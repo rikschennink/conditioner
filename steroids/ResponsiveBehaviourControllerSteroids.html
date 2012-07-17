@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Basic BehaviourController</title>
+    </head>
+    <body>
+
+
+        <!-- Clock behaviour HTML -->
+        <p data-behaviour="ui.Clock" data-environment='{"window":{"minWidth":600}}'>Clock is inactive</p>
+
+        <!-- ClearField behaviour HTML -->
+        <input type="text" data-behaviour="ui.ClearField" data-environment='{"window":{"maxWidth":600}}'>
+
+
+
+
+        <script src="js/bc/helper/Namespace.js"></script>
+        <script src="js/bc/helper/Observer.js"></script>
+        <script src="js/bc/helper/ResponsiveWindow.js"></script>
+        <script src="js/bc/helper/ScriptLoader.js"></script>
+        <script src="js/bc/core/OptionsController.js"></script>
+        <script src="js/bc/core/BehaviourBase.js"></script>
+        <script src="js/bc/core/BehaviourLoader.js"></script>
+        <script src="js/bc/core/BehaviourEnvironment.js"></script>
+        <script src="js/bc/core/BehaviourController.js"></script>
+
+
+        <script src="js/ui/ClearField.js"></script>
+
+
+        <script>
+
+            new bc.core.BehaviourController(
+                {
+                    'bc_core_BehaviourLoader':
+                    {
+                        'url':
+                        {
+                            'js':'js/'
+                        }
+                    }
+                }
+            );
+
+        </script>
+    </body>
+</html>

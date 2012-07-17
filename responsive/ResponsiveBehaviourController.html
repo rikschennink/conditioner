@@ -1,0 +1,405 @@
+<!doctype html>
+<html>
+    <head>
+
+        <title>Responsive BehaviourController</title>
+
+    </head>
+    <body>
+
+        <!-- Clock behaviour HTML -->
+        <p data-behaviour="Clock" data-environment='{"window":{"minWidth":600}}'>Clock is inactive</p>
+
+        <!-- ClearField behaviour HTML -->
+        <input type="text" data-behaviour="ClearField"  data-environment='{"window":{"maxWidth":600}}'>
+
+        <script>
+
+            /*
+             * Observer
+             */
+            var Observer = {
+
+                // subscribe to event
+                subscribe:function(obj,type,fn) {
+
+                    if (!obj._listeners) {
+                        obj._listeners = new Array();
+                    }
+
+                    // check if already added
+                    var test,i,l = obj._listeners;
+                    for (i=0; i<l; i++) {
+                        test = obj._listeners[i];
+                        if (test.type === type && test.fn === fn) {
+                            return;
+                        }
+                    }
+
+                    // add event
+                    obj._listeners.push({'type':type,'fn':fn});
+                },
+
+                // unsubscribe from event
+                unsubscribe:function() {
+
+                    if (!obj._listeners) {
+                        return;
+                    }
+
+                    // find and remove
+                    var test,i;
+                    for (i = obj._listeners.length-1; i >= 0; i--) {
+                        test = obj._listeners[i];
+                        if (test.type === type && test.fn === fn) {
+                            obj._listeners.splice(i,1);
+                            break;
+                        }
+                    }
+
+                },
+
+                // fire event
+                fire:function(obj,type,data) {
+
+                    if (!obj._listeners) {
+                        obj._listeners = new Array();
+                    }
+
+                    // find and execute callback
+                    var test,i,l = obj._listeners.length;
+                    for (i=0; i<l; i++) {
+                        test = obj._listeners[i];
+                        if (test.type === type) {
+                            test.fn(event,data);
+                        }
+                    }
+                }
+            };
+
+
+
+            /*
+             * BehaviourBase Abstract Class
+             */
+            var BehaviourBase = function(element) {
+                this._element = element;
+                this._element.setAttribute('data-initialized', 'true');
+            };
+
+            BehaviourBase.prototype._unload = function() {
+                this._element.removeAttribute('data-initialized');
+            };
+
+
+
+            /*
+             * Clock Class
+             */
+            var Clock = function(element) {
+
+                // Call BehaviourBase constructor
+                BehaviourBase.call(this,element);
+
+                // backup content
+                this._inner = this._element.innerHTML;
+
+                // start ticking
+                this.tick();
+            };
+
+            // Extend from BehaviourBase
+            Clock.prototype = Object.create(BehaviourBase.prototype);
+
+            // Update time
+            Clock.prototype.tick = function() {
+                this._element.textContent = new Date();
+                var self = this;
+                this._timer = setTimeout(function(){
+                    self.tick();
+                },1000);
+            };
+
+            // Unload Clock behaviour
+            Clock.prototype._unload = function() {
+
+                // call BehaviourBase unload method
+                BehaviourBase.prototype._unload.call(this);
+
+                // stop ticking
+                clearTimeout(this._timer);
+
+                // restore content
+                this._element.innerHTML = this._inner;
+            };
+
+
+
+            /*
+             * ClearField Class
+             */
+            var ClearField = function(element) {
+
+                // Call BehaviourBase constructor
+                BehaviourBase.call(this,element);
+
+                // Add clear button
+                var clearButton = document.createElement('button');
+                clearButton.textContent = 'clear';
+                clearButton.addEventListener('click',this);
+                this._element.parentNode.insertBefore(clearButton,this._element);
+
+            };
+
+            // Extend from BehaviourBase
+            ClearField.prototype = Object.create(BehaviourBase.prototype);
+
+            // Handle events
+            ClearField.prototype.handleEvent = function(e) {
+                if (e.type === 'click') {
+                    this._element.value = '';
+                }
+            };
+
+            // Unload ClearField behaviour
+            ClearField.prototype._unload = function() {
+
+                // call BehaviourBase unload method
+                BehaviourBase.prototype._unload.call(this);
+
+                // get button reference
+                var clearButton = this._element.previousSibling;
+
+                // remove events
+                clearButton.removeEventListener('click',this);
+
+                // remove clear button
+                this._element.parentNode.removeChild(clearButton);
+            };
+
+
+
+            /*
+             * BehaviourEnvironment Class
+             */
+            var BehaviourEnvironment = function(element,properties) {
+
+                // is the environment suitable, by default it is
+                this._suitable = true;
+
+                // set properties object
+                this._properties = properties;
+
+                // listen for environment changes
+                this._listen();
+
+                // test the environment
+                this._test();
+
+            };
+
+            // Static method construct creates behaviour environment objects
+            BehaviourEnvironment.construct = function(element) {
+
+                // check if has specifications
+                var specifications = element.getAttribute('data-environment');
+                if (!specifications) {
+                    return null;
+                }
+
+                var properties = null;
+                try {
+                    properties = JSON.parse(specifications);
+                }
+                catch(e) {
+                    console.warn("BehaviourEnvironment: data-environment attribute should have format data-environment='{\"foo\":\"bar\"}'");
+                    return null;
+                }
+
+                return new BehaviourEnvironment(element,properties)
+
+            };
+
+            // Adds listeners to the environment to act when it changes
+            BehaviourEnvironment.prototype._listen = function() {
+
+                if (this._properties.window) {
+                    window.addEventListener('resize',this);
+                }
+
+            };
+
+            // Handles events
+            BehaviourEnvironment.prototype.handleEvent = function(e) {
+
+                switch(e.type) {
+                    case 'resize':{
+                        this._test();
+                    }
+                        break;
+                    default: {}
+                        break;
+                }
+
+            };
+
+            // Checks if the current environment has the requested properties
+            BehaviourEnvironment.prototype._test = function() {
+
+                // test environment properties
+                var win,windowSize,suitable = true;
+
+                // test window sizes
+                if (win = this._properties.window) {
+
+                    // get window size
+                    windowSize = {x:window.innerWidth,y:window.innerHeight};
+
+                    // check max width
+                    if (win.maxWidth && windowSize.x > win.maxWidth) {
+                        suitable = false;
+                    }
+
+                    // check min width
+                    if (win.minWidth && windowSize.x < win.minWidth) {
+                        suitable = false;
+                    }
+
+                    // check max height
+                    if (win.maxHeight && windowSize.y > win.maxHeight) {
+                        suitable = false;
+                    }
+
+                    // check max height
+                    if (win.minHeight && windowSize.y < win.minHeight) {
+                        suitable = false;
+                    }
+
+                }
+
+                // fire changed event if environment suitability changed
+                if (suitable != this._suitable) {
+                    this._suitable = suitable;
+                    Observer.fire(this,'change');
+                }
+            };
+
+            // Returns the suitability of the current environment
+            BehaviourEnvironment.prototype.isSuitable = function() {
+                return this._suitable;
+            };
+
+
+
+            /*
+             * BehaviourLoader Class
+             */
+            var BehaviourLoader = function(element) {
+
+                // set element reference
+                this._element = element;
+
+                // check if environment specified
+                this._environment = BehaviourEnvironment.construct(this._element);
+                if (!this._environment) {
+                    this._loadBehaviour();
+                }
+                else {
+
+                    // listen to changes in environment
+                    Observer.subscribe(this._environment,'change',this._onEnvironmentChange.bind(this));
+
+                    // if environment is suitable, load my behaviour
+                    if (this._environment.isSuitable()) {
+                        this._loadBehaviour();
+                    }
+                }
+
+            };
+
+            // Called when the environment conditions change.
+            BehaviourLoader.prototype._onEnvironmentChange = function(e) {
+
+                var suitable = this._environment.isSuitable();
+
+                if (this._behaviour && !suitable) {
+                    this.unloadBehaviour();
+                }
+
+                if (!this._behaviour && suitable) {
+                    this._loadBehaviour();
+                }
+            };
+
+            // Load the behaviour set in the data-behaviour attribute
+            BehaviourLoader.prototype._loadBehaviour = function() {
+
+                var classPath = this._element.getAttribute('data-behaviour');
+
+                this._behaviourConstructor = window[classPath];
+                this._behaviour = new this._behaviourConstructor(this._element);
+            };
+
+            // Unload the behaviour
+            BehaviourLoader.prototype.unloadBehaviour = function() {
+
+                if (!this._behaviour) {
+                    return false;
+                }
+
+                this._behaviour._unload();
+                this._behaviour = null;
+
+                return true;
+            };
+
+
+
+            /*
+             * BehaviourController Class (Singleton)
+             */
+            (function(){
+
+                // reference to instance of BehaviourController
+                var _instance = null;
+
+                // BehaviourController constructor
+                BehaviourController = function() {
+
+                    if (_instance){return _instance;}
+                    else {_instance = this;}
+
+                    document.addEventListener('DOMContentLoaded',function(){
+                        _instance.applyBehaviour(document);
+                    });
+                };
+
+                // BehaviourController applyBehaviour method
+                // applies behaviour to given context or document if no context
+                BehaviourController.prototype.applyBehaviour = function(context) {
+
+                    var behaviourConstructor,behaviour,nodes,i,l;
+
+                    nodes = context.querySelectorAll('[data-behaviour]:not([data-processed])');
+                    l = nodes.length;
+
+                    for (i=0; i<l;i++) {
+
+                        // has been processed
+                        nodes[i].setAttribute('data-processed','true');
+
+                        // wrap in loader
+                        behaviour = new BehaviourLoader(nodes[i]);
+                   }
+                };
+
+            }());
+
+
+            // Run
+            var BC = new BehaviourController();
+
+
+        </script>
+    </body>
+</html>

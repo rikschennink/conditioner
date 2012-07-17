@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+    <head>
+
+        <title>Basic BehaviourController</title>
+
+    </head>
+    <body>
+
+        <!-- Clock behaviour HTML -->
+        <p data-behaviour="Clock">Clock is inactive</p>
+
+        <!-- ClearField behaviour HTML -->
+        <input type="text" data-behaviour="ClearField">
+
+        <script>
+
+            /*
+             * Clock Class
+             */
+            var Clock = function(element) {
+
+                // set element reference
+                this._element = element;
+
+                // start ticking
+                this.tick();
+            };
+
+            // Update time
+            Clock.prototype.tick = function() {
+                this._element.textContent = new Date();
+                var self = this;
+                this._timer = setTimeout(function(){
+                    self.tick();
+                },1000);
+            };
+
+
+            /*
+             * ClearField Class
+             */
+            var ClearField = function(element) {
+
+                // set element reference
+                this._element = element;
+
+                // Add clear button
+                var clearButton = document.createElement('button');
+                clearButton.textContent = 'clear';
+                clearButton.addEventListener('click',this);
+                this._element.parentNode.insertBefore(clearButton,this._element);
+            };
+
+            // Handle events
+            ClearField.prototype.handleEvent = function(e) {
+                // if event type is click clear the field
+                if (e.type === 'click') {
+                    this._element.value = '';
+                }
+            };
+
+
+            /*
+             * BehaviourController Class (Singleton)
+             */
+            (function(){
+
+                // reference to instance of BehaviourController
+                var _instance = null;
+
+                // BehaviourController constructor
+                BehaviourController = function() {
+
+                    if (_instance){return _instance;}
+                    else {_instance = this;}
+
+                    document.addEventListener('DOMContentLoaded',function(){
+                        _instance.applyBehaviour(document);
+                    });
+                };
+
+                // Applies behaviour to given context or document if no context
+                BehaviourController.prototype.applyBehaviour = function(context) {
+
+                    var behaviourConstructor,behaviour,nodes,i,l;
+
+                    nodes = context.querySelectorAll('[data-behaviour]');
+                    l = nodes.length;
+
+                    for (i=0;i<l;i++) {
+                        behaviourConstructor = nodes[i].getAttribute('data-behaviour');
+                        behaviour = new window[behaviourConstructor](nodes[i]);
+                   }
+                };
+
+            }());
+
+
+            // Run
+            var BC = new BehaviourController();
+
+
+        </script>
+    </body>
+</html>
