@@ -1,28 +1,26 @@
 
 /**
  * BehaviourController singleton.
- *
  * @class BehaviourController
  */
 (function() {
 
-    /**
-     * Private static variables
-     */
-    var _singleton;
+    // reference to first instance
+    var _instance;
 
 
     /**
-     * Constructs BehaviourController singleton objects.
+     * Constructs BehaviourController singleton
      *
      * @class BehaviourController
      * @constructor
+     * @param {Object} global options for OptionsController
      */
     var BehaviourController = function(options) {
 
         // do singleton check
-        if (!_singleton) {_singleton = this;}
-        else {return _singleton;}
+        if (!_instance) {_instance = this;}
+        else {return _instance;}
 
         // create the options controller
         if (options) {
@@ -31,7 +29,7 @@
 
         // start adding behaviour
         document.addEventListener('DOMContentLoaded',function() {
-            _singleton.applyBehaviour(document);
+            _instance.applyBehaviour(document);
         });
     };
 
@@ -39,8 +37,8 @@
     /**
      * Applies behaviour on object within given context.
      *
+     * @class BehaviourController
      * @method applyBehaviour
-     * @param {Node} context The DOM piece to apply behaviours to
      */
     BehaviourController.prototype.applyBehaviour = function(context) {
 

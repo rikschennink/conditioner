@@ -64,13 +64,16 @@
 
 
 
-    var _singleton;
+    // reference to first instance
+    var _instance;
+
+    // callback uid
     var _callbackIndex = 0;
 
     var ScriptLoader = function() {
 
-        if (!_singleton) {_singleton = this;}
-        else {return _singleton;}
+        if (!_instance) {_instance = this;}
+        else {return _instance;}
 
         this._scripts = [];
     };

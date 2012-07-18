@@ -9,7 +9,7 @@
     /**
      * Constructs BehaviourBase objects.
      *
-     * @class Behaviour
+     * @class BehaviourBase
      * @constructor
      * @param {Object} element DOM Element
      */
@@ -20,6 +20,12 @@
 
     };
 
+    /**
+     * Unloads behaviour by removing data initialized property
+     *
+     * @class BehaviourBase
+     * @method _unload
+     */
     BehaviourBase.prototype._unload = function() {
 
         this._element.removeAttribute('data-initialized');

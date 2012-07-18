@@ -6,10 +6,7 @@
  */
 (function() {
 
-
-    /**
-     * Private static variables
-     */
+    // global BehaviourLoader cache object
     var _cache = {};
 
     /**
@@ -50,9 +47,8 @@
      *
      * @method _onEnvironmentChanged
      * @class BehaviourLoader
-     * @param {Event} e
      */
-    p._onEnvironmentChange = function(e) {
+    p._onEnvironmentChange = function() {
 
         var suitable = this._environment.isSuitable();
 
@@ -68,8 +64,8 @@
     /**
      * Load the behaviour set in the data-behaviour attribute
      *
-     * @method _loadBehaviour
      * @class BehaviourLoader
+     * @method _loadBehaviour
      */
     p._loadBehaviour = function() {
 
@@ -89,8 +85,8 @@
     /**
      * Initialize the behaviour
      *
-     * @method _initBehaviour
      * @class BehaviourLoader
+     * @method _initBehaviour
      */
     p._initBehaviour = function() {
 
@@ -101,8 +97,8 @@
     /**
      * Unload the behaviour
      *
-     * @method unloadBehaviour
      * @class BehaviourLoader
+     * @method unloadBehaviour
      */
     p.unloadBehaviour = function() {
 
@@ -119,6 +115,7 @@
     /**
      * Try to get Behaviour by classPath.
      *
+     * @class BehaviourLoader
      * @method _getBehaviourConstructorByClassPath
      * @param {String} classPath The classPath to the Behaviour
      * @return {Object} The Behaviour
@@ -155,6 +152,7 @@
     /**
      * Try to load Behaviour by class path.
      *
+     * @class BehaviourLoader
      * @method _getBehaviourFileByClassPath
      * @param {String} classPath The class path to the Behaviour
      */

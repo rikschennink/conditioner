@@ -6,29 +6,20 @@
  */
 (function() {
 
-    /**
-     * Private static variables
-     */
-    var _singleton;
+    // reference to first instance
+    var _instance;
 
      /**
      * Constructs OptionsController singleton objects.
      *
-     // global options example
-     {
-         js:{
-            url:''
-         }
-     };
-
      * @class OptionsController
      * @constructor
      */
     var OptionsController = function(options) {
 
         // do singleton check
-        if (!_singleton) {_singleton = this;}
-        else {return _singleton;}
+        if (!_instance) {_instance = this;}
+        else {return _instance;}
 
         this._options = {};
         this._optionsReferenceCache = [];
@@ -38,6 +29,12 @@
         }
     };
 
+    /**
+     * Returns an options object for a given class path
+     *
+     * @class OptionsController
+     * @method getOptionsForClassPath
+     */
     OptionsController.prototype.getOptionsForClassPath = function(classPath) {
 
         var options,index;

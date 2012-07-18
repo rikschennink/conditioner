@@ -1,18 +1,19 @@
 
 (function() {
 
-    var _singleton;
+    // reference to first instance
+    var _instance;
 
     /**
-     * Constructs BehaviourController singleton objects.
+     * Constructs ResponsiveWindow singleton.
      *
-     * @class BehaviourController
+     * @class ResponsiveWindow
      * @constructor
      */
     var ResponsiveWindow = function()
     {
-        if (!_singleton) {_singleton = this;}
-        else {return _singleton;}
+        if (!_instance) {_instance = this;}
+        else {return _instance;}
 
         this._timer = null;
 
@@ -25,6 +26,7 @@
     /**
      * Handles events.
      *
+     * @class ResponsiveWindow
      * @method handleEvent
      */
     p.handleEvent = function(e)
@@ -38,9 +40,10 @@
     /**
      * On resize event handler, delays events.
      *
+     * @class ResponsiveWindow
      * @method _onResize
      */
-    p._onResize = function(e)
+    p._onResize = function()
     {
         clearTimeout(this._timer);
 
@@ -54,6 +57,7 @@
     /**
      * Dispatches resize event.
      *
+     * @class ResponsiveWindow
      * @method _onStable
      */
     p._onStable = function() {

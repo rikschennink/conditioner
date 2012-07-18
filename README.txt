@@ -1,3 +1,3 @@
-This is demo code related to the Controlling Behaviour article on http://rikschennink.nl/blog.
+This demo code further described in the Controlling Behaviour article on http://rikschennink.nl/blog.
 
-Test in Chrome, this is still a proof of concept on how to handle JavaScript loading than a plug and play library.
+These files are part of a proof of concept on how to handle JavaScript loading, by no means is this a plug and play library, if you want to see it in action use a modern browser.

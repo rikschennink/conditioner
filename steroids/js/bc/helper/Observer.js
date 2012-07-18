@@ -57,7 +57,7 @@
             for (i=0; i<l; i++) {
                 test = obj._listeners[i];
                 if (test.type === type) {
-                    test.fn(event,data);
+                    test.fn(data);
                 }
             }
         }

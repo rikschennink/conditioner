@@ -12,9 +12,9 @@
      *
      *  data-environment JSON specification
      *  {
-     *      'window':{
-     *          'minWidth':<Number>
-     *          'maxWidth':<Number>
+     *      "window":{
+     *          "minWidth":<Number>,
+     *          "maxWidth":<Number>
      *      }
      *  }
      *
@@ -39,10 +39,10 @@
     };
 
     /**
-     * Static method construct creates behaviour environment objects
+     * Static method construct behaviour environment objects
      *
-     * @method construct
      * @class BehaviourEnvironment
+     * @method construct
      */
     BehaviourEnvironment.construct = function(element) {
 
@@ -73,13 +73,12 @@
     /**
      * Adds listeners to the environment to act when it changes
      *
-     * @method _listen
      * @class BehaviourEnvironment
+     * @method _listen
      */
     p._listen = function() {
 
         if (this._properties.window) {
-            var self = this;
             var responsiveWindow = new bc.helper.ResponsiveWindow();
             bc.helper.Observer.subscribe(responsiveWindow,'resize',this._test.bind(this));
         }
@@ -90,8 +89,8 @@
     /**
      * Checks if the current environment has the requested properties
      *
-     * @method _test
      * @class BehaviourEnvironment
+     * @method _test
      */
     p._test = function() {
 
@@ -126,8 +125,8 @@
     /**
      * Returns the suitability of the current environment
      *
-     * @method isSuitable
      * @class BehaviourEnvironment
+     * @method isSuitable
      * @return {Boolean} The suitability of the environment
      */
     p.isSuitable = function() {
