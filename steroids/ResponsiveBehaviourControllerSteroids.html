@@ -6,17 +6,20 @@
     <body>
 
 
-        <!-- Clock behaviour HTML -->
+        <!-- Clock behaviour HTML, Clock is inactive when element size is smaller than 500 pixels -->
         <div style="width:50%">
             <p data-behaviour="ui.Clock" data-conditions='{"element":{"minWidth":500}}'>Clock is inactive</p>
         </div>
 
-        <!-- Clock behaviour HTML but with -->
-        <div data-behaviour="ui.Map" data-conditions='{"location":{"geoSupport":true},"window":{"minWidth":400,"maxWidth":700}}'>Map is inactive</div>
+        <p>
+            <!-- ClearField behaviour HTML, ClearField is inactive when window size is smaller than 400 pixels or wider than 700 pixels -->
+            <input type="text" data-behaviour="ui.ClearField" data-conditions='{"window":{"minWidth":400,"maxWidth":700}}'>
+        </p>
 
-        <!-- ClearField behaviour HTML -->
-        <input type="text" data-behaviour="ui.ClearField" data-conditions='{"window":{"minWidth":400,"maxWidth":700}}'>
-
+        <!-- Map behaviour HTML, Map is inactive when no geolocation support or window size is smaller than 400 pixels or wider than 700 pixels -->
+        <p>
+            <div data-behaviour="ui.Map" data-conditions='{"location":{"geolocation":true},"window":{"minWidth":400,"maxWidth":700}}'>Map is inactive</div>
+        </p>
 
 
         <script src="js/bc/helper/Namespace.js"></script>
@@ -33,7 +36,7 @@
         <script src="js/ui/ClearField.js"></script>
         <script src="js/ui/Clock.js"></script>
 
-        <!-- Note that the Map class has been commented, it will be loaded dynamically -->
+        <!-- Note that the Map class has been commented, it will be loaded dynamically when conditions are met -->
         <!-- <script src="js/ui/Map.js"></script>-->
 
 
@@ -55,7 +58,7 @@
                     {
                         'window':
                         {
-                            // link <event> to returned <object>
+                            // links <event> to returned <object>
                             // <element> is passed as first param, this way it's possible to bind to element or children of element
                             'event':{
                                 'resize':function(element){return new bc.helper.ResponsiveWindow();}
@@ -79,7 +82,7 @@
                         'location':
                         {
                             'condition':{
-                                'geoSupport':function(value){return Boolean(navigator.geolocation)===value;}
+                                'geolocation':function(value){return Boolean(navigator.geolocation)===value;}
                             }
                         }
                     }
