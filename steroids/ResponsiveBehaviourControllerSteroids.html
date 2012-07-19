@@ -7,10 +7,10 @@
 
 
         <!-- Clock behaviour HTML -->
-        <p data-behaviour="ui.Clock" data-environment='{"window":{"minWidth":600}}'>Clock is inactive</p>
+        <p data-behaviour="ui.Clock" data-conditions='{"window":{"minWidth":600}}'>Clock is inactive</p>
 
         <!-- ClearField behaviour HTML -->
-        <input type="text" data-behaviour="ui.ClearField" data-environment='{"window":{"maxWidth":600}}'>
+        <input type="text" data-behaviour="ui.ClearField" data-conditions='{"window":{"maxWidth":600}}'>
 
 
 
@@ -22,7 +22,7 @@
         <script src="js/bc/core/OptionsController.js"></script>
         <script src="js/bc/core/BehaviourBase.js"></script>
         <script src="js/bc/core/BehaviourLoader.js"></script>
-        <script src="js/bc/core/BehaviourEnvironment.js"></script>
+        <script src="js/bc/core/BehaviourConditions.js"></script>
         <script src="js/bc/core/BehaviourController.js"></script>
 
         <!-- ClearField control is embedded -->
@@ -39,6 +39,19 @@
                         'url':
                         {
                             'js':'js/'
+                        }
+                    },
+                    'bc_core_BehaviourConditions':
+                    {
+                        'window':
+                        {
+                            'event':{
+                                'resize':function(){return new bc.helper.ResponsiveWindow();}
+                            },
+                            'condition':{
+                                'minWidth':function(value){return value && window.innerWidth <= value;},
+                                'maxWidth':function(value){return value && window.innerWidth >= value;}
+                            }
                         }
                     }
                 }

@@ -21,18 +21,18 @@
         // set element reference
         this._element = element;
 
-        // check if environement specified
-        this._environment = bc.core.BehaviourEnvironment.construct(this._element);
-        if (!this._environment) {
+        // check if conditions specified
+        this._conditions = bc.core.BehaviourConditions.construct(this._element);
+        if (!this._conditions) {
             this._loadBehaviour();
         }
         else {
 
-            // listen to changes in environment
-            bc.helper.Observer.subscribe(this._environment,'change',this._onEnvironmentChange.bind(this));
+            // listen to condition changes
+            bc.helper.Observer.subscribe(this._conditions,'change',this._onConditionsChange.bind(this));
 
-            // if environment is suitable, load my behaviour
-            if (this._environment.isSuitable()) {
+            // if conditions are met, load my behaviour
+            if (this._conditions.areMet()) {
                 this._loadBehaviour();
             }
         }
@@ -43,14 +43,14 @@
     var p = BehaviourLoader.prototype;
 
     /**
-     * Called when the environment conditions change.
+     * Called when the conditions change.
      *
-     * @method _onEnvironmentChanged
+     * @method _onConditionsChange
      * @class BehaviourLoader
      */
-    p._onEnvironmentChange = function() {
+    p._onConditionsChange = function() {
 
-        var suitable = this._environment.isSuitable();
+        var suitable = this._conditions.areMet();
 
         if (this._behaviour && !suitable) {
             this.unloadBehaviour();

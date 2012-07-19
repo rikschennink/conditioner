@@ -8,10 +8,10 @@
     <body>
 
         <!-- Clock behaviour HTML -->
-        <p data-behaviour="Clock" data-environment='{"window":{"minWidth":600}}'>Clock is inactive</p>
+        <p data-behaviour="Clock" data-conditions='{"window":{"minWidth":600}}'>Clock is inactive</p>
 
         <!-- ClearField behaviour HTML -->
-        <input type="text" data-behaviour="ClearField"  data-environment='{"window":{"maxWidth":600}}'>
+        <input type="text" data-behaviour="ClearField"  data-conditions='{"window":{"maxWidth":600}}'>
 
         <script>
 
@@ -180,11 +180,11 @@
 
 
             /*
-             * BehaviourEnvironment Class
+             * BehaviourConditions Class
              */
-            var BehaviourEnvironment = function(element,properties) {
+            var BehaviourConditions = function(element,properties) {
 
-                // is the environment suitable, by default it is
+                // is the conditions are suitable, by default they are
                 this._suitable = true;
 
                 // set properties object
@@ -193,16 +193,16 @@
                 // listen for environment changes
                 this._listen();
 
-                // test the environment
+                // test the conditions
                 this._test();
 
             };
 
-            // Static method construct creates behaviour environment objects
-            BehaviourEnvironment.construct = function(element) {
+            // Static method construct creates behaviour condition objects
+            BehaviourConditions.construct = function(element) {
 
                 // check if has specifications
-                var specifications = element.getAttribute('data-environment');
+                var specifications = element.getAttribute('data-conditions');
                 if (!specifications) {
                     return null;
                 }
@@ -212,16 +212,16 @@
                     properties = JSON.parse(specifications);
                 }
                 catch(e) {
-                    console.warn("BehaviourEnvironment: data-environment attribute should have format data-environment='{\"foo\":\"bar\"}'");
+                    console.warn("BehaviourConditions: data-conditions attribute should have format data-conditions='{\"foo\":\"bar\"}'");
                     return null;
                 }
 
-                return new BehaviourEnvironment(element,properties)
+                return new BehaviourConditions(element,properties)
 
             };
 
             // Adds listeners to the environment to act when it changes
-            BehaviourEnvironment.prototype._listen = function() {
+            BehaviourConditions.prototype._listen = function() {
 
                 if (this._properties.window) {
                     window.addEventListener('resize',this);
@@ -230,7 +230,7 @@
             };
 
             // Handles events
-            BehaviourEnvironment.prototype.handleEvent = function(e) {
+            BehaviourConditions.prototype.handleEvent = function(e) {
 
                 switch(e.type) {
                     case 'resize':{
@@ -243,10 +243,10 @@
 
             };
 
-            // Checks if the current environment has the requested properties
-            BehaviourEnvironment.prototype._test = function() {
+            // Checks if the current conditions match the requested properties
+            BehaviourConditions.prototype._test = function() {
 
-                // test environment properties
+                // test condition properties
                 var win,windowSize,suitable = true;
 
                 // test window sizes
@@ -277,15 +277,15 @@
 
                 }
 
-                // fire changed event if environment suitability changed
+                // fire changed event if condition suitability changed
                 if (suitable != this._suitable) {
                     this._suitable = suitable;
                     Observer.fire(this,'change');
                 }
             };
 
-            // Returns the suitability of the current environment
-            BehaviourEnvironment.prototype.isSuitable = function() {
+            // Returns the true if the current conditions are met
+            BehaviourConditions.prototype.areMet = function() {
                 return this._suitable;
             };
 
@@ -300,27 +300,27 @@
                 this._element = element;
 
                 // check if environment specified
-                this._environment = BehaviourEnvironment.construct(this._element);
+                this._environment = BehaviourConditions.construct(this._element);
                 if (!this._environment) {
                     this._loadBehaviour();
                 }
                 else {
 
                     // listen to changes in environment
-                    Observer.subscribe(this._environment,'change',this._onEnvironmentChange.bind(this));
+                    Observer.subscribe(this._environment,'change',this._onConditionsChange.bind(this));
 
-                    // if environment is suitable, load my behaviour
-                    if (this._environment.isSuitable()) {
+                    // if conditions are suitable, load my behaviour
+                    if (this._environment.areMet()) {
                         this._loadBehaviour();
                     }
                 }
 
             };
 
-            // Called when the environment conditions change.
-            BehaviourLoader.prototype._onEnvironmentChange = function(e) {
+            // Called when behaviour conditions change.
+            BehaviourLoader.prototype._onConditionsChange = function(e) {
 
-                var suitable = this._environment.isSuitable();
+                var suitable = this._environment.areMet();
 
                 if (this._behaviour && !suitable) {
                     this.unloadBehaviour();
