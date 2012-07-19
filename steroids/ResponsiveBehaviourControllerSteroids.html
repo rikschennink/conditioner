@@ -7,11 +7,15 @@
 
 
         <!-- Clock behaviour HTML -->
-        <p data-behaviour="ui.Clock" data-conditions='{"window":{"minWidth":600}}'>Clock is inactive</p>
+        <div style="width:50%">
+            <p data-behaviour="ui.Clock" data-conditions='{"element":{"minWidth":500}}'>Clock is inactive</p>
+        </div>
+
+        <!-- Clock behaviour HTML but with -->
+        <div data-behaviour="ui.Map" data-conditions='{"location":{"geoSupport":true},"window":{"minWidth":400,"maxWidth":700}}'>Map is inactive</div>
 
         <!-- ClearField behaviour HTML -->
-        <input type="text" data-behaviour="ui.ClearField" data-conditions='{"window":{"maxWidth":600}}'>
-
+        <input type="text" data-behaviour="ui.ClearField" data-conditions='{"window":{"minWidth":400,"maxWidth":700}}'>
 
 
 
@@ -27,9 +31,14 @@
 
         <!-- ClearField control is embedded -->
         <script src="js/ui/ClearField.js"></script>
+        <script src="js/ui/Clock.js"></script>
 
-        <!-- Note that the Clock is not here, it will be loaded dynamically -->
+        <!-- Note that the Map class has been commented, it will be loaded dynamically -->
+        <!-- <script src="js/ui/Map.js"></script>-->
 
+
+
+        <!-- Behaviour start and configuration point -->
         <script>
 
             new bc.core.BehaviourController(
@@ -38,7 +47,7 @@
                     {
                         'url':
                         {
-                            // path to js root
+                            // path to js root to allow dynamic loading of js files
                             'js':'js/'
                         }
                     },
@@ -54,8 +63,23 @@
                             // link <key> to condition
                             // <element> is passed as first param by default, second param is value in data-conditions attribute
                             'condition':{
-                                'minWidth':function(element,value){return value && window.innerWidth <= value;},
-                                'maxWidth':function(element,value){return value && window.innerWidth >= value;}
+                                'minWidth':function(element,value){return value >= window.innerWidth;},
+                                'maxWidth':function(element,value){return value <= window.innerWidth;}
+                            }
+                        },
+                        'element':
+                        {
+                            'event':{
+                                'resize':function(element){return window;}
+                            },
+                            'condition':{
+                                'minWidth':function(element,value){return value >= element.offsetWidth;}
+                            }
+                        },
+                        'location':
+                        {
+                            'condition':{
+                                'geoSupport':function(value){return Boolean(navigator.geolocation)===value;}
                             }
                         }
                     }
