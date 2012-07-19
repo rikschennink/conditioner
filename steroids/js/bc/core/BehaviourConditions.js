@@ -26,6 +26,7 @@
 
         // if the conditions are suitable, by default they are
         this._suitable = true;
+        this._element = element;
 
         // set properties object
         this._conditions = conditions;
@@ -92,7 +93,7 @@
                 if (!events.hasOwnProperty(eventSpecification)) {
                     continue;
                 }
-                this._listenTo(eventSpecification,events[eventSpecification]());
+                this._listenTo(eventSpecification,events[eventSpecification](this._element));
             }
         }
 
@@ -161,7 +162,7 @@
             value = condition[check];
 
             // check if meets condition
-            if (checks[check](value)) {
+            if (checks[check](this._element,value)) {
                 return false;
             }
         }

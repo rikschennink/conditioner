@@ -45,12 +45,16 @@
                     {
                         'window':
                         {
+                            // link <event> to returned <object>
+                            // <element> is passed as first param, this way it's possible to bind to element or children of element
                             'event':{
-                                'resize':function(){return new bc.helper.ResponsiveWindow();}
+                                'resize':function(element){return new bc.helper.ResponsiveWindow();}
                             },
+                            // link <key> to condition
+                            // <element> is passed as first param by default, second param is value in data-conditions attribute
                             'condition':{
-                                'minWidth':function(value){return value && window.innerWidth <= value;},
-                                'maxWidth':function(value){return value && window.innerWidth >= value;}
+                                'minWidth':function(element,value){return value && window.innerWidth <= value;},
+                                'maxWidth':function(element,value){return value && window.innerWidth >= value;}
                             }
                         }
                     }
