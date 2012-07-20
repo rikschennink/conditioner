@@ -12,6 +12,9 @@
         // backup content
         this._inner = this._element.innerHTML;
 
+        // loading map
+        this._element.innerHTML = 'Loading map..';
+
         // get position
         navigator.geolocation.getCurrentPosition(this._success.bind(this),this._error.bind(this));
     };
@@ -21,7 +24,16 @@
 
     // get position success
     p._success = function(position) {
-        this._element.innerHTML = 'lat:' + position.coords.latitude + ', lon:' + position.coords.longitude;
+
+        // clear
+        this._element.innerHTML = '';
+
+        // append map
+        var image = document.createElement('img');
+        image.src = 'http://maps.googleapis.com/maps/api/staticmap?center=' + position.coords.latitude + ',' + position.coords.longitude + '&zoom=14&size=' + 500 + 'x' + 300 + '&maptype=roadmap&sensor=false';
+        image.alt = '';
+        image.style.maxWidth = '100%';
+        this._element.appendChild(image);
     };
 
     // get position success fail
