@@ -4,61 +4,73 @@
  *
  * @class OptionsController
  */
-(function() {
+Namespace.register('bc.core').OptionsController = (function() {
+
+    "use strict";
 
     // reference to first instance
     var _instance;
 
+
+    /**
+     * Returns OptionsController instance
+     *
+     * @class OptionsController
+     * @param {Object} global options for OptionsController
+     */
+    var OptionsController = {
+        getInstance:function() {
+            if (!_instance) { _instance = new _OptionsController(); }
+            return _instance;
+        }
+    };
+
+
      /**
      * Constructs OptionsController singleton objects.
      *
-     * @class OptionsController
+     * @class _OptionsController
      * @constructor
      */
-    var OptionsController = function(options) {
-
-        // do singleton check
-        if (!_instance) {_instance = this;}
-        else {return _instance;}
-
+    var _OptionsController = function() {
         this._options = {};
-        this._optionsReferenceCache = [];
+    };
 
-        if (options) {
-            this._options = options;
+    _OptionsController.prototype = {
+
+        /**
+         * Loads additional options to the OptionsController
+         *
+         * @class _OptionsController
+         * @method load
+         * @param {Object} options
+         */
+        load:function(options) {
+            for (var key in options) {
+                this._options[key] = options[key];
+            }
+        },
+
+        /**
+         * Returns an options object for a given class path
+         *
+         * @class _OptionsController
+         * @method getOptionsForClassPath
+         * @param {String} classPath to class
+         */
+        getOptionsForClassPath:function(classPath) {
+            var options = this._options[classPath];
+            if (options) {
+                return options;
+            }
+            else {
+                console.warn('OptionsController: Could not find options for "' + classPath + '"');
+            }
         }
     };
 
-    /**
-     * Returns an options object for a given class path
-     *
-     * @class OptionsController
-     * @method getOptionsForClassPath
-     */
-    OptionsController.prototype.getOptionsForClassPath = function(classPath) {
-
-        var options,index;
-
-        // check if in cache
-        options = this._optionsReferenceCache[classPath];
-        if (options) {
-            return options;
-        }
-
-        // get index
-        index = classPath.replace(/\./g,'_');
-
-        // get options subset
-        options = this._options[index];
-        if (options) {
-            // if options found cache for later reference
-            this._optionsReferenceCache[classPath] = options;
-        }
-
-        return options;
-    };
 
     // Register class
-    Namespace.register('bc.core').OptionsController = OptionsController;
+    return OptionsController;
 
 }());

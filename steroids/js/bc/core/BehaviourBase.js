@@ -4,14 +4,16 @@
  *
  * @class BehaviourBase
  */
-(function() {
+Namespace.register('bc.core').BehaviourBase = (function() {
+
+    "use strict";
 
     /**
      * Constructs BehaviourBase objects.
      *
      * @class BehaviourBase
      * @constructor
-     * @param {Object} element DOM Element
+     * @param {Element} element DOM Element
      */
     var BehaviourBase = function(element) {
 
@@ -29,9 +31,10 @@
     BehaviourBase.prototype._unload = function() {
 
         this._element.removeAttribute('data-initialized');
+
     };
 
     // Register class
-    Namespace.register('bc.core').BehaviourBase = BehaviourBase;
+    return BehaviourBase;
 
 }());

@@ -3,33 +3,34 @@
  * BehaviourController singleton.
  * @class BehaviourController
  */
-(function() {
+Namespace.register('bc.core').BehaviourController =(function() {
 
-    // reference to first instance
-    var _instance;
+    "use strict";
+
+    /**
+     * @class BehaviourController
+     * @constructor
+     */
+    var BehaviourController = {};
 
 
     /**
-     * Constructs BehaviourController singleton
+     * Loads options into BehaviourController
      *
-     * @class BehaviourController
-     * @constructor
+     * @class _BehaviourController
+     * @method domReady
      * @param {Object} global options for OptionsController
      */
-    var BehaviourController = function(options) {
+    BehaviourController.applyDefault = function(options) {
 
-        // do singleton check
-        if (!_instance) {_instance = this;}
-        else {return _instance;}
-
-        // create the options controller
+        // create the initial options controller
         if (options) {
-            new bc.core.OptionsController(options);
+            bc.core.OptionsController.getInstance().load(options);
         }
 
         // start adding behaviour
         document.addEventListener('DOMContentLoaded',function() {
-            _instance.applyBehaviour(document);
+            BehaviourController.applyBehaviour(document);
         });
     };
 
@@ -37,26 +38,26 @@
     /**
      * Applies behaviour on object within given context.
      *
-     * @class BehaviourController
+     * @class _BehaviourController
      * @method applyBehaviour
      */
-    BehaviourController.prototype.applyBehaviour = function(context) {
+    BehaviourController.applyBehaviour = function(context) {
 
         // if no context supplied use document
         if (!context) {
-            console.warn('mira.core.BehaviourController.applyBehaviour(context): Requires a context');
+            console.warn('bc.core.BehaviourController.applyBehaviour(context): Requires a context');
         }
 
         // register vars and get elements
         var i,l,loaders,elements = context.querySelectorAll('[data-behaviour]:not([data-processed])',context);
 
-        // init loaders array
-        loaders = new Array();
-
         // if no elements do nothing
         if (!elements) {
             return;
         }
+
+        // init loaders array
+        loaders = new Array();
 
         l = elements.length;
         for (i=0; i<l; i++) {
@@ -69,10 +70,11 @@
         }
 
         // returns copy of loaders so it is possible to later unload them if necessary
-        return loaders.concat();
+        return loaders;
+
     };
 
     // Register class
-    Namespace.register('bc.core').BehaviourController = BehaviourController;
+    return BehaviourController;
 
 }());

@@ -1,46 +1,7 @@
 
-/**
- * BehaviourConditions
- *
- * @class BehaviourConditions
- */
-(function() {
+Namespace.register('bc.core').BehaviourConditions = (function() {
 
-    /**
-     * Constructs BehaviourConditions objects.
-     * Should only be called from create method.
-     *
-     *  data-conditions JSON specification
-     *  {
-     *      "window":{
-     *          "minWidth":<Number>,
-     *          "maxWidth":<Number>
-     *      }
-     *  }
-     *
-     * @class BehaviourConditions
-     * @constructor
-     * @param {Object} element DOM Element
-     */
-    var BehaviourConditions = function(element,conditions) {
-
-        // if the conditions are suitable, by default they are
-        this._suitable = true;
-        this._element = element;
-
-        // set properties object
-        this._conditions = conditions;
-
-        // set options object
-        this._options = new bc.core.OptionsController().getOptionsForClassPath('bc.core.BehaviourConditions');
-
-        // check if we need to listen to certain environment changes
-        this._listen();
-
-        // test the conditions
-        this._test();
-
-    };
+    "use strict";
 
     /**
      * Static method construct behaviour condition objects
@@ -48,95 +9,86 @@
      * @class BehaviourConditions
      * @method construct
      */
-    BehaviourConditions.construct = function(element) {
+    var BehaviourConditions = {
+        fromElement:function(element) {
 
-        // check if has specifications
-        var conditionsSpecifications = element.getAttribute('data-conditions');
-        if (!conditionsSpecifications) {
-            return null;
-        }
-    
-        var conditions = null;
-        try {
-            conditions = JSON.parse(conditionsSpecifications);
-        }
-        catch(e) {
-            console.warn("BehaviourConditions: data-conditions attribute should have format data-conditions='{\"foo\":\"bar\"}'");
-            return null;
-        }
-    
-        return new bc.core.BehaviourConditions(element,conditions)
-    
+                // check if has specifications
+                var conditionsAttribute = element.getAttribute('data-conditions');
+                if (!conditionsAttribute) {
+                    return null;
+                }
+
+                var conditions = null;
+                try {
+                    conditions = JSON.parse(conditionsAttribute);
+                }
+                catch(e) {
+                    console.warn("BehaviourConditions: data-conditions attribute should have format data-conditions='{\"foo\":\"bar\"}'");
+                    return null;
+                }
+
+                return new _BehaviourConditions(element,conditions);
+            }
     };
+
+
+
+    /**
+     * Constructs BehaviourConditions objects.
+     * Should only be called from create method.
+     *
+     *  data-conditions JSON specification
+     *  {
+     *      "<group>":{
+     *          "<type>":<value>
+     *      }
+     *  }
+     *
+     * @class _BehaviourConditions
+     * @constructor
+     * @param {Object} element DOM Element
+     */
+    var _BehaviourConditions = function(element,conditions) {
+
+        // if the conditions are suitable, by default they are
+        this._suitable = true;
+        this._element = element;
+        this._conditions = [];
+
+        // set options object
+        this._options = bc.core.OptionsController.getInstance().getOptionsForClassPath('bc.core.BehaviourConditions');
+
+        // set conditions array
+        var key,condition;
+        for (key in conditions) {
+            condition = new Condition(element,this._options,key,conditions[key]);
+            bc.helper.Observer.subscribe(condition,'change',this._onConditionsChanged.bind(this));
+            this._conditions.push(condition);
+        }
+
+        // test conditions
+        this.test();
+    };
+
 
 
     // prototype shortcut
-    var p = BehaviourConditions.prototype;
+    var p = _BehaviourConditions.prototype;
 
-
-    /**
-     * Adds listeners to the environment to act when it changes
-     *
-     * @class BehaviourConditions
-     * @method _listen
-     */
-    p._listen = function() {
-
-        var check,events,event;
-        for(check in this._options) {
-            if (!this._options.hasOwnProperty(check)) {
-                continue;
-            }
-            events = this._options[check]['event'];
-
-            for(eventSpecification in events) {
-                if (!events.hasOwnProperty(eventSpecification)) {
-                    continue;
-                }
-                this._listenTo(eventSpecification,events[eventSpecification](this._element));
-            }
-        }
-
-
+    p._onConditionsChanged = function() {
+        this.test();
     };
 
-    /**
-     * Decides what kind of listeners are required for certain events
-     *
-     * @class BehaviourConditions
-     * @method _listen
-     */
-    p._listenTo = function(event,obj) {
-        var testBind = this._test.bind(this);
-        if (obj.addEventListener) {
-            obj.addEventListener(event,testBind);
-        }
-        else {
-            bc.helper.Observer.subscribe(obj,event,testBind);
-        }
-    };
-
-
-
-    /**
-     * Checks if the current conditions match the requested properties
-     *
-     * @class BehaviourConditions
-     * @method _test
-     */
-    p._test = function() {
+    p.test = function() {
 
         // start with suitable conditions
         var suitable = true;
 
-        // test condition properties
-        var condition;
-        for(condition in this._conditions) {
-            if (!this._conditions.hasOwnProperty(condition)) {
-                continue;
-            }
-
-            if (!this._testCondition(condition,this._conditions[condition])) {
+        // check all conditions on suitability
+        var condition,i,l = this._conditions.length;
+        for (i=0;i<l;i++) {
+            condition = this._conditions[i];
+            if (!condition.isSuitable()) {
                 suitable = false;
                 break;
             }
@@ -149,26 +101,6 @@
         }
     };
 
-    p._testCondition = function(type,condition) {
-
-        var checks = this._options[type].condition;
-        var check,value;
-        for(check in condition) {
-            if (!condition.hasOwnProperty(check)) {
-                continue;
-            }
-
-            // get value for condition check
-            value = condition[check];
-
-            // check if meets condition
-            if (checks[check](this._element,value)) {
-                return false;
-            }
-        }
-
-        return true;
-    };
 
     /**
      * Returns true if the current conditions are met
@@ -176,11 +108,99 @@
      * @class BehaviourConditions
      * @method areMet
      */
-    p.areMet = function() {
+    p.areSuitable = function() {
         return this._suitable;
     };
 
+
+
+
+
+
+
+    /**
+    * Condition
+    *
+    * @class BehaviourConditions
+    */
+    var Condition = function(element,options,condition,expectations) {
+
+        this._element = element;
+        this._condition = condition;
+        this._expectations = typeof expectations === 'object' ? expectations : {'value':expectations};
+        this._options = options;
+        this._suitable = true;
+
+        // setup triggers
+        this._setup();
+    };
+
+    Condition.prototype = {
+
+        _setup:function() {
+
+            // get trigger setup reference for this condition
+            var setup = this._options[this._condition].setup;
+
+            // if a trigger setup was found, setup triggers
+            if (setup) {
+                setup(
+
+                    // test callback
+                    this._isSuitable.bind(this),
+
+                    // the element to setup the trigger on
+                    this._element,
+
+                    // expectations for the test
+                    this._expectations
+
+                );
+            }
+            else {
+                this._isSuitable();
+            }
+
+        },
+
+        _isSuitable:function() {
+
+            var suitable = true,
+                key,value,test,
+                params = Array.prototype.slice.call(arguments),
+                valueIndex = params.length,
+                spec = this._options[this._condition];
+
+            for (key in this._expectations) {
+
+                value = this._expectations[key];
+                test = typeof spec.test === 'function' ? spec.test : spec.test[key];
+
+                // set expected value
+                params[valueIndex] = value;
+
+                // call test method for this condition
+                if (!test.apply(this,params)) {
+                    suitable = false;
+                    break;
+                }
+            }
+
+            if (this._suitable != suitable) {
+                this._suitable = suitable;
+                bc.helper.Observer.fire(this,'change');
+            }
+
+        },
+
+        isSuitable:function() {
+            return this._suitable;
+        }
+
+    };
+
+
     // Register class
-    Namespace.register('bc.core').BehaviourConditions = BehaviourConditions;
+    return BehaviourConditions;
 
 }());

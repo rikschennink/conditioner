@@ -2,7 +2,9 @@
  * Observer
  */
 
-(function(){
+Namespace.register('bc.helper').Observer = (function(){
+
+    "use strict";
 
     var Observer = {
 
@@ -42,7 +44,6 @@
                     break;
                 }
             }
-
         },
 
         // fire event
@@ -63,6 +64,6 @@
         }
     };
 
-    Namespace.register('bc.helper').Observer = Observer;
+    return Observer;
 
 }());

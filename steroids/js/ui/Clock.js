@@ -1,13 +1,18 @@
 
-/*
- * Clock Class
- */
-(function(){
+Namespace.register('ui').Clock = (function(){
 
+    "use strict";
+
+    // reference to parent class
+    var _parent = bc.core.BehaviourBase;
+
+    /**
+     * Clock Class
+     */
     var Clock = function(element) {
 
         // Call BehaviourBase constructor
-        bc.core.BehaviourBase.call(this,element);
+        _parent.call(this,element);
 
         // backup content
         this._inner = this._element.innerHTML;
@@ -17,11 +22,11 @@
     };
 
     // Extend from BehaviourBase
-    var p = Clock.prototype = Object.create(bc.core.BehaviourBase.prototype);
+    var p = Clock.prototype = Object.create(_parent.prototype);
 
     // Update time
     p.tick = function() {
-        this._element.textContent = new Date();
+        this._element.textContent = new Date().toString();
         var self = this;
         this._timer = setTimeout(function(){
             self.tick();
@@ -32,7 +37,7 @@
     p._unload = function() {
 
         // call BehaviourBase unload method
-        bc.core.BehaviourBase.prototype._unload.call(this);
+        _parent.prototype._unload.call(this);
 
         // stop ticking
         clearTimeout(this._timer);
@@ -41,6 +46,6 @@
         this._element.innerHTML = this._inner;
     };
 
-    Namespace.register('ui').Clock = Clock;
+    return Clock;
 
 }());

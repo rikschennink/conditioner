@@ -1,13 +1,18 @@
 
-/*
- * ClearField Class
- */
-(function(){
+Namespace.register('ui').ClearField = (function(){
 
+    "use strict";
+
+    // reference to parent class
+    var _parent = bc.core.BehaviourBase;
+
+    /**
+     * ClearField Class
+     */
     var ClearField = function(element) {
 
         // Call BehaviourBase constructor
-        bc.core.BehaviourBase.call(this,element);
+        _parent.call(this,element);
 
         // Add clear button
         var clearButton = document.createElement('button');
@@ -18,12 +23,14 @@
     };
 
     // Extend from BehaviourBase
-    var p = ClearField.prototype = Object.create(bc.core.BehaviourBase.prototype);
+    var p = ClearField.prototype = Object.create(_parent.prototype);
 
     // Handle events
     p.handleEvent = function(e) {
         if (e.type === 'click') {
             this._element.value = '';
+            this._element.focus();
+            e.stopPropagation();
         }
     };
 
@@ -31,7 +38,7 @@
     p._unload = function() {
 
         // call BehaviourBase unload method
-        bc.core.BehaviourBase.prototype._unload.call(this);
+        _parent.prototype._unload.call(this);
 
         // get button reference
         var clearButton = this._element.previousSibling;
@@ -43,6 +50,6 @@
         this._element.parentNode.removeChild(clearButton);
     };
 
-    Namespace.register('ui').ClearField = ClearField;
+    return ClearField;
 
 }());

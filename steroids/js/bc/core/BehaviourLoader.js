@@ -4,7 +4,9 @@
  *
  * @class BehaviourLoader
  */
-(function() {
+Namespace.register('bc.core').BehaviourLoader = (function() {
+
+    "use strict";
 
     // global BehaviourLoader cache object
     var _cache = {};
@@ -22,7 +24,7 @@
         this._element = element;
 
         // check if conditions specified
-        this._conditions = bc.core.BehaviourConditions.construct(this._element);
+        this._conditions = bc.core.BehaviourConditions.fromElement(this._element);
         if (!this._conditions) {
             this._loadBehaviour();
         }
@@ -32,15 +34,17 @@
             bc.helper.Observer.subscribe(this._conditions,'change',this._onConditionsChange.bind(this));
 
             // if conditions are met, load my behaviour
-            if (this._conditions.areMet()) {
+            if (this._conditions.areSuitable()) {
                 this._loadBehaviour();
             }
         }
+
     };
 
 
     // prototype shortcut
     var p = BehaviourLoader.prototype;
+
 
     /**
      * Called when the conditions change.
@@ -50,7 +54,7 @@
      */
     p._onConditionsChange = function() {
 
-        var suitable = this._conditions.areMet();
+        var suitable = this._conditions.areSuitable();
 
         if (this._behaviour && !suitable) {
             this.unloadBehaviour();
@@ -95,7 +99,7 @@
     };
 
     /**
-     * Unload the behaviour
+     * Public method for unload the behaviour
      *
      * @class BehaviourLoader
      * @method unloadBehaviour
@@ -165,23 +169,23 @@
 
         // build url
         var options,url,i,script;
-        options = new bc.core.OptionsController().getOptionsForClassPath('bc.core.BehaviourLoader');
+        options = bc.core.OptionsController.getInstance().getOptionsForClassPath('bc.core.BehaviourLoader');
         url = options.url.js + classPath.replace(/\./g,'/') + '.js';
 
         // check if already loading this script
         for (i=this._scripts.length-1;i>=0;i--) {
             if (this._scripts[i].url === url) {
-                console.warn('Already loading or could not find behaviour: "' + classPath + '"');
+                console.warn('BehaviourLoader: Already loading or could not find behaviour: "' + classPath + '"');
                 return false;
             }
         }
 
         // request resource
-        script = new bc.helper.ScriptLoader().load(url,this._loadBehaviour.bind(this));
+        script = bc.helper.ScriptLoader.load(url,this._loadBehaviour.bind(this));
         this._scripts.push(script);
     };
 
     // Register class
-    Namespace.register('bc.core').BehaviourLoader = BehaviourLoader;
+    return BehaviourLoader;
 
 }());
