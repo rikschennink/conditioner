@@ -127,9 +127,15 @@ Namespace.register('bc.core').BehaviourConditions = (function() {
 
         this._element = element;
         this._condition = condition;
-        this._expectations = typeof expectations === 'object' ? expectations : {'value':expectations};
         this._options = options;
         this._suitable = true;
+
+        if (typeof expectations === 'object' && !(expectations instanceof Array)) {
+            this._expectations = expectations;
+        }
+        else {
+            this._expectations = {'value':expectations};
+        }
 
         // setup triggers
         this._setup();

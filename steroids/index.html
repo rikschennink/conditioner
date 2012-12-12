@@ -20,7 +20,7 @@
                 overflow:scroll;
             }
 
-            html,input,textarea,button {
+            html,input,select,textarea,button {
                 font-family:Helvetica,Verdana,sans-serif;
                 font-size:1em;
             }
@@ -53,6 +53,10 @@
                 max-width:100%;
             }
 
+            label {
+                margin-right:.5em;
+            }
+
         </style>
     </head>
     <body>
@@ -83,6 +87,15 @@
             <div data-behaviour="ui.Map" data-conditions='{"geolocation":true,"media":"(min-width:40em)"}'>ui.Map is inactive</div>
         </div>
 
+        <h2>Based on custom Class conditions</h2>
+        <p>ui.Clock will be active if cookies are allowed</p>
+        <div class="component">
+            <div data-behaviour="ui.StorageConsentSelect">
+                Javascript needs to be enabled to control storage settings
+            </div>
+            <div data-behaviour="ui.Clock" data-conditions='{"cookies":["all","necessary"]}'>ui.Clock is inactive</div>
+        </div>
+
         <script src="js/bc/shim/Bind.js"></script>
         <script src="js/bc/helper/Namespace.js"></script>
         <script src="js/bc/helper/Observer.js"></script>
@@ -93,9 +106,13 @@
         <script src="js/bc/core/BehaviourConditions.js"></script>
         <script src="js/bc/core/BehaviourController.js"></script>
 
-        <!-- ClearField control is embedded -->
+        <!-- StorageConsentGuard Class is in use by StorageConsentSelect -->
+        <script src="js/security/StorageConsentGuard.js"></script>
+
+        <!-- ClearField, Clock and StorageConsentSelect are loaded directly-->
         <script src="js/ui/ClearField.js"></script>
         <script src="js/ui/Clock.js"></script>
+        <script src="js/ui/StorageConsentSelect.js"></script>
 
         <!-- Note that the Map class has been commented, it will be loaded dynamically when conditions are met -->
         <!-- <script src="js/ui/Map.js"></script>-->
@@ -127,8 +144,7 @@
                         },
                         'test':function(matchMedia) {return matchMedia.matches;}
                     },
-                    'element':
-                    {
+                    'element':{
                         'setup':function(handler,element,conditions) {
                             window.addEventListener('resize',function(){handler(element);},false);
                             handler(element);
@@ -148,9 +164,27 @@
                             'maxWidth':function(expected){return window.innerWidth <= expected;}
                         }
                     },
-                    'geolocation':
-                    {
+                    'geolocation':{
                         'test':function(expected){return Boolean(navigator.geolocation)===expected;}
+                    },
+                    'cookies':{
+                        'setup':function(handler,element,conditions) {
+                            var guard = security.StorageConsentGuard.getInstance();
+                            bc.helper.Observer.subscribe(guard,'change',function(state){handler(state);});
+                            handler(guard.getActiveLevel());
+                        },
+                        'test':function(current,expected) {
+                            return expected.indexOf(current) > -1;
+                        }
+                    }
+                },
+                // options for StorageGuard Class
+                'security.StorageConsentGuard':{
+                    'initial':'all',
+                    'levels':{
+                        'all':'All',
+                        'none':'None',
+                        'necessary':'Necessary'
                     }
                 }
             });

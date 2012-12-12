@@ -70,7 +70,6 @@ Namespace.register('bc.helper').ScriptLoader = (function(){
 
     // callback uid
     var _callbackIndex = 0;
-
     var ScriptLoader = {
 
         _scripts:[],
