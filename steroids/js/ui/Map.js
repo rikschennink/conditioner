@@ -4,15 +4,15 @@ Namespace.register('ui').Map = (function(){
     "use strict";
 
     // reference to parent class
-    var _parent = bc.core.BehaviourBase;
+    var _parent = conditioner.BehaviorBase;
 
     /**
      * Map Class
      */
-    var Map = function(element) {
+    var Map = function(element,options) {
 
         // Call BehaviourBase constructor
-        _parent.call(this,element);
+        _parent.call(this,element,options);
 
         // backup content
         this._inner = this._element.innerHTML;

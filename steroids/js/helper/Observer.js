@@ -1,18 +1,15 @@
-/*
- * Observer
- */
 
-Namespace.register('bc.helper').Observer = (function(){
+var Observer = (function(){
 
-    "use strict";
+    'use strict';
 
-    var Observer = {
+    return {
 
         // subscribe to event
         subscribe:function(obj,type,fn) {
 
             if (!obj._listeners) {
-                obj._listeners = new Array();
+                obj._listeners = [];
             }
 
             // check if already added
@@ -63,7 +60,5 @@ Namespace.register('bc.helper').Observer = (function(){
             }
         }
     };
-
-    return Observer;
 
 }());

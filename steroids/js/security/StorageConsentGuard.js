@@ -9,31 +9,20 @@ Namespace.register('security').StorageConsentGuard = (function(){
 
 
     /**
-     * Returns StorageConsentGuard instance
-     *
-     * @class StorageConsentGuard
-     */
-    var StorageConsentGuard = {
-
-        getInstance:function() {
-            if (!_instance) { _instance = new _StorageConsentGuard(); }
-            return _instance;
-        }
-
-    };
-
-
-
-    /**
     * Constructs StorageConsentGuard objects
     *
-    * @class _StorageConsentGuard
+    * @class StorageConsentGuard
     * @constructor
     */
-    var _StorageConsentGuard = function() {
+    var StorageConsentGuard = function() {
 
         // get options for storage guard
-        this._options = bc.core.OptionsController.getInstance().getOptionsForClassPath('security.StorageConsentGuard');
+        this._options = conditioner.OptionsController.getInstance().getOptionsForClassPath('security.StorageConsentGuard');
+
+        // stop when no options available
+        if (!this._options) {
+            this._options = {};
+        }
 
         // set initial storage level
         this._level = this._options.initial;
@@ -41,7 +30,7 @@ Namespace.register('security').StorageConsentGuard = (function(){
 
     };
 
-    var p = _StorageConsentGuard.prototype;
+    var p = StorageConsentGuard.prototype;
 
     p.getLevels = function() {
         return this._options.levels;
@@ -59,10 +48,23 @@ Namespace.register('security').StorageConsentGuard = (function(){
 
         this._level = level;
 
-        bc.helper.Observer.fire(this,'change',this._level);
+        Observer.fire(this,'change',this._level);
     };
 
-    return StorageConsentGuard;
+
+    /**
+     * Returns StorageConsentGuard instance
+     *
+     * @class StorageConsentGuard
+     */
+    return {
+
+        getInstance:function() {
+            if (!_instance) { _instance = new StorageConsentGuard(); }
+            return _instance;
+        }
+
+    };
 
 }());
 

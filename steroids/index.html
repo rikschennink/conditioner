@@ -5,8 +5,8 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-        <title>BehaviourController Steroids Demo</title>
-        <meta name="description" content="BehaviourController Steroids Demo">
+        <title>BehaviorController Steroids Demo</title>
+        <meta name="description" content="BehaviorController Steroids Demo">
         <meta name="author" content="Rik Schennink">
         <meta name="viewport" content="width=device-width">
 
@@ -50,6 +50,7 @@
             }
 
             img {
+                display:block;
                 max-width:100%;
             }
 
@@ -61,50 +62,67 @@
     </head>
     <body>
 
-        <h1>BehaviourController Steroids Demo</h1>
+        <h1>BehaviorController Steroids Demo</h1>
 
         <h2>Based on Element dimensions</h2>
         <p>ui.Clock will be active as long as element has a minimum width of 350 pixels.</p>
         <div class="component" style="width:60.00%">
-            <div data-behaviour="ui.Clock" data-conditions='{"element":{"minWidth":350}}'>ui.Clock is inactive</div>
+            <div data-behavior="ui.Clock" data-conditions='{"element":{"minWidth":350}}'>ui.Clock is inactive</div>
         </div>
 
         <h2>Based on multiple Window dimensions</h2>
         <p>ui.ClearField will be active as long as window width falls between 450 and 750 pixels</p>
         <div class="component">
-            <input type="text" data-behaviour="ui.ClearField" data-conditions='{"window":{"minWidth":450,"maxWidth":750}}'>
+            <input type="text" data-behavior="ui.ClearField" data-conditions='{"window":{"minWidth":450,"maxWidth":750}}'>
         </div>
 
         <h2>Based on Media Query</h2>
         <p>ui.Clock will be active as long as media query (max-width:40em) is matched.</p>
         <div class="component">
-            <div data-behaviour="ui.Clock" data-conditions='{"media":"(max-width:40em)"}'>ui.Clock is inactive</div>
+            <div data-behavior="ui.Clock" data-conditions='{"media":"(max-width:40em)"}'>ui.Clock is inactive</div>
         </div>
 
         <h2>Based on multiple conditions</h2>
         <p>ui.Map will be active as long as media query (min-width:40em) is matched and geolocation support is available. The ui.Map javascript file has not been included as a script reference and will only be loaded once the conditions are met.</p>
         <div class="component">
-            <div data-behaviour="ui.Map" data-conditions='{"geolocation":true,"media":"(min-width:40em)"}'>ui.Map is inactive</div>
+            <div data-behavior="ui.Map" data-conditions='{"geolocation":true,"media":"(min-width:40em)"}'>ui.Map is inactive</div>
         </div>
 
         <h2>Based on custom Class conditions</h2>
         <p>ui.Clock will be active if cookies are allowed</p>
         <div class="component">
-            <div data-behaviour="ui.StorageConsentSelect">
+            <div data-behavior="ui.StorageConsentSelect">
                 Javascript needs to be enabled to control storage settings
             </div>
-            <div data-behaviour="ui.Clock" data-conditions='{"cookies":["all","necessary"]}'>ui.Clock is inactive</div>
+            <div data-behavior="ui.Clock" data-conditions='{"cookies":["all","necessary"]}'>ui.Clock is inactive</div>
         </div>
 
-        <script src="js/bc/shim/Bind.js"></script>
-        <script src="js/bc/helper/Namespace.js"></script>
-        <script src="js/bc/helper/Observer.js"></script>
-        <script src="js/bc/helper/ScriptLoader.js"></script>
-        <script src="js/bc/core/OptionsController.js"></script>
-        <script src="js/bc/core/BehaviourBase.js"></script>
-        <script src="js/bc/core/BehaviourLoader.js"></script>
-        <script src="js/bc/core/BehaviourConditions.js"></script>
-        <script src="js/bc/core/BehaviourController.js"></script>
+
+
+
+        <!-- Shims -->
+        <script src="js/shim/Bind.js"></script>
+
+        <!-- Classes used by Conditioner -->
+        <script src="js/helper/Namespace.js"></script>
+        <script src="js/helper/Observer.js"></script>
+        <script src="js/helper/ScriptLoader.js"></script>
+
+        <!-- Conditioner Classes -->
+        <script src="js/conditioner/Conditioner.js"></script>
+        <script src="js/conditioner/BehaviorBase.js"></script>
+        <script src="js/conditioner/BehaviorController.js"></script>
+        <script src="js/conditioner/ConditionManager.js"></script>
+
+        <!-- Set default conditions -->
+        <script src="js/conditioner/DefaultConditions.js"></script>
+
+
+
+        <script src="js/conditioner/OptionsController.js"></script>
+
+
+
 
         <!-- StorageConsentGuard Class is in use by StorageConsentSelect -->
         <script src="js/security/StorageConsentGuard.js"></script>
@@ -119,75 +137,53 @@
 
 
 
-        <!-- Behaviour start and configuration point -->
+        <!-- Behavior start and configuration point -->
         <script>
 
-            bc.core.BehaviourController.applyDefault({
+            (function(){
+
+                // configure your javascript base url
+                Namespace.baseURL = 'js/';
+
                 // options for various components and ui elements
-                'bc.core.BehaviourLoader':{
-                    'url':{
-                        'js':'js/' // path to js root to allow dynamic loading of js files
+                var configuration = {
+
+                    // options for StorageGuard Class
+                    'security.StorageConsentGuard':{
+                        'initial':'all',
+                        'levels':{
+                            'all':'All',
+                            'none':'None',
+                            'necessary':'Necessary'
+                        }
                     }
-                },
-                // definitions for behaviour conditions class
-                'bc.core.BehaviourConditions':{
-                    'media':{
-                        'setup':function(handler,element,conditions) {
 
-                            var mql = window.matchMedia(conditions.value);
-                                mql.addListener(handler);
-                            handler(mql);
+                };
 
-                            // A Firefox quirk requires us to retain a reference to the mql, so store in array (otherwise addListener acts weird).
-                            // http://www.nczonline.net/blog/2012/01/19/css-media-queries-in-javascript-part-2/
-                            if (!window['mqls']) {window['mqls']=[];} window['mqls'].push(mql);
-                        },
-                        'test':function(matchMedia) {return matchMedia.matches;}
-                    },
-                    'element':{
-                        'setup':function(handler,element,conditions) {
-                            window.addEventListener('resize',function(){handler(element);},false);
-                            handler(element);
-                        },
-                        'test':{
-                            'minWidth':function(element,expected) {return element.offsetWidth >= expected;},
-                            'maxWidth':function(element,expected) {return element.offsetWidth <= expected;}
-                        }
-                    },
-                    'window':{
-                        'setup':function(handler,element,conditions) {
-                            window.addEventListener('resize',function(){handler();},false);
-                            handler();
-                        },
-                        'test':{
-                            'minWidth':function(expected){return window.innerWidth >= expected;},
-                            'maxWidth':function(expected){return window.innerWidth <= expected;}
-                        }
-                    },
-                    'geolocation':{
-                        'test':function(expected){return Boolean(navigator.geolocation)===expected;}
-                    },
-                    'cookies':{
-                        'setup':function(handler,element,conditions) {
+                // wait till dom ready
+                document.addEventListener('DOMContentLoaded',function() {
+
+                    // get instance of cconditioner
+                    var conditioner = Conditioner.getInstance();
+
+                    // register an additional test to handle cookie availability
+                    conditioner.registerTest(
+                        'cookies',
+                        function(handler,element,conditions) {
                             var guard = security.StorageConsentGuard.getInstance();
-                            bc.helper.Observer.subscribe(guard,'change',function(state){handler(state);});
+                            Observer.subscribe(guard,'change',function(state){handler(state);});
                             handler(guard.getActiveLevel());
                         },
-                        'test':function(current,expected) {
+                        function(current,expected) {
                             return expected.indexOf(current) > -1;
                         }
-                    }
-                },
-                // options for StorageGuard Class
-                'security.StorageConsentGuard':{
-                    'initial':'all',
-                    'levels':{
-                        'all':'All',
-                        'none':'None',
-                        'necessary':'Necessary'
-                    }
-                }
-            });
+                    );
+
+                    // apply behavior
+                    conditioner.applyBehavior(document,configuration);
+                });
+
+            }());
 
         </script>
     </body>

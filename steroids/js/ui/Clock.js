@@ -1,18 +1,18 @@
 
 Namespace.register('ui').Clock = (function(){
 
-    "use strict";
+    'use strict';
 
     // reference to parent class
-    var _parent = bc.core.BehaviourBase;
+    var _parent = conditioner.BehaviorBase;
 
     /**
      * Clock Class
      */
-    var Clock = function(element) {
+    var Clock = function(element,options) {
 
         // Call BehaviourBase constructor
-        _parent.call(this,element);
+        _parent.call(this,element,options);
 
         // backup content
         this._inner = this._element.innerHTML;

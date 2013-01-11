@@ -4,9 +4,9 @@
  *
  * @class OptionsController
  */
-Namespace.register('bc.core').OptionsController = (function() {
+Namespace.register('conditioner').OptionsController = (function() {
 
-    "use strict";
+    'use strict';
 
     // reference to first instance
     var _instance;

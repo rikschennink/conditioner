@@ -1,18 +1,18 @@
 
 Namespace.register('ui').StorageConsentSelect = (function(){
 
-    "use strict";
+    'use strict';
 
     // reference to parent class
-    var _parent = bc.core.BehaviourBase;
+    var _parent = conditioner.BehaviorBase;
 
     /**
      * StorageConsentSelect Class
      */
-    var StorageConsentSelect = function(element) {
+    var StorageConsentSelect = function(element,options) {
 
         // Call BehaviourBase constructor
-        _parent.call(this,element);
+        _parent.call(this,element,options);
 
         // store inner HTML
         this._inner = this._element.innerHTML;

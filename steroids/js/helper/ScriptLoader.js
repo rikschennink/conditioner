@@ -1,7 +1,7 @@
 
-Namespace.register('bc.helper').ScriptLoader = (function(){
+var ScriptLoader = (function(){
 
-    "use strict";
+    'use strict';
 
     var Script = function(url) {
         this.url = url;
@@ -60,7 +60,7 @@ Namespace.register('bc.helper').ScriptLoader = (function(){
         },
 
         _ready:function() {
-            bc.helper.Observer.fire(this,'load');
+            Observer.fire(this,'load');
         }
 
     };
@@ -70,7 +70,9 @@ Namespace.register('bc.helper').ScriptLoader = (function(){
 
     // callback uid
     var _callbackIndex = 0;
-    var ScriptLoader = {
+
+    // ScriptLoader
+    return {
 
         _scripts:[],
 
@@ -96,21 +98,19 @@ Namespace.register('bc.helper').ScriptLoader = (function(){
             // check if script already loading
             for (i=this._scripts.length-1;i>=0;i--) {
                 if (url === this._scripts[i].url) {
-                    bc.helper.Observer.subscribe(this._scripts[i],'load',callback);
+                    Observer.subscribe(this._scripts[i],'load',callback);
                     return this._scripts[i];
                 }
             }
 
             // if not already loading start loading
             s = new Script(url);
-            bc.helper.Observer.subscribe(s,'load',callback);
+            Observer.subscribe(s,'load',callback);
             this._scripts.push(s);
             s.load();
             return s;
 
         }
     };
-
-    return ScriptLoader;
 
 })();
