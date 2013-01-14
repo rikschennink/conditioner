@@ -1,4 +1,9 @@
 
+/**
+ * Conditioner Singleton
+ *
+ * @class Conditioner
+ */
 var Conditioner = (function() {
 
     'use strict';

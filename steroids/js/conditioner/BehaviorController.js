@@ -1,11 +1,12 @@
 
+/**
+ * BehaviorController Class.
+ *
+ * @class BehaviorController
+ */
 Namespace.register('conditioner').BehaviorController = (function() {
 
     'use strict';
-
-
-    // BehaviorController cache object
-    var _cache = {};
 
 
     /**

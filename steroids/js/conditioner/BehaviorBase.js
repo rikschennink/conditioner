@@ -1,6 +1,6 @@
 
 /**
- * BehaviorBase abstract class.
+ * BehaviorBase Abstract Class.
  *
  * @class BehaviorBase
  */
@@ -12,6 +12,8 @@ Namespace.register('conditioner').BehaviorBase = (function() {
     // todo: merge options with custom options via data attribute
 
     // todo: keep clone of original node
+
+    // todo: dependencies?
 
 
     /**

@@ -1,4 +1,4 @@
-
+define('ui.ClearField')
 Namespace.register('ui').ClearField = (function(){
 
     'use strict';

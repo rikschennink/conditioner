@@ -1,4 +1,9 @@
 
+/**
+ * ConditionManager
+ *
+ * @class ConditionManager
+ */
 Namespace.register('conditioner').ConditionManager = (function() {
 
 

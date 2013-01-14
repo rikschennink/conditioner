@@ -1,4 +1,9 @@
 
+/**
+ * Static Namespace
+ *
+ * @class Namespace
+ */
 var Namespace = (function(){
 
     'use strict';
