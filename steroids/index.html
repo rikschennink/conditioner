@@ -94,7 +94,7 @@
         <h2>Based on custom Class conditions</h2>
         <p>ui.Clock will be active if cookies are allowed</p>
         <div class="component">
-            <div data-behavior="ui.StorageConsentSelect">
+            <div data-behavior="ui.StorageConsentSelect" data-label-select="Cookies:">
                 Javascript needs to be enabled to control storage settings
             </div>
             <div data-behavior="ui.Clock" data-conditions='{"cookies":["all","necessary"]}'>ui.Clock is inactive</div>
@@ -118,7 +118,7 @@
         <script src="js/conditioner/BehaviorController.js"></script>
 
         <!-- Set default conditions -->
-        <script src="js/conditioner/DefaultConditions.js"></script>
+        <script src="js/conditioner/Tests.js"></script>
 
 
 
@@ -145,7 +145,7 @@
 
             (function(){
 
-                // configure your javascript base url
+                // configure your javascript file location
                 Namespace.baseURL = 'js/';
 
                 // options for various components and ui elements
@@ -154,36 +154,43 @@
                     // options for StorageGuard Class
                     'security.StorageConsentGuard':{
                         'initial':'all',
-                        'levels':{
-                            'all':'All',
-                            'none':'None',
-                            'necessary':'Necessary'
+                        'levels':['all','incognito','none']
+                    },
+
+                    // generic options for storage consent ui element
+                    'ui.StorageConsentSelect':{
+                        'guard':'security.StorageConsentGuard',
+                        'label':{
+                            'level':{
+                                'all':'All',
+                                'incognito':'No tracking cookies',
+                                'none':'None'
+                            }
                         }
                     }
 
+
                 };
+
+                // get instance of cconditioner
+                var demo = Conditioner.getInstance();
+
+                // register an additional test to handle cookie availability
+                demo.registerTest(
+                    'cookies',
+                    function(handler) {
+                        var guard = security.StorageConsentGuard.getInstance();
+                        Observer.subscribe(guard,'change',function(state){handler(state);});
+                        handler(guard.getActiveLevel());
+                    },
+                    function(current,expected) {
+                        return expected.indexOf(current) > -1;
+                    }
+                );
 
                 // wait till dom ready
                 document.addEventListener('DOMContentLoaded',function() {
-
-                    // get instance of cconditioner
-                    var conditioner = Conditioner.getInstance();
-
-                    // register an additional test to handle cookie availability
-                    conditioner.registerTest(
-                        'cookies',
-                        function(handler,element,conditions) {
-                            var guard = security.StorageConsentGuard.getInstance();
-                            Observer.subscribe(guard,'change',function(state){handler(state);});
-                            handler(guard.getActiveLevel());
-                        },
-                        function(current,expected) {
-                            return expected.indexOf(current) > -1;
-                        }
-                    );
-
-                    // apply behavior
-                    conditioner.applyBehavior(document,configuration);
+                    demo.applyBehavior(document,configuration);
                 });
 
             }());

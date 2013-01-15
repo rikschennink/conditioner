@@ -20,8 +20,9 @@ var Conditioner = (function() {
         registerTest:function(key,arrange,assert) {
 
             var test = this._tests[key] = {};
-            test.arrange = arrange;
-            test.assert = assert;
+                test.arrange = arrange;
+                test.assert = assert;
+
 
         },
 
@@ -85,7 +86,7 @@ var Conditioner = (function() {
 
         // register vars and get elements
         var controllers = [],
-            element,elements = context.querySelectorAll('[data-behavior]:not([data-processed])',context),
+            behaviorPath,element,elements = context.querySelectorAll('[data-behavior]:not([data-processed])',context),
             i,l = elements.length;
 
         // if no elements do nothing
@@ -102,13 +103,19 @@ var Conditioner = (function() {
             // has been processed
             element.setAttribute('data-processed','true');
 
+            // get behavior path from element
+            behaviorPath = element.getAttribute('data-behavior');
+
             // feed to controller
             controllers.push(
 
                 new conditioner.BehaviorController(
-                    element,
-                    options[element.getAttribute('data-behaviour')],
-                    options['conditioner.BehaviorController']
+                    behaviorPath,
+                    options[behaviorPath],
+                    {
+                        'target':element,
+                        'conditions':element.getAttribute('data-conditions')
+                    }
                 )
 
             );

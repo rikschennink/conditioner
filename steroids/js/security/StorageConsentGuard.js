@@ -4,7 +4,7 @@ Namespace.register('security').StorageConsentGuard = (function(){
 
     "use strict";
 
-    // reference to first instance
+    // reference to singleton
     var _instance;
 
 

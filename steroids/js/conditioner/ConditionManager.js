@@ -6,8 +6,10 @@
  */
 Namespace.register('conditioner').ConditionManager = (function() {
 
-
     'use strict';
+
+
+    // todo: create fallback scenario for unsupport conditions: media query -> window width, etc.
 
 
     /**
@@ -22,36 +24,31 @@ Namespace.register('conditioner').ConditionManager = (function() {
      *
      * @class ConditionManager
      * @constructor
-     * @param {Node} Element
-     * @param {Object} Expected Conditions
+     * @param {Object} expected, expected conditions to be met
+     * @param {Node} element, optional element to measure these conditions on
      */
-    var ConditionManager = function(element,expected) {
+    var ConditionManager = function(expected,element) {
 
         // if the conditions are suitable, by default they are
         this._suitable = true;
         this._element = element;
 
-        // check if required parameter element has been passed
-        if (!element) {
-            return null;
+        // if no conditions, conditions will always be suitable
+        if (!expected) {
+            return;
         }
 
-        // if required conditions have not been supplied
-        if (!expected) {
-
-            // find them on element
-            expected = this._element.getAttribute('data-conditions');
-
-            // see if able to parse
+        // if expected is in string format try to parse as JSON
+        if (typeof expected == 'string') {
             try {
                 expected = JSON.parse(expected);
             }
             catch(e) {
-                console.warn("ConditionManager: required conditions should be in JSON format");
-                return null;
+                console.warn('ConditionManager(expected,element): expected conditions should be in JSON format.');
+                return;
             }
         }
-        
+
         // set properties
         this._conditions = [];
 
@@ -59,11 +56,15 @@ Namespace.register('conditioner').ConditionManager = (function() {
         var key,condition,conditioner = Conditioner.getInstance();
         for (key in expected) {
 
+            if (!expected.hasOwnProperty(key)) {
+                continue;
+            }
+
             // define condition
             condition = new Condition(
-                element,
                 conditioner.getTestByKey(key),
-                expected[key]
+                expected[key],
+                this._element
             );
 
             // listen to condition changes
@@ -77,19 +78,6 @@ Namespace.register('conditioner').ConditionManager = (function() {
         this.test();
     };
 
-
-    /**
-     * regsiter a new condition test
-     *
-     * @class ConditionManager
-     * @method registerTest
-     * @param {String}
-     * @param {Object}
-     * @param {Function} Optional
-     */
-    ConditionManager.registerTest = function(key,arrange,assert) {
-        ConditionTests.registerTest(key,arrange,assert);
-    };
 
 
     // prototype shortcut
@@ -137,12 +125,12 @@ Namespace.register('conditioner').ConditionManager = (function() {
 
 
         /**
-         * Returns true if the current conditions are met
+         * Returns true if the current conditions are suitable
          *
          * @class ConditionManager
-         * @method areMet
+         * @method containsSuitableConditions
          */
-        areSuitable:function() {
+        getSuitability:function() {
             return this._suitable;
         }
     };
@@ -159,15 +147,15 @@ Namespace.register('conditioner').ConditionManager = (function() {
     * @class Condition
     *
     * @constructor
-    * @param {Node} Element
     * @param {Object} Rule
-    * @param {Object} expectations
+    * @param {Object} Expectations
+    * @param {Node} Element
     */
-    var Condition = function(element,test,expectations) {
+    var Condition = function(test,expectations,element) {
 
-        this._element = element;
         this._test = test;
         this._suitable = true;
+        this._element = element;
         
         if (typeof expectations === 'object' && !(expectations instanceof Array)) {
             this._expectations = expectations;
@@ -194,11 +182,11 @@ Namespace.register('conditioner').ConditionManager = (function() {
                     // test callback
                     this._assert.bind(this),
 
-                    // the element to setup the trigger on
-                    this._element,
-
                     // expectations for the test
-                    this._expectations
+                    this._expectations,
+
+                    // the element to setup the trigger on (if necessary)
+                    this._element
 
                 );
             }
@@ -217,6 +205,10 @@ Namespace.register('conditioner').ConditionManager = (function() {
                 test = this._test;
 
             for (key in this._expectations) {
+
+                if (!this._expectations.hasOwnProperty(key)) {
+                    continue;
+                }
 
                 value = this._expectations[key];
                 assert = typeof test.assert === 'function' ? test.assert : test.assert[key];
@@ -246,32 +238,4 @@ Namespace.register('conditioner').ConditionManager = (function() {
 
     return ConditionManager;
 
-    /**
-     * Static method construct behaviour condition objects
-     *
-     * @class ConditionManager
-     * @method construct
-
-    return {
-        fromElement:function(element) {
-
-            // check if has specifications
-            var conditionsAttribute = element.getAttribute('data-conditions');
-            if (!conditionsAttribute) {
-                return null;
-            }
-
-            var conditions = null;
-            try {
-                conditions = JSON.parse(conditionsAttribute);
-            }
-            catch(e) {
-                console.warn("ConditionManager: data-conditions attribute should have format data-conditions='{\"foo\":\"bar\"}'");
-                return null;
-            }
-
-            return new ConditionManager(element,conditions);
-        }
-    };
-     */
 }());

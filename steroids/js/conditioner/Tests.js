@@ -1,9 +1,11 @@
 (function(conditioner){
 
+    var _mqlReferences = [];
+
     // add mediaquery condition
     conditioner.registerTest(
         'media',
-        function(handler,element,conditions) {
+        function(handler,conditions) {
 
             var mql = window.matchMedia(conditions.value);
             mql.addListener(handler);
@@ -11,7 +13,7 @@
 
             // A Firefox quirk requires us to retain a reference to the mql, so store in array (otherwise addListener acts weird).
             // http://www.nczonline.net/blog/2012/01/19/css-media-queries-in-javascript-part-2/
-            if (!window['mqls']) {window['mqls']=[];} window['mqls'].push(mql);
+            _mqlReferences.push(mql);
         },
         function(matchMedia) {
             return matchMedia.matches;
@@ -21,7 +23,7 @@
     // add element conditions
     conditioner.registerTest(
         'element',
-        function(handler,element,conditions) {
+        function(handler,conditions,element) {
             window.addEventListener('resize',function(){handler(element);},false);
             handler(element);
         },
@@ -34,7 +36,7 @@
     // add window conditions
     conditioner.registerTest(
         'window',
-        function(handler,element,conditions) {
+        function(handler) {
             window.addEventListener('resize',function(){handler();},false);
             handler();
         },

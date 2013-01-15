@@ -51,6 +51,7 @@ Namespace.register('conditioner').OptionsController = (function() {
             }
         },
 
+
         /**
          * Returns an options object for a given class path
          *

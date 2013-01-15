@@ -8,30 +8,35 @@ Namespace.register('conditioner').BehaviorController = (function() {
 
     'use strict';
 
-
     /**
      * Constructs BehaviorController objects.
      *
      * @class BehaviorController
      * @constructor
-     * @param {Node} Element
-     * @param {Object} Configuration options for this Element
-     * @param {Object} Configuration options for this BehaviorController
+     * @param {String} classPath, path to this behavior
+     * @param {Object} classOptions, options for this behavior
+     * @param {Object} options, options for this behavior controller
      */
-    var BehaviorController = function(element,options) {
+    var BehaviorController = function(classPath,classOptions,options) {
 
-        // set element and options reference
-        this._element = element;
-        this._options = options;
+        // options for class behavior controller should load
+        this._classPath = classPath;
+        this._classOptions = classOptions;
+
+        // options for behavior controller
+        this._options = options || {};
 
         // check if conditions specified
-        this._conditions = new conditioner.ConditionManager(this._element);
+        this._conditionManager = new conditioner.ConditionManager(
+            this._options.conditions,
+            this._options.target
+        );
 
-        // listen to condition changes
-        Observer.subscribe(this._conditions,'change',this._onConditionsChange.bind(this));
+        // listen to changes in conditions
+        Observer.subscribe(this._conditionManager,'change',this._onConditionsChange.bind(this));
 
-        // if conditions are met, load my behavior
-        if (this._conditions.areSuitable()) {
+        // if already suitale, load behavior
+        if (this._conditionManager.getSuitability()) {
             this._loadBehavior();
         }
 
@@ -50,7 +55,7 @@ Namespace.register('conditioner').BehaviorController = (function() {
      */
     p._onConditionsChange = function() {
 
-        var suitable = this._conditions.areSuitable();
+        var suitable = this._conditionManager.getSuitability();
 
         if (this._behavior && !suitable) {
             this.unloadBehavior();
@@ -70,20 +75,28 @@ Namespace.register('conditioner').BehaviorController = (function() {
      */
     p._loadBehavior = function() {
 
-        // get classpath
-        var classPath = this._element.getAttribute('data-behavior');
-        
-        // load by classpath
         var self = this;
+
         Namespace.load(
-            classPath,
+            this._classPath,
             function(Class){
-                self._behavior = new Class(self._element,self._options);
+                self._initBehavior(Class);
             },
             function(error) {
                 console.warn(error);
             }
         );
+
+    };
+
+    p._initBehavior = function(Class) {
+
+        if (this._options.target) {
+            this._behavior = new Class(this._options.target,this._classOptions);
+        }
+        else {
+            this._behavior = new Class(this._classOptions);
+        }
 
     };
 
