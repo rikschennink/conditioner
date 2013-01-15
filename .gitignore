@@ -6,3 +6,7 @@
 *.xml
 
 .idea/conditioner.iml
+
+steroids/.idea/.name
+
+steroids/.idea/steroids.iml

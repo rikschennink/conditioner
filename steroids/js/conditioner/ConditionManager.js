@@ -1,8 +1,5 @@
-
 /**
- * ConditionManager
- *
- * @class ConditionManager
+ * @module conditioner/ConditionManager
  */
 Namespace.register('conditioner').ConditionManager = (function() {
 
@@ -24,8 +21,8 @@ Namespace.register('conditioner').ConditionManager = (function() {
      *
      * @class ConditionManager
      * @constructor
-     * @param {Object} expected, expected conditions to be met
-     * @param {Node} element, optional element to measure these conditions on
+     * @param {Object} expected - expected conditions to be met
+     * @param {Node} element - optional element to measure these conditions on
      */
     var ConditionManager = function(expected,element) {
 
@@ -86,8 +83,6 @@ Namespace.register('conditioner').ConditionManager = (function() {
 
         /**
          * Called when a condition has changed
-         *
-         * @class ConditionManager
          * @method _onConditionsChanged
          */
         _onConditionsChanged:function() {
@@ -97,8 +92,6 @@ Namespace.register('conditioner').ConditionManager = (function() {
 
         /**
          * Tests if conditions are suitable
-         *
-         * @class ConditionManager
          * @method test
          */
         test:function() {
@@ -126,9 +119,7 @@ Namespace.register('conditioner').ConditionManager = (function() {
 
         /**
          * Returns true if the current conditions are suitable
-         *
-         * @class ConditionManager
-         * @method containsSuitableConditions
+         * @method getSuitability
          */
         getSuitability:function() {
             return this._suitable;
@@ -147,9 +138,9 @@ Namespace.register('conditioner').ConditionManager = (function() {
     * @class Condition
     *
     * @constructor
-    * @param {Object} Rule
-    * @param {Object} Expectations
-    * @param {Node} Element
+    * @param {Object} test
+    * @param {Object} expectations
+    * @param {Node} element
     */
     var Condition = function(test,expectations,element) {
 

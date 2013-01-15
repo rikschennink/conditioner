@@ -1,17 +1,12 @@
-
 /**
- * Conditioner Singleton
- *
- * @class Conditioner
+ * @module conditioner/Conditioner
  */
 var Conditioner = (function() {
 
     'use strict';
 
-
     /**
-     * @static Tests
-     * @constructor
+     * Tests
      */
     var Tests = {
 
@@ -35,12 +30,10 @@ var Conditioner = (function() {
 
 
 
-
-
     var _instance;
 
     /**
-     * @class Conditioner
+     * @class Conditioner (Singleton)
      * @constructor
      */
     var Conditioner = function() {
@@ -53,6 +46,12 @@ var Conditioner = (function() {
 
 
 
+    /**
+     * @method registerTest
+     * @param {string} key - Test identifier
+     * @param {function} arrange - Test arrange method
+     * @param {function} assert - Test assert method
+     */
     p.registerTest = function(key,arrange,assert) {
         if (!key) {
             throw new Error('Conditioner.registerTest(key,arrange,assert): "key" is a required parameter.');
@@ -60,6 +59,11 @@ var Conditioner = (function() {
         Tests.registerTest(key,arrange,assert);
     };
 
+    /**
+     * @method getTestByKey
+     * @param {string} key - Test identifier
+     * @return {Object} a Test
+     */
     p.getTestByKey = function(key) {
         return Tests.getTestByKey(key);
     };
@@ -69,10 +73,9 @@ var Conditioner = (function() {
     /**
      * Applies behaviour on object within given context.
      *
-     * @class Conditioner
      * @method applyBehavior
-     * @param {Node}
-     * @param {Object}
+     * @param {Node} context - Context to apply behavior to
+     * @param {Object} options - Options to be passed to the behavior
      */
     p.applyBehavior = function(context,options) {
 
@@ -132,6 +135,11 @@ var Conditioner = (function() {
 
     // Singleton
     return {
+
+        /**
+         * Returns an instance of the Conditioner
+         * @method getInstance
+         */
         getInstance:function() {
             if (!_instance) {_instance = new Conditioner();}
             return _instance;

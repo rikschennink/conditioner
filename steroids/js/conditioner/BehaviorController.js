@@ -1,8 +1,5 @@
-
 /**
- * BehaviorController Class.
- *
- * @class BehaviorController
+ * @module conditioner/BehaviorController
  */
 Namespace.register('conditioner').BehaviorController = (function() {
 
@@ -13,9 +10,9 @@ Namespace.register('conditioner').BehaviorController = (function() {
      *
      * @class BehaviorController
      * @constructor
-     * @param {String} classPath, path to this behavior
-     * @param {Object} classOptions, options for this behavior
-     * @param {Object} options, options for this behavior controller
+     * @param {String} classPath - path to this behavior
+     * @param {Object} classOptions - options for this behavior
+     * @param {Object} options - options for this behavior controller
      */
     var BehaviorController = function(classPath,classOptions,options) {
 
@@ -49,8 +46,6 @@ Namespace.register('conditioner').BehaviorController = (function() {
 
     /**
      * Called when the conditions change.
-     *
-     * @class BehaviorController
      * @method _onConditionsChange
      */
     p._onConditionsChange = function() {
@@ -69,8 +64,6 @@ Namespace.register('conditioner').BehaviorController = (function() {
 
     /**
      * Load the behavior set in the data-behavior attribute
-     *
-     * @class BehaviorController
      * @method _loadBehavior
      */
     p._loadBehavior = function() {
@@ -89,6 +82,10 @@ Namespace.register('conditioner').BehaviorController = (function() {
 
     };
 
+    /**
+     * Initialize the class passed and decide what parameters to pass
+     * @method _initBehavior
+     */
     p._initBehavior = function(Class) {
 
         if (this._options.target) {
@@ -103,8 +100,6 @@ Namespace.register('conditioner').BehaviorController = (function() {
 
     /**
      * Public method for unload the behavior
-     *
-     * @class BehaviorController
      * @method unloadBehavior
      */
     p.unloadBehavior = function() {
