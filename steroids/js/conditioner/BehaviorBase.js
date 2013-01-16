@@ -72,52 +72,22 @@ Namespace.register('conditioner').BehaviorBase = (function() {
         // declare options as empty if not already defined in subclass
         this._options = this._options || {};
 
-        // merge additional options into options object
-        this._options = _mergeOptions(this._options,options);
-
-        // merge with options defined at node level
-        var opts,key,i,levels,depth,name,attr,attributes = this._element.attributes;
-        for (key in attributes) {
-
-            if (!attributes.hasOwnProperty(key)) {
-                continue;
-            }
-
-            // et attribute reference
-            attr = attributes[key];
-            name = attr.name;
-
-            // skip non data attributes
-            if (!name || name.indexOf('data-')!=0) {
-                continue;
-            }
-
-            // strip data part
-            name = name.substr(5);
-            levels = name.split('-');
-            depth = levels.length;
-            opts = this._options;
-
-            for (i=0;i<depth; i++) {
-
-                // if option not available
-                if (typeof opts[levels[i]] == 'undefined') {
-                    opts = null;
-                    break;
-                }
-
-                // if not is last level go to sub level
-                if (i<depth-1) {
-                    opts = opts[levels[i]];
-                }
-                else {
-                    opts[levels[i]] = attr.value;
-                }
-            }
-
+        // merge additional options into options object if supplied
+        if (options) {
+            this._options = _mergeOptions(this._options,options);
         }
 
-
+        // merge custom options passed in data-options attribute
+        var instanceOptions = this._element.getAttribute('data-options');
+        if (instanceOptions) {
+            try {
+                var instanceOptionsObject = JSON.parse(instanceOptions);
+                this._options = _mergeOptions(this._options,instanceOptionsObject);
+            }
+            catch(e) {
+                throw new Error('BehaviorBase(element,options): "data-options" attribute needs to be in JSON format');
+            }
+        }
     };
 
 

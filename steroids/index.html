@@ -94,7 +94,7 @@
         <h2>Based on custom Class conditions</h2>
         <p>ui.Clock will be active if cookies are allowed</p>
         <div class="component">
-            <div data-behavior="ui.StorageConsentSelect" data-label-select="Cookies:">
+            <div data-behavior="ui.StorageConsentSelect" data-options='{"label":{"select":"Allow cookies:"}}'>
                 Javascript needs to be enabled to control storage settings
             </div>
             <div data-behavior="ui.Clock" data-conditions='{"cookies":["all","necessary"]}'>ui.Clock is inactive</div>
