@@ -10,10 +10,6 @@ Namespace.register('conditioner').BehaviorBase = (function() {
 
     // todo: keep clone of original node for _unload method
 
-    // todo: access to methods through behavior controller
-
-    // todo: event dispatching link to behavior controller
-
 
     /**
      * Merges custom options passed for behavior with original behavior options
