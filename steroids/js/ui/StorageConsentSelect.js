@@ -6,9 +6,7 @@ Namespace.register('ui').StorageConsentSelect = (function(){
     // reference to parent class
     var _parent = conditioner.BehaviorBase;
 
-    /**
-     * StorageConsentSelect Class
-     */
+    // StorageConsentSelect Class
     var StorageConsentSelect = function(element,options) {
 
         // default options for this class

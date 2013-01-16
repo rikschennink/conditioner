@@ -6,9 +6,7 @@ Namespace.register('ui').Clock = (function(){
     // reference to parent class
     var _parent = conditioner.BehaviorBase;
 
-    /**
-     * Clock Class
-     */
+    // Clock Class
     var Clock = function(element,options) {
 
         // Call BehaviourBase constructor

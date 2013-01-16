@@ -1,4 +1,4 @@
-define('ui.ClearField')
+
 Namespace.register('ui').ClearField = (function(){
 
     'use strict';
@@ -6,9 +6,7 @@ Namespace.register('ui').ClearField = (function(){
     // reference to parent class
     var _parent = conditioner.BehaviorBase;
 
-    /**
-     * ClearField Class
-     */
+    // ClearField Class
     var ClearField = function(element,options) {
 
         // Call BehaviourBase constructor
@@ -16,8 +14,8 @@ Namespace.register('ui').ClearField = (function(){
 
         // Add clear button
         var clearButton = document.createElement('button');
-        clearButton.textContent = 'clear';
-        clearButton.addEventListener('click',this);
+            clearButton.textContent = 'clear';
+            clearButton.addEventListener('click',this);
         this._element.parentNode.insertBefore(clearButton,this._element);
 
     };

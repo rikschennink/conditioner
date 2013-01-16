@@ -51,7 +51,7 @@ var Namespace = (function(){
 
         find:function(classPath) {
 
-            if (!classPath) {
+            if (typeof(classPath) != 'string') {
                 throw new Error('Namespace.find(classPath): "classPath" is a required parameter');
             }
 

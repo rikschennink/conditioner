@@ -8,12 +8,7 @@ Namespace.register('security').StorageConsentGuard = (function(){
     var _instance;
 
 
-    /**
-    * Constructs StorageConsentGuard objects
-    *
-    * @class StorageConsentGuard
-    * @constructor
-    */
+    // StorageConsentGuard
     var StorageConsentGuard = function() {
 
         // get options for storage guard
@@ -51,12 +46,6 @@ Namespace.register('security').StorageConsentGuard = (function(){
         Observer.fire(this,'change',this._level);
     };
 
-
-    /**
-     * Returns StorageConsentGuard instance
-     *
-     * @class StorageConsentGuard
-     */
     return {
 
         getInstance:function() {

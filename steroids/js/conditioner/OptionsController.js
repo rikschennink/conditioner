@@ -71,7 +71,6 @@ Namespace.register('conditioner').OptionsController = (function() {
     };
 
 
-    // Register class
     return OptionsController;
 
 }());

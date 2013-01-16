@@ -6,9 +6,7 @@ Namespace.register('ui').Map = (function(){
     // reference to parent class
     var _parent = conditioner.BehaviorBase;
 
-    /**
-     * Map Class
-     */
+    // Map Class
     var Map = function(element,options) {
 
         // Call BehaviourBase constructor

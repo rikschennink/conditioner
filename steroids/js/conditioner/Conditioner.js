@@ -79,11 +79,12 @@ var Conditioner = (function() {
 
 
     /**
-     * Applies behaviour on object within given context.
+     * Applies behavior on object within given context.
      *
      * @method applyBehavior
      * @param {Node} context - Context to apply behavior to
      * @param {Object} options - Options to be passed to the behavior
+     * @return {Array} - Array of initialized BehaviorControllers
      */
     p.applyBehavior = function(context,options) {
 
@@ -98,15 +99,15 @@ var Conditioner = (function() {
         // register vars and get elements
         var controllers = [],
             behaviorPath,element,elements = context.querySelectorAll('[data-behavior]:not([data-processed])',context),
-            i,l = elements.length;
+            i=0,l = elements.length;
 
         // if no elements do nothing
         if (!elements) {
-            return;
+            return [];
         }
 
         // process elements
-        for (i=0; i<l; i++) {
+        for (; i<l; i++) {
 
             // set element reference
             element = elements[i];
@@ -136,8 +137,27 @@ var Conditioner = (function() {
         // merge with current controllers
         this._controllers = this._controllers.concat(controllers);
 
-        // returns copy of loaders so it is possible to later unload them if necessary
+        // returns copy of loaders so it is possible to later unload them manually if necessary
         return controllers;
+    };
+
+
+    /**
+     * Returns BehaviorControllers matching the selector
+     *
+     * @method getBehavior
+     * @param {Object} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
+     * @return
+     */
+    p.getBehavior = function(query) {
+        var controller,i=0,l = this._controllers.length,results=[];
+        for (;i<l;i++) {
+            controller = this._controllers[i];
+            if (controller.matchesQuery(query)) {
+                results.push(controller);
+            }
+        }
+        return results;
     };
 
 
@@ -147,6 +167,7 @@ var Conditioner = (function() {
         /**
          * Returns an instance of the Conditioner
          * @method getInstance
+         * @return instance of Conditioner
          */
         getInstance:function() {
             if (!_instance) {_instance = new Conditioner();}

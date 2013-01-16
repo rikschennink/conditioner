@@ -106,7 +106,6 @@ Namespace.register('conditioner').BehaviorBase = (function() {
 
     };
 
-    // Register class
     return BehaviorBase;
 
 }());

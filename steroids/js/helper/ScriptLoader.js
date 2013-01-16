@@ -53,9 +53,9 @@ var ScriptLoader = (function(){
         _load:function() {
 
             var self = this,
-            done = false,
-            h = document.getElementsByTagName('head')[0],
-            s = document.createElement('script');
+                done = false,
+                h = document.getElementsByTagName('head')[0],
+                s = document.createElement('script');
 
             s.async = true;
             s.src = this.url;
@@ -102,13 +102,17 @@ var ScriptLoader = (function(){
 
         loadJSONP:function(url,callback) {
 
-            var uniqueCallback,seperator,s;
+            if (!url || !callback) {
+                throw new Error('ScriptLoader.loadJSONP(url,callback): "url" and "callback" are required parameters.');
+            }
+
+            var uniqueCallback,separator,s;
 
             uniqueCallback = 'JSONPCallback_' + _callbackIndex++;
             window[uniqueCallback] = callback;
 
-            seperator = url.indexOf('?')===-1 ? '?' : '&';
-            url += seperator + 'callback=' + uniqueCallback;
+            separator = url.indexOf('?') == -1 ? '?' : '&';
+            url += separator + 'callback=' + uniqueCallback;
 
             s = new Script(url);
             s.load();
@@ -116,6 +120,10 @@ var ScriptLoader = (function(){
         },
 
         load:function(url,callback) {
+
+            if (!url || !callback) {
+                throw new Error('ScriptLoader.load(url,callback): "url" and "callback" are required parameters.');
+            }
 
             var i,s;
 

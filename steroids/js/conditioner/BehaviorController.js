@@ -5,6 +5,39 @@ Namespace.register('conditioner').BehaviorController = (function() {
 
     'use strict';
 
+
+
+    var _matchesMethod = null;
+    var _matchesSelector = function(element,selector) {
+
+        if (!element) {
+            return false;
+        }
+
+        if (!_matchesMethod) {
+            var el = document.body;
+            if (el.matches) {
+                _matchesMethod = '';
+            }
+            else if (el.webkitMatchesSelector) {
+                _matchesMethod = 'webkitMatchesSelector';
+            }
+            else if (el.mozMatchesSelector) {
+                _matchesMethod = 'mozMatchesSelector';
+            }
+            else if (el.msMatchesSelector) {
+                _matchesMethod = 'msMatchesSelector';
+            }
+            else if (el.oMatchesSelector) {
+                _matchesMethod = 'oMatchesSelector';
+            }
+        }
+
+        return element[_matchesMethod](selector);
+    };
+
+
+
     /**
      * Constructs BehaviorController objects.
      *
@@ -64,6 +97,7 @@ Namespace.register('conditioner').BehaviorController = (function() {
         if (!this._behavior && suitable) {
             this._loadBehavior();
         }
+
     };
 
 
@@ -100,12 +134,16 @@ Namespace.register('conditioner').BehaviorController = (function() {
             this._behavior = new Class(this._classOptions);
         }
 
+        // route events triggered by behavior to this object
+        Observer.setupPropagationTarget(this._behavior,this);
+
     };
 
 
     /**
      * Public method for unload the behavior
      * @method unloadBehavior
+     * @return {Boolean}
      */
     p.unloadBehavior = function() {
 
@@ -120,7 +158,52 @@ Namespace.register('conditioner').BehaviorController = (function() {
     };
 
 
-    // Register class
+    /**
+     * Public method for unload the behavior
+     * @method matchesQuery
+     * @param {Object} query - query to match
+     * @return {Boolean}
+     */
+    p.matchesQuery = function(query) {
+
+        if (typeof query == 'string') {
+
+            // if matches classpath
+            if (query == this._classPath) {
+                return true;
+            }
+
+            // check if matches query
+            if (_matchesSelector(this._options.target,query)) {
+                return true;
+            }
+
+        }
+
+        return (query == this._options.target);
+    };
+
+
+
+    /**
+     * Public method for safely executing methods on the loaded behavior
+     * @method execute
+     * @param {String} method - method key
+     * @param {Array} params - array containing the method parameters
+     * @return
+     */
+    p.execute = function(method,params) {
+
+        // if behavior not loaded
+        if (!this._behavior) {
+            return null;
+        }
+
+        // once loaded call method and pass parameters
+        return this._behavior[method].apply(this._behavior,params);
+
+    };
+
     return BehaviorController;
 
 }());
