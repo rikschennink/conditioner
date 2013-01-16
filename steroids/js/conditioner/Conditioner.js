@@ -5,6 +5,7 @@ var Conditioner = (function() {
 
     'use strict';
 
+
     /**
      * Tests
      */
@@ -29,7 +30,7 @@ var Conditioner = (function() {
 
 
 
-
+    // Conditioner singleton reference
     var _instance;
 
     /**
@@ -53,9 +54,11 @@ var Conditioner = (function() {
      * @param {function} assert - Test assert method
      */
     p.registerTest = function(key,arrange,assert) {
+
         if (!key) {
             throw new Error('Conditioner.registerTest(key,arrange,assert): "key" is a required parameter.');
         }
+
         Tests.registerTest(key,arrange,assert);
     };
 
@@ -65,6 +68,11 @@ var Conditioner = (function() {
      * @return {Object} a Test
      */
     p.getTestByKey = function(key) {
+
+        if (!key) {
+            throw new Error('Conditioner.getTestByKey(key): "key" is a required parameter.');
+        }
+
         return Tests.getTestByKey(key);
     };
 
@@ -79,9 +87,9 @@ var Conditioner = (function() {
      */
     p.applyBehavior = function(context,options) {
 
-        // if no context supplied use document
+        // if no context supplied throw error
         if (!context) {
-            console.warn('Conditioner.applyBehavior(context,options): "context" is a required parameter');
+            throw new Error('Conditioner.applyBehavior(context,options): "context" is a required parameter.');
         }
 
         // if no options, set empty options object
@@ -144,6 +152,7 @@ var Conditioner = (function() {
             if (!_instance) {_instance = new Conditioner();}
             return _instance;
         }
+
     };
 
 }());

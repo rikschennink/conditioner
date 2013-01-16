@@ -1,8 +1,5 @@
-
 /**
- * Static Namespace
- *
- * @class Namespace
+ * @module Namespace
  */
 var Namespace = (function(){
 

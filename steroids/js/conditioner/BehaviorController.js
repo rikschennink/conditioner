@@ -16,6 +16,11 @@ Namespace.register('conditioner').BehaviorController = (function() {
      */
     var BehaviorController = function(classPath,classOptions,options) {
 
+        // if no element, throw error
+        if (!classPath) {
+            throw new Error('BehaviorController(classPath,classOptions,options): "classPath" is a required parameter.');
+        }
+
         // options for class behavior controller should load
         this._classPath = classPath;
         this._classOptions = classOptions;

@@ -1,4 +1,6 @@
-
+/**
+ * @module Observer
+ */
 var Observer = (function(){
 
     'use strict';

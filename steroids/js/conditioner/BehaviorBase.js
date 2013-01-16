@@ -6,9 +6,9 @@ Namespace.register('conditioner').BehaviorBase = (function() {
     'use strict';
 
 
-    // todo: keep clone of original node
-
     // todo: dependencies?
+
+    // todo: keep clone of original node for _unload method
 
     // todo: access to methods through behavior controller
 
@@ -65,6 +65,11 @@ Namespace.register('conditioner').BehaviorBase = (function() {
      */
     var BehaviorBase = function(element,options) {
 
+        // if no element, throw error
+        if (!element) {
+            throw new Error('BehaviorBase(element,options): "element" is a required parameter.');
+        }
+
         // element reference
         this._element = element;
         this._element.setAttribute('data-initialized','true');
@@ -85,7 +90,7 @@ Namespace.register('conditioner').BehaviorBase = (function() {
                 this._options = _mergeOptions(this._options,instanceOptionsObject);
             }
             catch(e) {
-                throw new Error('BehaviorBase(element,options): "data-options" attribute needs to be in JSON format');
+                throw new Error('BehaviorBase(element,options): "data-options" attribute needs to be in JSON format.');
             }
         }
     };

@@ -1,14 +1,25 @@
-
+/**
+ * @module ScriptLoader
+ */
 var ScriptLoader = (function(){
 
     'use strict';
 
+    /**
+     * @class Script
+     * @constructor
+     * @param {string} url - URL location of script
+     */
     var Script = function(url) {
         this.url = url;
     };
 
     Script.prototype = {
 
+        /**
+         * Public load method
+         * @method load
+         */
         load:function() {
             if (document.readyState === 'complete') {
                 this._load();
@@ -18,6 +29,11 @@ var ScriptLoader = (function(){
             }
         },
 
+        /**
+         * internal method to handle events
+         * @method handleEvent
+         * @param {Event} e - Event to handle
+         */
         handleEvent:function(e) {
 
             switch(e.type) {
@@ -30,6 +46,10 @@ var ScriptLoader = (function(){
             }
         },
 
+        /**
+         * Private load method
+         * @method _load
+         */
         _load:function() {
 
             var self = this,
@@ -59,6 +79,10 @@ var ScriptLoader = (function(){
             h.insertBefore(s,h.firstChild);
         },
 
+        /**
+         * Private ready method
+         * @method _ready
+         */
         _ready:function() {
             Observer.fire(this,'load');
         }

@@ -28,12 +28,14 @@ Namespace.register('conditioner').ConditionManager = (function() {
 
         // if the conditions are suitable, by default they are
         this._suitable = true;
-        this._element = element;
 
         // if no conditions, conditions will always be suitable
         if (!expected) {
             return;
         }
+
+        // set element reference
+        this._element = element;
 
         // if expected is in string format try to parse as JSON
         if (typeof expected == 'string') {
