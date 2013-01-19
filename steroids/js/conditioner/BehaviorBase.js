@@ -8,8 +8,6 @@ Namespace.register('conditioner').BehaviorBase = (function() {
 
     // todo: dependencies?
 
-    // todo: keep clone of original node for _unload method
-
 
     /**
      * Merges custom options passed for behavior with original behavior options
@@ -94,6 +92,7 @@ Namespace.register('conditioner').BehaviorBase = (function() {
 
     /**
      * Unloads behaviour by removing data initialized property
+     * Override to clean up your control, remove event listeners, restore original state, etc.
      * @method _unload
      */
     BehaviorBase.prototype._unload = function() {
