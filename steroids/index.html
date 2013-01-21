@@ -58,6 +58,10 @@
                 margin-right:.5em;
             }
 
+            label:after {
+                content:':';
+            }
+
         </style>
 
         <script src="js/lib/require.js"></script>
@@ -94,7 +98,7 @@
         <h2>Based on custom Class conditions</h2>
         <p>ui.Clock will be active if cookies are allowed</p>
         <div class="component">
-            <div data-behavior="ui.StorageConsentSelect" data-options='{"label":{"select":"Allow cookies:"}}'>
+            <div data-behavior="ui.StorageConsentSelect" data-options='{"label":{"select":"Allow cookies"}}'>
                 Javascript needs to be enabled to control storage settings
             </div>
             <div data-behavior="ui.Clock" data-conditions='{"cookies":["all","necessary"]}'>ui.Clock is inactive</div>
@@ -116,6 +120,7 @@
         <script src="js/conditioner/ConditionManager.js"></script>
         <script src="js/conditioner/BehaviorBase.js"></script>
         <script src="js/conditioner/BehaviorController.js"></script>
+        <script src="js/conditioner/Injector.js"></script>
 
         <!-- Set default conditions -->
         <script src="js/conditioner/Tests.js"></script>
@@ -148,32 +153,22 @@
                 // configure your javascript file location
                 Namespace.baseURL = 'js/';
 
+                // get instance of cconditioner
+                var demo = Conditioner.getInstance();
+
                 // options for various components and ui elements
-                var configuration = {
-
-                    // options for StorageGuard Class
-                    'security.StorageConsentGuard':{
-                        'initial':'all',
-                        'levels':['all','incognito','none']
-                    },
-
-                    // generic options for storage consent ui element
+                demo.setOptions({
                     'ui.StorageConsentSelect':{
-                        'guard':'security.StorageConsentGuard',
                         'label':{
+                            'select':'Cookies',
                             'level':{
                                 'all':'All',
-                                'incognito':'No tracking cookies',
+                                'incognito':'No tracking',
                                 'none':'None'
                             }
                         }
                     }
-
-
-                };
-
-                // get instance of cconditioner
-                var demo = Conditioner.getInstance();
+                });
 
                 // register an additional test to handle cookie availability
                 demo.registerTest(
@@ -188,10 +183,17 @@
                     }
                 );
 
+                // register storage consent guard
+                demo.registerClass('IStorageGuard',security.StorageConsentGuard,{
+                    'initial':'all',
+                    'levels':['all','incognito','none']
+                });
+
                 // wait till dom ready
                 document.addEventListener('DOMContentLoaded',function() {
-                    demo.applyBehavior(document,configuration);
+                    demo.applyBehavior(document);
                 });
+
 
             }());
 

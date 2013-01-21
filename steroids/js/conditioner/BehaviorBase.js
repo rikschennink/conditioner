@@ -26,6 +26,11 @@ Namespace.register('conditioner').BehaviorBase = (function() {
                 continue;
             }
 
+            if (!changes) {
+                result[key] = original[key];
+                continue;
+            }
+
             // get change value
             change = changes[key];
 
@@ -42,7 +47,6 @@ Namespace.register('conditioner').BehaviorBase = (function() {
                 result[key] = _mergeOptions(original[key],change);
 
             }
-
         }
 
         return result;
@@ -81,12 +85,13 @@ Namespace.register('conditioner').BehaviorBase = (function() {
         if (instanceOptions) {
             try {
                 var instanceOptionsObject = JSON.parse(instanceOptions);
-                this._options = _mergeOptions(this._options,instanceOptionsObject);
             }
             catch(e) {
                 throw new Error('BehaviorBase(element,options): "data-options" attribute needs to be in JSON format.');
             }
+            this._options = _mergeOptions(this._options,instanceOptionsObject);
         }
+
     };
 
 

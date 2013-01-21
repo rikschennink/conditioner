@@ -7,14 +7,25 @@ Namespace.register('ui').StorageConsentSelect = (function(){
     var _parent = conditioner.BehaviorBase;
 
     // StorageConsentSelect Class
-    var StorageConsentSelect = function(element,options) {
+    var StorageConsentSelect = function(element,options,IStorageGuard) {
+
+        // set storage guard reference
+        if (!IStorageGuard) {
+            throw new Error('StorageConsentSelect(element,options,IStorageGuard): IStorageGuard is a required attribute');
+        }
+
+        // set reference to storage guard
+        this._storageGuard = IStorageGuard;
 
         // default options for this class
         this._options = {
-            'guard':null,
             'label':{
-                'level':{},
-                'select':'Cookies:'
+                'select':'Cookies',
+                'level':{
+                    'all':'All',
+                    'incognito':'No tracking cookies',
+                    'none':'None'
+                }
             }
         };
 
@@ -49,9 +60,10 @@ Namespace.register('ui').StorageConsentSelect = (function(){
     p.handleEvent = function(e) {
         if (e.type === 'change') {
             var select = this._element.querySelector('select'),
-                value = select.options[select.selectedIndex].value,
-                guard = security.StorageConsentGuard.getInstance();
-                guard.setActiveLevel(value);
+                value = select.options[select.selectedIndex].value;
+
+            // set active level
+            this._storageGuard.setActiveLevel(value);
         }
     };
 

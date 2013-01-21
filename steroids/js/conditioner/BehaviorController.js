@@ -7,6 +7,7 @@ Namespace.register('conditioner').BehaviorController = (function() {
 
 
 
+    /* matches helper */
     var _matchesMethod = null;
     var _matchesSelector = function(element,selector) {
 
@@ -17,7 +18,7 @@ Namespace.register('conditioner').BehaviorController = (function() {
         if (!_matchesMethod) {
             var el = document.body;
             if (el.matches) {
-                _matchesMethod = '';
+                _matchesMethod = 'matches';
             }
             else if (el.webkitMatchesSelector) {
                 _matchesMethod = 'webkitMatchesSelector';
@@ -127,6 +128,46 @@ Namespace.register('conditioner').BehaviorController = (function() {
      */
     p._initBehavior = function(Class) {
 
+
+        var dependencies = conditioner.Injector.getDependencies(Class);
+        if (dependencies.length>0) {
+
+            // process dependencies
+            var ClassOptions,ClassDependency,instance,options,dependency,processed = [],i=0,l=dependencies.length;
+            for (;i<l;i++) {
+
+                // get reference
+                dependency = dependencies[i];
+
+                // get possible options for dependency
+                ClassOptions = dependency.options;
+                ClassDependency = dependency.Class;
+
+                // check if singleton
+                if (ClassDependency.getInstance) {
+                    instance = ClassDependency.getInstance();
+                    if (instance.setOptions) {
+                        instance.setOptions(ClassOptions);
+                    }
+                }
+                else {
+                    instance = new ClassDependency(ClassOptions);
+                }
+
+                processed.push(instance);
+            }
+
+            this._behavior = conditioner.Injector.construct(Class,[this._options.target,this._classOptions].concat(processed));
+
+            // route events triggered by behavior to this object
+            Observer.setupPropagationTarget(this._behavior,this);
+
+            return;
+        }
+
+        //Class.apply(Class,this._getDependencies(args));
+
+
         if (this._options.target) {
             this._behavior = new Class(this._options.target,this._classOptions);
         }
@@ -159,7 +200,7 @@ Namespace.register('conditioner').BehaviorController = (function() {
 
 
     /**
-     * Public method for unload the behavior
+     * Public method to check if the behavior matches the given query
      * @method matchesQuery
      * @param {Object} query - query to match
      * @return {Boolean}
@@ -177,7 +218,6 @@ Namespace.register('conditioner').BehaviorController = (function() {
             if (_matchesSelector(this._options.target,query)) {
                 return true;
             }
-
         }
 
         return (query == this._options.target);

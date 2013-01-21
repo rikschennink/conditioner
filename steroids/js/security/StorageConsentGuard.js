@@ -2,30 +2,27 @@
 
 Namespace.register('security').StorageConsentGuard = (function(){
 
-    "use strict";
+    'use strict';
 
     // reference to singleton
     var _instance;
 
-
     // StorageConsentGuard
     var StorageConsentGuard = function() {
+        this._options = {};
+    };
 
-        // get options for storage guard
-        this._options = conditioner.OptionsController.getInstance().getOptionsForClassPath('security.StorageConsentGuard');
+    var p = StorageConsentGuard.prototype;
 
-        // stop when no options available
-        if (!this._options) {
-            this._options = {};
-        }
+    p.setOptions = function(options) {
+
+        // sets initial options
+        this._options = options;
 
         // set initial storage level
         this._level = this._options.initial;
 
-
     };
-
-    var p = StorageConsentGuard.prototype;
 
     p.getLevels = function() {
         return this._options.levels;

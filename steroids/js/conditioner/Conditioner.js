@@ -39,6 +39,7 @@ var Conditioner = (function() {
      */
     var Conditioner = function() {
         this._controllers = [];
+        this._configurationOptions = {};
     };
 
     var p = Conditioner.prototype;
@@ -78,6 +79,26 @@ var Conditioner = (function() {
 
 
 
+
+    p.getOptionsForClassPath = function(classPath) {
+        return this._configurationOptions[classPath] || {};
+    };
+
+    p.setOptions = function(options) {
+        this._configurationOptions = options;
+    };
+
+
+
+
+    p.registerClass = function(identifier,Class,options) {
+
+        conditioner.Injector.register(identifier,Class,options);
+
+    };
+
+
+
     /**
      * Applies behavior on object within given context.
      *
@@ -86,15 +107,12 @@ var Conditioner = (function() {
      * @param {Object} options - Options to be passed to the behavior
      * @return {Array} - Array of initialized BehaviorControllers
      */
-    p.applyBehavior = function(context,options) {
+    p.applyBehavior = function(context) {
 
         // if no context supplied throw error
         if (!context) {
             throw new Error('Conditioner.applyBehavior(context,options): "context" is a required parameter.');
         }
-
-        // if no options, set empty options object
-        options = options || {};
 
         // register vars and get elements
         var controllers = [],
@@ -123,7 +141,7 @@ var Conditioner = (function() {
 
                 new conditioner.BehaviorController(
                     behaviorPath,
-                    options[behaviorPath],
+                    this.getOptionsForClassPath(behaviorPath),
                     {
                         'target':element,
                         'conditions':element.getAttribute('data-conditions')
