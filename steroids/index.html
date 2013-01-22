@@ -74,38 +74,40 @@
         <h2>Based on Element dimensions</h2>
         <p>ui.Clock will be active as long as element has a minimum width of 350 pixels.</p>
         <div class="component" style="width:60.00%">
-            <div data-behavior="ui.Clock" data-conditions='{"element":{"minWidth":350}}'>ui.Clock is inactive</div>
+            <div data-behavior="IClock" data-conditions='{"element":{"minWidth":350}}'>ui.Clock is inactive</div>
         </div>
 
         <h2>Based on multiple Window dimensions</h2>
         <p>ui.ClearField will be active as long as window width falls between 450 and 750 pixels</p>
         <div class="component">
-            <input type="text" data-behavior="ui.ClearField" data-conditions='{"window":{"minWidth":450,"maxWidth":750}}'>
+            <input type="text" data-behavior="IClearField" data-conditions='{"window":{"minWidth":450,"maxWidth":750}}'>
         </div>
 
         <h2>Based on Media Query</h2>
         <p>ui.Clock will be active as long as media query (max-width:40em) is matched.</p>
         <div class="component">
-            <div data-behavior="ui.Clock" data-conditions='{"media":"(max-width:40em)"}'>ui.Clock is inactive</div>
+            <div data-behavior="IClock" data-conditions='{"media":"(max-width:40em)"}'>ui.Clock is inactive</div>
         </div>
 
         <h2>Based on multiple conditions</h2>
         <p>ui.Map will be active as long as media query (min-width:40em) is matched and geolocation support is available. The ui.Map javascript file has not been included as a script reference and will only be loaded once the conditions are met.</p>
         <div class="component">
-            <div data-behavior="ui.Map" data-conditions='{"geolocation":true,"media":"(min-width:40em)"}'>ui.Map is inactive</div>
+            <div data-behavior="IMap" data-conditions='{"geolocation":true,"media":"(min-width:40em)"}'>ui.Map is inactive</div>
         </div>
 
         <h2>Based on custom Class conditions</h2>
         <p>ui.Clock will be active if cookies are allowed</p>
         <div class="component">
-            <div data-behavior="ui.StorageConsentSelect" data-options='{"label":{"select":"Allow cookies"}}'>
+            <div data-behavior="IStorageConsent" data-options='{"label":{"select":"Allow cookies"}}'>
                 Javascript needs to be enabled to control storage settings
             </div>
-            <div data-behavior="ui.Clock" data-conditions='{"cookies":["all","necessary"]}'>ui.Clock is inactive</div>
+            <div data-behavior="IClock" data-conditions='{"cookies":["all","necessary"]}'>ui.Clock is inactive</div>
         </div>
 
 
 
+        <!-- Require 
+        <script src="js/lib/require.js"></script>-->
 
         <!-- Shims -->
         <script src="js/shim/Bind.js"></script>
@@ -114,6 +116,7 @@
         <script src="js/helper/Namespace.js"></script>
         <script src="js/helper/Observer.js"></script>
         <script src="js/helper/ScriptLoader.js"></script>
+        <script src="js/helper/Options.js"></script>
 
         <!-- Conditioner Classes -->
         <script src="js/conditioner/Conditioner.js"></script>
@@ -126,12 +129,6 @@
         <script src="js/conditioner/Tests.js"></script>
 
 
-
-        <script src="js/conditioner/OptionsController.js"></script>
-
-
-
-
         <!-- StorageConsentGuard Class is in use by StorageConsentSelect -->
         <script src="js/security/StorageConsentGuard.js"></script>
 
@@ -141,12 +138,13 @@
         <script src="js/ui/StorageConsentSelect.js"></script>
 
         <!-- Note that the Map class has been commented, it will be loaded dynamically when conditions are met -->
-        <!-- <script src="js/ui/Map.js"></script>-->
+        <script src="js/ui/Map.js"></script>
 
 
 
         <!-- Behavior start and configuration point -->
         <script>
+
 
             (function(){
 
@@ -156,18 +154,22 @@
                 // get instance of cconditioner
                 var demo = Conditioner.getInstance();
 
-                // options for various components and ui elements
-                demo.setOptions({
-                    'ui.StorageConsentSelect':{
-                        'label':{
-                            'select':'Cookies',
-                            'level':{
-                                'all':'All',
-                                'incognito':'No tracking',
-                                'none':'None'
-                            }
+                // register classes and their options
+                demo.registerClass('IClearField','ui.ClearField');
+                demo.registerClass('IMap','ui.Map');
+                demo.registerClass('IClock','ui.Clock');
+
+                // pass additional options to storage consent select
+                demo.registerClass('IStorageConsent','ui.StorageConsentSelect',{
+                    'label':{
+                        'level':{
+                            'incognito':'No tracking'
                         }
                     }
+                });
+                demo.registerClass('IStorageGuard','security.StorageConsentGuard',{
+                    'levels':['all','incognito','none'],
+                    'initial':'none'
                 });
 
                 // register an additional test to handle cookie availability
@@ -182,12 +184,6 @@
                         return expected.indexOf(current) > -1;
                     }
                 );
-
-                // register storage consent guard
-                demo.registerClass('IStorageGuard',security.StorageConsentGuard,{
-                    'initial':'all',
-                    'levels':['all','incognito','none']
-                });
 
                 // wait till dom ready
                 document.addEventListener('DOMContentLoaded',function() {

@@ -30,16 +30,12 @@ var Conditioner = (function() {
 
 
 
-    // Conditioner singleton reference
-    var _instance;
-
     /**
      * @class Conditioner (Singleton)
      * @constructor
      */
     var Conditioner = function() {
         this._controllers = [];
-        this._configurationOptions = {};
     };
 
     var p = Conditioner.prototype;
@@ -80,21 +76,27 @@ var Conditioner = (function() {
 
 
 
-    p.getOptionsForClassPath = function(classPath) {
-        return this._configurationOptions[classPath] || {};
+
+    /**
+     * @method registerClasses
+     * @param {Array} classes - Array of classes to register
+     */
+    p.registerClasses = function(classes) {
+        var Class,i=0,l=classes.length;
+        for (;i<l;i++) {
+            Class = classes[i];
+            this.registerClass(Class.id,Class.uri,Class.options)
+        }
     };
 
-    p.setOptions = function(options) {
-        this._configurationOptions = options;
-    };
-
-
-
-
-    p.registerClass = function(identifier,Class,options) {
-
-        conditioner.Injector.register(identifier,Class,options);
-
+    /**
+     * @method registerClass
+     * @param {String} id - identifier (interface) of Class
+     * @param {String} uri - path to class
+     * @param {Object} options - options to pass to instance
+     */
+    p.registerClass = function(id,uri,options) {
+        conditioner.Injector.registerClass(id,uri,options);
     };
 
 
@@ -116,7 +118,7 @@ var Conditioner = (function() {
 
         // register vars and get elements
         var controllers = [],
-            behaviorPath,element,elements = context.querySelectorAll('[data-behavior]:not([data-processed])',context),
+            behaviorId,element,elements = context.querySelectorAll('[data-behavior]:not([data-processed])',context),
             i=0,l = elements.length;
 
         // if no elements do nothing
@@ -134,14 +136,13 @@ var Conditioner = (function() {
             element.setAttribute('data-processed','true');
 
             // get behavior path from element
-            behaviorPath = element.getAttribute('data-behavior');
+            behaviorId = element.getAttribute('data-behavior');
 
             // feed to controller
             controllers.push(
 
                 new conditioner.BehaviorController(
-                    behaviorPath,
-                    this.getOptionsForClassPath(behaviorPath),
+                    behaviorId,
                     {
                         'target':element,
                         'conditions':element.getAttribute('data-conditions')
@@ -179,7 +180,9 @@ var Conditioner = (function() {
     };
 
 
-    // Singleton
+    // Singleton structure
+    var _instance;
+
     return {
 
         /**

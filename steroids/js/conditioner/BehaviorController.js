@@ -44,20 +44,18 @@ Namespace.register('conditioner').BehaviorController = (function() {
      *
      * @class BehaviorController
      * @constructor
-     * @param {String} classPath - path to this behavior
-     * @param {Object} classOptions - options for this behavior
+     * @param {String} id - id of behavior
      * @param {Object} options - options for this behavior controller
      */
-    var BehaviorController = function(classPath,classOptions,options) {
+    var BehaviorController = function(id,options) {
 
         // if no element, throw error
-        if (!classPath) {
-            throw new Error('BehaviorController(classPath,classOptions,options): "classPath" is a required parameter.');
+        if (!id) {
+            throw new Error('BehaviorController(id,options): "id" is a required parameter.');
         }
 
         // options for class behavior controller should load
-        this._classPath = classPath;
-        this._classOptions = classOptions;
+        this._id = id;
 
         // options for behavior controller
         this._options = options || {};
@@ -108,74 +106,10 @@ Namespace.register('conditioner').BehaviorController = (function() {
      */
     p._loadBehavior = function() {
 
-        var self = this;
+        // get behavior instance
+        this._behavior = conditioner.Injector.constructClass(this._id,this._options.target);
 
-        Namespace.load(
-            this._classPath,
-            function(Class){
-                self._initBehavior(Class);
-            },
-            function(error) {
-                console.warn(error);
-            }
-        );
-
-    };
-
-    /**
-     * Initialize the class passed and decide what parameters to pass
-     * @method _initBehavior
-     */
-    p._initBehavior = function(Class) {
-
-
-        var dependencies = conditioner.Injector.getDependencies(Class);
-        if (dependencies.length>0) {
-
-            // process dependencies
-            var ClassOptions,ClassDependency,instance,options,dependency,processed = [],i=0,l=dependencies.length;
-            for (;i<l;i++) {
-
-                // get reference
-                dependency = dependencies[i];
-
-                // get possible options for dependency
-                ClassOptions = dependency.options;
-                ClassDependency = dependency.Class;
-
-                // check if singleton
-                if (ClassDependency.getInstance) {
-                    instance = ClassDependency.getInstance();
-                    if (instance.setOptions) {
-                        instance.setOptions(ClassOptions);
-                    }
-                }
-                else {
-                    instance = new ClassDependency(ClassOptions);
-                }
-
-                processed.push(instance);
-            }
-
-            this._behavior = conditioner.Injector.construct(Class,[this._options.target,this._classOptions].concat(processed));
-
-            // route events triggered by behavior to this object
-            Observer.setupPropagationTarget(this._behavior,this);
-
-            return;
-        }
-
-        //Class.apply(Class,this._getDependencies(args));
-
-
-        if (this._options.target) {
-            this._behavior = new Class(this._options.target,this._classOptions);
-        }
-        else {
-            this._behavior = new Class(this._classOptions);
-        }
-
-        // route events triggered by behavior to this object
+        // propagate event
         Observer.setupPropagationTarget(this._behavior,this);
 
     };

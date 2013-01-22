@@ -6,52 +6,6 @@ Namespace.register('conditioner').BehaviorBase = (function() {
     'use strict';
 
 
-    // todo: dependencies?
-
-
-    /**
-     * Merges custom options passed for behavior with original behavior options
-     * @method _mergeOptions
-     * @param {Object} original - The original options
-     * @param {Object} changes - The custom options
-     */
-    var _mergeOptions = function(original,changes) {
-
-        // merge with custom generic options
-        var key,change,result = {};
-        for (key in original) {
-
-            // needs to be own property and needs to be already available as an option
-            if (!original.hasOwnProperty(key)) {
-                continue;
-            }
-
-            if (!changes) {
-                result[key] = original[key];
-                continue;
-            }
-
-            // get change value
-            change = changes[key];
-
-            // merge
-            if (typeof original[key] != 'object') {
-
-                // set result value to changed value or original value
-                result[key] = change || original[key];
-
-            }
-            else {
-
-                // merge options on new level
-                result[key] = _mergeOptions(original[key],change);
-
-            }
-        }
-
-        return result;
-
-    };
 
 
 
@@ -77,7 +31,7 @@ Namespace.register('conditioner').BehaviorBase = (function() {
 
         // merge additional options into options object if supplied
         if (options) {
-            this._options = _mergeOptions(this._options,options);
+            this._options = Options.merge(this._options,options);
         }
 
         // merge custom options passed in data-options attribute
@@ -89,7 +43,7 @@ Namespace.register('conditioner').BehaviorBase = (function() {
             catch(e) {
                 throw new Error('BehaviorBase(element,options): "data-options" attribute needs to be in JSON format.');
             }
-            this._options = _mergeOptions(this._options,instanceOptionsObject);
+            this._options = Options.merge(this._options,instanceOptionsObject);
         }
 
     };

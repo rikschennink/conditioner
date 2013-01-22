@@ -9,7 +9,17 @@ Namespace.register('security').StorageConsentGuard = (function(){
 
     // StorageConsentGuard
     var StorageConsentGuard = function() {
-        this._options = {};
+
+        // current level
+        this._level = null;
+
+        // default options
+        this._options = {
+            'initial':'all',
+            'levels':['all','none']
+        };
+
+        this._setDefaultLevel();
     };
 
     var p = StorageConsentGuard.prototype;
@@ -17,11 +27,13 @@ Namespace.register('security').StorageConsentGuard = (function(){
     p.setOptions = function(options) {
 
         // sets initial options
-        this._options = options;
+        this._options = Options.merge(this._options,options);
 
-        // set initial storage level
-        this._level = this._options.initial;
+        this._setDefaultLevel();
+    };
 
+    p._setDefaultLevel = function() {
+        this.setActiveLevel(this._options.initial);
     };
 
     p.getLevels = function() {
@@ -34,7 +46,7 @@ Namespace.register('security').StorageConsentGuard = (function(){
 
     p.setActiveLevel = function(level) {
 
-        if (level === this._level) {
+        if (level == this._level) {
             return;
         }
 

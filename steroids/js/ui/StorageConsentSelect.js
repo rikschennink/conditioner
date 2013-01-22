@@ -1,7 +1,7 @@
 
+
 Namespace.register('ui').StorageConsentSelect = (function(){
 
-    'use strict';
 
     // reference to parent class
     var _parent = conditioner.BehaviorBase;
@@ -23,7 +23,6 @@ Namespace.register('ui').StorageConsentSelect = (function(){
                 'select':'Cookies',
                 'level':{
                     'all':'All',
-                    'incognito':'No tracking cookies',
                     'none':'None'
                 }
             }
@@ -41,7 +40,7 @@ Namespace.register('ui').StorageConsentSelect = (function(){
             if (!levels.hasOwnProperty(level)) {
                 continue;
             }
-            html += '<option value="' + level + '">' + this._options.label.level[level] + '</option>';
+            html += '<option' + (level == this._storageGuard.getActiveLevel() ? ' selected="selected"': '') + ' value="' + level + '">' + this._options.label.level[level] + '</option>';
         }
 
         // setup select
