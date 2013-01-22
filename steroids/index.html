@@ -154,23 +154,40 @@
                 // get instance of cconditioner
                 var demo = Conditioner.getInstance();
 
-                // register classes and their options
-                demo.registerClass('IClearField','ui.ClearField');
-                demo.registerClass('IMap','ui.Map');
-                demo.registerClass('IClock','ui.Clock');
-
-                // pass additional options to storage consent select
-                demo.registerClass('IStorageConsent','ui.StorageConsentSelect',{
-                    'label':{
-                        'level':{
-                            'incognito':'No tracking'
+                // register classes
+                demo.registerDependencies(
+                    {
+                        'id':'IClearField',
+                        'uri':'ui.ClearField'
+                    },
+                    {
+                        'id':'IMap',
+                        'uri':'ui.Map'
+                    },
+                    {
+                        'id':'IClock',
+                        'uri':'ui.Clock'
+                    },
+                    {
+                        'id':'IStorageConsent',
+                        'uri':'ui.StorageConsentSelect',
+                        'options':{
+                            'label':{
+                                'level':{
+                                    'incognito':'No tracking'
+                                }
+                            }
+                        }
+                    },
+                    {
+                        'id':'IStorageGuard',
+                        'uri':'security.StorageConsentGuard',
+                        'options':{
+                            'levels':['all','incognito','none'],
+                            'initial':'none'
                         }
                     }
-                });
-                demo.registerClass('IStorageGuard','security.StorageConsentGuard',{
-                    'levels':['all','incognito','none'],
-                    'initial':'none'
-                });
+                );
 
                 // register an additional test to handle cookie availability
                 demo.registerTest(

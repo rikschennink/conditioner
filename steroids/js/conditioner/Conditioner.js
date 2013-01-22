@@ -78,25 +78,24 @@ var Conditioner = (function() {
 
 
     /**
-     * @method registerClasses
-     * @param {Array} classes - Array of classes to register
+     * @method registerDependencies
      */
-    p.registerClasses = function(classes) {
-        var Class,i=0,l=classes.length;
+    p.registerDependencies = function() {
+        var Class,i=0,l=arguments.length,injector = conditioner.Injector;
         for (;i<l;i++) {
-            Class = classes[i];
-            this.registerClass(Class.id,Class.uri,Class.options)
+            Class = arguments[i];
+            injector.registerDependency(Class.id,Class.uri,Class.options);
         }
     };
 
     /**
-     * @method registerClass
+     * @method registerDependency
      * @param {String} id - identifier (interface) of Class
      * @param {String} uri - path to class
      * @param {Object} options - options to pass to instance
      */
-    p.registerClass = function(id,uri,options) {
-        conditioner.Injector.registerClass(id,uri,options);
+    p.registerDependency = function(id,uri,options) {
+        conditioner.Injector.registerDependency(id,uri,options);
     };
 
 
