@@ -5,10 +5,6 @@ Namespace.register('conditioner').ConditionManager = (function() {
 
     'use strict';
 
-
-    // todo: create fallback scenario for unsupport conditions: media query -> window width, etc.
-
-
     /**
      * Constructs ConditionManager objects.
      *
