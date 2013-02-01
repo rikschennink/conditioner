@@ -53,4 +53,6 @@
         function(expected){return Boolean(navigator.geolocation)===expected;}
     );
 
+    // todo: fix geolocation test
+
 }(Conditioner.getInstance()));

@@ -105,7 +105,6 @@ var Conditioner = (function() {
      *
      * @method applyBehavior
      * @param {Node} context - Context to apply behavior to
-     * @param {Object} options - Options to be passed to the behavior
      * @return {Array} - Array of initialized BehaviorControllers
      */
     p.applyBehavior = function(context) {
@@ -165,9 +164,27 @@ var Conditioner = (function() {
      *
      * @method getBehavior
      * @param {Object} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
-     * @return
+     * @return {Object} controller - First matched BehaviorController
      */
     p.getBehavior = function(query) {
+        var controller,i=0,l = this._controllers.length;
+        for (;i<l;i++) {
+            controller = this._controllers[i];
+            if (controller.matchesQuery(query)) {
+                return controller;
+            }
+        }
+        return null;
+    };
+
+    /**
+     * Returns all BehaviorControllers matching the selector
+     *
+     * @method getBehaviorAll
+     * @param {Object} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
+     * @return {Array} results - Array containing matched behavior controllers
+     */
+    p.getBehaviorAll = function(query) {
         var controller,i=0,l = this._controllers.length,results=[];
         for (;i<l;i++) {
             controller = this._controllers[i];
@@ -177,6 +194,7 @@ var Conditioner = (function() {
         }
         return results;
     };
+
 
 
     // Singleton structure
