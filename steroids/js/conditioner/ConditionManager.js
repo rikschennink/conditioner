@@ -110,7 +110,7 @@ Namespace.register('conditioner').ConditionManager = (function() {
             // fire changed event if environment suitability changed
             if (suitable != this._suitable) {
                 this._suitable = suitable;
-                Observer.fire(this,'change');
+                Observer.publish(this,'change');
             }
         },
 
@@ -214,7 +214,7 @@ Namespace.register('conditioner').ConditionManager = (function() {
 
             if (this._suitable != suitable) {
                 this._suitable = suitable;
-                Observer.fire(this,'change');
+                Observer.publish(this,'change');
             }
 
         },

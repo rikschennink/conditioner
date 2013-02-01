@@ -58,13 +58,13 @@ var Observer = (function(){
         },
 
         /**
-         * Fire an event
-         * @method fire
+         * Publish an event
+         * @method publish
          * @param {Object} obj - Object to fire the event on
          * @param {String} type - Event type to fire
          * @param {Object} data - Any type of data
          */
-        fire:function(obj,type,data) {
+        publish:function(obj,type,data) {
 
             if (!obj._eventListeners) {
                 obj._eventListeners = [];
@@ -81,7 +81,7 @@ var Observer = (function(){
 
             // see if should be propagated
             if (obj._eventPropagationTarget) {
-                Observer.fire(obj._eventPropagationTarget,type,data);
+                Observer.publish(obj._eventPropagationTarget,type,data);
             }
 
         },

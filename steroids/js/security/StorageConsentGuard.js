@@ -52,7 +52,7 @@ Namespace.register('security').StorageConsentGuard = (function(){
 
         this._level = level;
 
-        Observer.fire(this,'change',this._level);
+        Observer.publish(this,'change',this._level);
     };
 
     return {
