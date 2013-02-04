@@ -7,6 +7,12 @@
         'media',
         function(handler,conditions) {
 
+            // IE 9 and lower don't support matchmedia
+            if (!window.matchMedia) {
+                return;
+            }
+
+            // get list
             var mql = window.matchMedia(conditions.value);
             mql.addListener(handler);
             handler(mql);
