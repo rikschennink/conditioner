@@ -94,6 +94,7 @@ Namespace.register('conditioner').Injector = (function(){
 
             F.prototype = Class.prototype;
             return new F(args);
+
         },
 
         _getDependenciesForClass:function(Class) {
@@ -106,7 +107,7 @@ Namespace.register('conditioner').Injector = (function(){
                 return [];
             }
 
-            // get seperate parameters as array
+            // get separate parameters as array
             return matches[1].split(',');
         }
     };

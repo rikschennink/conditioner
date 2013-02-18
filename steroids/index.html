@@ -64,8 +64,6 @@
 
         </style>
 
-        <script src="js/lib/require.js"></script>
-
     </head>
     <body>
 
@@ -105,10 +103,6 @@
         </div>
 
 
-
-        <!-- Require 
-        <script src="js/lib/require.js"></script>-->
-
         <!-- Shims -->
         <script src="js/shim/Bind.js"></script>
 
@@ -125,36 +119,38 @@
         <script src="js/conditioner/BehaviorController.js"></script>
         <script src="js/conditioner/Injector.js"></script>
 
-        <!-- Set default conditions -->
+        <!-- Load default tests -->
         <script src="js/conditioner/Tests.js"></script>
-
 
         <!-- StorageConsentGuard Class is in use by StorageConsentSelect -->
         <script src="js/security/StorageConsentGuard.js"></script>
 
-        <!-- ClearField, Clock and StorageConsentSelect are loaded directly-->
+        <!-- UI Classes-->
         <script src="js/ui/ClearField.js"></script>
         <script src="js/ui/Clock.js"></script>
-        <script src="js/ui/StorageConsentSelect.js"></script>
-
-        <!-- Note that the Map class has been commented, it will be loaded dynamically when conditions are met -->
         <script src="js/ui/Map.js"></script>
+        <script src="js/ui/StorageConsentSelect.js"></script>
 
 
 
         <!-- Behavior start and configuration point -->
         <script>
 
+            // Todo: add code paths for conditionally loading javascript files (look into requirejs)
+            // Todo: create base class for using multiple ui classes (with non overlapping conditions) on a single dom node
+            // Todo: look into IE matchMedia shim
+            // Todo: look into setting a singleton as a concrete class (how to handle getInstance method)
+            // Todo: add more documentation
 
             (function(){
 
                 // configure your javascript file location
                 Namespace.baseURL = 'js/';
 
-                // get instance of cconditioner
+                // get instance of conditioner
                 var demo = Conditioner.getInstance();
 
-                // register classes
+                // register concrete classes
                 demo.registerDependencies(
                     {
                         'id':'IClearField',
@@ -189,7 +185,7 @@
                     }
                 );
 
-                // register an additional test to handle cookie availability
+                // register an additional 'custom' test to handle cookie availability
                 demo.registerTest(
                     'cookies',
                     function(handler) {

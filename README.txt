@@ -1,1 +1,1 @@
-This is very much a work in progress, code is changing FAST.
+At this moment this is very much a work in progress.
