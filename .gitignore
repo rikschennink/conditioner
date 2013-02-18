@@ -1,4 +1,3 @@
-
 .DS_Store
 
 .idea/.name
@@ -7,8 +6,8 @@
 
 .idea/conditioner.iml
 
-steroids/.idea/.name
+demo/.idea/.name
 
-steroids/.idea/steroids.iml
+demo/.idea/steroids.iml
 
-steroids/.idea/workspace.xml~
+demo/.idea/workspace.xml~
