@@ -107,12 +107,29 @@ Namespace.register('conditioner').BehaviorController = (function() {
     p._loadBehavior = function() {
 
         // get behavior instance
-        this._behavior = conditioner.Injector.constructClass(this._id,this._options.target);
+        //this._behavior = conditioner.Injector.constructClass(this._id,this._options.target);
 
-        // propagate event
-        Observer.setupPropagationTarget(this._behavior,this);
+        var self = this;
+        conditioner.Injector.constructClass(
 
+            // class identifier
+            this._id,
+
+            // target element
+            this._options.target,
+
+            // instance return method
+            function(instance){
+
+                // set behavior reference
+                self._behavior = instance;
+
+                // propagate events from behavior to behaviorController
+                Observer.setupPropagationTarget(self._behavior,self);
+            }
+        );
     };
+
 
 
     /**

@@ -71,7 +71,7 @@ var ScriptLoader = (function(window){
                     // handle memory leak in IE
                     script.onload = script.onreadystatechange = null;
                     if (head && script.parentNode) {
-                        head.removeChild(s);
+                        head.removeChild(script);
                     }
                 }
             };

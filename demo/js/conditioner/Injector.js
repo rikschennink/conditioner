@@ -23,32 +23,59 @@ Namespace.register('conditioner').Injector = (function(){
             };
         },
 
-        constructClass:function(id,element) {
+
+        /**
+         * Construct a Class
+         * @method constructClass
+         * @param {String} id - identifier (interface) of Class
+         * @param {Element} element - element parameter
+         * @param {Function} success - callback method to return constructed Class
+         */
+        constructClass:function(id,element,success) {
 
             // get dependency spec
             var specification = _dependencies[id];
 
-            // if specifications not found, halt
+            // if specifications not found, stop
             if (!specification) {
-                return null;
+                return;
             }
 
-            // Load class by uri if no concrete class is available yet
+            // if class for this spec is not known yet, find it
             if (!specification.Class) {
 
-                // Cache Class for future reference
-                specification.Class = Namespace.find(specification.uri);
+                // load the class, if found, retry to class construction
+                Namespace.load(
 
-                // is this class a singleton
-                specification.singleton = typeof specification.Class.getInstance != 'undefined';
+                    // classpath
+                    specification.uri,
 
+                    // class loaded callback
+                    function(Class) {
+
+                        // class loaded and ready to be added to specification
+                        specification.Class = Class;
+
+                        // is this class a singleton
+                        specification.singleton = typeof specification.Class.getInstance != 'undefined';
+
+                        // try again
+                        Injector.constructClass(id,element,success);
+
+                    },
+                    function(error) {
+                        throw new Error(error);
+                    }
+                );
+                return;
             }
 
             // if is singleton, pass options and return
             if (specification.singleton) {
                 var instance = specification.Class.getInstance();
                     instance.setOptions(specification.options);
-                return instance;
+                success(instance);
+                return;
             }
 
             // if dependencies not yet set, set now
@@ -66,23 +93,39 @@ Namespace.register('conditioner').Injector = (function(){
 
                 if (dependency == 'element') {
                     // is base element
-                    dependencies.push(element);
+                    dependencies[i] = element;
                 }
                 else if (dependency == 'options') {
                     // is options, get from spec
-                    dependencies.push(specification.options);
+                    dependencies[i] = specification.options;
                 }
                 else if (_dependencies[dependency]) {
 
                     // is custom class
-                    dependencies.push(Injector.constructClass(dependency));
+                    Injector.constructClass(
+                        dependency,
+                        element,
+                        function(index){
+                            return function(instance) {
+                                dependencies[index] = instance;
+                            };
+                        }(i)
+                    );
+
                 }
             }
 
-            return Injector._getInstance(specification.Class,dependencies);
+            success(Injector._getInstanceOfClass(specification.Class,dependencies));
         },
 
-        _getInstance:function(Class,args) {
+        /**
+         * Returns an instance of the Class passing the given arguments
+         * @method _getInstanceOfClass
+         * @param {Function} Class - Class constructor
+         * @param {Array} args - Class constructor arguments to pass
+         * @return {Object} - Instance of supplied Class
+         */
+        _getInstanceOfClass:function(Class,args) {
 
             if (Class.getInstance) {
                 return Class.getInstance();
@@ -97,6 +140,12 @@ Namespace.register('conditioner').Injector = (function(){
 
         },
 
+        /**
+         * Returns the dependencies for the supplied Class constructor
+         * @method _getDependenciesForClass
+         * @param {Function} Class - Class constructor
+         * @return {Array} - Array of dependencies as Strings
+         */
         _getDependenciesForClass:function(Class) {
 
             var text = Class.toString(),

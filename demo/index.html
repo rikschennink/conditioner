@@ -128,19 +128,23 @@
         <!-- UI Classes-->
         <script src="js/ui/ClearField.js"></script>
         <script src="js/ui/Clock.js"></script>
-        <script src="js/ui/Map.js"></script>
         <script src="js/ui/StorageConsentSelect.js"></script>
+
+        <!-- Map Class will be loaded when necessary
+        <script src="js/ui/Map.js"></script>
+        -->
 
 
 
         <!-- Behavior start and configuration point -->
         <script>
 
-            // Todo: add code paths for conditionally loading javascript files (look into requirejs)
-            // Todo: create base class for using multiple ui classes (with non overlapping conditions) on a single dom node
+            // Todo: look into specifying load order
             // Todo: look into IE matchMedia shim
             // Todo: look into setting a singleton as a concrete class (how to handle getInstance method)
+            // Todo: create base class for using multiple ui classes (with non overlapping conditions) on a single dom node
             // Todo: add more documentation
+            // Todo: look into performance
 
             (function(){
 
