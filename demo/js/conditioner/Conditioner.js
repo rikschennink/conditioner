@@ -1,7 +1,7 @@
 /**
  * @module conditioner/Conditioner
  */
-var Conditioner = (function() {
+var Conditioner = (function(Injector,BehaviorController) {
 
     'use strict';
 
@@ -78,24 +78,26 @@ var Conditioner = (function() {
 
 
     /**
+     * Register multiple dependencies
      * @method registerDependencies
      */
     p.registerDependencies = function() {
-        var Class,i=0,l=arguments.length,injector = conditioner.Injector;
+        var dependency,i=0,l=arguments.length;
         for (;i<l;i++) {
-            Class = arguments[i];
-            injector.registerDependency(Class.id,Class.uri,Class.options);
+            dependency = arguments[i];
+            Injector.registerDependency(dependency.id,dependency.uri,dependency.options);
         }
     };
+
 
     /**
      * @method registerDependency
      * @param {String} id - identifier (interface) of Class
-     * @param {String} uri - path to class
+     * @param {String} uri - class path
      * @param {Object} options - options to pass to instance
      */
     p.registerDependency = function(id,uri,options) {
-        conditioner.Injector.registerDependency(id,uri,options);
+        Injector.registerDependency(id,uri,options);
     };
 
 
@@ -139,7 +141,7 @@ var Conditioner = (function() {
             // feed to controller
             controllers.push(
 
-                new conditioner.BehaviorController(
+                new BehaviorController(
                     behaviorId,
                     {
                         'target':element,
@@ -214,4 +216,4 @@ var Conditioner = (function() {
 
     };
 
-}());
+}(conditioner.Injector,conditioner.BehaviorController));

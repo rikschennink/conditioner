@@ -7,8 +7,6 @@ Namespace.register('conditioner').BehaviorBase = (function() {
 
 
 
-
-
     /**
      * @class BehaviorBase
      * @constructor

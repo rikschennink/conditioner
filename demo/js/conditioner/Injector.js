@@ -10,7 +10,7 @@ Namespace.register('conditioner').Injector = (function(){
          * Register a Dependency
          * @method register
          * @param {String} id - identifier (interface) of Class
-         * @param {String} uri - path to class
+         * @param {String} uri - class path
          * @param {Object} options - options to pass to instance
          */
         registerDependency:function(id,uri,options) {
@@ -18,7 +18,6 @@ Namespace.register('conditioner').Injector = (function(){
                 'uri':uri,
                 'options':options,
                 'dependencies':null,
-                'singleton':false,
                 'Class':null
             };
         },
@@ -56,9 +55,6 @@ Namespace.register('conditioner').Injector = (function(){
                         // class loaded and ready to be added to specification
                         specification.Class = Class;
 
-                        // is this class a singleton
-                        specification.singleton = typeof specification.Class.getInstance != 'undefined';
-
                         // try again
                         Injector.constructClass(id,element,success);
 
@@ -70,8 +66,8 @@ Namespace.register('conditioner').Injector = (function(){
                 return;
             }
 
-            // if is singleton, pass options and return
-            if (specification.singleton) {
+            // if this Class is a singleton, get an instance and set it's options
+            if (typeof specification.Class.getInstance != 'undefined') {
                 var instance = specification.Class.getInstance();
                     instance.setOptions(specification.options);
                 success(instance);
@@ -84,10 +80,10 @@ Namespace.register('conditioner').Injector = (function(){
             }
 
             // find out if this class has dependencies
-            var dependency,dependencies=[];
+            var i=0,dependency,dependencies=[];
 
             // construct dependencies
-            for (var i=0;i<specification.dependencies.length;i++) {
+            for (;i<specification.dependencies.length;i++) {
 
                 dependency = specification.dependencies[i];
 

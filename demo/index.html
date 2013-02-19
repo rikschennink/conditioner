@@ -113,11 +113,11 @@
         <script src="js/helper/Options.js"></script>
 
         <!-- Conditioner Classes -->
-        <script src="js/conditioner/Conditioner.js"></script>
-        <script src="js/conditioner/ConditionManager.js"></script>
-        <script src="js/conditioner/BehaviorBase.js"></script>
-        <script src="js/conditioner/BehaviorController.js"></script>
         <script src="js/conditioner/Injector.js"></script>
+        <script src="js/conditioner/ConditionManager.js"></script>
+        <script src="js/conditioner/BehaviorController.js"></script>
+        <script src="js/conditioner/BehaviorBase.js"></script>
+        <script src="js/conditioner/Conditioner.js"></script>
 
         <!-- Load default tests -->
         <script src="js/conditioner/Tests.js"></script>
@@ -139,12 +139,13 @@
         <!-- Behavior start and configuration point -->
         <script>
 
+            // Todo: add more documentation
             // Todo: look into specifying load order
             // Todo: look into IE matchMedia shim
-            // Todo: look into setting a singleton as a concrete class (how to handle getInstance method)
             // Todo: create base class for using multiple ui classes (with non overlapping conditions) on a single dom node
-            // Todo: add more documentation
+            // Todo: look into setting a singleton as a concrete class (how to handle getInstance method, what to do with testing)
             // Todo: look into performance
+            // todo: fix geolocation test
 
             (function(){
 

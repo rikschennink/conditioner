@@ -1,7 +1,7 @@
 /**
  * @module conditioner/BehaviorController
  */
-Namespace.register('conditioner').BehaviorController = (function() {
+Namespace.register('conditioner').BehaviorController = (function(Injector,ConditionManager) {
 
     'use strict';
 
@@ -61,7 +61,7 @@ Namespace.register('conditioner').BehaviorController = (function() {
         this._options = options || {};
 
         // check if conditions specified
-        this._conditionManager = new conditioner.ConditionManager(
+        this._conditionManager = new ConditionManager(
             this._options.conditions,
             this._options.target
         );
@@ -110,7 +110,7 @@ Namespace.register('conditioner').BehaviorController = (function() {
         //this._behavior = conditioner.Injector.constructClass(this._id,this._options.target);
 
         var self = this;
-        conditioner.Injector.constructClass(
+        Injector.constructClass(
 
             // class identifier
             this._id,
@@ -197,4 +197,4 @@ Namespace.register('conditioner').BehaviorController = (function() {
 
     return BehaviorController;
 
-}());
+}(conditioner.Injector,conditioner.ConditionManager));
