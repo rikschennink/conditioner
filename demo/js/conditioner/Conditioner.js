@@ -118,7 +118,7 @@ var Conditioner = (function(Injector,BehaviorController) {
 
         // register vars and get elements
         var controllers = [],
-            behaviorId,element,elements = context.querySelectorAll('[data-behavior]:not([data-processed])',context),
+            behavior,element,elements = context.querySelectorAll('[data-behavior]:not([data-processed])',context),
             i=0,l = elements.length;
 
         // if no elements do nothing
@@ -136,13 +136,13 @@ var Conditioner = (function(Injector,BehaviorController) {
             element.setAttribute('data-processed','true');
 
             // get behavior path from element
-            behaviorId = element.getAttribute('data-behavior');
+            behavior = element.getAttribute('data-behavior');
 
             // feed to controller
             controllers.push(
 
                 new BehaviorController(
-                    behaviorId,
+                    behavior,
                     {
                         'target':element,
                         'conditions':element.getAttribute('data-conditions')

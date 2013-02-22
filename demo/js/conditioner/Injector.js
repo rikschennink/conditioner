@@ -1,7 +1,7 @@
 
 Namespace.register('conditioner').Injector = (function(){
 
-    var _args = /^function\s*[^\(]*\(\s*([^\)]*)\)/m,
+    var _argsRegex = /^function\s*[^\(]*\(\s*([^\)]*)\)/m,
         _dependencies = {};
 
     var Injector = {
@@ -145,7 +145,7 @@ Namespace.register('conditioner').Injector = (function(){
         _getDependenciesForClass:function(Class) {
 
             var text = Class.toString(),
-                matches = text.match(_args);
+                matches = text.match(_argsRegex);
 
             // if no matches found, no constructor parameters
             if (!matches) {

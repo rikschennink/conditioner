@@ -69,7 +69,7 @@ Namespace.register('conditioner').BehaviorController = (function(Injector,Condit
         // listen to changes in conditions
         Observer.subscribe(this._conditionManager,'change',this._onConditionsChange.bind(this));
 
-        // if already suitale, load behavior
+        // if already suitable, load behavior
         if (this._conditionManager.getSuitability()) {
             this._loadBehavior();
         }
@@ -105,9 +105,6 @@ Namespace.register('conditioner').BehaviorController = (function(Injector,Condit
      * @method _loadBehavior
      */
     p._loadBehavior = function() {
-
-        // get behavior instance
-        //this._behavior = conditioner.Injector.constructClass(this._id,this._options.target);
 
         var self = this;
         Injector.constructClass(
