@@ -150,7 +150,6 @@ var Conditioner = (function(Injector,BehaviorController) {
                 )
 
             );
-
         }
 
         // merge with current controllers

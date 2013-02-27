@@ -35,8 +35,9 @@ Namespace.register('conditioner').BehaviorBase = (function() {
         // merge custom options passed in data-options attribute
         var instanceOptions = this._element.getAttribute('data-options');
         if (instanceOptions) {
+            var instanceOptionsObject;
             try {
-                var instanceOptionsObject = JSON.parse(instanceOptions);
+                instanceOptionsObject = JSON.parse(instanceOptions);
             }
             catch(e) {
                 throw new Error('BehaviorBase(element,options): "data-options" attribute needs to be in JSON format.');

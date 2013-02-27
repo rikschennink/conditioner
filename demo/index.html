@@ -69,13 +69,6 @@
 
         <h1>Conditioner Demo</h1>
 
-
-        <!--
-        <h2>Multiple Behavior Classes on a single element</h2>
-        <div data-behavior="IClock,IClock" data-conditions='{"window":{"maxWidth":500}},{"window":{"minWidth":600}}'>ui.Clock's are inactive</div>
-        -->
-
-
         <h2>Based on Element dimensions</h2>
         <p>ui.Clock will be active as long as element has a minimum width of 350 pixels.</p>
         <div class="component" style="width:60.00%">
@@ -149,10 +142,10 @@
         <!-- Behavior start and configuration point -->
         <script>
 
+            // Todo: create base class for using multiple ui classes (with non overlapping conditions) on a single dom node
             // Todo: add class which renders window width (for testing purpose)
             // Todo: add more documentation
             // Todo: look into specifying load order
-            // Todo: create base class for using multiple ui classes (with non overlapping conditions) on a single dom node
             // Todo: look into setting a singleton as a concrete class (how to handle getInstance method, what to do with testing)
             // Todo: look into performance
             // todo: fix geolocation test
