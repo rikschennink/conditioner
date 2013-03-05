@@ -38,25 +38,22 @@
 
 <p>Conditioner is a JavaScript framework to help you decouple your JavaScript UI classes from your HTML and allows you to only initialize them under on certain conditions (which is a good thing).</p>
 
-<h3>Example</h3>
-
 <p>In short it allows you to do the following:
-Load the Clock UI Class the moment the supplied media query <code>(max-width:40em)</code> is met.</p>
+Load the UI Map Class the moment the supplied media query <code>(min-width:30em)</code> is met.</p>
 
-<div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">data-behavior=</span><span class="s">"IClock"</span> <span class="na">data-conditions=</span><span class="s">'{"media":"(max-width:40em)"}'</span><span class="nt">&gt;</span>
-    IClock is inactive
+<div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">data-behavior=</span><span class="s">"IMap"</span> <span class="na">data-conditions=</span><span class="s">'{"media":"(min-width:30em)"}'</span><span class="nt">&gt;</span>
+    IMap is currently inactive
 <span class="nt">&lt;/div&gt;</span>
 </pre></div>
 
-<div class="highlight"><pre>
-<span class="c1">// get instance of conditioner</span>
+<div class="highlight"><pre><span class="c1">// get instance of conditioner</span>
 <span class="kd">var</span> <span class="nx">myConditioner</span> <span class="o">=</span> <span class="nx">Conditioner</span><span class="p">.</span><span class="nx">getInstance</span><span class="p">();</span>
 
-<span class="c1">// register ui.Clock to be used for IClock behavior reference</span>
-<span class="nx">demo</span><span class="p">.</span><span class="nx">registerDependencies</span><span class="p">(</span>
+<span class="c1">// register ui.Map Class to be used for IMap behavior reference</span>
+<span class="nx">myConditioner</span><span class="p">.</span><span class="nx">registerDependencies</span><span class="p">(</span>
     <span class="p">{</span>
-        <span class="s1">'id'</span><span class="o">:</span><span class="s1">'IClock'</span><span class="p">,</span>
-        <span class="s1">'uri'</span><span class="o">:</span><span class="s1">'ui.Clock'</span>
+        <span class="s1">'id'</span><span class="o">:</span><span class="s1">'IMap'</span><span class="p">,</span>
+        <span class="s1">'uri'</span><span class="o">:</span><span class="s1">'ui.Map'</span>
     <span class="p">}</span>
 <span class="p">);</span>
 
