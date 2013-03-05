@@ -117,8 +117,10 @@ var Conditioner = (function(Injector,BehaviorController) {
         }
 
         // register vars and get elements
-        var controllers = [],
-            behavior,element,elements = context.querySelectorAll('[data-behavior]:not([data-processed])',context),
+        var controllers = [],controller,
+            priorityList = [],behavior,
+            priorityLevel,behavior,behaviorId,
+            element,elements = context.querySelectorAll('[data-behavior]:not([data-processed])',context),
             i=0,l = elements.length;
 
         // if no elements do nothing
@@ -136,26 +138,47 @@ var Conditioner = (function(Injector,BehaviorController) {
             element.setAttribute('data-processed','true');
 
             // get behavior path from element
-            behavior = element.getAttribute('data-behavior');
+            behaviorId = element.getAttribute('data-behavior');
+
+            // get priority attribute
+            priorityLevel = parseInt(element.getAttribute('data-priority'),10) || 0;
+
+            // create instance
+            controller = new BehaviorController(
+                behaviorId,
+                {
+                    'target':element,
+                    'conditions':element.getAttribute('data-conditions')
+                }
+            );
 
             // feed to controller
-            controllers.push(
+            priorityList.push({
+                'controller':controller,
+                'priority':priorityLevel
+            });
 
-                new BehaviorController(
-                    behavior,
-                    {
-                        'target':element,
-                        'conditions':element.getAttribute('data-conditions')
-                    }
-                )
-
-            );
+            // add to controllers
+            controllers.push(controller);
         }
 
-        // merge with current controllers
+        // sort controllers by priority:
+        // higher numbers go first,
+        // then 0 (or no priority assigned),
+        // then negative numbers
+        priorityList.sort(function(a,b){
+            return b.priority - a.priority;
+        });
+
+        // initialize behavior depending on assigned priority
+        for (i=0; i<l; i++) {
+            priorityList[i].controller.init();
+        }
+
+        // merge new controllers with current controllers
         this._controllers = this._controllers.concat(controllers);
 
-        // returns copy of loaders so it is possible to later unload them manually if necessary
+        // returns copy of controllers so it is possible to later unload behavior manually if necessary
         return controllers;
     };
 

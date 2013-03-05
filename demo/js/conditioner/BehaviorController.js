@@ -60,6 +60,19 @@ Namespace.register('conditioner').BehaviorController = (function(Injector,Condit
         // options for behavior controller
         this._options = options || {};
 
+    };
+
+
+    // prototype shortcut
+    var p = BehaviorController.prototype;
+
+
+    /**
+     * Initializes the behavior controller
+     * @method init
+     */
+    p.init = function() {
+
         // check if conditions specified
         this._conditionManager = new ConditionManager(
             this._options.conditions,
@@ -75,10 +88,6 @@ Namespace.register('conditioner').BehaviorController = (function(Injector,Condit
         }
 
     };
-
-
-    // prototype shortcut
-    var p = BehaviorController.prototype;
 
 
     /**
