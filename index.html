@@ -7,7 +7,6 @@
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -16,41 +15,56 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1 class="header">Conditioner</h1>
-        <p class="header">JavaScript Conditioner framework</p>
+        <h1>Conditioner</h1>
+        <p>JavaScript Conditioner framework</p>
+
+        <p class="view"><a href="https://github.com/rikschennink/conditioner">View the Project on GitHub <small>rikschennink/conditioner</small></a></p>
+
 
         <ul>
-          <li class="download"><a class="buttons" href="https://github.com/rikschennink/conditioner/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/rikschennink/conditioner/tarball/master">Download TAR</a></li>
-          <li><a class="buttons github" href="https://github.com/rikschennink/conditioner">View On GitHub</a></li>
+          <li><a href="https://github.com/rikschennink/conditioner/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/rikschennink/conditioner/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/rikschennink/conditioner">View On <strong>GitHub</strong></a></li>
         </ul>
-
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/rikschennink">rikschennink</a></p>
-
-
       </header>
       <section>
         <h1>JavaScript Conditioner Framework</h1>
 
-<h2>About</h2>
+<h2>Attention</h2>
+
+<p>This is currently a work in progress</p>
+
+<h2>Introduction</h2>
 
 <p>Conditioner is a JavaScript framework to help you decouple your JavaScript UI classes from your HTML and allows you to only initialize them under on certain conditions (which is a good thing).</p>
 
 <h3>Example</h3>
 
 <p>In short it allows you to do the following:
-Load the Clock behavior the moment the supplied media query is met.</p>
+Load the Clock UI Class the moment the supplied media query <code>(max-width:40em)</code> is met.</p>
 
-<div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">data-behavior=</span><span class="s">"ui.Clock"</span> <span class="na">data-conditions=</span><span class="s">'{"media":"(max-width:40em)"}'</span><span class="nt">&gt;</span>
-    ui.Clock is inactive
+<div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">data-behavior=</span><span class="s">"IClock"</span> <span class="na">data-conditions=</span><span class="s">'{"media":"(max-width:40em)"}'</span><span class="nt">&gt;</span>
+    IClock is inactive
 <span class="nt">&lt;/div&gt;</span>
 </pre></div>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">myConditioner</span> <span class="o">=</span> <span class="nx">Conditioner</span><span class="p">.</span><span class="nx">getInstance</span><span class="p">();</span>
-    <span class="nx">myConditoiner</span><span class="p">.</span><span class="nx">applyBehavior</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span>
+<div class="highlight"><pre>
+<span class="c1">// get instance of conditioner</span>
+<span class="kd">var</span> <span class="nx">myConditioner</span> <span class="o">=</span> <span class="nx">Conditioner</span><span class="p">.</span><span class="nx">getInstance</span><span class="p">();</span>
+
+<span class="c1">// register ui.Clock to be used for IClock behavior reference</span>
+<span class="nx">demo</span><span class="p">.</span><span class="nx">registerDependencies</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s1">'id'</span><span class="o">:</span><span class="s1">'IClock'</span><span class="p">,</span>
+        <span class="s1">'uri'</span><span class="o">:</span><span class="s1">'ui.Clock'</span>
+    <span class="p">}</span>
+<span class="p">);</span>
+
+<span class="c1">// apply behavior to document</span>
+<span class="nx">myConditioner</span><span class="p">.</span><span class="nx">applyBehavior</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span>
 </pre></div>
 
-<h2>Why</h2>
+<h2>Why should I use this</h2>
 
 <p>Most UI Classes should not be concerned with the conditions under which they are allowed to be active.</p>
 
@@ -59,10 +73,11 @@ Load the Clock behavior the moment the supplied media query is met.</p>
 <p>By separating the conditions under which the Map Class becomes active you can reuse the Class under various circumstances without altering it's code.</p>
       </section>
       <footer>
-        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+        <p>This project is maintained by <a href="https://github.com/rikschennink">rikschennink</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		
+    <script src="javascripts/scale.fix.js"></script>
+    
   </body>
 </html>
