@@ -200,6 +200,7 @@ Namespace.register('conditioner').ConditionManager = (function() {
                 }
 
                 value = this._expectations[key];
+
                 assert = typeof test.assert === 'function' ? test.assert : test.assert[key];
 
                 // set expected value

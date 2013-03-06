@@ -118,8 +118,8 @@ var Conditioner = (function(Injector,BehaviorController) {
 
         // register vars and get elements
         var controllers = [],controller,
-            priorityList = [],behavior,
-            priorityLevel,behavior,behaviorId,
+            priorityList = [],priorityLevel,
+            behavior,behaviorId,
             element,elements = context.querySelectorAll('[data-behavior]:not([data-processed])',context),
             i=0,l = elements.length;
 

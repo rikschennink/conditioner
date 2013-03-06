@@ -1,8 +1,10 @@
 (function(conditioner){
 
+
+
     var _mqlReferences = [];
 
-    // add mediaquery condition
+    // add mediaquery test
     conditioner.registerTest(
         'media',
         function(handler,conditions) {
@@ -26,7 +28,10 @@
         }
     );
 
-    // add element conditions
+
+
+
+    // add element test
     conditioner.registerTest(
         'element',
         function(handler,conditions,element) {
@@ -39,7 +44,10 @@
         }
     );
 
-    // add window conditions
+
+
+
+    // add window test
     conditioner.registerTest(
         'window',
         function(handler) {
@@ -52,11 +60,52 @@
         }
     );
 
-    // add geolocation conditions
+
+
+
+    // add geolocation test
     conditioner.registerTest(
         'geolocation',
         null,
         function(expected){return Boolean(navigator.geolocation)===expected;}
     );
+
+
+
+
+    // add mouse test
+    var _consecutiveMouseMoves = 0;
+    var _consecutiveMouseMovesRequired = 2;
+    conditioner.registerTest(
+        'mouse',
+        function(handler) {
+
+            var cleanEvents = function() {
+                document.removeEventListener('mousemove',onMouseMoved,false);
+                document.removeEventListener('mousedown',onMouseEvent,false);
+            };
+
+            var onMouseMoved = function() {
+                _consecutiveMouseMoves++;
+                if (_consecutiveMouseMoves>=_consecutiveMouseMovesRequired) {
+                    cleanEvents();
+                }
+                handler(_consecutiveMouseMoves);
+            };
+
+            var onMouseEvent = function() {
+                _consecutiveMouseMoves=0;
+            };
+
+            document.addEventListener('mousemove',onMouseMoved,false);
+            document.addEventListener('mousedown',onMouseEvent,false);
+
+            handler(_consecutiveMouseMoves);
+        },
+        function(moves,expected) {
+            return (moves >= _consecutiveMouseMovesRequired) === expected;
+        }
+    );
+
 
 }(Conditioner.getInstance()));
