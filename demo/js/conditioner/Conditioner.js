@@ -209,6 +209,9 @@ var Conditioner = (function(Injector,BehaviorController) {
      * @return {Array} results - Array containing matched behavior controllers
      */
     p.getBehaviorAll = function(query) {
+        if (typeof query == 'undefined') {
+            return this._controllers.concat();
+        }
         var controller,i=0,l = this._controllers.length,results=[];
         for (;i<l;i++) {
             controller = this._controllers[i];
