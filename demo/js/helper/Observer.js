@@ -16,21 +16,21 @@ var Observer = (function(){
          */
         subscribe:function(obj,type,fn) {
 
-            if (!obj._eventListeners) {
-                obj._eventListeners = [];
+            if (!obj._subscriptions) {
+                obj._subscriptions = [];
             }
 
             // check if already added
-            var test,i=0,l = obj._eventListeners;
+            var test,i=0,l = obj._subscriptions;
             for (; i<l; i++) {
-                test = obj._eventListeners[i];
+                test = obj._subscriptions[i];
                 if (test.type == type && test.fn == fn) {
                     return;
                 }
             }
 
             // add event
-            obj._eventListeners.push({'type':type,'fn':fn});
+            obj._subscriptions.push({'type':type,'fn':fn});
         },
 
         /**
@@ -42,16 +42,16 @@ var Observer = (function(){
          */
         unsubscribe:function(obj,type,fn) {
 
-            if (!obj._eventListeners) {
+            if (!obj._subscriptions) {
                 return;
             }
 
             // find and remove
             var test,i;
-            for (i = obj._eventListeners.length-1; i >= 0; i--) {
-                test = obj._eventListeners[i];
+            for (i = obj._subscriptions.length-1; i >= 0; i--) {
+                test = obj._subscriptions[i];
                 if (test.type == type && test.fn == fn) {
-                    obj._eventListeners.splice(i,1);
+                    obj._subscriptions.splice(i,1);
                     break;
                 }
             }
@@ -66,14 +66,14 @@ var Observer = (function(){
          */
         publish:function(obj,type,data) {
 
-            if (!obj._eventListeners) {
-                obj._eventListeners = [];
+            if (!obj._subscriptions) {
+                obj._subscriptions = [];
             }
             
             // find and execute callback
-            var test,i=0,l = obj._eventListeners.length;
+            var test,i=0,l = obj._subscriptions.length;
             for (; i<l; i++) {
-                test = obj._eventListeners[i];
+                test = obj._subscriptions[i];
                 if (test.type == type) {
                     test.fn(data);
                 }
