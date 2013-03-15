@@ -120,7 +120,7 @@ var Conditioner = (function(Injector,BehaviorController) {
         var controllers = [],controller,
             priorityList = [],priorityLevel,
             behavior,behaviorId,
-            element,elements = context.querySelectorAll('[data-behavior]:not([data-processed])',context),
+            element,elements = context.querySelectorAll('[data-behavior]'),
             i=0,l = elements.length;
 
         // if no elements do nothing
@@ -133,6 +133,11 @@ var Conditioner = (function(Injector,BehaviorController) {
 
             // set element reference
             element = elements[i];
+
+            // skip element if already processed
+            if (element.getAttribute('data-processed')==='true') {
+                continue;
+            }
 
             // has been processed
             element.setAttribute('data-processed','true');

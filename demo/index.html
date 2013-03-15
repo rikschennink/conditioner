@@ -109,8 +109,16 @@
         </div>
 
 
+        <!-- Include these scripts only if you want IE8 support -->
+        <!--[if lte IE 8]>
+        <script src="js/shim/JSON.js"></script>
+        <script src="js/shim/ContentLoaded.js"></script>
+        <script src="js/shim/EventListener.js"></script>
+        <script src="js/shim/IndexOf.js"></script>
+        <![endif]-->
 
         <!-- Shims -->
+        <script src="js/shim/Object.create.js"></script>
         <script src="js/shim/Bind.js"></script>
         <script src="js/shim/matchMedia/matchMedia.js"></script>
         <script src="js/shim/matchMedia/matchMedia.addListener.js"></script>
@@ -148,13 +156,19 @@
         <!-- Behavior start and configuration point -->
         <script>
 
+            // Must have
+            // Todo: Create a fallback mechanism to allow backup tests when no browser support for test (ie8)
+            // Todo: Test Dependency injection and requirejs for module loading
+
+            // Should be tested
+            // Todo: look into performance
+            // Todo: add more suitable and testable UI classes
+
+            // Nice to have
+            // Todo: look into creating AND OR expressions in conditions
+            // Todo: create base class for using multiple ui classes (with non overlapping conditions) on a single dom node
             // Todo: look into generic condition where behavior is only loaded if other behavior is done loading
             // Todo: make used data attributes configurable
-            // Todo: create base class for using multiple ui classes (with non overlapping conditions) on a single dom node
-            // Todo: add class which renders window width (for testing purpose)
-            // Todo: look into setting a singleton as a concrete class (how to handle getInstance method, what to do with testing)
-            // Todo: look into performance
-            // Todo: add more suitable example UI classes
 
             (function(){
 

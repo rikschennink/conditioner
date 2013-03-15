@@ -14,7 +14,7 @@ Namespace.register('ui').ClearField = (function(){
 
         // Add clear button
         var clearButton = document.createElement('button');
-            clearButton.textContent = 'clear';
+            clearButton.innerHTML = 'clear';
             clearButton.addEventListener('click',this);
         this._element.parentNode.insertBefore(clearButton,this._element);
 

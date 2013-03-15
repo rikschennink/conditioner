@@ -24,7 +24,7 @@ Namespace.register('ui').Clock = (function(){
 
     // Update time
     p.tick = function() {
-        this._element.textContent = new Date().toString();
+        this._element.innerHTML = new Date().toString();
         var self = this;
         this._timer = setTimeout(function(){
             self.tick();

@@ -1,7 +1,7 @@
 
-
 Namespace.register('ui').StorageConsentSelect = (function(){
 
+    'use strict';
 
     // reference to parent class
     var _parent = conditioner.BehaviorBase;

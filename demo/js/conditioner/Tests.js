@@ -9,11 +9,6 @@
         'media',
         function(handler,conditions) {
 
-            // IE 9 and lower don't support matchmedia
-            if (!window.matchMedia) {
-                return;
-            }
-
             // get list
             var mql = window.matchMedia(conditions.value);
             mql.addListener(handler);
@@ -27,7 +22,6 @@
             return matchMedia.matches;
         }
     );
-
 
 
 
@@ -55,8 +49,8 @@
             handler();
         },
         {
-            'minWidth':function(expected){return window.innerWidth >= expected;},
-            'maxWidth':function(expected){return window.innerWidth <= expected;}
+            'minWidth':function(expected){return (window.innerWidth || document.documentElement.clientWidth) >= expected;},
+            'maxWidth':function(expected){return (window.innerWidth || document.documentElement.clientWidth) <= expected;}
         }
     );
 
@@ -107,5 +101,44 @@
         }
     );
 
+
+
+    /*
+
+
+    // only set the following test if IE8
+    // add mediaquery test
+    conditioner.registerTest(
+        'media',
+        function(handler,conditions) {
+
+            //console.log(conditions.value);
+
+
+            window.addEventListener('resize',function(e){
+                handler(conditions.value);
+            });
+
+            handler(conditions.value);
+
+        },
+        function(query) {
+
+            var width = document.documentElement.clientWidth;
+            var value = parseInt(query,10);
+
+            if (query.indexOf('min-width') > -1 && width >= value*16) {
+                return true;
+            }
+
+            if (query.indexOf('max-width') > -1 && width <= value*16) {
+                return true;
+            }
+
+            return false;
+        }
+    );
+
+    */
 
 }(Conditioner.getInstance()));
