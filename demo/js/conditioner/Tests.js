@@ -125,7 +125,10 @@
         function(query) {
 
             var width = document.documentElement.clientWidth;
-            var value = parseInt(query,10);
+            var value = query.replace(/[^\d]/g, '');
+            var unit = query.split(value)[1];
+
+            // if unit is EM calculate actual pixel width
 
             if (query.indexOf('min-width') > -1 && width >= value*16) {
                 return true;
