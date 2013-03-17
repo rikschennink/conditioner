@@ -88,13 +88,13 @@
         </div>
 
         <h2>Based on Media Query</h2>
-        <p>ui.Clock will be active as long as media query (max-width:40em) is matched.</p>
+        <p>ui.Clock will be active as long as media query "(min-width:30em) and (max-width:40em)" is matched.</p>
         <div class="component">
-            <div data-behavior="IClock" data-priority="-1" data-conditions='{"media":"(max-width:40em)"}'>ui.Clock is inactive</div>
+            <div data-behavior="IClock" data-priority="-1" data-conditions='{"media":"(min-width:30em) and (max-width:40em)"}'>ui.Clock is inactive</div>
         </div>
 
         <h2>Based on multiple conditions</h2>
-        <p>ui.Map will be active as long as media query (min-width:40em) is matched and geolocation support is available. The ui.Map javascript file has not been included as a script reference and will only be loaded once the conditions are met.</p>
+        <p>ui.Map will be active as long as media query "(min-width:40em)" is matched and geolocation support is available. The ui.Map javascript file has not been included as a script reference and will only be loaded once the conditions are met.</p>
         <div class="component">
             <div data-behavior="IMap" data-priority="2" data-conditions='{"geolocation":true,"media":"(min-width:40em)"}'>ui.Map is inactive</div>
         </div>
@@ -137,7 +137,13 @@
         <script src="js/conditioner/Conditioner.js"></script>
 
         <!-- Load default tests -->
-        <script src="js/conditioner/Tests.js"></script>
+        <script src="js/conditioner/DefaultTests.js"></script>
+
+        <!-- Load fallback tests -->
+        <!--[if lte IE 8]>
+        <script src="js/conditioner/FallbackTests.js"></script>
+        <![endif]-->
+
 
         <!-- StorageConsentGuard Class is in use by StorageConsentSelect -->
         <script src="js/security/StorageConsentGuard.js"></script>
@@ -159,8 +165,7 @@
         <script>
 
             // Must have
-            // Todo: Create a fallback mechanism to allow backup tests when no browser support for test (ie8)
-            // Todo: Test Dependency injection and requirejs for module loading
+            // Todo: test Dependency injection and requirejs for module loading
             // Todo: create base class for using multiple ui classes (with non overlapping conditions) on a single dom node
 
             // Should be tested

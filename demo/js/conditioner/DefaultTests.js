@@ -102,46 +102,4 @@
     );
 
 
-
-    /*
-
-
-    // only set the following test if IE8
-    // add mediaquery test
-    conditioner.registerTest(
-        'media',
-        function(handler,conditions) {
-
-            //console.log(conditions.value);
-
-
-            window.addEventListener('resize',function(e){
-                handler(conditions.value);
-            });
-
-            handler(conditions.value);
-
-        },
-        function(query) {
-
-            var width = document.documentElement.clientWidth;
-            var value = query.replace(/[^\d]/g, '');
-            var unit = query.split(value)[1];
-
-            // if unit is EM calculate actual pixel width
-
-            if (query.indexOf('min-width') > -1 && width >= value*16) {
-                return true;
-            }
-
-            if (query.indexOf('max-width') > -1 && width <= value*16) {
-                return true;
-            }
-
-            return false;
-        }
-    );
-
-    */
-
 }(Conditioner.getInstance()));
