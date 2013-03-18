@@ -24,26 +24,8 @@ Namespace.register('conditioner').BehaviorBase = (function() {
         this._element = element;
         this._element.setAttribute('data-initialized','true');
 
-        // declare options as empty if not already defined in subclass
-        this._options = this._options || {};
-
-        // merge additional options into options object if supplied
-        if (options) {
-            this._options = Options.merge(this._options,options);
-        }
-
-        // merge custom options passed in data-options attribute
-        var instanceOptions = this._element.getAttribute('data-options');
-        if (instanceOptions) {
-            var instanceOptionsObject;
-            try {
-                instanceOptionsObject = JSON.parse(instanceOptions);
-            }
-            catch(e) {
-                throw new Error('BehaviorBase(element,options): "data-options" attribute needs to be in JSON format.');
-            }
-            this._options = Options.merge(this._options,instanceOptionsObject);
-        }
+        // declare options as empty
+        this._options = this._options && options ? Options.merge(this._options,options) : {};
 
     };
 

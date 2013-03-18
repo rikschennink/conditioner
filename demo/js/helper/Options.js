@@ -11,6 +11,14 @@ var Options = (function(){
          */
         merge:function(original,changes) {
 
+            if (!changes) {
+                return original;
+            }
+
+            if (!original) {
+                return changes;
+            }
+
             // merge with custom generic options
             var key,result = {};
             for (key in original) {

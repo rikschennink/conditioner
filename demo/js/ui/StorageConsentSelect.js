@@ -14,9 +14,6 @@ Namespace.register('ui').StorageConsentSelect = (function(){
             throw new Error('StorageConsentSelect(element,options,IStorageGuard): IStorageGuard is a required attribute');
         }
 
-        // set reference to storage guard
-        this._storageGuard = IStorageGuard;
-
         // default options for this class
         this._options = {
             'label':{
@@ -30,6 +27,9 @@ Namespace.register('ui').StorageConsentSelect = (function(){
 
         // Call BehaviourBase constructor
         _parent.call(this,element,options);
+
+        // set reference to storage guard
+        this._storageGuard = IStorageGuard;
 
         // store inner HTML
         this._inner = this._element.innerHTML;

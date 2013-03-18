@@ -124,6 +124,9 @@ Namespace.register('conditioner').BehaviorController = (function(Injector,Condit
             // target element
             this._options.target,
 
+            // target element options
+            this._options.options,
+
             // instance return method
             function(instance){
 

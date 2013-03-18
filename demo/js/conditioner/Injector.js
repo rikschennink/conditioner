@@ -28,9 +28,10 @@ Namespace.register('conditioner').Injector = (function(){
          * @method constructClass
          * @param {String} id - identifier (interface) of Class
          * @param {Element} element - element parameter
+         * @param {Object} options - options for Class
          * @param {Function} success - callback method to return constructed Class
          */
-        constructClass:function(id,element,success) {
+        constructClass:function(id,element,options,success) {
 
             // get dependency spec
             var specification = _dependencies[id];
@@ -56,7 +57,7 @@ Namespace.register('conditioner').Injector = (function(){
                         specification.Class = Class;
 
                         // try again
-                        Injector.constructClass(id,element,success);
+                        Injector.constructClass(id,element,options,success);
 
                     },
                     function(error) {
@@ -93,7 +94,7 @@ Namespace.register('conditioner').Injector = (function(){
                 }
                 else if (dependency == 'options') {
                     // is options, get from spec
-                    dependencies[i] = specification.options;
+                    dependencies[i] = Options.merge(specification.options,options);
                 }
                 else if (_dependencies[dependency]) {
 
@@ -101,6 +102,7 @@ Namespace.register('conditioner').Injector = (function(){
                     Injector.constructClass(
                         dependency,
                         element,
+                        options,
                         function(index){
                             return function(instance) {
                                 dependencies[index] = instance;

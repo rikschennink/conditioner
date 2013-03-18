@@ -75,6 +75,12 @@
             <div data-behavior="IClock" data-conditions='{"element":{"minWidth":350}}'>ui.Clock is inactive</div>
         </div>
 
+        <h2>Multiple Behavior Classes on a single element</h2>
+        <p>ui.Clock will be active as long as element has a maximum width of 400 pixels or a minimum width of 500 pixels.</p>
+        <div class="component" style="width:60.00%">
+            <div data-behavior='["IClock","IClock"]' data-conditions='[{"element":{"maxWidth":400}},{"element":{"minWidth":500}}]' data-options='[{"timestamp":true},{"timestamp":false}]' data-priority="[1,2]">ui.Clock is inactive</div>
+        </div>
+
         <h2>Based on the availability of a mouse</h2>
         <p>ui.Clock will be active as long as we can detect the user has a mouse.</p>
         <div class="component">
@@ -165,14 +171,15 @@
         <script>
 
             // Must have
-            // Todo: test Dependency injection and requirejs for module loading
-            // Todo: create base class for using multiple ui classes (with non overlapping conditions) on a single dom node
+            // Todo: Test Dependency Injection and requirejs for module loading
+            // Todo: Fix default options for classes
+            // Todo: Optimize Conditioner code
 
             // Should be tested
             // Todo: look into performance
-            // Todo: add more suitable and testable UI classes
 
             // Nice to have
+            // Todo: add more suitable and testable UI classes
             // Todo: look into creating AND OR expressions in conditions
             // Todo: look into generic condition where behavior is only loaded if other behavior is done loading
             // Todo: make used data attributes configurable

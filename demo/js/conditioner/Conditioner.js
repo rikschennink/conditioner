@@ -119,7 +119,7 @@ var Conditioner = (function(Injector,BehaviorController) {
         // register vars and get elements
         var controllers = [],controller,
             priorityList = [],priorityLevel,
-            behavior,behaviorId,
+            behaviorId,behavior,
             element,elements = context.querySelectorAll('[data-behavior]'),
             i=0,l = elements.length;
 
@@ -142,29 +142,28 @@ var Conditioner = (function(Injector,BehaviorController) {
             // has been processed
             element.setAttribute('data-processed','true');
 
-            // get behavior path from element
-            behaviorId = element.getAttribute('data-behavior');
+            // get specs
+            var spec,specs = this._getBehaviorSpecificationsByElement(element);
+            while (spec = specs.shift()) {
 
-            // get priority attribute
-            priorityLevel = parseInt(element.getAttribute('data-priority'),10) || 0;
+                // create controller instance
+                controller = new BehaviorController(
+                    spec.id,{
+                        'target':element,
+                        'conditions':spec.conditions,
+                        'options':spec.options
+                    }
+                );
 
-            // create instance
-            controller = new BehaviorController(
-                behaviorId,
-                {
-                    'target':element,
-                    'conditions':element.getAttribute('data-conditions')
-                }
-            );
+                // add to prio list
+                priorityList.push({
+                    'controller':controller,
+                    'priority':spec.priority
+                });
 
-            // feed to controller
-            priorityList.push({
-                'controller':controller,
-                'priority':priorityLevel
-            });
-
-            // add to controllers
-            controllers.push(controller);
+                // add to controllers
+                controllers.push(controller);
+            }
         }
 
         // sort controllers by priority:
@@ -185,6 +184,52 @@ var Conditioner = (function(Injector,BehaviorController) {
 
         // returns copy of controllers so it is possible to later unload behavior manually if necessary
         return controllers;
+    };
+
+
+    p._getBehaviorSpecificationsByElement = function(element) {
+
+        var result = [],
+            behaviorIds = this._getElementAttributeAsObject(element,'data-behavior'),
+            conditions = this._getElementAttributeAsObject(element,'data-conditions'),
+            priorities = this._getElementAttributeAsObject(element,'data-priority'),
+            options = this._getElementAttributeAsObject(element,'data-options'),
+            i=0,l=behaviorIds.length;
+
+        for (;i<l;i++) {
+
+            result.push({
+                'id':behaviorIds[i],
+                'conditions':conditions.length ? conditions[i] : conditions,
+                'options':options.length ? options[i] : options,
+                'priority':priorities.length ? priorities[i] : priorities
+            });
+
+        }
+
+        return result;
+    };
+
+
+    /**
+     * Tries to convert element attribute value to an object
+     *
+     * @method _getElementAttributeAsObject
+     * @param {Node} element - Element to find attribute on
+     * @param {String} attribute - Attribute value to convert
+     * @return {Object} array or object
+     */
+    p._getElementAttributeAsObject = function(element,attribute) {
+
+        var value = element.getAttribute(attribute);
+        if (value) {
+            try {
+                return JSON.parse(value);
+            }
+            catch (e) {}
+        }
+        return [value];
+
     };
 
 

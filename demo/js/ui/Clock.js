@@ -9,6 +9,11 @@ Namespace.register('ui').Clock = (function(){
     // Clock Class
     var Clock = function(element,options) {
 
+        // set default options
+        this._options = {
+            'timestamp':false
+        };
+
         // Call BehaviourBase constructor
         _parent.call(this,element,options);
 
@@ -24,11 +29,13 @@ Namespace.register('ui').Clock = (function(){
 
     // Update time
     p.tick = function() {
-        this._element.innerHTML = new Date().toString();
+        var date = new Date();
+        this._element.innerHTML = this._options.timestamp ? date.getTime() : date.toString();
         var self = this;
         this._timer = setTimeout(function(){
             self.tick();
         },1000);
+
     };
 
     // Unload Clock behaviour
