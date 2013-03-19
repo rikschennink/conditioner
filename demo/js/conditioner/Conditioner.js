@@ -175,6 +175,7 @@ var Conditioner = (function(Injector,BehaviorController) {
         });
 
         // initialize behavior depending on assigned priority
+        l = controllers.length;
         for (i=0; i<l; i++) {
             priorityList[i].controller.init();
         }
@@ -195,6 +196,7 @@ var Conditioner = (function(Injector,BehaviorController) {
             priorities = this._getElementAttributeAsObject(element,'data-priority'),
             options = this._getElementAttributeAsObject(element,'data-options'),
             i=0,l=behaviorIds.length;
+
 
         for (;i<l;i++) {
 

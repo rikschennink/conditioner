@@ -14,7 +14,7 @@ Namespace.register('ui').Clock = (function(){
             'timestamp':false
         };
 
-        // Call BehaviourBase constructor
+        // call BehaviourBase constructor
         _parent.call(this,element,options);
 
         // backup content
