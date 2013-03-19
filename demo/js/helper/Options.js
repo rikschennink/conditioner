@@ -11,10 +11,12 @@ var Options = (function(){
          */
         merge:function(original,changes) {
 
+            // if no changes return original
             if (typeof changes == 'undefined') {
                 return original;
             }
 
+            // if no original use changes as base
             if (typeof original == 'undefined') {
                 return changes;
             }

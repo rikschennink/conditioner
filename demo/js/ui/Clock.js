@@ -11,7 +11,7 @@ Namespace.register('ui').Clock = (function(){
 
         // set default options
         this._options = {
-            'seconds':true
+            'time':true
         };
 
         // call BehaviourBase constructor
@@ -21,26 +21,34 @@ Namespace.register('ui').Clock = (function(){
         this._inner = this._element.innerHTML;
 
         // start ticking
-        this.tick();
+        this._tick();
     };
 
     // Extend from BehaviourBase
     var p = Clock.prototype = Object.create(_parent.prototype);
 
     // Update time
-    p.tick = function() {
-        var date = new Date();
-        this._element.innerHTML = this._format(date.getHours()) + ':' + this._format(date.getMinutes()) + (this._options.seconds ? ':' + this._format(date.getSeconds()) : '');
-        var self = this;
+    p._tick = function() {
+
+        var self = this,
+            pad = function(n){return n<10 ? '0'+n : n},
+            now = new Date(),
+            date = pad(now.getDate()) + '/' + (now.getMonth()+1) + '/'+ now.getFullYear(),
+            time = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+
+        // write inner html
+        this._element.innerHTML = date + (this._options.time ? ' - ' + time : '');
+
+        // if time is not enabled, don't start ticking
+        if (!this._options.time) {
+            return;
+        }
+
+        // wait timeout milliseconds till next clock tick
         this._timer = setTimeout(function(){
-            self.tick();
-        },this._options.seconds ? 900 : 59000);
+            self._tick();
+        },900);
 
-    };
-
-    // Add zero
-    p._format = function(value) {
-        return value<10 ? '0' + value : value;
     };
 
     // Unload Clock behaviour
