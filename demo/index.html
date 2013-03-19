@@ -54,6 +54,15 @@
                 box-sizing:border-box;
             }
 
+            [data-behavior] {
+                color:#bbb;
+                -webkit-transition:color .5s;
+            }
+
+            [data-initialized] {
+                color:#666;
+            }
+
             img {
                 display:block;
                 max-width:100%;
@@ -73,7 +82,7 @@
                 padding:.25em .375em;
                 white-space:nowrap;
                 border-radius:.25em;
-                color:#6f6c62;
+                color:#786c55;
                 font-weight:bold;
             }
 
@@ -97,7 +106,7 @@
         </div>
 
         <h2>Based on multiple window dimensions</h2>
-        <p>Clock will be active as long as window width falls between <code>450px</code> and <code>750px</code></p>
+        <p>Clock will be active as long as window width falls between <code>450px</code> and <code>750px</code>.</p>
         <div class="component">
             <div data-behavior="IClock" data-priority="1" data-conditions='{"window":{"minWidth":450,"maxWidth":750}}'>Clock is inactive</div>
         </div>
@@ -130,7 +139,7 @@
         <h2>Multiple Behavior Classes on a single element</h2>
         <p>Clock will be active as long as element has a maximum width of <code>400px</code> or a minimum width of <code>500px</code>.</p>
         <div class="component" style="width:50.00%">
-            <div data-behavior='["IClock","IClock"]' data-conditions='[{"element":{"maxWidth":400}},{"element":{"minWidth":500}}]' data-options='[{"timestamp":true},{"timestamp":false}]' data-priority="[1,2]">Clock is inactive</div>
+            <div data-behavior='["IClock","IClock"]' data-conditions='[{"element":{"maxWidth":400}},{"element":{"minWidth":500}}]' data-options='[{"seconds":false},{"seconds":true}]' data-priority="[1,2]">Clock is inactive</div>
         </div>
 
 
