@@ -11,7 +11,7 @@ Namespace.register('ui').Clock = (function(){
 
         // set default options
         this._options = {
-            'timestamp':false
+            'seconds':true
         };
 
         // call BehaviourBase constructor
@@ -30,12 +30,17 @@ Namespace.register('ui').Clock = (function(){
     // Update time
     p.tick = function() {
         var date = new Date();
-        this._element.innerHTML = this._options.timestamp ? date.getTime() : date.toString();
+        this._element.innerHTML = this._format(date.getHours()) + ':' + this._format(date.getMinutes()) + (this._options.seconds ? ':' + this._format(date.getSeconds()) : '');
         var self = this;
         this._timer = setTimeout(function(){
             self.tick();
-        },1000);
+        },this._options.seconds ? 900 : 59000);
 
+    };
+
+    // Add zero
+    p._format = function(value) {
+        return value<10 ? '0' + value : value;
     };
 
     // Unload Clock behaviour
