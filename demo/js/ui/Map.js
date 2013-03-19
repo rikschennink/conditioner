@@ -7,10 +7,10 @@ Namespace.register('ui').Map = (function(){
     var _parent = conditioner.BehaviorBase;
 
     // Map Class
-    var Map = function(element,options) {
+    var Map = function(element) {
 
         // Call BehaviourBase constructor
-        _parent.call(this,element,options);
+        _parent.call(this,element);
 
         // backup content
         this._inner = this._element.innerHTML;

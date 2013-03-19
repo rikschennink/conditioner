@@ -62,6 +62,17 @@
                 content:':';
             }
 
+            code {
+                font-size:1em;
+                font-family:monospace;
+                background:#f8e9c7;
+                padding:.25em .375em;
+                white-space:nowrap;
+                border-radius:.25em;
+                color:#6f6c62;
+                font-weight:bold;
+            }
+
         </style>
 
     </head>
@@ -70,49 +81,50 @@
         <h1>Conditioner Demo</h1>
 
         <h2>Based on Element dimensions</h2>
-        <p>ui.Clock will be active as long as element has a minimum width of 350 pixels.</p>
+        <p>Clock will be active as long as the element has a minimum width of <code>350px</code>.</p>
         <div class="component" style="width:60.00%">
-            <div data-behavior="IClock" data-conditions='{"element":{"minWidth":350}}'>ui.Clock is inactive</div>
-        </div>
-
-        <h2>Multiple Behavior Classes on a single element</h2>
-        <p>ui.Clock will be active as long as element has a maximum width of 400 pixels or a minimum width of 500 pixels.</p>
-        <div class="component" style="width:60.00%">
-            <div data-behavior='["IClock","IClock"]' data-conditions='[{"element":{"maxWidth":400}},{"element":{"minWidth":500}}]' data-options='[{"timestamp":true},{"timestamp":false}]' data-priority="[1,2]">ui.Clock is inactive</div>
+            <div data-behavior="IClock" data-conditions='{"element":{"minWidth":350}}'>Clock is inactive</div>
         </div>
 
         <h2>Based on the availability of a mouse</h2>
-        <p>ui.Clock will be active as long as we can detect the user has a mouse.</p>
+        <p>Clock will be active as long as we can detect the user has a mouse.</p>
         <div class="component">
-            <div data-behavior="IClock" data-conditions='{"mouse":true}'>ui.Clock is inactive</div>
+            <div data-behavior="IClock" data-conditions='{"mouse":true}'>Clock is inactive</div>
         </div>
 
-        <h2>Based on multiple Window dimensions</h2>
-        <p>ui.ClearField will be active as long as window width falls between 450 and 750 pixels</p>
+        <h2>Based on multiple window dimensions</h2>
+        <p>Clock will be active as long as window width falls between <code>450px</code> and <code>750px</code></p>
         <div class="component">
-            <input type="text" data-behavior="IClearField" data-priority="1" data-conditions='{"window":{"minWidth":450,"maxWidth":750}}'>
+            <div data-behavior="IClock" data-priority="1" data-conditions='{"window":{"minWidth":450,"maxWidth":750}}'>Clock is inactive</div>
         </div>
 
         <h2>Based on Media Query</h2>
-        <p>ui.Clock will be active as long as media query "(min-width:30em) and (max-width:40em)" is matched.</p>
+        <p>Clock will be active as long as media query <code>(min-width:30em) and (max-width:40em)</code> is matched.</p>
         <div class="component">
-            <div data-behavior="IClock" data-priority="-1" data-conditions='{"media":"(min-width:30em) and (max-width:40em)"}'>ui.Clock is inactive</div>
+            <div data-behavior="IClock" data-priority="-1" data-conditions='{"media":"(min-width:30em) and (max-width:40em)"}'>Clock is inactive</div>
         </div>
 
         <h2>Based on multiple conditions</h2>
-        <p>ui.Map will be active as long as media query "(min-width:40em)" is matched and geolocation support is available. The ui.Map javascript file has not been included as a script reference and will only be loaded once the conditions are met.</p>
+        <p>Map will be active as long as media query <code>(min-width:40em)</code> is matched and <code>geolocation</code> support is available. The ui.Map javascript file has not been included as a script reference and will only be loaded once the conditions are met.</p>
         <div class="component">
-            <div data-behavior="IMap" data-priority="2" data-conditions='{"geolocation":true,"media":"(min-width:40em)"}'>ui.Map is inactive</div>
+            <div data-behavior="IMap" data-priority="2" data-conditions='{"geolocation":true,"media":"(min-width:40em)"}'>Map is inactive</div>
         </div>
 
-        <h2>Based on custom Class conditions</h2>
-        <p>ui.Clock will be active if cookies are allowed</p>
+        <h2>Based on custom conditions</h2>
+        <p>Clock will be activated the moment cookies are allowed</p>
         <div class="component">
             <div data-behavior="IStorageConsent" data-options='{"label":{"select":"Allow cookies"}}'>
                 Javascript needs to be enabled to control storage settings
             </div>
             <div data-behavior="IClock" data-conditions='{"cookies":["all","incognito"]}'>ui.Clock is inactive</div>
         </div>
+
+        <h2>Multiple Behavior Classes on a single element</h2>
+        <p>Clock will be active as long as element has a maximum width of <code>400px</code> or a minimum width of <code>500px</code>.</p>
+        <div class="component" style="width:60.00%">
+            <div data-behavior='["IClock","IClock"]' data-conditions='[{"element":{"maxWidth":400}},{"element":{"minWidth":500}}]' data-options='[{"timestamp":true},{"timestamp":false}]' data-priority="[1,2]">Clock is inactive</div>
+        </div>
+
 
 
         <!-- Include these scripts only if you want IE8 support -->
@@ -159,13 +171,8 @@
         <script src="js/security/StorageConsentGuard.js"></script>
 
         <!-- UI Classes-->
-        <script src="js/ui/ClearField.js"></script>
         <script src="js/ui/Clock.js"></script>
         <script src="js/ui/StorageConsentSelect.js"></script>
-
-        <!-- Map Class will be loaded when necessary
-        <script src="js/ui/Map.js"></script>
-        -->
 
 
 
@@ -176,7 +183,6 @@
 
             // Must have
             // Todo: Test Dependency Injection and requirejs for module loading
-            // Todo: Fix default options for classes
             // Todo: Optimize Conditioner code
 
             // Should be tested

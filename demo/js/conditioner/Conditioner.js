@@ -253,6 +253,7 @@ var Conditioner = (function(Injector,BehaviorController) {
         return null;
     };
 
+
     /**
      * Returns all BehaviorControllers matching the selector
      *
@@ -274,8 +275,7 @@ var Conditioner = (function(Injector,BehaviorController) {
         return results;
     };
 
-
-
+    
     // Singleton structure
     var _instance;
 

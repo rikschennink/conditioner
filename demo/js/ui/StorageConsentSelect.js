@@ -9,11 +9,6 @@ Namespace.register('ui').StorageConsentSelect = (function(){
     // StorageConsentSelect Class
     var StorageConsentSelect = function(element,options,IStorageGuard) {
 
-        // set storage guard reference
-        if (!IStorageGuard) {
-            throw new Error('StorageConsentSelect(element,options,IStorageGuard): IStorageGuard is a required attribute');
-        }
-
         // default options for this class
         this._options = {
             'label':{
@@ -24,6 +19,11 @@ Namespace.register('ui').StorageConsentSelect = (function(){
                 }
             }
         };
+
+        // set storage guard reference
+        if (!IStorageGuard) {
+            throw new Error('StorageConsentSelect(element,options,IStorageGuard): IStorageGuard is a required attribute');
+        }
 
         // Call BehaviourBase constructor
         _parent.call(this,element,options);
