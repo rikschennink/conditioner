@@ -46,8 +46,12 @@
 
             .component {
                 padding:1em;
+                margin-bottom:1em;
                 background:#f3f3f3;
                 border-radius:.25em;
+                color:#666;
+                font-size:.875em;
+                box-sizing:border-box;
             }
 
             img {
@@ -64,7 +68,6 @@
             }
 
             code {
-                font-size:1em;
                 font-family:monospace;
                 background:#f8e9c7;
                 padding:.25em .375em;
@@ -83,7 +86,7 @@
 
         <h2>Based on Element dimensions</h2>
         <p>Clock will be active as long as the element has a minimum width of <code>350px</code>.</p>
-        <div class="component" style="width:60.00%">
+        <div class="component" style="width:50.00%">
             <div data-behavior="IClock" data-conditions='{"element":{"minWidth":350}}'>Clock is inactive</div>
         </div>
 
@@ -113,16 +116,20 @@
 
         <h2>Based on custom conditions</h2>
         <p>Clock will be activated the moment cookies are allowed</p>
+
         <div class="component">
             <div data-behavior="IStorageConsent" data-options='{"label":{"select":"Allow cookies"}}'>
                 Javascript needs to be enabled to control storage settings
             </div>
+        </div>
+
+        <div class="component">
             <div data-behavior="IClock" data-conditions='{"cookies":["all","incognito"]}'>Clock is inactive</div>
         </div>
 
         <h2>Multiple Behavior Classes on a single element</h2>
         <p>Clock will be active as long as element has a maximum width of <code>400px</code> or a minimum width of <code>500px</code>.</p>
-        <div class="component" style="width:60.00%">
+        <div class="component" style="width:50.00%">
             <div data-behavior='["IClock","IClock"]' data-conditions='[{"element":{"maxWidth":400}},{"element":{"minWidth":500}}]' data-options='[{"timestamp":true},{"timestamp":false}]' data-priority="[1,2]">Clock is inactive</div>
         </div>
 
