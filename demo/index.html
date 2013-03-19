@@ -46,7 +46,8 @@
 
             .component {
                 padding:1em;
-                border:1px dotted #ccc;
+                background:#f3f3f3;
+                border-radius:.25em;
             }
 
             img {
@@ -105,7 +106,7 @@
         </div>
 
         <h2>Based on multiple conditions</h2>
-        <p>Map will be active as long as media query <code>(min-width:40em)</code> is matched and <code>geolocation</code> support is available. The ui.Map javascript file has not been included as a script reference and will only be loaded once the conditions are met.</p>
+        <p>Map will be active as long as media query <code>(min-width:40em)</code> is matched and <code>geolocation</code> support is available. The Map javascript file has not been included as a script reference and will only be loaded once the conditions are met.</p>
         <div class="component">
             <div data-behavior="IMap" data-priority="2" data-conditions='{"geolocation":true,"media":"(min-width:40em)"}'>Map is inactive</div>
         </div>
@@ -116,7 +117,7 @@
             <div data-behavior="IStorageConsent" data-options='{"label":{"select":"Allow cookies"}}'>
                 Javascript needs to be enabled to control storage settings
             </div>
-            <div data-behavior="IClock" data-conditions='{"cookies":["all","incognito"]}'>ui.Clock is inactive</div>
+            <div data-behavior="IClock" data-conditions='{"cookies":["all","incognito"]}'>Clock is inactive</div>
         </div>
 
         <h2>Multiple Behavior Classes on a single element</h2>

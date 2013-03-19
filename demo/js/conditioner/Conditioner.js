@@ -275,7 +275,7 @@ var Conditioner = (function(Injector,BehaviorController) {
         return results;
     };
 
-    
+
     // Singleton structure
     var _instance;
 
