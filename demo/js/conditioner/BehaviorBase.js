@@ -25,7 +25,8 @@ Namespace.register('conditioner').BehaviorBase = (function() {
         this._element.setAttribute('data-initialized','true');
 
         // declare options as empty
-        this._options = this._options && options ? Options.merge(this._options,options) : {};
+        this._options = this._options || {};
+        this._options = options ? Options.merge(this._options,options) : this._options;
 
     };
 

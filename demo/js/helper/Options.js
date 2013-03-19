@@ -11,11 +11,11 @@ var Options = (function(){
          */
         merge:function(original,changes) {
 
-            if (!changes) {
+            if (typeof changes == 'undefined') {
                 return original;
             }
 
-            if (!original) {
+            if (typeof original == 'undefined') {
                 return changes;
             }
 
@@ -28,7 +28,7 @@ var Options = (function(){
                 }
 
                 // if no changes, result becomes original
-                if (!changes) {
+                if (typeof changes == 'undefined') {
                     result[key] = original[key];
                     continue;
                 }
@@ -53,7 +53,7 @@ var Options = (function(){
         _mergeOption:function(original,change) {
 
             if (typeof original != 'object') {
-                return change || original;
+                return typeof change == 'undefined' ? original : change;
             }
 
             return this.merge(original,change);

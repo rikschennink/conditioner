@@ -94,7 +94,7 @@ Namespace.register('conditioner').Injector = (function(){
                 }
                 else if (dependency == 'options') {
                     // is options, get from spec
-                    dependencies[i] = Options.merge(specification.options,options);
+                    dependencies[i] = options ? Options.merge(specification.options,options) : specification.options;
                 }
                 else if (_dependencies[dependency]) {
 
