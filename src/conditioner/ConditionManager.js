@@ -94,11 +94,8 @@ Namespace.register('conditioner').ConditionManager = (function() {
          */
         test:function() {
 
-            // start with suitable conditions
-            var suitable = true;
-
             // check all conditions on suitability
-            var condition,i,l = this._conditions.length;
+            var suitable = true,l = this._conditions.length,condition,i;
             for (i=0;i<l;i++) {
                 condition = this._conditions[i];
                 if (!condition.isSuitable()) {
@@ -146,7 +143,7 @@ Namespace.register('conditioner').ConditionManager = (function() {
         this._suitable = true;
         this._element = element;
         
-        if (typeof expectations === 'object' && !(expectations instanceof Array)) {
+        if (typeof expectations == 'object' && !(expectations instanceof Array)) {
             this._expectations = expectations;
         }
         else {

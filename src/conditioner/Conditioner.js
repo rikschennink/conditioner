@@ -117,11 +117,16 @@ var Conditioner = (function(Injector,BehaviorController) {
         }
 
         // register vars and get elements
-        var controllers = [],controller,
-            priorityList = [],priorityLevel,
-            behaviorId,behavior,
-            element,elements = context.querySelectorAll('[data-behavior]'),
-            i=0,l = elements.length;
+        var elements = context.querySelectorAll('[data-behavior]'),
+            l = elements.length,
+            i=0,
+            controllers = [],
+            priorityList = [],
+            controller,
+            behavior,
+            element,
+            specs,
+            spec;
 
         // if no elements do nothing
         if (!elements) {
@@ -135,15 +140,18 @@ var Conditioner = (function(Injector,BehaviorController) {
             element = elements[i];
 
             // skip element if already processed
-            if (element.getAttribute('data-processed')==='true') {
+            if (element.getAttribute('data-processed')=='true') {
                 continue;
             }
 
             // has been processed
             element.setAttribute('data-processed','true');
 
+
             // get specs
-            var spec,specs = this._getBehaviorSpecificationsByElement(element);
+            specs = this._getBehaviorSpecificationsByElement(element);
+
+            // apply specs
             while (spec = specs.shift()) {
 
                 // create controller instance
@@ -188,28 +196,50 @@ var Conditioner = (function(Injector,BehaviorController) {
     };
 
 
+    /**
+     * Reads specifications for behavior from the element attributes
+     *
+     * @method _getBehaviorSpecificationsByElement
+     * @param {Node} element - Element to parse
+     * @return {Array} behavior specifications
+     */
     p._getBehaviorSpecificationsByElement = function(element) {
 
-        var result = [],
-            behaviorIds = this._getElementAttributeAsObject(element,'data-behavior'),
-            conditions = this._getElementAttributeAsObject(element,'data-conditions'),
-            priorities = this._getElementAttributeAsObject(element,'data-priority'),
-            options = this._getElementAttributeAsObject(element,'data-options'),
-            i=0,l=behaviorIds.length;
+        var behavior = element.getAttribute('data-behavior'),
+            multiple = behavior.charAt(0) === '[';
 
+        // get multiple specs
+        if (multiple) {
 
-        for (;i<l;i++) {
+            var behaviorIds = this._getElementAttributeAsObject(element,'data-behavior'),
+                conditions = this._getElementAttributeAsObject(element,'data-conditions'),
+                options = this._getElementAttributeAsObject(element,'data-options'),
+                priorities = this._getElementAttributeAsObject(element,'data-priority'),
+                l=behaviorIds.length,
+                i=0,
+                result = [];
 
-            result.push({
-                'id':behaviorIds[i],
-                'conditions':conditions.length ? conditions[i] : conditions,
-                'options':options.length ? options[i] : options,
-                'priority':priorities.length ? priorities[i] : priorities
-            });
+            for (;i<l;i++) {
 
+                result.push({
+                    'id':behaviorIds[i],
+                    'conditions':conditions.length ? conditions[i] : conditions,
+                    'options':options.length ? options[i] : options,
+                    'priority':priorities.length ? priorities[i] : priorities
+                });
+
+            }
+            return result;
         }
 
-        return result;
+        // get single spec
+        return [{
+            'id':behavior,
+            'conditions':element.getAttribute('data-conditions'),
+            'options':element.getAttribute('data-options'),
+            'priority':element.getAttribute('data-priority')
+        }];
+
     };
 
 

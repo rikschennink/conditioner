@@ -69,7 +69,14 @@ document.addEventListener('DOMContentLoaded',function() {
         
         
         <h2>Examples</h2>
-        
+
+        <h3>Always enabled</h3>
+        <p>Clock will be always be active.</p>
+        <pre><code data-language="html">&lt;div data-behavior="IClock"&gt;Clock is inactive&lt;/div&gt;</code></pre>
+        <div class="component">
+            <div data-behavior="IClock">Clock is inactive</div>
+        </div>
+
         <h3>Based on Element dimensions</h3>
         <p>Clock will be active as long as the element has a minimum width of 350px.</p>
         <pre><code data-language="html">&lt;div data-behavior="IClock" data-conditions='{"element":{"minWidth":350}}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
@@ -153,8 +160,8 @@ document.addEventListener('DOMContentLoaded',function() {
 
         <script src="../src/conditioner/Injector.js"></script>
         <script src="../src/conditioner/ConditionManager.js"></script>
-        <script src="../src/conditioner/BehaviorController.js"></script>
         <script src="../src/conditioner/BehaviorBase.js"></script>
+        <script src="../src/conditioner/BehaviorController.js"></script>
         <script src="../src/conditioner/Conditioner.js"></script>
 
         <!-- Register default condition tests -->
@@ -247,6 +254,7 @@ document.addEventListener('DOMContentLoaded',function() {
                 });
 
             }());
+
 
         </script>
     </body>
