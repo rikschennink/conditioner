@@ -1,8 +1,8 @@
 (function(conditioner){
 
-    // override mediaquery test
     var _baseFontSize = null;
 
+    // override mediaquery test
     conditioner.registerTest(
         'media',
         function(handler,conditions) {
