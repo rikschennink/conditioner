@@ -1,67 +1,45 @@
-
+/**
+ * @module Options
+ */
 var Options = (function(){
 
     return {
 
         /**
          * Merges custom options passed for behavior with original behavior options
+         * http://stackoverflow.com/a/383245/1774081
          * @method merge
-         * @param {Object} original - The original options
-         * @param {Object} changes - The custom options
+         * @param {Object} obj1 - Object 1
+         * @param {Object} obj2 - Object 2
+         * @return {Object} result of merger
          */
-        merge:function(original,changes) {
+        merge:function(obj1, obj2) {
 
-            // if no changes return original
-            if (typeof changes == 'undefined') {
-                return original;
+            if (!obj1) {
+                return obj2;
             }
 
-            // if no original use changes as base
-            if (typeof original == 'undefined') {
-                return changes;
-            }
+            for (var p in obj2) {
+                if (!obj2.hasOwnProperty(p)){continue;}
+                try {
+                    // Property in destination object set; update its value.
+                    if (obj2[p].constructor==Object ) {
+                        obj1[p] = this.merge(obj1[p], obj2[p]);
 
-            // merge with custom generic options
-            var key,result = {};
-            for (key in original) {
+                    } else {
+                        obj1[p] = obj2[p];
 
-                if (!original.hasOwnProperty(key)) {
-                    continue;
+                    }
+
+                } catch(e) {
+                    // Property in destination object not set; create it and set its value.
+                    obj1[p] = obj2[p];
+
                 }
-
-                // if no changes, result becomes original
-                if (typeof changes == 'undefined') {
-                    result[key] = original[key];
-                    continue;
-                }
-
-                result[key] = this._mergeOption(original[key],changes[key]);
             }
 
-            // add new changes
-            for (key in changes) {
-
-                if (!changes.hasOwnProperty(key) || original.hasOwnProperty(key)) {
-                    continue;
-                }
-
-                result[key] = this._mergeOption(original[key],changes[key]);
-            }
-
-            return result;
-
-        },
-
-        _mergeOption:function(original,change) {
-
-            if (typeof original != 'object') {
-                return typeof change == 'undefined' ? original : change;
-            }
-
-            return this.merge(original,change);
-
+            return obj1;
         }
-
-    };
+    }
 
 }());
