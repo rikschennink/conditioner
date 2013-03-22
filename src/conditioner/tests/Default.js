@@ -71,7 +71,7 @@
     var _consecutiveMouseMoves = 0;
     var _consecutiveMouseMovesRequired = 2;
     conditioner.registerTest(
-        'mouse',
+        'pointer',
         function(handler) {
 
             var cleanEvents = function() {
