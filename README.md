@@ -1,11 +1,7 @@
-JavaScript Conditioner Framework
+ConditionerJS
 ================================
 
-Attention
---------------------------------
-
-This is currently a work in progress and very much a proof of concept
-
+**This is currently a work in progress and very much a proof of concept**
 
 Introduction
 --------------------------------
