@@ -1,7 +1,7 @@
 /**
  * @module BehaviorBase
  */
-define(['./Options'],function(Options) {
+define(['./MergeObjects'],function(updateObject) {
 
     'use strict';
 
@@ -24,7 +24,7 @@ define(['./Options'],function(Options) {
 
         // declare options as empty
         this._options = this._options || {};
-        this._options = options ? Options.merge(this._options,options) : this._options;
+        this._options = options ? updateObject(this._options,options) : this._options;
 
     };
 

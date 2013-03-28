@@ -1,7 +1,7 @@
 /**
  * @module Injector
  */
-define(['require','./Options'],function(require,Options){
+define(['require','./MergeObjects'],function(require,updateObject){
 
     var _argsRegex = /^function\s*[^\(]*\(\s*([^\)]*)\)/m,
         _dependencies = {};
@@ -99,7 +99,7 @@ define(['require','./Options'],function(require,Options){
                         catch(e) {}
                     }
 
-                    dependencies[i] = Options.merge(specification.options,options);
+                    dependencies[i] = updateObject(specification.options,options);
                 }
             }
 

@@ -1,5 +1,5 @@
 
-define(['conditioner/Observer','conditioner/Options'],function(Observer,Options){
+define(['conditioner/Observer','conditioner/MergeObjects'],function(Observer,mergeObjects){
 
     'use strict';
 
@@ -23,7 +23,7 @@ define(['conditioner/Observer','conditioner/Options'],function(Observer,Options)
     p.setOptions = function(options) {
 
         // sets initial options
-        this._options = Options.merge(this._options,options);
+        this._options = mergeObjects(this._options,options);
 
         this._setDefaultLevel();
     };

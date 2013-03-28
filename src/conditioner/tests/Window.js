@@ -1,5 +1,4 @@
 
-
 define(['./TestBase'],function(TestBase){
 
     var Test = TestBase.inherit(),

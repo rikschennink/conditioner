@@ -1,6 +1,8 @@
 
 define(function() {
 
+    'use strict';
+
     var _method = null;
     var el = document.body;
     if (el.matches) {
