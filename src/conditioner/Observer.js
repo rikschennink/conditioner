@@ -1,7 +1,7 @@
 /**
  * @module Observer
  */
-var Observer = (function(){
+define(function(){
 
     'use strict';
 
@@ -81,7 +81,7 @@ var Observer = (function(){
 
             // see if should be propagated
             if (obj._eventPropagationTarget) {
-                Observer.publish(obj._eventPropagationTarget,type,data);
+                this.publish(obj._eventPropagationTarget,type,data);
             }
 
         },
@@ -98,4 +98,4 @@ var Observer = (function(){
 
     };
 
-}());
+});

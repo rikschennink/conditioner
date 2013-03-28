@@ -1,9 +1,9 @@
-(function(conditioner){
+define(['../conditioner/TestManager'],function(TestManager){
 
     var _baseFontSize = null;
 
     // override mediaquery test
-    conditioner.registerTest(
+    TestManager.defineTest(
         'media',
         function(handler,conditions) {
 
@@ -59,4 +59,4 @@
         }
     );
 
-}(Conditioner.getInstance()));
+});
