@@ -95,9 +95,17 @@ document.addEventListener('DOMContentLoaded',function() {
 
         <h3>Based on Media Query</h3>
         <p>Clock will be active as long as media the media query is matched. Priority of this component has a value of minus 1, which causes it to be loaded after all other components have loaded.</p>
-        <pre><code data-language="html">&lt;div data-behavior="IClock" data-priority="-1" data-conditions='{"mediaquery":"(min-width:30em) and (max-width:40em)"}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
+        <pre><code data-language="html">&lt;div data-behavior="IClock" data-priority="-1" data-conditions='{"mediaquery":"(min-width:40em)"}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-behavior="IClock" data-priority="-1" data-conditions='{"mediaquery":"(min-width:30em) and (max-width:40em)"}'>Clock is inactive</div>
+            <div data-behavior="IClock" data-priority="-1" data-conditions='{"mediaquery":"(min-width:40em)"}'>Clock is inactive</div>
+        </div>
+
+
+        <h3>Based on Media Query</h3>
+        <p>Clock will be active as long as media the media query is matched. Priority of this component has a value of minus 1, which causes it to be loaded after all other components have loaded.</p>
+        <pre><code data-language="html">&lt;div data-behavior="IClock" data-priority="-1" data-conditions='{"mediaquery":"(min-width:30em) and (max-width:60em)"}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
+        <div class="component">
+            <div data-behavior="IClock" data-priority="-1" data-conditions='{"mediaquery":"(min-width:30em) and (max-width:60em)"}'>Clock is inactive</div>
         </div>
 
 
@@ -107,7 +115,6 @@ document.addEventListener('DOMContentLoaded',function() {
         <div class="component">
             <div data-behavior="IClock" data-conditions='{"pointer":true}'>Clock is inactive</div>
         </div>
-
 
 
         <h3>Based on multiple conditions</h3>
