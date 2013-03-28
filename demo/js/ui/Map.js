@@ -1,13 +1,18 @@
 
-Namespace.register('ui').Map = (function(){
+define(['conditioner/BehaviorBase'],function(BehaviorBase){
 
     "use strict";
 
     // reference to parent class
-    var _parent = conditioner.BehaviorBase;
+    var _parent = BehaviorBase;
 
     // Map Class
     var Map = function(element) {
+
+        // test if geolocation support, otherwise map won't function
+        if (!navigator.geolocation) {
+            return;
+        }
 
         // Call BehaviourBase constructor
         _parent.call(this,element);
@@ -57,4 +62,4 @@ Namespace.register('ui').Map = (function(){
 
     return Map;
 
-}());
+});

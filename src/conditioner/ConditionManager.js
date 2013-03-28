@@ -1,7 +1,7 @@
 /**
- * @module conditioner/ConditionManager
+ * @module ConditionManager
  */
-Namespace.register('conditioner').ConditionManager = (function() {
+define(['./TestManager','./Observer'],function(TestManager,Observer){
 
     'use strict';
 
@@ -30,8 +30,8 @@ Namespace.register('conditioner').ConditionManager = (function() {
             return;
         }
 
-        // set element reference
-        this._element = element;
+        // conditions supplied, conditions are now unsuitable by default
+        this._suitable = false;
 
         // if expected is in string format try to parse as JSON
         if (typeof expected == 'string') {
@@ -44,33 +44,29 @@ Namespace.register('conditioner').ConditionManager = (function() {
             }
         }
 
+        // event bind
+        this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
+
         // set properties
-        this._conditions = [];
+        this._tests = [];
 
         // set conditions array
-        var key,condition,conditioner = Conditioner.getInstance();
+        this._count = 0;
+
+        // parse expected
+        var key;
         for (key in expected) {
 
-            if (!expected.hasOwnProperty(key)) {
-                continue;
-            }
+            // skip if not own property
+            if (!expected.hasOwnProperty(key)) {continue;}
 
-            // define condition
-            condition = new Condition(
-                conditioner.getTestByKey(key),
-                expected[key],
-                this._element
-            );
+            // up count
+            this._count++;
 
-            // listen to condition changes
-            Observer.subscribe(condition,'change',this._onConditionsChanged.bind(this));
+            // load test for expectation with supplied key
+            this._loadTest(key,expected,element);
 
-            // add to list of managed conditions for this element
-            this._conditions.push(condition);
         }
-
-        // test conditions
-        this.test();
     };
 
 
@@ -80,10 +76,77 @@ Namespace.register('conditioner').ConditionManager = (function() {
 
 
         /**
+         * Called to load a test
+         * @method _loadTest
+         * @param {String} key - Key related to the test to load
+         * @param {Object} expected - Expected value for this test
+         * @param {Node} element - Element related to this test
+         */
+        _loadTest:function(key,expected,element) {
+
+            var self = this;
+
+            TestManager.loadTestByKey(key,function(Test){
+
+                //condition = new Condition(
+                var test = new Test(expected[key],element);
+
+                // add to tests array
+                self._tests.push(test);
+
+                // another test loaded
+                self._onLoadTest();
+
+            });
+        },
+
+
+        /**
+         * Called when a test was loaded
+         * @method _onLoadTest
+         */
+        _onLoadTest:function() {
+
+            // lower count if test loaded
+            this._count--;
+
+            // if count reaches zero all tests have been loaded
+            if (this._count==0) {
+                this._onReady();
+            }
+
+        },
+
+        /**
+         * Called when all tests are ready
+         * @method _onReady
+         */
+        _onReady:function() {
+
+            var l = this._tests.length,test,i;
+            for (i=0;i<l;i++) {
+                test = this._tests[i];
+
+                // arrange test
+                test.arrange();
+
+                // execute test
+                test.assert();
+
+                // listen to changes
+                Observer.subscribe(test,'change',this._onResultsChangedBind);
+            }
+
+            // test current state
+            this.test();
+        },
+
+
+        /**
          * Called when a condition has changed
          * @method _onConditionsChanged
          */
-        _onConditionsChanged:function() {
+        _onTestResultsChanged:function() {
             this.test();
         },
 
@@ -95,10 +158,10 @@ Namespace.register('conditioner').ConditionManager = (function() {
         test:function() {
 
             // check all conditions on suitability
-            var suitable = true,l = this._conditions.length,condition,i;
+            var suitable = true,l = this._tests.length,test,i;
             for (i=0;i<l;i++) {
-                condition = this._conditions[i];
-                if (!condition.isSuitable()) {
+                test = this._tests[i];
+                if (!test.succeeds()) {
                     suitable = false;
                     break;
                 }
@@ -109,6 +172,7 @@ Namespace.register('conditioner').ConditionManager = (function() {
                 this._suitable = suitable;
                 Observer.publish(this,'change');
             }
+
         },
 
 
@@ -122,107 +186,6 @@ Namespace.register('conditioner').ConditionManager = (function() {
     };
 
 
-
-
-
-
-
-    /**
-    * Condition
-    *
-    * @class Condition
-    *
-    * @constructor
-    * @param {Object} test
-    * @param {Object} expectations
-    * @param {Node} element
-    */
-    var Condition = function(test,expectations,element) {
-
-        this._test = test;
-        this._suitable = true;
-        this._element = element;
-        
-        if (typeof expectations == 'object' && !(expectations instanceof Array)) {
-            this._expectations = expectations;
-        }
-        else {
-            this._expectations = {'value':expectations};
-        }
-
-        // arrange test
-        this._arrange();
-    };
-
-    Condition.prototype = {
-
-        _arrange:function() {
-
-            // get trigger setup reference for this condition
-            var arrange = this._test.arrange;
-
-            // if a trigger setup was found, setup triggers
-            if (arrange) {
-                arrange(
-
-                    // test callback
-                    this._assert.bind(this),
-
-                    // expectations for the test
-                    this._expectations,
-
-                    // the element to setup the trigger on (if necessary)
-                    this._element
-
-                );
-            }
-            else {
-                this._assert();
-            }
-
-        },
-
-        _assert:function() {
-
-            var suitable = true,
-                key,value,assert,
-                params = Array.prototype.slice.call(arguments),
-                valueIndex = params.length,
-                test = this._test;
-
-            for (key in this._expectations) {
-
-                if (!this._expectations.hasOwnProperty(key)) {
-                    continue;
-                }
-
-                value = this._expectations[key];
-
-                assert = typeof test.assert === 'function' ? test.assert : test.assert[key];
-
-                // set expected value
-                params[valueIndex] = value;
-
-                // call test method for this condition
-                if (!assert.apply(this,params)) {
-                    suitable = false;
-                    break;
-                }
-            }
-
-            if (this._suitable != suitable) {
-                this._suitable = suitable;
-                Observer.publish(this,'change');
-            }
-
-        },
-
-        isSuitable:function() {
-            return this._suitable;
-        }
-
-    };
-
     return ConditionManager;
 
-}());
+});

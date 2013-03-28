@@ -1,11 +1,7 @@
 
-
-Namespace.register('security').StorageConsentGuard = (function(){
+define(['conditioner/Observer','conditioner/Options'],function(Observer,Options){
 
     'use strict';
-
-    // reference to singleton
-    var _instance;
 
     // StorageConsentGuard
     var StorageConsentGuard = function() {
@@ -55,15 +51,15 @@ Namespace.register('security').StorageConsentGuard = (function(){
         Observer.publish(this,'change',this._level);
     };
 
-    return {
 
+    // reference to singleton
+    var _instance;
+
+    return {
         getInstance:function() {
             if (!_instance) { _instance = new StorageConsentGuard(); }
             return _instance;
         }
-
     };
 
-}());
-
-
+});

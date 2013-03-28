@@ -1,34 +1,10 @@
+
 /**
- * @module conditioner/Conditioner
+ * @module Conditioner
  */
-var Conditioner = (function(Injector,BehaviorController) {
+define(['./Injector','./BehaviorController','./TestManager'],function(Injector,BehaviorController,TestManager) {
 
     'use strict';
-
-
-    /**
-     * Tests
-     */
-    var Tests = {
-
-        _tests:[],
-
-        registerTest:function(key,arrange,assert) {
-
-            var test = this._tests[key] = {};
-                test.arrange = arrange;
-                test.assert = assert;
-
-
-        },
-
-        getTestByKey:function(key) {
-            return this._tests[key];
-        }
-
-    };
-
-
 
     /**
      * @class Conditioner (Singleton)
@@ -41,65 +17,29 @@ var Conditioner = (function(Injector,BehaviorController) {
     var p = Conditioner.prototype;
 
 
-
-
-
     /**
-     * @method registerTest
-     * @param {string} key - Test identifier
-     * @param {function} arrange - Test arrange method
-     * @param {function} assert - Test assert method
+     * @method registerTests, shortcut method to TestManager.registerTest()
      */
-    p.registerTest = function(key,arrange,assert) {
-
-        if (!key) {
-            throw new Error('Conditioner.registerTest(key,arrange,assert): "key" is a required parameter.');
+    p.registerTests = function() {
+        var test,i=0,l=arguments.length;
+        for (;i<l;i++) {
+            test = arguments[i];
+            TestManager.registerTest(test.id,test.path);
         }
-
-        Tests.registerTest(key,arrange,assert);
-    };
-
-    /**
-     * @method getTestByKey
-     * @param {string} key - Test identifier
-     * @return {Object} a Test
-     */
-    p.getTestByKey = function(key) {
-
-        if (!key) {
-            throw new Error('Conditioner.getTestByKey(key): "key" is a required parameter.');
-        }
-
-        return Tests.getTestByKey(key);
     };
 
 
-
-
-
     /**
-     * Register multiple dependencies
+     * Register multiple dependencies, shortcut method to Injector.registerDependency()
      * @method registerDependencies
      */
     p.registerDependencies = function() {
         var dependency,i=0,l=arguments.length;
         for (;i<l;i++) {
             dependency = arguments[i];
-            Injector.registerDependency(dependency.id,dependency.uri,dependency.options);
+            Injector.registerDependency(dependency.id,dependency.path,dependency.options);
         }
     };
-
-
-    /**
-     * @method registerDependency
-     * @param {String} id - identifier (interface) of Class
-     * @param {String} uri - class path
-     * @param {Object} options - options to pass to instance
-     */
-    p.registerDependency = function(id,uri,options) {
-        Injector.registerDependency(id,uri,options);
-    };
-
 
 
     /**
@@ -146,7 +86,6 @@ var Conditioner = (function(Injector,BehaviorController) {
 
             // has been processed
             element.setAttribute('data-processed','true');
-
 
             // get specs
             specs = this._getBehaviorSpecificationsByElement(element);
@@ -323,4 +262,4 @@ var Conditioner = (function(Injector,BehaviorController) {
 
     };
 
-}(conditioner.Injector,conditioner.BehaviorController));
+});

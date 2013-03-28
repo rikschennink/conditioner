@@ -10,13 +10,15 @@
         <link href="css/rainbow/github.css" rel="stylesheet">
         <link href="css/styles.css" rel="stylesheet">
 
+        <script src="js/lib/require.js"></script>
+
     </head>
     <body>
-
 
         <h1>Conditioner Demo</h1>
         
         <h2>Setup</h2>
+
 
 
 
@@ -30,7 +32,7 @@
 
         <h4>data-conditions</h4>
         <p>The conditions attributes allows you to control the conditions under which behavior is loaded. For instance, below is an example condition which triggers the behavior once the window is at least 450 pixels wide.</p>
-        <pre><code data-language="html">&lt;div data-behavior="IClock" data-conditions='{"window":{"minWidth":450}}'&gt; ... &lt;/div&gt;</code></pre>
+        <pre><code data-language="html">&lt;div data-behavior="IClock" data-conditions='{"window":{"min-width":450}}'&gt; ... &lt;/div&gt;</code></pre>
 
         <h4>data-options</h4>
         <p>The options attribute allows you to set specific options for the behavior, these options are then passed to the behavior constructor the moment the Class is initialized.</p>
@@ -55,19 +57,16 @@ demo.registerDependencies(
     {
         'id':'IClock',
         'uri':'ui.Clock'
-    },
-    {
-        'id':'IMap',
-        'uri':'ui.Map'
     }
 );
 
 // wait till dom ready
 document.addEventListener('DOMContentLoaded',function() {
     demo.applyBehavior(document);
-});</code></pre>
-        
-        
+},false);</code></pre>
+
+
+
         <h2>Examples</h2>
 
         <h3>Always enabled</h3>
@@ -77,11 +76,28 @@ document.addEventListener('DOMContentLoaded',function() {
             <div data-behavior="IClock">Clock is inactive</div>
         </div>
 
+
         <h3>Based on Element dimensions</h3>
         <p>Clock will be active as long as the element has a minimum width of 350px.</p>
         <pre><code data-language="html">&lt;div data-behavior="IClock" data-conditions='{"element":{"minWidth":350}}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component" style="width:50.00%">
-            <div data-behavior="IClock" data-conditions='{"element":{"minWidth":350}}'>Clock is inactive</div>
+            <div data-behavior="IClock" data-conditions='{"element":{"min-width":350}}'>Clock is inactive</div>
+        </div>
+
+
+        <h3>Based on multiple window dimensions</h3>
+        <p>Clock will be active as long as window width falls between 450px and 750px. Priority of this component has a value of 1 which causes it to be loaded before all default components.</p>
+        <pre><code data-language="html">&lt;div data-priority="1" data-conditions='{"window":{"minWidth":450,"maxWidth":750}}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
+        <div class="component">
+            <div data-behavior="IClock" data-priority="1" data-conditions='{"window":{"min-width":450,"max-width":750}}'>Clock is inactive</div>
+        </div>
+
+
+        <h3>Based on Media Query</h3>
+        <p>Clock will be active as long as media the media query is matched. Priority of this component has a value of minus 1, which causes it to be loaded after all other components have loaded.</p>
+        <pre><code data-language="html">&lt;div data-behavior="IClock" data-priority="-1" data-conditions='{"mediaquery":"(min-width:30em) and (max-width:40em)"}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
+        <div class="component">
+            <div data-behavior="IClock" data-priority="-1" data-conditions='{"mediaquery":"(min-width:30em) and (max-width:40em)"}'>Clock is inactive</div>
         </div>
 
 
@@ -93,41 +109,12 @@ document.addEventListener('DOMContentLoaded',function() {
         </div>
 
 
-        <h3>Based on multiple window dimensions</h3>
-        <p>Clock will be active as long as window width falls between 450px and 750px. Priority of this component has a value of 1 which causes it to be loaded before all default components.</p>
-        <pre><code data-language="html">&lt;div data-priority="1" data-conditions='{"window":{"minWidth":450,"maxWidth":750}}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
-        <div class="component">
-            <div data-behavior="IClock" data-priority="1" data-conditions='{"window":{"minWidth":450,"maxWidth":750}}'>Clock is inactive</div>
-        </div>
-
-
-        <h3>Based on Media Query</h3>
-        <p>Clock will be active as long as media the media query is matched. Priority of this component has a value of minus 1, which causes it to be loaded after all other components have loaded.</p>
-        <pre><code data-language="html">&lt;div data-behavior="IClock" data-priority="-1" data-conditions='{"media":"(min-width:30em) and (max-width:40em)"}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
-        <div class="component">
-            <div data-behavior="IClock" data-priority="-1" data-conditions='{"media":"(min-width:30em) and (max-width:40em)"}'>Clock is inactive</div>
-        </div>
-
 
         <h3>Based on multiple conditions</h3>
-        <p>Map will be active as long as media query (min-width:40em) is matched and geolocation support is available. The Map javascript file has not been included as a script reference and will only be loaded once the conditions are met.</p>
-        <pre><code data-language="html">&lt;div data-behavior="IMap" data-priority="2" data-conditions='{"geolocation":true,"media":"(min-width:40em)"}'&gt;Map is inactive&lt;/div&gt;</code></pre>
+        <p>Map will be active as long as there is a network connection and the media query (min-width:40em) is matched. The Map javascript file has not been included as a script reference and will only be loaded once the conditions are met.</p>
+        <pre><code data-language="html">&lt;div data-behavior="IMap" data-priority="2" data-conditions='{"connection":"any","mediaquery":"(min-width:40em)"}'&gt;Map is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-behavior="IMap" data-priority="2" data-conditions='{"geolocation":true,"media":"(min-width:40em)"}'>Map is inactive</div>
-        </div>
-
-
-        <h3>Based on custom conditions</h3>
-        <p>Clock will be activated the moment cookies are allowed.</p>
-        <pre><code data-language="html">&lt;div data-behavior="IStorageConsent" data-options='{"label":{"select":"Allow cookies"}}'&gt;Javascript needs to be enabled to control storage settings&lt;/div&gt;</code></pre>
-        <pre><code data-language="html">&lt;div data-behavior="IClock" data-conditions='{"cookies":["all","incognito"]}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
-        <div class="component">
-            <div data-behavior="IStorageConsent" data-options='{"label":{"select":"Allow cookies"}}'>
-                Javascript needs to be enabled to control storage settings
-            </div>
-        </div>
-        <div class="component">
-            <div data-behavior="IClock" data-conditions='{"cookies":["all","incognito"]}'>Clock is inactive</div>
+            <div data-behavior="IMap" data-priority="2" data-conditions='{"connection":"any","mediaquery":"(min-width:40em)"}'>Map is inactive</div>
         </div>
 
 
@@ -135,13 +122,31 @@ document.addEventListener('DOMContentLoaded',function() {
         <p>Date will be active as long as element has a maximum width of 300px, if the element width gets above 400px the Clock becomes active.</p>
         <pre><code data-language="html">&lt;div data-behavior='["IClock","IClock"]' data-conditions='[{"element":{"maxWidth":300}},{"element":{"minWidth":400}}]' data-options='[{"time":false},{"time":true}]' data-priority="[1,2]"&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component" style="width:50.00%">
-            <div data-behavior='["IClock","IClock"]' data-conditions='[{"element":{"maxWidth":300}},{"element":{"minWidth":400}}]' data-options='[{"time":false},{"time":true}]' data-priority="[1,2]">Clock is inactive</div>
+            <div data-behavior='["IClock","IClock"]' data-conditions='[{"element":{"max-width":300}},{"element":{"min-width":400}}]' data-options='[{"time":false},{"time":true}]' data-priority="[1,2]">Clock is inactive</div>
+        </div>
+
+
+        <h3>Based on custom conditions</h3>
+        <p>Clock will be activated the moment cookies are allowed.</p>
+        <pre><code data-language="html">&lt;div data-behavior="IStorageConsent" data-options='{"label":{"select":"Allow cookies"}}'&gt;Javascript needs to be enabled to control storage settings&lt;/div&gt;</code></pre>
+        <div class="component">
+            <div data-behavior="IStorageConsent" data-options='{"label":{"select":"Allow cookies"}}'>
+                Javascript needs to be enabled to control storage settings
+            </div>
+        </div>
+        <pre><code data-language="html">&lt;div data-behavior="IClock" data-conditions='{"cookies":["all"]}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
+        <div class="component">
+            <div data-behavior="IClock" data-conditions='{"cookies":["all"]}'>Clock is inactive</div>
+        </div>
+
+        <pre><code data-language="html">&lt;div data-behavior="IClock" data-conditions='{"cookies":["all","incognito"]}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
+        <div class="component">
+            <div data-behavior="IClock" data-conditions='{"cookies":["all","incognito"]}'>Clock is inactive</div>
         </div>
 
 
 
-
-        <!-- Shims -->
+        <!-- Shims to get this working on older browsers -->
         <script src="js/shim/JSON.js"></script>
         <script src="js/shim/ContentLoaded.js"></script>
         <script src="js/shim/EventListener.js"></script>
@@ -151,83 +156,62 @@ document.addEventListener('DOMContentLoaded',function() {
         <script src="js/shim/matchMedia/matchMedia.js"></script>
         <script src="js/shim/matchMedia/matchMedia.addListener.js"></script>
 
-
-        <!-- Conditioner -->
-        <script src="../src/helper/Namespace.js"></script>
-        <script src="../src/helper/Observer.js"></script>
-        <script src="../src/helper/ScriptLoader.js"></script>
-        <script src="../src/helper/Options.js"></script>
-
-        <script src="../src/conditioner/Injector.js"></script>
-        <script src="../src/conditioner/ConditionManager.js"></script>
-        <script src="../src/conditioner/BehaviorBase.js"></script>
-        <script src="../src/conditioner/BehaviorController.js"></script>
-        <script src="../src/conditioner/Conditioner.js"></script>
-
-        <!-- Register default condition tests -->
-        <script src="../src/conditioner/tests/Default.js"></script>
-
-
-        <!-- Register fallback tests -->
-        <!--[if lte IE 8]>
-        <script src="../src/conditioner/tests/Degraded.js"></script>
-        <![endif]-->
-
-
-
-        <!-- make code pretty -->
+        <!-- make demo code pretty -->
         <script src="js/lib/rainbow/rainbow.min.js"></script>
         <script src="js/lib/rainbow/html.js"></script>
         <script src="js/lib/rainbow/generic.js"></script>
         <script src="js/lib/rainbow/javascript.js"></script>
 
-        <!-- StorageConsentGuard Class is in use by StorageConsentSelect -->
-        <script src="js/security/StorageConsentGuard.js"></script>
-
-        <!-- UI Classes-->
-        <script src="js/ui/Clock.js"></script>
-        <script src="js/ui/StorageConsentSelect.js"></script>
-
-
-
         <script>
 
-            (function(){
+            // todo: how to get options to singleton?
+            // todo: domready?
+            // todo: merge and compress conditioner framework, how to setup files
+            // todo: how to deal with requirejs dependency
+            // todo: rename Options to Objects.merge()?
+            // todo: what to do with Observer/Options/matchesSelector
+            // todo: how to handle fallback to ie8 (degraded mediaquery tests)
 
-                // configure your javascript file location
-                Namespace.baseURL = 'js/';
+            // set requirejs default options
+            requirejs.config({
+                baseUrl: 'js',
+                paths:{
+                    'conditioner':'../../src/conditioner'
+                }
+            });
+
+            // load Conditioner and default set of Tests
+            requirejs(['conditioner/Conditioner'],
+
+                function(Conditioner){
 
                 // get instance of conditioner
                 var demo = Conditioner.getInstance();
 
-                // register concrete classes
+                // register modules
                 demo.registerDependencies(
                     {
-                        'id':'IClearField',
-                        'uri':'ui.ClearField'
-                    },
-                    {
                         'id':'IMap',
-                        'uri':'ui.Map'
+                        'path':'ui/Map'
                     },
                     {
                         'id':'IClock',
-                        'uri':'ui.Clock'
+                        'path':'ui/Clock'
                     },
                     {
                         'id':'IStorageConsent',
-                        'uri':'ui.StorageConsentSelect',
+                        'path':'ui/StorageConsentSelect',
                         'options':{
                             'label':{
                                 'level':{
-                                    'incognito':'No tracking'
+                                    'incognito':'Incognito'
                                 }
                             }
                         }
                     },
                     {
                         'id':'IStorageGuard',
-                        'uri':'security.StorageConsentGuard',
+                        'path':'security/StorageConsentGuard',
                         'options':{
                             'levels':['all','incognito','none'],
                             'initial':'none'
@@ -235,25 +219,16 @@ document.addEventListener('DOMContentLoaded',function() {
                     }
                 );
 
-                // register additional 'custom' test to handle cookie availability
-                demo.registerTest(
-                    'cookies',
-                    function(handler) {
-                        var guard = security.StorageConsentGuard.getInstance();
-                        Observer.subscribe(guard,'change',function(state){handler(state);});
-                        handler(guard.getActiveLevel());
-                    },
-                    function(current,expected) {
-                        return expected.indexOf(current) > -1;
-                    }
-                );
-
-                // wait till dom ready
-                document.addEventListener('DOMContentLoaded',function() {
-                    demo.applyBehavior(document);
+                // register custom cookie test
+                demo.registerTests({
+                    'id':'cookies',
+                    'path':'./tests/Cookies'
                 });
 
-            }());
+                // apply behavior to document scope
+                demo.applyBehavior(document);
+
+            });
 
 
         </script>

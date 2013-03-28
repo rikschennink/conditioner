@@ -1,11 +1,9 @@
 /**
- * @module conditioner/BehaviorBase
+ * @module BehaviorBase
  */
-Namespace.register('conditioner').BehaviorBase = (function() {
+define(['./Options'],function(Options) {
 
     'use strict';
-
-
 
     /**
      * @class BehaviorBase
@@ -37,11 +35,9 @@ Namespace.register('conditioner').BehaviorBase = (function() {
      * @method _unload
      */
     BehaviorBase.prototype._unload = function() {
-
         this._element.removeAttribute('data-initialized');
-
     };
 
     return BehaviorBase;
 
-}());
+});

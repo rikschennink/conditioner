@@ -1,13 +1,13 @@
 
-Namespace.register('ui').StorageConsentSelect = (function(){
+define(['conditioner/BehaviorBase','../security/StorageConsentGuard'],function(BehaviorBase,IStorageGuard){
 
     'use strict';
 
     // reference to parent class
-    var _parent = conditioner.BehaviorBase;
+    var _parent = BehaviorBase;
 
     // StorageConsentSelect Class
-    var StorageConsentSelect = function(element,options,IStorageGuard) {
+    var StorageConsentSelect = function(element,options) {
 
         // default options for this class
         this._options = {
@@ -20,16 +20,11 @@ Namespace.register('ui').StorageConsentSelect = (function(){
             }
         };
 
-        // set storage guard reference
-        if (!IStorageGuard) {
-            throw new Error('StorageConsentSelect(element,options,IStorageGuard): IStorageGuard is a required attribute');
-        }
-
         // Call BehaviourBase constructor
         _parent.call(this,element,options);
 
         // set reference to storage guard
-        this._storageGuard = IStorageGuard;
+        this._storageGuard = IStorageGuard.getInstance();
 
         // store inner HTML
         this._inner = this._element.innerHTML;
@@ -82,4 +77,4 @@ Namespace.register('ui').StorageConsentSelect = (function(){
 
     return StorageConsentSelect;
 
-}());
+});

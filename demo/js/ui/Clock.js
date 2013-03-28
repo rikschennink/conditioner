@@ -1,10 +1,10 @@
 
-Namespace.register('ui').Clock = (function(){
+define(['conditioner/BehaviorBase'],function(BehaviorBase){
 
     'use strict';
 
     // reference to parent class
-    var _parent = conditioner.BehaviorBase;
+    var _parent = BehaviorBase;
 
     // Clock Class
     var Clock = function(element,options) {
@@ -66,4 +66,4 @@ Namespace.register('ui').Clock = (function(){
 
     return Clock;
 
-}());
+});

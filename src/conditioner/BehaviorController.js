@@ -1,43 +1,9 @@
 /**
- * @module conditioner/BehaviorController
+ * @module BehaviorController
  */
-Namespace.register('conditioner').BehaviorController = (function(Injector,ConditionManager) {
+define(['./Injector','./ConditionManager','./Observer','./MatchesSelector'],function(Injector,ConditionManager,Observer,matchesSelector) {
 
     'use strict';
-
-
-
-    /* matches helper */
-    var _matchesMethod = null;
-    var _matchesSelector = function(element,selector) {
-
-        if (!element) {
-            return false;
-        }
-
-        if (!_matchesMethod) {
-            var el = document.body;
-            if (el.matches) {
-                _matchesMethod = 'matches';
-            }
-            else if (el.webkitMatchesSelector) {
-                _matchesMethod = 'webkitMatchesSelector';
-            }
-            else if (el.mozMatchesSelector) {
-                _matchesMethod = 'mozMatchesSelector';
-            }
-            else if (el.msMatchesSelector) {
-                _matchesMethod = 'msMatchesSelector';
-            }
-            else if (el.oMatchesSelector) {
-                _matchesMethod = 'oMatchesSelector';
-            }
-        }
-
-        return element[_matchesMethod](selector);
-    };
-
-
 
     /**
      * Constructs BehaviorController objects.
@@ -175,7 +141,7 @@ Namespace.register('conditioner').BehaviorController = (function(Injector,Condit
             }
 
             // check if matches query
-            if (_matchesSelector(this._options.target,query)) {
+            if (matchesSelector(this._options.target,query)) {
                 return true;
             }
         }
@@ -206,4 +172,4 @@ Namespace.register('conditioner').BehaviorController = (function(Injector,Condit
 
     return BehaviorController;
 
-}(conditioner.Injector,conditioner.ConditionManager));
+});

@@ -4,7 +4,7 @@ JavaScript Conditioner Framework
 Attention
 --------------------------------
 
-This is currently a work in progress
+This is currently a work in progress and very much a proof of concept
 
 
 Introduction
