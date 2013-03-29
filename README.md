@@ -13,7 +13,7 @@ In short, supose you have a Google Maps Class which turns a link to Google Maps 
 Load the UI Map Class the moment the supplied media query `(min-width:30em)` is met.
 
 ```html
-<div data-behavior="IMap" data-conditions='{"media":"(min-width:30em)"}'>
+<div data-behavior="IMap" data-conditions='{"mediaquery":"(min-width:30em)"}'>
     The map is currently inactive
 </div>
 ```
