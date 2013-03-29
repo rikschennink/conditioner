@@ -17,9 +17,24 @@ define(['require','./MergeObjects'],function(require,updateObject){
          */
         registerDependency:function(id,path,options) {
 
+            // setup mapping
+            var map = {};
+                map[id] = path;
+
+            // setup options
+            var config = {};
+                config[path] = options;
+
+            // update requirejs config
+            requirejs.config({
+                map:{
+                    '*':map
+                },
+                config:config
+            });
+
             // set dependencies
             _dependencies[id] = {
-                'path':path,
                 'options':options || {},
                 'dependencies':null,
                 'klass':null
@@ -48,7 +63,8 @@ define(['require','./MergeObjects'],function(require,updateObject){
             // if class for this spec is not known yet, find it
             if (!specification.klass) {
 
-                require([specification.path],function(klass){
+                require([id],function(klass){
+                //require([specification.path],function(klass){
 
                     if (!klass) {
                         return;

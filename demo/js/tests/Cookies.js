@@ -1,5 +1,5 @@
 
-define(['conditioner/tests/TestBase','conditioner/Observer','security/StorageConsentGuard'],function(TestBase,Observer,StorageConsentGuard){
+define(['conditioner/tests/TestBase','conditioner/Observer','../security/StorageConsentGuard'],function(TestBase,Observer,StorageConsentGuard){
 
     var Test = TestBase.inherit(),
         p = Test.prototype;

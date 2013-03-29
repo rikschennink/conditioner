@@ -1,5 +1,5 @@
 
-define(['conditioner/Observer','conditioner/MergeObjects'],function(Observer,mergeObjects){
+define(['module','conditioner/Observer','conditioner/MergeObjects'],function(module,Observer,mergeObjects){
 
     'use strict';
 
@@ -15,12 +15,20 @@ define(['conditioner/Observer','conditioner/MergeObjects'],function(Observer,mer
             'levels':['all','none']
         };
 
+        // set options
+        this.setOptions(module.config());
+
+        // set default level
         this._setDefaultLevel();
     };
 
     var p = StorageConsentGuard.prototype;
 
     p.setOptions = function(options) {
+
+        if (!options) {
+            return;
+        }
 
         // sets initial options
         this._options = mergeObjects(this._options,options);
