@@ -10,10 +10,10 @@ Conditioner is a JavaScript framework build to help you decouple your JavaScript
 
 In short, supose you have a Google Maps Class which turns a link to Google Maps into a active Google Map. It would only make sense to activate this UI element when you've got enough real estate.
 
-Load the UI Map Class the moment the supplied media query `(min-width:30em)` is met.
+Load the UI Map module the moment the supplied media query `(min-width:30em)` is met.
 
 ```html
-<div data-behavior="IMap" data-conditions='{"mediaquery":"(min-width:30em)"}'>
+<div data-module="IMap" data-conditions='{"mediaquery":"(min-width:30em)"}'>
     The map is currently inactive
 </div>
 ```
@@ -26,7 +26,7 @@ var myConditioner = Conditioner.getInstance();
 myConditioner.registerDependencies(
     {
         'id':'IMap',
-        'uri':'ui.Map'
+        'path':'ui/Map'
     }
 );
 
