@@ -2,7 +2,7 @@
 /**
  * @module Conditioner
  */
-define(['./Injector','./BehaviorController','./TestManager'],function(Injector,BehaviorController,TestManager) {
+define(['./Injector','./BehaviorController','./TestManager','./MergeObjects'],function(Injector,BehaviorController,TestManager,mergeObjects) {
 
     'use strict';
 
@@ -11,10 +11,31 @@ define(['./Injector','./BehaviorController','./TestManager'],function(Injector,B
      * @constructor
      */
     var Conditioner = function() {
+
         this._controllers = [];
+
+        this._options = {
+            'attribute':{
+                'module':'data-module',
+                'conditions':'data-conditions',
+                'options':'data-options',
+                'priority':'data-priority'
+            }
+        }
     };
 
     var p = Conditioner.prototype;
+
+
+    /**
+     * @method setOptions, set custom options
+     * @param {Object} options - options to override
+     */
+    p.setOptions = function(options) {
+
+        this._options = mergeObjects(this._options,options);
+
+    };
 
 
     /**
@@ -57,13 +78,12 @@ define(['./Injector','./BehaviorController','./TestManager'],function(Injector,B
         }
 
         // register vars and get elements
-        var elements = context.querySelectorAll('[data-behavior]'),
+        var elements = context.querySelectorAll('[' + this._options.attribute.module + ']'),
             l = elements.length,
             i=0,
             controllers = [],
             priorityList = [],
             controller,
-            behavior,
             element,
             specs,
             spec;
@@ -80,7 +100,7 @@ define(['./Injector','./BehaviorController','./TestManager'],function(Injector,B
             element = elements[i];
 
             // skip element if already processed
-            if (element.getAttribute('data-processed')=='true') {
+            if (element.getAttribute('data-processed') == 'true') {
                 continue;
             }
 
@@ -144,16 +164,16 @@ define(['./Injector','./BehaviorController','./TestManager'],function(Injector,B
      */
     p._getBehaviorSpecificationsByElement = function(element) {
 
-        var behavior = element.getAttribute('data-behavior'),
+        var behavior = element.getAttribute(this._options.attribute.module),
             multiple = behavior.charAt(0) === '[';
 
         // get multiple specs
         if (multiple) {
 
-            var behaviorIds = this._getElementAttributeAsObject(element,'data-behavior'),
-                conditions = this._getElementAttributeAsObject(element,'data-conditions'),
-                options = this._getElementAttributeAsObject(element,'data-options'),
-                priorities = this._getElementAttributeAsObject(element,'data-priority'),
+            var behaviorIds = this._getElementAttributeAsObject(element,this._options.attribute.module),
+                conditions = this._getElementAttributeAsObject(element,this._options.attribute.conditions),
+                options = this._getElementAttributeAsObject(element,this._options.attribute.options),
+                priorities = this._getElementAttributeAsObject(element,this._options.attribute.priority),
                 l=behaviorIds.length,
                 i=0,
                 result = [];
@@ -174,9 +194,9 @@ define(['./Injector','./BehaviorController','./TestManager'],function(Injector,B
         // get single spec
         return [{
             'id':behavior,
-            'conditions':element.getAttribute('data-conditions'),
-            'options':element.getAttribute('data-options'),
-            'priority':element.getAttribute('data-priority')
+            'conditions':element.getAttribute(this._options.attribute.conditions),
+            'options':element.getAttribute(this._options.attribute.options),
+            'priority':element.getAttribute(this._options.attribute.priority)
         }];
 
     };
