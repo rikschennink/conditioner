@@ -1,6 +1,3 @@
-/**
- * @module TestManager
- */
 define(function(){
 
     'use strict';

@@ -1,6 +1,3 @@
-/**
- * @module Injector
- */
 define(['require','./MergeObjects'],function(require,updateObject){
 
     'use strict';
@@ -52,7 +49,7 @@ define(['require','./MergeObjects'],function(require,updateObject){
         getSpecification:function(id) {
 
             // if no id supplied throw error
-            if (!context) {
+            if (!id) {
                 throw new Error('DependencyManager.getSpecification(id): "id" is a required parameter.');
             }
 

@@ -1,20 +1,9 @@
-/**
- * @module ConditionManager
- */
 define(['./TestManager','./Observer'],function(TestManager,Observer){
 
     'use strict';
 
     /**
      * Constructs ConditionManager objects.
-     *
-     *  data-conditions JSON specification
-     *  {
-     *      "<group>":{
-     *          "<type>":<value>
-     *      }
-     *  }
-     *
      * @class ConditionManager
      * @constructor
      * @param {object} expected - expected conditions to be met
