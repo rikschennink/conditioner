@@ -10,8 +10,8 @@ define(['require','./DependencyRegister','./ConditionManager','./Observer','./Me
      *
      * @class BehaviorController
      * @constructor
-     * @param {String} id - id of behavior
-     * @param {Object} options - options for this behavior controller
+     * @param {string} id - id of behavior
+     * @param {object} options - options for this behavior controller
      */
     var BehaviorController = function(id,options) {
 
@@ -139,7 +139,7 @@ define(['require','./DependencyRegister','./ConditionManager','./Observer','./Me
     /**
      * Public method for unloading the behavior
      * @method unloadBehavior
-     * @return {Boolean}
+     * @return {boolean}
      */
     p.unloadBehavior = function() {
 
@@ -157,8 +157,8 @@ define(['require','./DependencyRegister','./ConditionManager','./Observer','./Me
     /**
      * Public method to check if the behavior matches the given query
      * @method matchesQuery
-     * @param {Object} query - query to match
-     * @return {Boolean}
+     * @param {object || string} query - string query to match or object to match
+     * @return {boolean} if matched
      */
     p.matchesQuery = function(query) {
 
@@ -184,8 +184,8 @@ define(['require','./DependencyRegister','./ConditionManager','./Observer','./Me
     /**
      * Public method for safely executing methods on the loaded behavior
      * @method execute
-     * @param {String} method - method key
-     * @param {Array} params - array containing the method parameters
+     * @param {string} method - method key
+     * @param {Array} [params] - array containing the method parameters
      * @return
      */
     p.execute = function(method,params) {

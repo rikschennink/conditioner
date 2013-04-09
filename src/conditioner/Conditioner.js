@@ -20,7 +20,7 @@ define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeOb
                 'priority':'data-priority'
             }
         };
-
+        
         // array of all active controllers
         this._controllers = [];
 
@@ -32,7 +32,7 @@ define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeOb
 
     /**
      * @method setOptions, set custom options
-     * @param {Object} options - options to override
+     * @param {object} options - options to override
      */
     p.setOptions = function(options) {
         this._options = mergeObjects(this._options,options);
@@ -68,7 +68,7 @@ define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeOb
      * Applies behavior on object within given context.
      *
      * @method applyBehavior
-     * @param {Node} context - Context to apply behavior to
+     * @param {node} context - Context to apply behavior to
      * @return {Array} - Array of initialized BehaviorControllers
      */
     p.applyBehavior = function(context) {
@@ -160,7 +160,7 @@ define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeOb
      * Reads specifications for behavior from the element attributes
      *
      * @method _getBehaviorSpecificationsByElement
-     * @param {Node} element - Element to parse
+     * @param {node} element - Element to parse
      * @return {Array} behavior specifications
      */
     p._getBehaviorSpecificationsByElement = function(element) {
@@ -207,9 +207,9 @@ define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeOb
      * Tries to convert element attribute value to an object
      *
      * @method _getElementAttributeAsObject
-     * @param {Node} element - Element to find attribute on
-     * @param {String} attribute - Attribute value to convert
-     * @return {Object} array or object
+     * @param {node} element - Element to find attribute on
+     * @param {string} attribute - Attribute value to convert
+     * @return {object} array or object
      */
     p._getElementAttributeAsObject = function(element,attribute) {
 
@@ -229,8 +229,8 @@ define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeOb
      * Returns BehaviorControllers matching the selector
      *
      * @method getBehavior
-     * @param {Object} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
-     * @return {Object} controller - First matched BehaviorController
+     * @param {object} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
+     * @return {object} controller - First matched BehaviorController
      */
     p.getBehavior = function(query) {
         var controller,i=0,l = this._controllers.length;
@@ -248,7 +248,7 @@ define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeOb
      * Returns all BehaviorControllers matching the selector
      *
      * @method getBehaviorAll
-     * @param {Object} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
+     * @param {object} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
      * @return {Array} results - Array containing matched behavior controllers
      */
     p.getBehaviorAll = function(query) {

@@ -12,9 +12,9 @@ define(['require','./MergeObjects'],function(require,updateObject){
         /**
          * Register a dependency
          * @method register
-         * @param {String} id - identifier (interface) of Class
-         * @param {String} path - path to module
-         * @param {Object} options - options to pass to instance
+         * @param {string} id - identifier (interface) of Class
+         * @param {string} path - path to module
+         * @param {object} options - options to pass to instance
          */
         registerDependency:function(id,path,options) {
 
@@ -46,10 +46,16 @@ define(['require','./MergeObjects'],function(require,updateObject){
         /**
          * Get a registered dependency
          * @method getSpecification
-         * @param {String} id - identifier (interface) of Class
-         * @return {Object} - class specification object
+         * @param {string} id - identifier (interface) of Class
+         * @return {object} - class specification object
          */
         getSpecification:function(id) {
+
+            // if no id supplied throw error
+            if (!context) {
+                throw new Error('DependencyManager.getSpecification(id): "id" is a required parameter.');
+            }
+
             return this._dependencies[id];
         }
 

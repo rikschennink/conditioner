@@ -5,25 +5,25 @@ define(function(){
     /**
      * Merges custom options passed for behavior with original behavior options
      * @method merge
-     * @param {Object} o - The original options
-     * @param {Object} c - The changes to apply
-     * @return {Object} The result of the two merged objects
+     * @param {object} original - The original options
+     * @param {object} additions - The additional fields to add or override
+     * @return {object} The result of the two merged objects
      */
-    var merge = function(o,c) {
+    var merge = function(original,additions) {
 
-        var p,r = {};
+        var p,result = {};
 
-        for(p in o) {
-            if (!o.hasOwnProperty(p)) {continue;}
-            r[p] = typeof o[p] == 'object' ? merge(o[p],c[p]) : o[p];
+        for(p in original) {
+            if (!original.hasOwnProperty(p)) {continue;}
+            result[p] = typeof original[p] == 'object' ? merge(original[p],additions[p]) : original[p];
         }
 
-        for(p in c) {
-            if (!c.hasOwnProperty(p)) {continue;}
-            r[p] = typeof c[p] == 'object' ? merge(o[p],c[p]) : c[p];
+        for(p in additions) {
+            if (!additions.hasOwnProperty(p)) {continue;}
+            result[p] = typeof additions[p] == 'object' ? merge(original[p],additions[p]) : additions[p];
         }
 
-        return r;
+        return result;
 
     };
 

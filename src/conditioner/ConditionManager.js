@@ -17,8 +17,8 @@ define(['./TestManager','./Observer'],function(TestManager,Observer){
      *
      * @class ConditionManager
      * @constructor
-     * @param {Object} expected - expected conditions to be met
-     * @param {Node} element - optional element to measure these conditions on
+     * @param {object} expected - expected conditions to be met
+     * @param {node} [element] - optional element to measure these conditions on
      */
     var ConditionManager = function(expected,element) {
 
@@ -78,9 +78,9 @@ define(['./TestManager','./Observer'],function(TestManager,Observer){
         /**
          * Called to load a test
          * @method _loadTest
-         * @param {String} key - Key related to the test to load
-         * @param {Object} expected - Expected value for this test
-         * @param {Node} element - Element related to this test
+         * @param {string} key - Key related to the test to load
+         * @param {object} expected - Expected value for this test
+         * @param {node} [element] - Element related to this test
          */
         _loadTest:function(key,expected,element) {
 

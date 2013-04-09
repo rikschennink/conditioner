@@ -10,8 +10,8 @@ define(function(){
         /**
          * Subscribe to an event
          * @method subscribe
-         * @param {Object} obj - Object to subscribe to
-         * @param {String} type - Event type to listen for
+         * @param {object} obj - Object to subscribe to
+         * @param {string} type - Event type to listen for
          * @param {Function} fn - Function to call when event fires
          */
         subscribe:function(obj,type,fn) {
@@ -36,8 +36,8 @@ define(function(){
         /**
          * Unsubscribe from further notifications
          * @method unsubscribe
-         * @param {Object} obj - Object to unsubscribe from
-         * @param {String} type - Event type to match
+         * @param {object} obj - Object to unsubscribe from
+         * @param {string} type - Event type to match
          * @param {Function} fn - Function to match
          */
         unsubscribe:function(obj,type,fn) {
@@ -60,9 +60,9 @@ define(function(){
         /**
          * Publish an event
          * @method publish
-         * @param {Object} obj - Object to fire the event on
-         * @param {String} type - Event type to fire
-         * @param {Object} data - Any type of data
+         * @param {object} obj - Object to fire the event on
+         * @param {string} type - Event type to fire
+         * @param {object} data - Any type of data
          */
         publish:function(obj,type,data) {
 
@@ -89,8 +89,8 @@ define(function(){
         /**
          * Setup propagation target for events so they can bubble up the object tree
          * @method setupPropagationTarget
-         * @param {Object} obj - Object to set as origin
-         * @param {Object} target - Object to set as target
+         * @param {object} obj - Object to set as origin
+         * @param {object} target - Object to set as target
          */
         setupPropagationTarget:function(obj,target) {
             obj._eventPropagationTarget = target;

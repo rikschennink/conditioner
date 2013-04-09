@@ -8,8 +8,8 @@ define(['./MergeObjects'],function(updateObject) {
     /**
      * @class BehaviorBase
      * @constructor
-     * @param {Element} element - DOM Element to apply this behavior to
-     * @param {Object} options - Custom options to pass to this behavior
+     * @param {node} element - DOM Element to apply this behavior to
+     * @param {object} [options] - Custom options to pass to this behavior
      */
     var BehaviorBase = function(element,options) {
 
