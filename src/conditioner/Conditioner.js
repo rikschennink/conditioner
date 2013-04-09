@@ -218,7 +218,7 @@ define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeOb
             try {
                 return JSON.parse(value);
             }
-            catch (e) {}
+            catch(e) {}
         }
         return [value];
 

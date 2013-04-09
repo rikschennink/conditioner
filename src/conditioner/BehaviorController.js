@@ -164,11 +164,6 @@ define(['require','./DependencyRegister','./ConditionManager','./Observer','./Me
 
         if (typeof query == 'string') {
 
-            // if matches classpath
-            if (query == this._classPath) {
-                return true;
-            }
-
             // check if matches query
             if (matchesSelector(this._options.target,query)) {
                 return true;
@@ -195,8 +190,14 @@ define(['require','./DependencyRegister','./ConditionManager','./Observer','./Me
             return null;
         }
 
+        // get function reference
+        var F = this._behavior[method];
+        if (!F) {
+            throw new Error('Conditioner(method,params): "method" not found on behavior.');
+        }
+
         // once loaded call method and pass parameters
-        return this._behavior[method].apply(this._behavior,params);
+        return F.apply(this._behavior,params);
 
     };
 
