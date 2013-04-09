@@ -1,5 +1,6 @@
-
 define(['./TestBase'],function(TestBase){
+
+    'use strict';
 
     var MOUSE_MOVES_REQUIRED = 2;
 

@@ -1,5 +1,6 @@
-
 define(['./TestBase'],function(TestBase){
+
+    'use strict';
 
     var Test = TestBase.inherit(),
         p = Test.prototype;

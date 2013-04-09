@@ -1,4 +1,3 @@
-
 define(['module','conditioner/Observer','conditioner/MergeObjects'],function(module,Observer,mergeObjects){
 
     'use strict';

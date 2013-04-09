@@ -1,5 +1,7 @@
 define(['conditioner/Observer'],function(Observer){
 
+    'use strict';
+
     var Test = function(expected,element) {
 
         // store element

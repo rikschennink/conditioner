@@ -1,8 +1,7 @@
-
 /**
  * @module Conditioner
  */
-define(['./Injector','./BehaviorController','./TestManager','./MergeObjects'],function(Injector,BehaviorController,TestManager,mergeObjects) {
+define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeObjects'],function(DependencyRegister,BehaviorController,TestManager,mergeObjects) {
 
     'use strict';
 
@@ -12,8 +11,7 @@ define(['./Injector','./BehaviorController','./TestManager','./MergeObjects'],fu
      */
     var Conditioner = function() {
 
-        this._controllers = [];
-
+        // options for conditioner
         this._options = {
             'attribute':{
                 'module':'data-module',
@@ -21,9 +19,14 @@ define(['./Injector','./BehaviorController','./TestManager','./MergeObjects'],fu
                 'options':'data-options',
                 'priority':'data-priority'
             }
-        }
+        };
+
+        // array of all active controllers
+        this._controllers = [];
+
     };
 
+    // prototype shortcut
     var p = Conditioner.prototype;
 
 
@@ -32,9 +35,7 @@ define(['./Injector','./BehaviorController','./TestManager','./MergeObjects'],fu
      * @param {Object} options - options to override
      */
     p.setOptions = function(options) {
-
         this._options = mergeObjects(this._options,options);
-
     };
 
 
@@ -51,14 +52,14 @@ define(['./Injector','./BehaviorController','./TestManager','./MergeObjects'],fu
 
 
     /**
-     * Register multiple dependencies, shortcut method to Injector.registerDependency()
+     * Register multiple dependencies, shortcut method to DependencyRegister.registerDependency()
      * @method registerDependencies
      */
     p.registerDependencies = function() {
         var dependency,i=0,l=arguments.length;
         for (;i<l;i++) {
             dependency = arguments[i];
-            Injector.registerDependency(dependency.id,dependency.path,dependency.options);
+            DependencyRegister.registerDependency(dependency.id,dependency.path,dependency.options);
         }
     };
 

@@ -1,4 +1,3 @@
-
 define(['conditioner/BehaviorBase','../security/StorageConsentGuard'],function(BehaviorBase,IStorageGuard){
 
     'use strict';

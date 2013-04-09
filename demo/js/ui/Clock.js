@@ -1,4 +1,3 @@
-
 define(['conditioner/BehaviorBase'],function(BehaviorBase){
 
     'use strict';

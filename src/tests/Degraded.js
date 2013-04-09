@@ -1,5 +1,7 @@
 define(['../conditioner/TestManager'],function(TestManager){
 
+    'use strict';
+
     var _baseFontSize = null;
 
     // override mediaquery test

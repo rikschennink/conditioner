@@ -1,7 +1,7 @@
 /**
  * @module BehaviorController
  */
-define(['./Injector','./ConditionManager','./Observer','./MatchesSelector'],function(Injector,ConditionManager,Observer,matchesSelector) {
+define(['require','./DependencyRegister','./ConditionManager','./Observer','./MergeObjects','./MatchesSelector'],function(require,DependencyRegister,ConditionManager,Observer,updateObject,matchesSelector) {
 
     'use strict';
 
@@ -81,34 +81,63 @@ define(['./Injector','./ConditionManager','./Observer','./MatchesSelector'],func
      */
     p._loadBehavior = function() {
 
-        var self = this;
-        Injector.constructClass(
+        // get specification for this behavior
+        var self = this,specs = DependencyRegister.getSpecification(this._id);
 
-            // class identifier
-            this._id,
+        // if no specifications not found, stop
+        if (!specs) {
+            return;
+        }
 
-            // target element
-            this._options.target,
+        // if class not specified load async
+        if (!specs.klass) {
 
-            // target element options
-            this._options.options,
+            require([this._id],function(klass){
 
-            // instance return method
-            function(instance){
+                if (!klass) {
+                    return;
+                }
 
-                // set behavior reference
-                self._behavior = instance;
+                // set class for future reference
+                specs.klass = klass;
 
-                // propagate events from behavior to behaviorController
-                Observer.setupPropagationTarget(self._behavior,self);
+                // try again
+                self._loadBehavior();
+
+            });
+
+            return;
+        }
+
+
+        // parse options
+        var options;
+        if (typeof this._options.options == 'string') {
+            try {
+                options = JSON.parse(this._options.options);
             }
-        );
+            catch(e) {}
+        }
+
+        // merge options
+        options = updateObject(specs.options,options);
+
+        // create instance of behavior klass
+        this._behavior = new specs.klass(this._options.target,options);
+
+        // propagate events from behavior to behaviorController
+        Observer.setupPropagationTarget(this._behavior,this);
+
     };
 
 
 
+
+
+
+
     /**
-     * Public method for unload the behavior
+     * Public method for unloading the behavior
      * @method unloadBehavior
      * @return {Boolean}
      */
@@ -144,6 +173,7 @@ define(['./Injector','./ConditionManager','./Observer','./MatchesSelector'],func
             if (matchesSelector(this._options.target,query)) {
                 return true;
             }
+
         }
 
         return (query == this._options.target);
