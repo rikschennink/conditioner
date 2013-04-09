@@ -26,7 +26,7 @@ define(function(){
         /**
          * @method loadTestByKey
          * @param {string} key - Test identifier
-         * @param {Function} success - callback for when the test was loaded successfully
+         * @param {function} success - callback for when the test module was loaded successfully
          */
         loadTestByKey:function(key,success) {
 
