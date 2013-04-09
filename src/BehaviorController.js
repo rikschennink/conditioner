@@ -147,7 +147,12 @@ define(['require','./DependencyRegister','./ConditionManager','./Observer','./Me
             return false;
         }
 
-        this._behavior._unload();
+        // unload behavior if possible
+        if (this._behavior._unload) {
+            this._behavior._unload();
+        }
+
+        // reset property
         this._behavior = null;
 
         return true;

@@ -1,15 +1,10 @@
+
+# Folders to ignore
 .DS_Store
-
+.cache
+.hg
+.svn
+.CVS
 .idea
-
-.idea/.name
-
-*.xml
-
-.idea/conditioner.iml
-
-demo/.idea/.name
-
-demo/.idea/steroids.iml
-
-demo/.idea/workspace.xml~
+node_modules
+Thumbs.db

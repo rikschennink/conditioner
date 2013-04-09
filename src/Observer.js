@@ -93,6 +93,9 @@ define(function(){
          * @param {object} target - Object to set as target
          */
         setupPropagationTarget:function(obj,target) {
+            if (!obj) {
+                return;
+            }
             obj._eventPropagationTarget = target;
         }
 
