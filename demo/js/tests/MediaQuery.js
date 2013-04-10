@@ -1,10 +1,14 @@
 
+/**
+ * Tests if a media query is matched or not and listens to changes
+ * @module tests/MediaQuery
+ */
 define(['Conditioner'],function(Conditioner){
 
     'use strict';
 
     var Test = Conditioner.Test.inherit(),
-        p = Test.prototype;
+    p = Test.prototype;
 
     p._mql = null;
 

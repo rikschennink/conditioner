@@ -1,12 +1,11 @@
-//define(['./TestManager','./Observer'],function(TestManager,Observer){
 
-//    'use strict';
-
+/**
+ * Constructs ConditionManager objects.
+ * @class ConditionManager
+ */
 var ConditionManager = (function(TestManager){
 
     /**
-     * Constructs ConditionManager objects.
-     * @class ConditionManager
      * @constructor
      * @param {object} expected - expected conditions to be met
      * @param {node} [element] - optional element to measure these conditions on
@@ -179,8 +178,3 @@ var ConditionManager = (function(TestManager){
     return ConditionManager;
 
 }(TestManager));
-
-
-    //return ConditionManager;
-
-//});

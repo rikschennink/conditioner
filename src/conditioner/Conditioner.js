@@ -1,14 +1,10 @@
+
 /**
- * @module Conditioner
+ * @class Conditioner
  */
-//define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeObjects'],function(DependencyRegister,BehaviorController,TestManager,mergeObjects) {
-
-//    'use strict';
-
-var Conditioner = (function(DependencyRegister,BehaviorController,TestManager,updateObject,Test,Module,Observer){
+var Conditioner = (function(DependencyRegister,BehaviorController,updateObject,Test,Module,Observer){
 
     /**
-     * @class Conditioner (Singleton)
      * @constructor
      */
     var Conditioner = function() {
@@ -38,18 +34,6 @@ var Conditioner = (function(DependencyRegister,BehaviorController,TestManager,up
      */
     p.setOptions = function(options) {
         this._options = updateObject(this._options,options);
-    };
-
-
-    /**
-     * @method registerTests, shortcut method to TestManager.registerTest()
-     */
-    p.registerTests = function() {
-        var test,i=0,l=arguments.length;
-        for (;i<l;i++) {
-            test = arguments[i];
-            TestManager.registerTest(test.id,test.path);
-        }
     };
 
 
@@ -305,6 +289,4 @@ var Conditioner = (function(DependencyRegister,BehaviorController,TestManager,up
 
     };
 
-}(DependencyRegister,BehaviorController,TestManager,updateObject,Test,Module,Observer));
-
-//});
+}(DependencyRegister,BehaviorController,updateObject,Test,Module,Observer));

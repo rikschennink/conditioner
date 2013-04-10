@@ -1,5 +1,14 @@
+
+/**
+ * @class Test
+ */
 var Test = (function(Observer){
 
+    /**
+     * @constructor
+     * @param {object} expected - expected conditions to be met
+     * @param {node} [element] - optional element to measure these conditions on
+     */
     var Test = function(expected,element) {
 
         // store element

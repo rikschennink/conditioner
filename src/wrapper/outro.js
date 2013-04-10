@@ -1,6 +1,6 @@
 
 
-
-    return Conditioner;
+// expose conditioner
+return Conditioner;
 
 });

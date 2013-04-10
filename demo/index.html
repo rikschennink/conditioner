@@ -15,34 +15,36 @@
     </head>
     <body>
 
+
         <h1>Conditioner Demo</h1>
-        
+
+
         <h2>Setup</h2>
-
-
 
 
         <h3>HTML Attributes</h3>
 
         <p>You can link javascript modules to your DOM nodes using the <code>data-module</code> attribute.</p>
 
+
         <h4>data-module</h4>
         <p>The string contained in the <code>data-module</code> attribute points to the concrete implementation of the Class. For <code>IClock</code> this would be <code>ui.Clock</code>.</p>
         <pre><code data-language="html">&lt;div data-module="IClock"&gt; ... &lt;/div&gt;</code></pre>
+
 
         <h4>data-conditions</h4>
         <p>The conditions attributes allows you to control the conditions under which behavior is loaded. For instance, below is an example condition which loads the module once the window is at least 450 pixels wide.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-conditions='{"window":{"min-width":450}}'&gt; ... &lt;/div&gt;</code></pre>
 
+
         <h4>data-options</h4>
         <p>The options attribute allows you to set specific options for the module, these options are then passed to the constructor the moment the Class is initialized.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-options='{"time":false}'&gt; ... &lt;/div&gt;</code></pre>
 
+
         <h4>data-priority</h4>
         <p>The priority attributes allows you to control the order in which module is loaded. Positive numbers give a node priority over other nodes, a negative number moves it to the back of the line.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-priority="1"&gt; ... &lt;/div&gt;</code></pre>
-
-
 
 
         <h3>Javascript Kickoff</h3>
@@ -65,8 +67,8 @@ demo.applyBehavior(document);
 </code></pre>
 
 
-
         <h2>Examples</h2>
+
 
         <h3>Always enabled</h3>
         <p>Clock will be always be active.</p>
@@ -169,12 +171,12 @@ demo.applyBehavior(document);
             requirejs.config({
                 baseUrl: 'js',
                 paths:{
-                    'conditioner':'../../src/'
+                    'Conditioner':'../../dist/conditioner.min'
                 }
             });
 
             // load Conditioner and default set of Tests
-            requirejs(['conditioner/Conditioner'],
+            requirejs(['Conditioner'],
 
                 function(Conditioner) {
 
@@ -211,12 +213,6 @@ demo.applyBehavior(document);
                             }
                         }
                     );
-
-                    // register custom cookie test
-                    demo.registerTests({
-                        'id':'cookies',
-                        'path':'./tests/Cookies'
-                    });
 
                     // apply behavior to document scope
                     demo.applyBehavior(document);

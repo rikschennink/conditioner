@@ -1,9 +1,9 @@
-define(['conditioner/BehaviorBase','../security/StorageConsentGuard'],function(BehaviorBase,IStorageGuard){
+define(['Conditioner','../security/StorageConsentGuard'],function(Conditioner,IStorageGuard){
 
     'use strict';
 
     // reference to parent class
-    var _parent = BehaviorBase;
+    var _parent = Conditioner.Module;
 
     // StorageConsentSelect Class
     var StorageConsentSelect = function(element,options) {

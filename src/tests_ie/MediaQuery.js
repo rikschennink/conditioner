@@ -1,4 +1,4 @@
-define(['../conditioner/TestManager'],function(TestManager){
+define(['../TestManager'],function(TestManager){
 
     'use strict';
 

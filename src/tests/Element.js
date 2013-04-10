@@ -1,9 +1,14 @@
-define(['./TestBase'],function(TestBase){
+
+/**
+ * Tests if an elements dimensions match certain expectations
+ * @module tests/Element
+ */
+define(['Conditioner'],function(Conditioner){
 
     'use strict';
 
-    var Test = TestBase.inherit(),
-        p = Test.prototype;
+    var Test = Conditioner.Test.inherit(),
+    p = Test.prototype;
 
     p.handleEvent = function(e) {
         this.assert();

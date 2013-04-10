@@ -1,17 +1,10 @@
+
 /**
- * @module BehaviorController
+ * @class BehaviorController
  */
-//define(['require','./DependencyRegister','./ConditionManager','./Observer','./MergeObjects','./MatchesSelector'],
-// function(require,DependencyRegister,ConditionManager,Observer,updateObject,matchesSelector) {
-
-//'use strict';
-
 var BehaviorController = (function(require,DependencyRegister,ConditionManager,matchesSelector,updateObject){
 
     /**
-     * Constructs BehaviorController objects.
-     *
-     * @class BehaviorController
      * @constructor
      * @param {string} id - id of behavior
      * @param {object} options - options for this behavior controller
@@ -121,6 +114,9 @@ var BehaviorController = (function(require,DependencyRegister,ConditionManager,m
             }
             catch(e) {}
         }
+        else {
+            options = this._options.options;
+        }
 
         // merge options
         options = updateObject(specs.options,options);
@@ -132,11 +128,6 @@ var BehaviorController = (function(require,DependencyRegister,ConditionManager,m
         Observer.setupPropagationTarget(this._behavior,this);
 
     };
-
-
-
-
-
 
 
     /**
@@ -212,6 +203,3 @@ var BehaviorController = (function(require,DependencyRegister,ConditionManager,m
     return BehaviorController;
 
 }(require,DependencyRegister,ConditionManager,matchesSelector,updateObject));
-
-
-//});

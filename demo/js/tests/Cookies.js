@@ -1,6 +1,6 @@
-define(['conditioner/tests/TestBase','conditioner/Observer','../security/StorageConsentGuard'],function(TestBase,Observer,StorageConsentGuard){
+define(['Conditioner','../security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
 
-    var Test = TestBase.inherit(),
+    var Test = Conditioner.Test.inherit(),
         p = Test.prototype;
 
     p.arrange = function() {
@@ -8,7 +8,7 @@ define(['conditioner/tests/TestBase','conditioner/Observer','../security/Storage
         var guard = StorageConsentGuard.getInstance();
 
         var self = this;
-        Observer.subscribe(guard,'change',function() {
+        Conditioner.Observer.subscribe(guard,'change',function() {
             self.assert();
         });
     };

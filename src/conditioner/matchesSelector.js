@@ -1,3 +1,7 @@
+
+/**
+ * @method matchesSelector
+ */
 var matchesSelector = (function() {
 
     var _method = null;

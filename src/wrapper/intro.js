@@ -1,3 +1,7 @@
 define(function(){
 
-    'use strict';
+/**
+ * @module Conditioner
+ */
+
+'use strict';

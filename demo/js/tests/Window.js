@@ -1,10 +1,14 @@
 
+/**
+ * Tests if the window dimensions match certain expectations
+ * @module tests/Window
+ */
 define(['Conditioner'],function(Conditioner){
 
     'use strict';
 
     var Test = Conditioner.Test.inherit(),
-        p = Test.prototype;
+    p = Test.prototype;
 
     p.handleEvent = function(e) {
         this.assert();

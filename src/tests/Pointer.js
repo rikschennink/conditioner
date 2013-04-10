@@ -1,11 +1,15 @@
-define(['./TestBase'],function(TestBase){
+
+/**
+ * Tests if the user is using a pointer device
+ * @module tests/Pointer
+ */
+define(['Conditioner'],function(Conditioner){
 
     'use strict';
 
-    var MOUSE_MOVES_REQUIRED = 2;
-
-    var Test = TestBase.inherit(),
-        p = Test.prototype;
+    var Test = Conditioner.Test.inherit(),
+    p = Test.prototype,
+    MOUSE_MOVES_REQUIRED = 2;
 
     p._totalMouseMoves = 0;
 
@@ -29,7 +33,7 @@ define(['./TestBase'],function(TestBase){
         document.addEventListener('mousemove',this,false);
         document.addEventListener('mousedown',this,false);
 
-        // start timer, stop listening after 10 seconds
+        // start timer, stop testing after 10 seconds
         var self = this;
         setTimeout(function(){
             document.removeEventListener('mousemove',self,false);

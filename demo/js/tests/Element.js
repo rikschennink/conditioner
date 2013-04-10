@@ -1,10 +1,14 @@
 
+/**
+ * Tests if an elements dimensions match certain expectations
+ * @module tests/Element
+ */
 define(['Conditioner'],function(Conditioner){
 
     'use strict';
 
     var Test = Conditioner.Test.inherit(),
-        p = Test.prototype;
+    p = Test.prototype;
 
     p.handleEvent = function(e) {
         this.assert();

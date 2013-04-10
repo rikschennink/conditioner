@@ -1,9 +1,9 @@
-define(['conditioner/BehaviorBase'],function(BehaviorBase){
+define(['Conditioner'],function(Conditioner){
 
     "use strict";
 
     // reference to parent class
-    var _parent = BehaviorBase;
+    var _parent = Conditioner.Module;
 
     // Map Class
     var Map = function(element) {

@@ -1,9 +1,9 @@
-define(['conditioner/BehaviorBase'],function(BehaviorBase){
+define(['Conditioner'],function(Conditioner){
 
     'use strict';
 
     // reference to parent class
-    var _parent = BehaviorBase;
+    var _parent = Conditioner.Module;
 
     // Clock Class
     var Clock = function(element,options) {

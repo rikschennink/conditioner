@@ -1,5 +1,6 @@
+
 /**
- * @module Observer
+ * @class Observer
  */
 var Observer = (function(){
 

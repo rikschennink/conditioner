@@ -1,10 +1,14 @@
 
+/**
+ * Tests if an active network connection is available and monitors this connection
+ * @module tests/Connection
+ */
 define(['Conditioner'],function(Conditioner){
 
     'use strict';
 
     var Test = Conditioner.Test.inherit(),
-        p = Test.prototype;
+    p = Test.prototype;
 
     p.handleEvent = function(e) {
         this.assert();
