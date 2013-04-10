@@ -1,9 +1,11 @@
 /**
  * @module Conditioner
  */
-define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeObjects'],function(DependencyRegister,BehaviorController,TestManager,mergeObjects) {
+//define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeObjects'],function(DependencyRegister,BehaviorController,TestManager,mergeObjects) {
 
-    'use strict';
+//    'use strict';
+
+var Conditioner = (function(DependencyRegister,BehaviorController,TestManager,updateObject,Test,Module,Observer){
 
     /**
      * @class Conditioner (Singleton)
@@ -20,7 +22,7 @@ define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeOb
                 'priority':'data-priority'
             }
         };
-        
+
         // array of all active controllers
         this._controllers = [];
 
@@ -35,7 +37,7 @@ define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeOb
      * @param {object} options - options to override
      */
     p.setOptions = function(options) {
-        this._options = mergeObjects(this._options,options);
+        this._options = updateObject(this._options,options);
     };
 
 
@@ -279,8 +281,30 @@ define(['./DependencyRegister','./BehaviorController','./TestManager','./MergeOb
         getInstance:function() {
             if (!_instance) {_instance = new Conditioner();}
             return _instance;
-        }
+        },
+
+        /**
+         * Reference to Test base class
+         */
+        Test:Test,
+
+        /**
+         * Reference to Module base class
+         */
+        Module:Module,
+
+        /**
+         * Reference to Observer class
+         */
+        Observer:Observer,
+
+        /**
+         * Reference to updateObject method
+         */
+        updateObject:updateObject
 
     };
 
-});
+}(DependencyRegister,BehaviorController,TestManager,updateObject,Test,Module,Observer));
+
+//});

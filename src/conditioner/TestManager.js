@@ -1,6 +1,4 @@
-define(function(){
-
-    'use strict';
+var TestManager = (function(){
 
     return {
 
@@ -32,7 +30,7 @@ define(function(){
             }
 
             // get path to test
-            var path = this._tests[key] || 'conditioner/tests/' + key;
+            var path = this._tests[key] || 'tests/' + key;
 
             // get test by key
             require([path],function(Test){
@@ -43,4 +41,4 @@ define(function(){
 
     };
 
-});
+}());

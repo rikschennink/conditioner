@@ -1,9 +1,7 @@
 /**
  * @module BehaviorBase
  */
-define(['./MergeObjects'],function(updateObject) {
-
-    'use strict';
+var Module = (function(updateObject) {
 
     /**
      * @class BehaviorBase
@@ -11,7 +9,7 @@ define(['./MergeObjects'],function(updateObject) {
      * @param {node} element - DOM Element to apply this behavior to
      * @param {object} [options] - Custom options to pass to this behavior
      */
-    var BehaviorBase = function(element,options) {
+    var Module = function(element,options) {
 
         // if no element, throw error
         if (!element) {
@@ -34,10 +32,10 @@ define(['./MergeObjects'],function(updateObject) {
      * Override to clean up your control, remove event listeners, restore original state, etc.
      * @method _unload
      */
-    BehaviorBase.prototype._unload = function() {
+    Module.prototype._unload = function() {
         this._element.removeAttribute('data-initialized');
     };
 
-    return BehaviorBase;
+    return Module;
 
-});
+}(updateObject));

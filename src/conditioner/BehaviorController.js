@@ -1,9 +1,12 @@
 /**
  * @module BehaviorController
  */
-define(['require','./DependencyRegister','./ConditionManager','./Observer','./MergeObjects','./MatchesSelector'],function(require,DependencyRegister,ConditionManager,Observer,updateObject,matchesSelector) {
+//define(['require','./DependencyRegister','./ConditionManager','./Observer','./MergeObjects','./MatchesSelector'],
+// function(require,DependencyRegister,ConditionManager,Observer,updateObject,matchesSelector) {
 
-    'use strict';
+//'use strict';
+
+var BehaviorController = (function(require,DependencyRegister,ConditionManager,matchesSelector,updateObject){
 
     /**
      * Constructs BehaviorController objects.
@@ -208,4 +211,7 @@ define(['require','./DependencyRegister','./ConditionManager','./Observer','./Me
 
     return BehaviorController;
 
-});
+}(require,DependencyRegister,ConditionManager,matchesSelector,updateObject));
+
+
+//});

@@ -1,6 +1,7 @@
-define(['require','./MergeObjects'],function(require,updateObject){
+//define(['require','./MergeObjects'],function(require,updateObject){
 
-    'use strict';
+   // 'use strict';
+var DependencyRegister = (function(){
 
     return {
 
@@ -58,4 +59,7 @@ define(['require','./MergeObjects'],function(require,updateObject){
 
     };
 
-});
+}());
+
+
+//});

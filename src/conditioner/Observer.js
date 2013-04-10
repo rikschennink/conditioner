@@ -1,9 +1,7 @@
 /**
  * @module Observer
  */
-define(function(){
-
-    'use strict';
+var Observer = (function(){
 
     return {
 
@@ -101,4 +99,4 @@ define(function(){
 
     };
 
-});
+}());

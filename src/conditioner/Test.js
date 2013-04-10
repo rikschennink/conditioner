@@ -1,6 +1,4 @@
-define(['conditioner/Observer'],function(Observer){
-
-    'use strict';
+var Test = (function(Observer){
 
     var Test = function(expected,element) {
 
@@ -84,4 +82,4 @@ define(['conditioner/Observer'],function(Observer){
 
     return Test;
 
-});
+}(Observer));

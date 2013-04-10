@@ -1,6 +1,4 @@
-define(function() {
-
-    'use strict';
+var matchesSelector = (function() {
 
     var _method = null;
     var el = document.body;
@@ -30,4 +28,4 @@ define(function() {
 
     };
 
-});
+}());

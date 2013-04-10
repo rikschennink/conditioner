@@ -1,6 +1,4 @@
-define(function(){
-
-    'use strict';
+var updateObject = (function(){
 
     /**
      * Merges custom options passed for behavior with original behavior options
@@ -29,4 +27,4 @@ define(function(){
 
     return merge;
 
-});
+}());

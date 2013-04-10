@@ -1,6 +1,8 @@
-define(['./TestManager','./Observer'],function(TestManager,Observer){
+//define(['./TestManager','./Observer'],function(TestManager,Observer){
 
-    'use strict';
+//    'use strict';
+
+var ConditionManager = (function(TestManager){
 
     /**
      * Constructs ConditionManager objects.
@@ -174,7 +176,11 @@ define(['./TestManager','./Observer'],function(TestManager,Observer){
         }
     };
 
-
     return ConditionManager;
 
-});
+}(TestManager));
+
+
+    //return ConditionManager;
+
+//});
