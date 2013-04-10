@@ -40,22 +40,34 @@ module.exports = function(grunt) {
                 dest:'dist/<%= pkg.name %>.js'
             }
         },
-        uglify: {
-            options: {
-                banner:'<%= meta.banner %>',
-                report:'gzip'
-            },
-            dist: {
-                src: '<%= concat.dist.dest %>',
-                dest: 'dist/<%= pkg.name %>.min.js'
-            }
-        },
-        copy:{
+        copy: {
             tests: {
                 expand:true,
                 cwd: '<%= path.tests %>',
                 src:'*',
+                dest:'dist/tests/'
+            },
+            demo: {
+                expand:true,
+                cwd: '<%= path.tests %>',
+                src:'*',
                 dest:'<%= path.demo %>js/tests/'
+            }
+        },
+        uglify: {
+            tests: {
+                expand: true,
+                src: '*',
+                dest: 'dist/tests.min/',
+                cwd: '<%= copy.tests.dest %>'
+            },
+            lib: {
+                options: {
+                    banner:'<%= meta.banner %>',
+                    report:'gzip'
+                },
+                src: '<%= concat.dist.dest %>',
+                dest: 'dist/<%= pkg.name %>.min.js'
             }
         }
     });
@@ -64,6 +76,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
 
-    grunt.registerTask('default',['concat','uglify','copy']);
+    grunt.registerTask('default',['concat','copy','uglify']);
 
 };

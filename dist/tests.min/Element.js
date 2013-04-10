@@ -1,0 +1,1 @@
+define(["Conditioner"],function(t){"use strict";var n=t.Test.inherit(),e=n.prototype;return e.handleEvent=function(){this.assert()},e.arrange=function(){window.addEventListener("resize",this,!1)},e._test=function(t){switch(t.key){case"min-width":return this._element.offsetWidth>=t.value;case"max-width":return this._element.offsetWidth<=t.value}return!0},n});
