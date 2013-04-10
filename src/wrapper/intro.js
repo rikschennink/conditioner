@@ -1,4 +1,5 @@
-define(function(){
+
+define(['require'],function(require){
 
 /**
  * @module Conditioner

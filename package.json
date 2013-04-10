@@ -1,6 +1,6 @@
 {
   "name": "conditioner",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "A JavaScript framework for conditionally loading UI classes",
   "homepage":"https://github.com/rikschennink/conditioner",
   "main": "index.js",

@@ -1,7 +1,8 @@
-// conditioner v0.8.0 - A JavaScript framework for conditionally loading UI classes
+// conditioner v0.8.1 - A JavaScript framework for conditionally loading UI classes
 // Copyright (c) 2013 Rik Schennink - https://github.com/rikschennink/conditioner
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
-define(function(){
+
+define(['require'],function(require){
 
 /**
  * @module Conditioner
@@ -1096,7 +1097,6 @@ var Conditioner = (function(DependencyRegister,BehaviorController,updateObject,T
     };
 
 }(DependencyRegister,BehaviorController,updateObject,Test,Module,Observer));
-
 
 
 // expose conditioner
