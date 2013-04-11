@@ -2,22 +2,22 @@
 /**
  * @class BehaviorController
  */
-var BehaviorController = (function(require,DependencyRegister,ConditionManager,matchesSelector,updateObject){
+var BehaviorController = (function(require,ModuleRegister,ConditionManager,matchesSelector,mergeObjects){
 
     /**
      * @constructor
-     * @param {string} id - id of behavior
+     * @param {string} module - reference to module
      * @param {object} options - options for this behavior controller
      */
-    var BehaviorController = function(id,options) {
+    var BehaviorController = function(path,options) {
 
         // if no element, throw error
-        if (!id) {
-            throw new Error('BehaviorController(id,options): "id" is a required parameter.');
+        if (!path) {
+            throw new Error('BehaviorController(path,options): "path" is a required parameter.');
         }
 
         // options for class behavior controller should load
-        this._id = id;
+        this._path = path;
 
         // options for behavior controller
         this._options = options || {};
@@ -77,55 +77,41 @@ var BehaviorController = (function(require,DependencyRegister,ConditionManager,m
      */
     p._loadBehavior = function() {
 
-        // get specification for this behavior
-        var self = this,specs = DependencyRegister.getSpecification(this._id);
+        var self = this;
 
-        // if no specifications not found, stop
-        if (!specs) {
-            return;
-        }
+        console.log(this._path);
+        
+        require([this._path],function(klass){
 
-        // if class not specified load async
-        if (!specs.klass) {
+            // get module specification
+            var specification = ModuleRegister.getModuleByPath(self._path);
 
-            require([this._id],function(klass){
+            // setup options
+            var moduleOptions = specification.config || {},
+                elementOptions,
+                options;
 
-                if (!klass) {
-                    return;
+            // parse element options
+            if (typeof self._options.options == 'string') {
+                try {
+                    elementOptions = JSON.parse(self._options.options);
                 }
-
-                // set class for future reference
-                specs.klass = klass;
-
-                // try again
-                self._loadBehavior();
-
-            });
-
-            return;
-        }
-
-
-        // parse options
-        var options;
-        if (typeof this._options.options == 'string') {
-            try {
-                options = JSON.parse(this._options.options);
+                catch(e) {}
             }
-            catch(e) {}
-        }
-        else {
-            options = this._options.options;
-        }
+            else {
+                elementOptions = self._options.options;
+            }
 
-        // merge options
-        options = updateObject(specs.options,options);
+            // merge options if necessary
+            options = mergeObjects(moduleOptions,elementOptions);
 
-        // create instance of behavior klass
-        this._behavior = new specs.klass(this._options.target,options);
+            // create instance of behavior klass
+            self._behavior = new klass(self._options.target,options);
 
-        // propagate events from behavior to behaviorController
-        Observer.setupPropagationTarget(this._behavior,this);
+            // propagate events from behavior to behaviorController
+            Observer.setupPropagationTarget(self._behavior,self);
+
+        });
 
     };
 
@@ -202,4 +188,4 @@ var BehaviorController = (function(require,DependencyRegister,ConditionManager,m
 
     return BehaviorController;
 
-}(require,DependencyRegister,ConditionManager,matchesSelector,updateObject));
+}(require,ModuleRegister,ConditionManager,matchesSelector,mergeObjects));
