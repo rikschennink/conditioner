@@ -13,24 +13,22 @@ In short, supose you have a Google Maps Class which turns a link to Google Maps 
 Load the UI Map module the moment the supplied media query `(min-width:30em)` is met.
 
 ```html
-<div data-module="IMap" data-conditions='{"mediaquery":"(min-width:30em)"}'>
-    The map is currently inactive
+<div data-module="IMap" data-conditions='{"MediaQuery":"(min-width:30em)"}'>
+    ...
 </div>
 ```
 
 ```javascript
-// get instance of conditioner
 var myConditioner = Conditioner.getInstance();
 
-// register ui.Map Class to be used for IMap behavior reference
-myConditioner.registerDependencies(
-    {
-        'id':'IMap',
-        'path':'ui/Map'
+// set custom module options
+myConditioner.setOptions({
+    'modules':{
+        'ui/Map':'IMap'
     }
-);
+});
 
-// apply behavior to document
+// apply behavior to document scope
 myConditioner.applyBehavior(document);
 ```
 
