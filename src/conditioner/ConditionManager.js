@@ -1,9 +1,8 @@
 
 /**
- * Constructs ConditionManager objects.
  * @class ConditionManager
  */
-var ConditionManager = (function(TestManager){
+var ConditionManager = (function(require){
 
     /**
      * @constructor
@@ -68,18 +67,18 @@ var ConditionManager = (function(TestManager){
         /**
          * Called to load a test
          * @method _loadTest
-         * @param {string} key - Key related to the test to load
+         * @param {string} path - path to the test module
          * @param {object} expected - Expected value for this test
          * @param {node} [element] - Element related to this test
          */
-        _loadTest:function(key,expected,element) {
+        _loadTest:function(path,expected,element) {
 
             var self = this;
 
-            TestManager.loadTestByKey(key,function(Test){
+            require(['tests/' + path],function(Test){
 
                 //condition = new Condition(
-                var test = new Test(expected[key],element);
+                var test = new Test(expected[path],element);
 
                 // add to tests array
                 self._tests.push(test);
@@ -88,6 +87,7 @@ var ConditionManager = (function(TestManager){
                 self._onLoadTest();
 
             });
+
         },
 
 
@@ -177,4 +177,4 @@ var ConditionManager = (function(TestManager){
 
     return ConditionManager;
 
-}(TestManager));
+}(require));

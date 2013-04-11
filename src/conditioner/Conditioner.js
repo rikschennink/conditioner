@@ -2,7 +2,11 @@
 /**
  * @class Conditioner
  */
-var Conditioner = (function(DependencyRegister,BehaviorController,updateObject,Test,Module,Observer){
+var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Module,Observer){
+
+
+
+
 
     /**
      * @constructor
@@ -16,7 +20,8 @@ var Conditioner = (function(DependencyRegister,BehaviorController,updateObject,T
                 'conditions':'data-conditions',
                 'options':'data-options',
                 'priority':'data-priority'
-            }
+            },
+            'modules':{}
         };
 
         // array of all active controllers
@@ -33,20 +38,31 @@ var Conditioner = (function(DependencyRegister,BehaviorController,updateObject,T
      * @param {object} options - options to override
      */
     p.setOptions = function(options) {
-        this._options = updateObject(this._options,options);
-    };
 
+        // update options
+        this._options = mergeObjects(this._options,options);
 
-    /**
-     * Register multiple dependencies, shortcut method to DependencyRegister.registerDependency()
-     * @method registerDependencies
-     */
-    p.registerDependencies = function() {
-        var dependency,i=0,l=arguments.length;
-        for (;i<l;i++) {
-            dependency = arguments[i];
-            DependencyRegister.registerDependency(dependency.id,dependency.path,dependency.options);
+        // loop over modules
+        var config,path,mod,alias;
+        for (path in this._options.modules) {
+
+            if (!this._options.modules.hasOwnProperty(path)){continue;}
+
+            // get module reference
+            mod = this._options.modules[path];
+
+            // get alias
+            alias = typeof mod === 'string' ? mod : mod.alias;
+
+            // get config
+            config = typeof mod === 'string' ? null : mod.options || {};
+
+            // register this module
+            ModuleRegister.registerModule(path,config,alias);
+
         }
+
+
     };
 
 
@@ -55,7 +71,7 @@ var Conditioner = (function(DependencyRegister,BehaviorController,updateObject,T
      *
      * @method applyBehavior
      * @param {node} context - Context to apply behavior to
-     * @return {Array} - Array of initialized BehaviorControllers
+     * @return {Array} - Array of initialized ModuleControllers
      */
     p.applyBehavior = function(context) {
 
@@ -66,8 +82,8 @@ var Conditioner = (function(DependencyRegister,BehaviorController,updateObject,T
 
         // register vars and get elements
         var elements = context.querySelectorAll('[' + this._options.attribute.module + ']'),
+            i = 0,
             l = elements.length,
-            i=0,
             controllers = [],
             priorityList = [],
             controller,
@@ -101,8 +117,9 @@ var Conditioner = (function(DependencyRegister,BehaviorController,updateObject,T
             while (spec = specs.shift()) {
 
                 // create controller instance
-                controller = new BehaviorController(
-                    spec.id,{
+                controller = new ModuleController(
+                    spec.path,
+                    {
                         'target':element,
                         'conditions':spec.conditions,
                         'options':spec.options
@@ -168,7 +185,7 @@ var Conditioner = (function(DependencyRegister,BehaviorController,updateObject,T
             for (;i<l;i++) {
 
                 result.push({
-                    'id':behaviorIds[i],
+                    'path':behaviorIds[i],
                     'conditions':conditions.length ? conditions[i] : conditions,
                     'options':options.length ? options[i] : options,
                     'priority':priorities.length ? priorities[i] : priorities
@@ -180,7 +197,7 @@ var Conditioner = (function(DependencyRegister,BehaviorController,updateObject,T
 
         // get single spec
         return [{
-            'id':behavior,
+            'path':behavior,
             'conditions':element.getAttribute(this._options.attribute.conditions),
             'options':element.getAttribute(this._options.attribute.options),
             'priority':element.getAttribute(this._options.attribute.priority)
@@ -212,11 +229,11 @@ var Conditioner = (function(DependencyRegister,BehaviorController,updateObject,T
 
 
     /**
-     * Returns BehaviorControllers matching the selector
+     * Returns ModuleControllers matching the selector
      *
      * @method getBehavior
      * @param {object} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
-     * @return {object} controller - First matched BehaviorController
+     * @return {object} controller - First matched ModuleController
      */
     p.getBehavior = function(query) {
         var controller,i=0,l = this._controllers.length;
@@ -231,7 +248,7 @@ var Conditioner = (function(DependencyRegister,BehaviorController,updateObject,T
 
 
     /**
-     * Returns all BehaviorControllers matching the selector
+     * Returns all ModuleControllers matching the selector
      *
      * @method getBehaviorAll
      * @param {object} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
@@ -285,8 +302,8 @@ var Conditioner = (function(DependencyRegister,BehaviorController,updateObject,T
         /**
          * Reference to updateObject method
          */
-        updateObject:updateObject
+        mergeObjects:mergeObjects
 
     };
 
-}(DependencyRegister,BehaviorController,updateObject,Test,Module,Observer));
+}(ModuleRegister,ModuleController,mergeObjects,Test,Module,Observer));

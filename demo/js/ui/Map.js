@@ -39,6 +39,7 @@ define(['Conditioner'],function(Conditioner){
         var image = document.createElement('img');
         image.src = 'http://maps.googleapis.com/maps/api/staticmap?center=' + position.coords.latitude + ',' + position.coords.longitude + '&zoom=14&size=' + 500 + 'x' + 300 + '&maptype=roadmap&sensor=false';
         image.alt = '';
+        image.className = 'map';
         this._element.appendChild(image);
 
     };

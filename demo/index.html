@@ -10,8 +10,6 @@
         <link href="css/rainbow/github.css" rel="stylesheet">
         <link href="css/styles.css" rel="stylesheet">
 
-        <script src="js/lib/require.js"></script>
-
     </head>
     <body>
 
@@ -54,15 +52,31 @@
 <pre><code data-language="javascript">// get instance of conditioner
 var demo = Conditioner.getInstance();
 
-// register concrete classes
-demo.registerDependencies(
-    {
-        'id':'IClock',
-        'uri':'ui/Clock'
+// set custom module options
+demo.setOptions({
+    'modules':{
+        'ui/Map':'IMap',
+        'ui/Clock':'IClock',
+        'ui/StorageConsentSelect':{
+            'alias':'IStorageConsentSelect',
+            'options':{
+                'label':{
+                    'level':{
+                        'incognito':'Incognito'
+                    }
+                }
+            }
+        },
+        'security/StorageConsentGuard':{
+            'options':{
+                'levels':['all','incognito','none'],
+                'initial':'none'
+            }
+        }
     }
-);
+});
 
-// apply behavior to document
+// apply behavior to document scope
 demo.applyBehavior(document);
 </code></pre>
 
@@ -82,7 +96,7 @@ demo.applyBehavior(document);
         <p>Clock will be active as long as the element has a minimum width of 350 pixels.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-conditions='{"element":{"minWidth":350}}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component" style="width:50.00%">
-            <div data-module="IClock" data-conditions='{"element":{"min-width":350}}'>Clock is inactive</div>
+            <div data-module="IClock" data-conditions='{"Element":{"min-width":350}}'>Clock is inactive</div>
         </div>
 
 
@@ -90,7 +104,7 @@ demo.applyBehavior(document);
         <p>Clock will be active as long as window width falls between 450 and 750 pixels. Priority of this component has a value of 1 which causes it to be loaded before all components without and explicit priority.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-conditions='{"window":{"minWidth":450,"maxWidth":750}}' data-priority="1"&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IClock" data-priority="1" data-conditions='{"window":{"min-width":450,"max-width":750}}'>Clock is inactive</div>
+            <div data-module="IClock" data-priority="1" data-conditions='{"Window":{"min-width":450,"max-width":750}}'>Clock is inactive</div>
         </div>
 
 
@@ -98,7 +112,7 @@ demo.applyBehavior(document);
         <p>Clock will be active as long as media the media query is matched. Priority of this component has a value of minus 1, which causes it to be loaded after all components without and explicit priority have loaded.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-priority="-1" data-conditions='{"mediaquery":"(min-width:30em) and (max-width:60em)"}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IClock" data-priority="-1" data-conditions='{"mediaquery":"(min-width:30em) and (max-width:60em)"}'>Clock is inactive</div>
+            <div data-module="IClock" data-priority="-1" data-conditions='{"MediaQuery":"(min-width:30em) and (max-width:60em)"}'>Clock is inactive</div>
         </div>
 
 
@@ -106,7 +120,7 @@ demo.applyBehavior(document);
         <p>Clock will be active as long as we can detect the user has a pointer device.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-conditions='{"pointer":true}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IClock" data-conditions='{"pointer":true}'>Clock is inactive</div>
+            <div data-module="IClock" data-conditions='{"Pointer":true}'>Clock is inactive</div>
         </div>
 
 
@@ -114,7 +128,7 @@ demo.applyBehavior(document);
         <p>Map will be active as long as there is any network connection and the media query is matched.</p>
         <pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions='{"connection":"any","mediaquery":"(min-width:40em)"}'&gt;Map is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IMap" data-priority="2" data-conditions='{"connection":"any","mediaquery":"(min-width:40em)"}'>Map is inactive</div>
+            <div data-module="IMap" data-priority="2" data-conditions='{"Connection":"any","MediaQuery":"(min-width:40em)"}'>Map is inactive</div>
         </div>
 
 
@@ -122,31 +136,37 @@ demo.applyBehavior(document);
         <p>Clock will be active as long as element has a maximum width of 300 pixels, if the element width gets above 400 pixels another Clock becomes active which also shows the time.</p>
         <pre><code data-language="html">&lt;div data-module='["IClock","IClock"]' data-conditions='[{"element":{"maxWidth":300}},{"element":{"minWidth":400}}]' data-options='[{"time":false},{"time":true}]' data-priority="[1,2]"&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component" style="width:50.00%">
-            <div data-module='["IClock","IClock"]' data-conditions='[{"element":{"max-width":300}},{"element":{"min-width":400}}]' data-options='[{"time":false},{"time":true}]' data-priority="[1,2]">Clock is inactive</div>
+            <div data-module='["IClock","IClock"]' data-conditions='[{"Element":{"max-width":300}},{"Element":{"min-width":400}}]' data-options='[{"time":false},{"time":true}]' data-priority="[1,2]">Clock is inactive</div>
         </div>
 
 
         <h3>Based on custom conditions</h3>
         <p>The first Clock will be activated the moment all cookies are allowed. The second Clock is only inactive when the user accepts no cookies.</p>
-        <pre><code data-language="html">&lt;div data-module="IStorageConsent" data-options='{"label":{"select":"Allow cookies"}}'&gt;Javascript needs to be enabled to control storage settings&lt;/div&gt;</code></pre>
+        <pre><code data-language="html">&lt;div data-module="IStorageConsentSelect" data-options='{"label":{"select":"Allow cookies"}}'&gt;Javascript needs to be enabled to control storage settings&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IStorageConsent" data-options='{"label":{"select":"Allow cookies"}}'>
+            <div data-module="IStorageConsentSelect" data-options='{"label":{"select":"Allow cookies"}}'>
                 Javascript needs to be enabled to control storage settings
             </div>
         </div>
         <pre><code data-language="html">&lt;div data-module="IClock" data-conditions='{"cookies":["all"]}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IClock" data-conditions='{"cookies":["all"]}'>Clock is inactive</div>
+            <div data-module="IClock" data-conditions='{"Cookies":["all"]}'>Clock is inactive</div>
         </div>
 
         <pre><code data-language="html">&lt;div data-module="IClock" data-conditions='{"cookies":["all","incognito"]}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IClock" data-conditions='{"cookies":["all","incognito"]}'>Clock is inactive</div>
+            <div data-module="IClock" data-conditions='{"Cookies":["all","incognito"]}'>Clock is inactive</div>
         </div>
 
 
+        <!-- for pretty javascript example code -->
+        <script src="js/lib/ccampbell/rainbow/rainbow.min.js"></script>
+        <script src="js/lib/ccampbell/rainbow/html.js"></script>
+        <script src="js/lib/ccampbell/rainbow/generic.js"></script>
+        <script src="js/lib/ccampbell/rainbow/javascript.js"></script>
 
-        <!-- Shims to get this working on older browsers <= IE9 -->
+
+        <!-- Shims to get this working on older browsers <= IE9 (please minimize in real life) -->
         <script src="js/shim/JSON.js"></script>
         <script src="js/shim/ContentLoaded.js"></script>
         <script src="js/shim/EventListener.js"></script>
@@ -156,46 +176,36 @@ demo.applyBehavior(document);
         <script src="js/shim/matchMedia/matchMedia.js"></script>
         <script src="js/shim/matchMedia/matchMedia.addListener.js"></script>
 
-        <!-- make demo code pretty -->
-        <script src="js/lib/rainbow/rainbow.min.js"></script>
-        <script src="js/lib/rainbow/html.js"></script>
-        <script src="js/lib/rainbow/generic.js"></script>
-        <script src="js/lib/rainbow/javascript.js"></script>
 
-
+        <!-- load minimized library (require + modules) -->
+        <script src="js.min/built.js"></script>
 
 
         <script>
 
-            // set requirejs default options
-            requirejs.config({
-                baseUrl: 'js',
-                paths:{
-                    'Conditioner':'../../dist/conditioner.min'
-                }
-            });
+        // setup module configuration
+        requirejs.config({
+            baseUrl:'js/',
+            paths:{
+                Conditioner:'../../dist/conditioner'
+            }
+        });
 
-            // load Conditioner and default set of Tests
-            requirejs(['Conditioner'],
+        // load Conditioner and default set of Tests
+        requirejs(['Conditioner'],
 
-                function(Conditioner) {
+            function(Conditioner) {
 
-                    // get instance of conditioner
-                    var demo = Conditioner.getInstance();
+                // get instance of conditioner
+                var demo = Conditioner.getInstance();
 
-                    // register modules
-                    demo.registerDependencies(
-                        {
-                            'id':'IMap',
-                            'path':'ui/Map'
-                        },
-                        {
-                            'id':'IClock',
-                            'path':'ui/Clock'
-                        },
-                        {
-                            'id':'IStorageConsent',
-                            'path':'ui/StorageConsentSelect',
+                // set custom module options
+                demo.setOptions({
+                    'modules':{
+                        'ui/Map':'IMap',
+                        'ui/Clock':'IClock',
+                        'ui/StorageConsentSelect':{
+                            'alias':'IStorageConsentSelect',
                             'options':{
                                 'label':{
                                     'level':{
@@ -204,24 +214,24 @@ demo.applyBehavior(document);
                                 }
                             }
                         },
-                        {
-                            'id':'IStorageConsentGuard',
-                            'path':'security/StorageConsentGuard',
+                        'security/StorageConsentGuard':{
                             'options':{
                                 'levels':['all','incognito','none'],
                                 'initial':'none'
                             }
                         }
-                    );
+                    }
+                });
 
-                    // apply behavior to document scope
-                    demo.applyBehavior(document);
+                // apply behavior to document scope
+                demo.applyBehavior(document);
 
-                }
+            }
 
-            );
-
+        );
 
         </script>
+
+
     </body>
 </html>

@@ -1,4 +1,4 @@
-define(['Conditioner','../security/StorageConsentGuard'],function(Conditioner,IStorageGuard){
+define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,IStorageGuard){
 
     'use strict';
 

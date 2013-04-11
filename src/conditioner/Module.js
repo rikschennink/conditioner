@@ -2,7 +2,7 @@
 /**
  * @class Module
  */
-var Module = (function(updateObject) {
+var Module = (function(mergeObjects) {
 
     /**
      * @constructor
@@ -22,7 +22,7 @@ var Module = (function(updateObject) {
 
         // declare options as empty
         this._options = this._options || {};
-        this._options = options ? updateObject(this._options,options) : this._options;
+        this._options = options ? mergeObjects(this._options,options) : this._options;
 
     };
 
@@ -38,4 +38,4 @@ var Module = (function(updateObject) {
 
     return Module;
 
-}(updateObject));
+}(mergeObjects));

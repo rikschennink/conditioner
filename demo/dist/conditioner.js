@@ -1,8 +1,9 @@
+
 // conditioner v0.8.1 - A JavaScript framework for conditionally loading UI classes
 // Copyright (c) 2013 Rik Schennink - https://github.com/rikschennink/conditioner
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-define(['require'],function(require){
+define('../../dist/conditioner',['require'],function(require){
 
 /**
  * @module Conditioner
@@ -343,6 +344,51 @@ var Test = (function(Observer){
 
 
 /**
+ * @class TestManager
+ */
+var TestManager = {
+
+    _tests:{},
+
+    /**
+     * @method defineTest
+     * @param {string} key - Test identifier
+     * @param {function} path - The path to the test
+     */
+    registerTest:function(key,path) {
+
+        if (!key || !path) {
+            throw new Error('TestManager.defineTest(key,path): Both "key" and "path" are required parameters.');
+        }
+
+        this._tests[key] = path;
+    },
+
+    /**
+     * @method loadTestByKey
+     * @param {string} key - Test identifier
+     * @param {function} success - callback for when the test module was loaded successfully
+     */
+    loadTestByKey:function(key,success) {
+
+        if (!key || !success) {
+            throw new Error('TestManager.getTestByKey(key,success): Both "key" and "success" are required parameters.');
+        }
+
+        // get path to test
+        var path = this._tests[key] || 'tests/' + key;
+
+        // get test by key
+        require([path],function(Test){
+            success(Test);
+        });
+
+    }
+
+};
+
+
+/**
  * @class ModuleRegister
  */
 var ModuleRegister = {
@@ -416,9 +462,10 @@ var ModuleRegister = {
 };
 
 /**
+ * Constructs ConditionManager objects.
  * @class ConditionManager
  */
-var ConditionManager = (function(require){
+var ConditionManager = (function(TestManager){
 
     /**
      * @constructor
@@ -483,18 +530,18 @@ var ConditionManager = (function(require){
         /**
          * Called to load a test
          * @method _loadTest
-         * @param {string} path - path to the test module
+         * @param {string} key - Key related to the test to load
          * @param {object} expected - Expected value for this test
          * @param {node} [element] - Element related to this test
          */
-        _loadTest:function(path,expected,element) {
+        _loadTest:function(key,expected,element) {
 
             var self = this;
 
-            require(['tests/' + path],function(Test){
+            TestManager.loadTestByKey(key,function(Test){
 
                 //condition = new Condition(
-                var test = new Test(expected[path],element);
+                var test = new Test(expected[key],element);
 
                 // add to tests array
                 self._tests.push(test);
@@ -503,7 +550,6 @@ var ConditionManager = (function(require){
                 self._onLoadTest();
 
             });
-
         },
 
 
@@ -593,7 +639,7 @@ var ConditionManager = (function(require){
 
     return ConditionManager;
 
-}(require));
+}(TestManager));
 
 
 /**
@@ -686,7 +732,7 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
                 moduleOptions = specification ? specification.config : {},
                 elementOptions = {},
                 options;
-
+            
             // parse element options
             if (typeof self._options.options == 'string') {
                 try {

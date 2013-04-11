@@ -5,9 +5,9 @@ module.exports = function(grunt) {
         path:{
             src:'src/',
             demo:'demo/',
-            conditioner:'<%= path.src %>' + 'conditioner/',
-            wrapper:'<%= path.src %>' + 'wrapper/',
-            tests:'<%= path.src %>' + 'tests/'
+            conditioner:'<%= path.src %>conditioner/',
+            wrapper:'<%= path.src %>wrapper/',
+            tests:'<%= path.src %>tests/'
         },
         meta: {
             banner: '// <%= pkg.name %> v<%= pkg.version %> - <%= pkg.description %>\n' +
@@ -23,16 +23,15 @@ module.exports = function(grunt) {
                     '<%= meta.banner %>',
                     '<%= path.wrapper %>intro.js',
 
-                    '<%= path.conditioner %>updateObject.js',
+                    '<%= path.conditioner %>mergeObjects.js',
                     '<%= path.conditioner %>matchesSelector.js',
                     '<%= path.conditioner %>Observer.js',
 
                     '<%= path.conditioner %>Module.js',
                     '<%= path.conditioner %>Test.js',
-                    '<%= path.conditioner %>TestManager.js',
-                    '<%= path.conditioner %>DependencyRegister.js',
+                    '<%= path.conditioner %>ModuleRegister.js',
                     '<%= path.conditioner %>ConditionManager.js',
-                    '<%= path.conditioner %>BehaviorController.js',
+                    '<%= path.conditioner %>ModuleController.js',
                     '<%= path.conditioner %>Conditioner.js',
 
                     '<%= path.wrapper %>outro.js'
@@ -69,13 +68,50 @@ module.exports = function(grunt) {
                 src: '<%= concat.dist.dest %>',
                 dest: 'dist/<%= pkg.name %>.min.js'
             }
+        },
+        requirejs: {
+            compile: {
+                options: {
+
+                    preserveLicenseComments:false,
+                    findNestedDependencies:true,
+                    optimize:'none',
+
+                    baseUrl:'<%= path.demo %>js/',
+                    paths:{
+                        'Conditioner':'../../dist/conditioner'
+                    },
+
+                    name:'lib/jrburke/require',
+                    out:'<%= path.demo %>/js.min/built.js',
+                    include:[
+                        'Conditioner',
+                        'tests/Connection',
+                        'tests/Cookies',
+                        'tests/Element',
+                        'tests/MediaQuery',
+                        'tests/Pointer',
+                        'tests/Window',
+                        'ui/Clock',
+                        'ui/StorageConsentSelect',
+                        'security/StorageConsentGuard'
+                    ]
+
+                }
+            }
         }
+
     });
 
-    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-requirejs');
 
-    grunt.registerTask('default',['concat','copy','uglify','requirejs']);
+    // task for building the library
+    grunt.registerTask('default',['concat','copy','uglify']);
+
+    // task for optimizing the demo
+    grunt.registerTask('demo',['requirejs']);
 
 };

@@ -67,15 +67,19 @@ code{
 [data-module] {
 	color:#aeaaa0;
 	-webkit-transition:color .5s;
+	-moz-transition:color .5s;
+	-ms-transition:color .5s;
+	transition:color .5s;
 }
 
 [data-initialized] {
 	color:#6b6963;
 }
 
-img {
+img.map {
 	display:block;
 	max-width:100%;
+	margin:0 auto;
 	border:1px solid #ccc8bd;
 }
 

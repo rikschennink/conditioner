@@ -1,19 +1,19 @@
 
 /**
- * @class BehaviorController
+ * @class ModuleController
  */
-var BehaviorController = (function(require,ModuleRegister,ConditionManager,matchesSelector,mergeObjects){
+var ModuleController = (function(require,ModuleRegister,ConditionManager,matchesSelector,mergeObjects){
 
     /**
      * @constructor
-     * @param {string} module - reference to module
+     * @param {string} path - reference to module
      * @param {object} options - options for this behavior controller
      */
-    var BehaviorController = function(path,options) {
-
+    var ModuleController = function(path,options) {
+        
         // if no element, throw error
         if (!path) {
-            throw new Error('BehaviorController(path,options): "path" is a required parameter.');
+            throw new Error('ModuleController(path,options): "path" is a required parameter.');
         }
 
         // options for class behavior controller should load
@@ -22,15 +22,18 @@ var BehaviorController = (function(require,ModuleRegister,ConditionManager,match
         // options for behavior controller
         this._options = options || {};
 
+        // module reference
+        this._module = null;
+
     };
 
 
     // prototype shortcut
-    var p = BehaviorController.prototype;
+    var p = ModuleController.prototype;
 
 
     /**
-     * Initializes the behavior controller
+     * Initializes the module controller
      * @method init
      */
     p.init = function() {
@@ -44,9 +47,9 @@ var BehaviorController = (function(require,ModuleRegister,ConditionManager,match
         // listen to changes in conditions
         Observer.subscribe(this._conditionManager,'change',this._onConditionsChange.bind(this));
 
-        // if already suitable, load behavior
+        // if already suitable, load module
         if (this._conditionManager.getSuitability()) {
-            this._loadBehavior();
+            this._loadModule();
         }
 
     };
@@ -60,35 +63,31 @@ var BehaviorController = (function(require,ModuleRegister,ConditionManager,match
 
         var suitable = this._conditionManager.getSuitability();
 
-        if (this._behavior && !suitable) {
-            this.unloadBehavior();
+        if (this._module && !suitable) {
+            this.unloadModule();
         }
 
-        if (!this._behavior && suitable) {
-            this._loadBehavior();
+        if (!this._module && suitable) {
+            this._loadModule();
         }
 
     };
 
 
     /**
-     * Load the behavior set in the data-behavior attribute
-     * @method _loadBehavior
+     * Load the module set in the referenced in the path property
+     * @method _loadModule
      */
-    p._loadBehavior = function() {
+    p._loadModule = function() {
 
         var self = this;
 
-        console.log(this._path);
-        
         require([this._path],function(klass){
 
             // get module specification
-            var specification = ModuleRegister.getModuleByPath(self._path);
-
-            // setup options
-            var moduleOptions = specification.config || {},
-                elementOptions,
+            var specification = ModuleRegister.getModuleByPath(self._path),
+                moduleOptions = specification ? specification.config : {},
+                elementOptions = {},
                 options;
 
             // parse element options
@@ -103,13 +102,13 @@ var BehaviorController = (function(require,ModuleRegister,ConditionManager,match
             }
 
             // merge options if necessary
-            options = mergeObjects(moduleOptions,elementOptions);
+            options = moduleOptions ? mergeObjects(moduleOptions,elementOptions) : elementOptions;
 
             // create instance of behavior klass
-            self._behavior = new klass(self._options.target,options);
+            self._module = new klass(self._options.target,options);
 
             // propagate events from behavior to behaviorController
-            Observer.setupPropagationTarget(self._behavior,self);
+            Observer.setupPropagationTarget(self._module,self);
 
         });
 
@@ -117,30 +116,30 @@ var BehaviorController = (function(require,ModuleRegister,ConditionManager,match
 
 
     /**
-     * Public method for unloading the behavior
-     * @method unloadBehavior
+     * Public method for unloading the module
+     * @method unloadModule
      * @return {boolean}
      */
-    p.unloadBehavior = function() {
+    p.unloadModule = function() {
 
-        if (!this._behavior) {
+        if (!this._module) {
             return false;
         }
 
         // unload behavior if possible
-        if (this._behavior._unload) {
-            this._behavior._unload();
+        if (this._module._unload) {
+            this._module._unload();
         }
 
         // reset property
-        this._behavior = null;
+        this._module = null;
 
         return true;
     };
 
 
     /**
-     * Public method to check if the behavior matches the given query
+     * Public method to check if the module matches the given query
      * @method matchesQuery
      * @param {object || string} query - string query to match or object to match
      * @return {boolean} if matched
@@ -153,7 +152,7 @@ var BehaviorController = (function(require,ModuleRegister,ConditionManager,match
             if (matchesSelector(this._options.target,query)) {
                 return true;
             }
-
+            
         }
 
         return (query == this._options.target);
@@ -162,7 +161,7 @@ var BehaviorController = (function(require,ModuleRegister,ConditionManager,match
 
 
     /**
-     * Public method for safely executing methods on the loaded behavior
+     * Public method for safely executing methods on the loaded module
      * @method execute
      * @param {string} method - method key
      * @param {Array} [params] - array containing the method parameters
@@ -171,21 +170,21 @@ var BehaviorController = (function(require,ModuleRegister,ConditionManager,match
     p.execute = function(method,params) {
 
         // if behavior not loaded
-        if (!this._behavior) {
+        if (!this._module) {
             return null;
         }
 
         // get function reference
-        var F = this._behavior[method];
+        var F = this._module[method];
         if (!F) {
-            throw new Error('Conditioner(method,params): "method" not found on behavior.');
+            throw new Error('Conditioner(method,params): "method" not found on module.');
         }
 
         // once loaded call method and pass parameters
-        return F.apply(this._behavior,params);
+        return F.apply(this._module,params);
 
     };
 
-    return BehaviorController;
+    return ModuleController;
 
 }(require,ModuleRegister,ConditionManager,matchesSelector,mergeObjects));

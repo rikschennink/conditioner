@@ -1,4 +1,4 @@
-define(['module','Conditioner'],function(module,Conditioner){
+define(['Conditioner','module'],function(Conditioner,module){
 
     'use strict';
 
@@ -30,7 +30,7 @@ define(['module','Conditioner'],function(module,Conditioner){
         }
 
         // sets initial options
-        this._options = Conditioner.updateObject(this._options,options);
+        this._options = Conditioner.mergeObjects(this._options,options);
 
         this._setDefaultLevel();
     };

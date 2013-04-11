@@ -1,4 +1,9 @@
-define(['Conditioner','../security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
+
+/**
+ * Tests if what consent the user has given concerning cookie storage
+ * @module security/StorageConsentGuard
+ */
+define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
 
     var Test = Conditioner.Test.inherit(),
         p = Test.prototype;
