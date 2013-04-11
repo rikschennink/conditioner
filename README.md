@@ -1,7 +1,7 @@
 ConditionerJS
 ================================
 
-**This is currently a work in progress and very much a proof of concept**
+**This is a work in progress, see the issues section for work to be done**
 
 Introduction
 --------------------------------
