@@ -6,11 +6,9 @@ ConditionerJS
 Introduction
 --------------------------------
 
-Conditioner is a JavaScript framework build to help you decouple your JavaScript UI classes from your HTML, it allows you to control the conditions under which your JavaScript Classes are allowed to be initialized.
+Conditioner is a JavaScript framework based on requirejs, it allows you to conditionally load your modules based on certain environment requirements.
 
-In short, supose you have a Google Maps Class which turns a link to Google Maps into a active Google Map. It would only make sense to activate this UI element when you've got enough real estate.
-
-Load the UI Map module the moment the supplied media query `(min-width:30em)` is met.
+Supose you have a Google Maps module which transforms an anchor to a full blown Google Map. It would make sense to only activate this module when there's enough real estate on the screen to render a decent sized map. It would look something like this:
 
 ```html
 <div data-module="IMap" data-conditions='{"MediaQuery":"(min-width:30em)"}'>
