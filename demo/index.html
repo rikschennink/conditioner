@@ -95,8 +95,9 @@ demo.applyBehavior(document);
         <h3>Based on Element dimensions</h3>
         <p>Clock will be active as long as the element has a minimum width of 350 pixels.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-conditions='{"Element":{"min-width":350}}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
-        <div class="component" style="width:50.00%">
-            <div data-module="IClock" data-conditions='{"Element":{"min-width":350}}'>Clock is inactive</div>
+        <div class="component alt">
+            <div data-module="IClock"
+                 data-conditions='{"Element":{"min-width":350}}'>Clock is inactive</div>
         </div>
 
 
@@ -104,7 +105,9 @@ demo.applyBehavior(document);
         <p>Clock will be active as long as window width falls between 450 and 750 pixels. Priority of this component has a value of 1 which causes it to be loaded before all components without and explicit priority.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-conditions='{"Window":{"min-width":450,"max-width":750}}' data-priority="1"&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IClock" data-priority="1" data-conditions='{"Window":{"min-width":450,"max-width":750}}'>Clock is inactive</div>
+            <div data-module="IClock"
+                 data-priority="1"
+                 data-conditions='{"Window":{"min-width":450,"max-width":750}}'>Clock is inactive</div>
         </div>
 
 
@@ -112,15 +115,19 @@ demo.applyBehavior(document);
         <p>Clock will be active as long as media the media query is matched. Priority of this component has a value of minus 1, which causes it to be loaded after all components without and explicit priority have loaded.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-priority="-1" data-conditions='{"MediaQuery":"(min-width:30em) and (max-width:60em)"}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IClock" data-priority="-1" data-conditions='{"MediaQuery":"(min-width:30em) and (max-width:60em)"}'>Clock is inactive</div>
+            <div data-module="IClock"
+                 data-priority="-1"
+                 data-conditions='{"MediaQuery":"(min-width:30em) and (max-width:60em)"}'>Clock is inactive</div>
         </div>
 
 
         <h3>Based on the availability of a pointer device</h3>
         <p>Clock will be active as long as we can detect the user has a pointer device.</p>
-        <pre><code data-language="html">&lt;div data-module="IClock" data-conditions='{"Pointer":true}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
+        <pre><code data-language="html">&lt;div data-module="IClock" data-module-alt="IClock" data-conditions='{"Pointer":true}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IClock" data-conditions='{"Pointer":true}'>Clock is inactive</div>
+            <div data-module="IClock"
+                 data-module-alt="IClock"
+                 data-conditions='{"Pointer":true}'>Clock is inactive</div>
         </div>
 
 
@@ -128,15 +135,20 @@ demo.applyBehavior(document);
         <p>Map will be active as long as there is any network connection and the media query is matched.</p>
         <pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions='{"Connection":"any","MediaQuery":"(min-width:40em)"}'&gt;Map is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IMap" data-priority="2" data-conditions='{"Connection":"any","MediaQuery":"(min-width:40em)"}'>Map is inactive</div>
+            <div data-module="IMap"
+                 data-priority="2"
+                 data-conditions='{"Connection":"any","MediaQuery":"(min-width:40em)"}'>Map is inactive</div>
         </div>
 
 
         <h3>Multiple Behavior Classes on a single element</h3>
         <p>Clock will be active as long as element has a maximum width of 300 pixels, if the element width gets above 400 pixels another Clock becomes active which also shows the time.</p>
         <pre><code data-language="html">&lt;div data-module='["IClock","IClock"]' data-conditions='[{"Element":{"max-width":300}},{"Element":{"min-width":400}}]' data-options='[{"time":false},{"time":true}]' data-priority="[1,2]"&gt;Clock is inactive&lt;/div&gt;</code></pre>
-        <div class="component" style="width:50.00%">
-            <div data-module='["IClock","IClock"]' data-conditions='[{"Element":{"max-width":300}},{"Element":{"min-width":400}}]' data-options='[{"time":false},{"time":true}]' data-priority="[1,2]">Clock is inactive</div>
+        <div class="component alt">
+            <div data-module='["IClock","IClock"]'
+                 data-conditions='[{"Element":{"max-width":300}},{"Element":{"min-width":400}}]'
+                 data-options='[{"time":false},{"time":true}]'
+                 data-priority="[1,2]">Clock is inactive</div>
         </div>
 
 
@@ -144,18 +156,21 @@ demo.applyBehavior(document);
         <p>The first Clock will be activated the moment all cookies are allowed. The second Clock is only inactive when the user accepts no cookies.</p>
         <pre><code data-language="html">&lt;div data-module="IStorageConsentSelect" data-options='{"label":{"select":"Allow cookies"}}'&gt;Javascript needs to be enabled to control storage settings&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IStorageConsentSelect" data-options='{"label":{"select":"Allow cookies"}}'>
+            <div data-module="IStorageConsentSelect"
+                 data-options='{"label":{"select":"Allow cookies"}}'>
                 Javascript needs to be enabled to control storage settings
             </div>
         </div>
         <pre><code data-language="html">&lt;div data-module="IClock" data-conditions='{"Cookies":["all"]}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IClock" data-conditions='{"Cookies":["all"]}'>Clock is inactive</div>
+            <div data-module="IClock"
+                 data-conditions='{"Cookies":["all"]}'>Clock is inactive</div>
         </div>
 
         <pre><code data-language="html">&lt;div data-module="IClock" data-conditions='{"Cookies":["all","incognito"]}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component">
-            <div data-module="IClock" data-conditions='{"Cookies":["all","incognito"]}'>Clock is inactive</div>
+            <div data-module="IClock"
+                 data-conditions='{"Cookies":["all","incognito"]}'>Clock is inactive</div>
         </div>
 
 

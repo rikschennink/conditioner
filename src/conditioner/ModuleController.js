@@ -21,6 +21,7 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
 
         // options for behavior controller
         this._options = options || {};
+        this._options.suitable = typeof this._options.suitable === 'undefined' ? true : this._options.suitable;
 
         // module reference
         this._module = null;
@@ -48,7 +49,7 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
         Observer.subscribe(this._conditionManager,'change',this._onConditionsChange.bind(this));
 
         // if already suitable, load module
-        if (this._conditionManager.getSuitability()) {
+        if (this._conditionManager.getSuitability() === this._options.suitable) {
             this._loadModule();
         }
 
@@ -63,11 +64,11 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
 
         var suitable = this._conditionManager.getSuitability();
 
-        if (this._module && !suitable) {
+        if (this._module && suitable !== this._options.suitable) {
             this.unloadModule();
         }
 
-        if (!this._module && suitable) {
+        if (!this._module && suitable === this._options.suitable) {
             this._loadModule();
         }
 

@@ -64,6 +64,10 @@ code{
 	border:1px solid #dcd8cc;
 }
 
+.component.alt {
+	width:50%;
+}
+
 [data-module] {
 	color:#aeaaa0;
 	-webkit-transition:color .5s;

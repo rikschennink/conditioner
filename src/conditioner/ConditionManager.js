@@ -7,7 +7,7 @@ var ConditionManager = (function(require){
     /**
      * @constructor
      * @param {object} expected - expected conditions to be met
-     * @param {node} [element] - optional element to measure these conditions on
+     * @param {Element} [element] - optional element to measure these conditions on
      */
     var ConditionManager = function(expected,element) {
 

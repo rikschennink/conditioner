@@ -5,9 +5,6 @@
 var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Module,Observer){
 
 
-
-
-
     /**
      * @constructor
      */
@@ -17,8 +14,10 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
         this._options = {
             'attribute':{
                 'module':'data-module',
+                'alternative':'data-module-alt',
                 'conditions':'data-conditions',
                 'options':'data-options',
+                'options-alt':'data-options-alt',
                 'priority':'data-priority'
             },
             'modules':{}
@@ -70,7 +69,7 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
      * Applies behavior on object within given context.
      *
      * @method applyBehavior
-     * @param {node} context - Context to apply behavior to
+     * @param {Element} context - Context to apply behavior to
      * @return {Array} - Array of initialized ModuleControllers
      */
     p.applyBehavior = function(context) {
@@ -111,7 +110,7 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
             element.setAttribute('data-processed','true');
 
             // get specs
-            specs = this._getBehaviorSpecificationsByElement(element);
+            specs = this._getModuleSpecificationsByElement(element);
 
             // apply specs
             while (spec = specs.shift()) {
@@ -122,11 +121,12 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
                     {
                         'target':element,
                         'conditions':spec.conditions,
-                        'options':spec.options
+                        'options':spec.options,
+                        'suitable':spec.suitable
                     }
                 );
 
-                // add to prio list
+                // add to priority list
                 priorityList.push({
                     'controller':controller,
                     'priority':spec.priority
@@ -145,7 +145,7 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
             return b.priority - a.priority;
         });
 
-        // initialize behavior depending on assigned priority
+        // initialize modules depending on assigned priority
         l = controllers.length;
         for (i=0; i<l; i++) {
             priorityList[i].controller.init();
@@ -154,54 +154,87 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
         // merge new controllers with current controllers
         this._controllers = this._controllers.concat(controllers);
 
-        // returns copy of controllers so it is possible to later unload behavior manually if necessary
+        // returns copy of controllers so it is possible to later unload modules manually if necessary
         return controllers;
     };
 
 
     /**
-     * Reads specifications for behavior from the element attributes
+     * Reads specifications for module from the element attributes
      *
      * @method _getBehaviorSpecificationsByElement
-     * @param {node} element - Element to parse
+     * @param {Element} element - Element to parse
      * @return {Array} behavior specifications
      */
-    p._getBehaviorSpecificationsByElement = function(element) {
+    p._getModuleSpecificationsByElement = function(element) {
 
-        var behavior = element.getAttribute(this._options.attribute.module),
-            multiple = behavior.charAt(0) === '[';
+        var path = element.getAttribute(this._options.attribute.module),
+            multiple = path.charAt(0) === '[',
+            result = [],
+            conditions,
+            alternate;
 
         // get multiple specs
         if (multiple) {
 
-            var behaviorIds = this._getElementAttributeAsObject(element,this._options.attribute.module),
-                conditions = this._getElementAttributeAsObject(element,this._options.attribute.conditions),
+            // get conditions
+            conditions = this._getElementAttributeAsObject(element,this._options.attribute.conditions);
+
+            // specific vars for multiple elements
+            var paths = this._getElementAttributeAsObject(element,this._options.attribute.module),
                 options = this._getElementAttributeAsObject(element,this._options.attribute.options),
                 priorities = this._getElementAttributeAsObject(element,this._options.attribute.priority),
-                l=behaviorIds.length,
-                i=0,
-                result = [];
+                l=paths.length,
+                i=0;
 
             for (;i<l;i++) {
 
                 result.push({
-                    'path':behaviorIds[i],
+                    'path':paths[i],
                     'conditions':conditions.length ? conditions[i] : conditions,
                     'options':options.length ? options[i] : options,
-                    'priority':priorities.length ? priorities[i] : priorities
+                    'priority':priorities.length ? priorities[i] : priorities,
+                    'suitable':true
                 });
 
             }
-            return result;
+
+        }
+        else {
+
+            // get conditions, these are shared among default and alternate module
+            conditions = element.getAttribute(this._options.attribute.conditions);
+
+            // add default module
+            result.push({
+                'path':path,
+                'conditions':conditions,
+                'options':element.getAttribute(this._options.attribute.options),
+                'priority':element.getAttribute(this._options.attribute.priority),
+                'suitable':true
+            });
+
+            // test if alternate module specified
+            alternate = element.getAttribute(this._options.attribute.alternative);
+
         }
 
-        // get single spec
-        return [{
-            'path':behavior,
-            'conditions':element.getAttribute(this._options.attribute.conditions),
-            'options':element.getAttribute(this._options.attribute.options),
-            'priority':element.getAttribute(this._options.attribute.priority)
-        }];
+        // if alternate specified
+        if (alternate) {
+
+            // todo: alternate currently gets same options as default module, related to https://github.com/rikschennink/conditioner/issues/8
+
+            result.push({
+                'path':alternate,
+                'conditions':conditions,
+                'options':element.getAttribute(this._options.attribute.options),
+                'priority':element.getAttribute(this._options.attribute.priority),
+                'suitable':false
+            });
+
+        }
+
+        return result;
 
     };
 
@@ -210,7 +243,7 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
      * Tries to convert element attribute value to an object
      *
      * @method _getElementAttributeAsObject
-     * @param {node} element - Element to find attribute on
+     * @param {Element} element - Element to find attribute on
      * @param {string} attribute - Attribute value to convert
      * @return {object} array or object
      */
@@ -231,11 +264,11 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
     /**
      * Returns ModuleControllers matching the selector
      *
-     * @method getBehavior
-     * @param {object} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
+     * @method getModule
+     * @param {object} query - Query to match the ModuleController to, could be ClassPath, Element or CSS Selector
      * @return {object} controller - First matched ModuleController
      */
-    p.getBehavior = function(query) {
+    p.getModule = function(query) {
         var controller,i=0,l = this._controllers.length;
         for (;i<l;i++) {
             controller = this._controllers[i];
@@ -250,11 +283,11 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
     /**
      * Returns all ModuleControllers matching the selector
      *
-     * @method getBehaviorAll
+     * @method getModuleAll
      * @param {object} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
      * @return {Array} results - Array containing matched behavior controllers
      */
-    p.getBehaviorAll = function(query) {
+    p.getModuleAll = function(query) {
         if (typeof query == 'undefined') {
             return this._controllers.concat();
         }

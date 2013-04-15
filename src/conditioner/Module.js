@@ -6,7 +6,7 @@ var Module = (function(mergeObjects) {
 
     /**
      * @constructor
-     * @param {node} element - DOM Element to apply this behavior to
+     * @param {Element} element - DOM Element to apply this behavior to
      * @param {object} [options] - Custom options to pass to this behavior
      */
     var Module = function(element,options) {
