@@ -131,12 +131,12 @@ demo.loadModules(document);
 
 
         <h3>Based on multiple conditions</h3>
-        <p>Map will be active as long as there is any network connection and the media query is matched.</p>
-        <pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions='{"Connection":"any","Media":"(min-width:40em)"}'&gt;Map is inactive&lt;/div&gt;</code></pre>
+        <p>Map will be active as long as there is any network connection, the media query is matched and the element is in view.</p>
+        <pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions='{"Connection":"any","Media":"(min-width:40em),"Element":{"visible":true}"}'&gt;Map is inactive&lt;/div&gt;</code></pre>
         <div class="component">
             <div data-module="IMap"
                  data-priority="2"
-                 data-conditions='{"Connection":"any","Media":"(min-width:40em)"}'>Map is inactive</div>
+                 data-conditions='{"Connection":"any","Media":"(min-width:40em)","Element":{"visible":true}}'>Map is inactive</div>
         </div>
 
 
@@ -197,7 +197,10 @@ demo.loadModules(document);
 
         // Setup module configuration
         requirejs.config({
-            baseUrl:'js/'
+            baseUrl:'js/',
+            paths:{
+                Conditioner:'../../dist/conditioner'
+            }
         });
 
         // Load Conditioner and default set of Tests

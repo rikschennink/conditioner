@@ -16,6 +16,7 @@ define(['Conditioner'],function(Conditioner){
 
     p.arrange = function() {
         window.addEventListener('resize',this,false);
+        window.addEventListener('scroll',this,false);
     };
 
     p._test = function(rule) {
@@ -26,6 +27,11 @@ define(['Conditioner'],function(Conditioner){
             }
             case 'max-width':{
                 return this._element.offsetWidth <= rule.value;
+            }
+            case 'visible':{
+                var viewHeight = window.innerHeight;
+                var offsetTop = this._element.getBoundingClientRect().top;
+                return (offsetTop > 0 && offsetTop < viewHeight) === rule.value;
             }
         }
 
