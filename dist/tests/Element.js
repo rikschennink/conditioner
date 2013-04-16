@@ -30,8 +30,8 @@ define(['Conditioner'],function(Conditioner){
             }
             case 'visible':{
                 var viewHeight = window.innerHeight;
-                var offsetTop = this._element.getBoundingClientRect().top;
-                return (offsetTop > 0 && offsetTop < viewHeight) === rule.value;
+                var bounds = this._element.getBoundingClientRect();
+                return ((bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight)) === rule.value;
             }
         }
 
