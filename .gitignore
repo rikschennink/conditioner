@@ -1,0 +1,10 @@
+
+# Folders to ignore
+.DS_Store
+.cache
+.hg
+.svn
+.CVS
+.idea
+node_modules
+Thumbs.db
