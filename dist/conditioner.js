@@ -1007,28 +1007,6 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
 
 
     /**
-     * Tries to convert element attribute value to an object
-     *
-     * @method _getElementAttributeAsObject
-     * @param {Element} element - Element to find attribute on
-     * @param {string} attribute - Attribute value to convert
-     * @return {object} array or object
-     */
-    p._getElementAttributeAsObject = function(element,attribute) {
-
-        var value = element.getAttribute(attribute);
-        if (value) {
-            try {
-                return JSON.parse(value);
-            }
-            catch(e) {}
-        }
-        return [value];
-
-    };
-
-
-    /**
      * Returns ModuleControllers matching the selector
      *
      * @method getModule
