@@ -166,11 +166,11 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
     p._getModuleSpecificationsByElement = function(element) {
 
         var path = element.getAttribute(this._options.attribute.module),
-            multiple = path.charAt(0) === '[',
+            advanced = path.charAt(0) === '[',
             result = [],specs;
 
-        // get multiple specs
-        if (multiple) {
+        // if advanced specifications parse path
+        if (advanced) {
 
             try {
                 specs = JSON.parse(path);
@@ -184,9 +184,8 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
                 return result;
             }
 
-            var l=specs.length,
-                i=0,
-                spec;
+            // setup vars
+            var l=specs.length,i=0,spec;
 
             // create specs
             for (;i<l;i++) {
