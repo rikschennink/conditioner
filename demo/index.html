@@ -26,28 +26,28 @@
 
 
         <h4>data-module</h4>
-        <p>The string contained in the <code>data-module</code> attribute points to the concrete implementation of the Class. For <code>IClock</code> this would be <code>ui.Clock</code>.</p>
+        <p>The string contained in the <code>data-module</code> attribute points to the location of the module. For <code>IClock</code> this would be <code>ui/Clock</code>.</p>
         <pre><code data-language="html">&lt;div data-module="IClock"&gt; ... &lt;/div&gt;</code></pre>
 
 
         <h4>data-conditions</h4>
-        <p>The conditions attributes allows you to control the conditions under which behavior is loaded. For instance, below is an example condition which loads the module once the window is at least 450 pixels wide.</p>
+        <p>The conditions attributes allows you to control the conditions under which a module is loaded. For instance, below is an example condition which loads the module once the window is at least 450 pixels wide.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-conditions='{"Window":{"min-width":450}}'&gt; ... &lt;/div&gt;</code></pre>
 
 
         <h4>data-options</h4>
-        <p>The options attribute allows you to set specific options for the module, these options are then passed to the constructor the moment the Class is initialized.</p>
+        <p>The options attribute allows you to set specific options for the module, these options are then passed to the constructor the moment the module is initialized.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-options='{"time":false}'&gt; ... &lt;/div&gt;</code></pre>
 
 
         <h4>data-priority</h4>
-        <p>The priority attributes allows you to control the order in which module is loaded. Positive numbers give a node priority over other nodes, a negative number moves it to the back of the line.</p>
+        <p>The priority attributes allows you to control the order in which a module is loaded. Positive numbers give a module priority over other modules, a negative number moves it to the back of the initialisation queue.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-priority="1"&gt; ... &lt;/div&gt;</code></pre>
 
 
         <h3>Javascript Kickoff</h3>
 
-        <p>To initiate the <code>Conditioner</code> request an instance and have it <code>applyBehavior</code> to the document scope.</p>
+        <p>To initiate the <code>Conditioner</code> request an instance and have it <code>loadModules</code> passing the document as the context.</p>
 
 <pre><code data-language="javascript">// get instance of conditioner
 var demo = Conditioner.getInstance();
@@ -162,7 +162,7 @@ demo.loadModules(document);
         </div>
 
 
-        <h3>Multiple Behavior Classes on a single element</h3>
+        <h3>Multiple modules on a single element</h3>
         <p>Clock will be active as long as element has a maximum width of 300 pixels, if the element width gets above 400 pixels another Clock becomes active which also shows the time.</p>
         <pre><code data-language="html">&lt;div data-module='[{"path":"IClock","conditions":{"Element":{"max-width":300}},"options":{"time":false},"priority":1},{"path":"IClock","conditions":{"Element":{"min-width":400}},"priority":2}]'&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component alt">
