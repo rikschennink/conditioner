@@ -27,7 +27,7 @@ myConditioner.setOptions({
 });
 
 // apply behavior to document scope
-myConditioner.applyBehavior(document);
+myConditioner.loadModules(document);
 ```
 
 

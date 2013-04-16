@@ -853,17 +853,17 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
 
 
     /**
-     * Applies behavior on object within given context.
+     * Loads modules within the given context.
      *
-     * @method applyBehavior
-     * @param {Element} context - Context to apply behavior to
+     * @method loadModules
+     * @param {Element} context - Context to find modules in
      * @return {Array} - Array of initialized ModuleControllers
      */
-    p.applyBehavior = function(context) {
+    p.loadModules = function(context) {
 
         // if no context supplied throw error
         if (!context) {
-            throw new Error('Conditioner.applyBehavior(context,options): "context" is a required parameter.');
+            throw new Error('Conditioner.loadModules(context): "context" is a required parameter.');
         }
 
         // register vars and get elements

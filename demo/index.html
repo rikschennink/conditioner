@@ -77,7 +77,7 @@ demo.setOptions({
 });
 
 // apply behavior to document scope
-demo.applyBehavior(document);
+demo.loadModules(document);
 </code></pre>
 
 
@@ -140,14 +140,6 @@ demo.applyBehavior(document);
         </div>
 
 
-        <h3>Multiple Behavior Classes on a single element</h3>
-        <p>Clock will be active as long as element has a maximum width of 300 pixels, if the element width gets above 400 pixels another Clock becomes active which also shows the time.</p>
-        <pre><code data-language="html">&lt;div data-module='[{"path":"IClock","conditions":{"Element":{"max-width":300}},"options":{"time":false},"priority":1},{"path":"IClock","conditions":{"Element":{"min-width":400}},"priority":2}]'&gt;Clock is inactive&lt;/div&gt;</code></pre>
-        <div class="component alt">
-            <div data-module='[{"path":"IClock","conditions":{"Element":{"max-width":300}},"options":{"time":false},"priority":1},{"path":"IClock","conditions":{"Element":{"min-width":400}},"priority":2}]'>Clock is inactive</div>
-        </div>
-
-
         <h3>Based on custom conditions</h3>
         <p>The first Clock will be activated the moment all cookies are allowed. The second Clock is only inactive when the user accepts no cookies.</p>
         <pre><code data-language="html">&lt;div data-module="IStorageConsentSelect" data-options='{"label":{"select":"Allow cookies"}}'&gt;Javascript needs to be enabled to control storage settings&lt;/div&gt;</code></pre>
@@ -170,7 +162,16 @@ demo.applyBehavior(document);
         </div>
 
 
-        <!-- for pretty javascript example code -->
+        <h3>Multiple Behavior Classes on a single element</h3>
+        <p>Clock will be active as long as element has a maximum width of 300 pixels, if the element width gets above 400 pixels another Clock becomes active which also shows the time.</p>
+        <pre><code data-language="html">&lt;div data-module='[{"path":"IClock","conditions":{"Element":{"max-width":300}},"options":{"time":false},"priority":1},{"path":"IClock","conditions":{"Element":{"min-width":400}},"priority":2}]'&gt;Clock is inactive&lt;/div&gt;</code></pre>
+        <div class="component alt">
+            <div data-module='[{"path":"IClock","conditions":{"Element":{"max-width":300}},"options":{"time":false},"priority":1},{"path":"IClock","conditions":{"Element":{"min-width":400}},"priority":2}]'>Clock is inactive</div>
+        </div>
+
+
+
+        <!-- For pretty javascript example code -->
         <script src="js/lib/ccampbell/rainbow/rainbow.min.js"></script>
         <script src="js/lib/ccampbell/rainbow/html.js"></script>
         <script src="js/lib/ccampbell/rainbow/generic.js"></script>
@@ -188,13 +189,13 @@ demo.applyBehavior(document);
         <script src="js/shim/matchMedia/matchMedia.addListener.js"></script>
 
 
-        <!-- load minimized library (require + modules) -->
+        <!-- Load minimized library (require + modules) -->
         <script src="js.min/built.js"></script>
 
 
         <script>
 
-        // setup module configuration
+        // Setup module configuration
         requirejs.config({
             baseUrl:'js/',
             paths:{
@@ -202,15 +203,15 @@ demo.applyBehavior(document);
             }
         });
 
-        // load Conditioner and default set of Tests
+        // Load Conditioner and default set of Tests
         requirejs(['Conditioner'],
 
             function(Conditioner) {
 
-                // get instance of conditioner
+                // Get instance of conditioner
                 var demo = Conditioner.getInstance();
 
-                // set custom module options
+                // Set custom module options
                 demo.setOptions({
                     'modules':{
                         'ui/Map':'IMap',
@@ -234,8 +235,8 @@ demo.applyBehavior(document);
                     }
                 });
 
-                // apply behavior to document scope
-                demo.applyBehavior(document);
+                // Apply behavior to document scope
+                demo.loadModules(document);
 
             }
 
