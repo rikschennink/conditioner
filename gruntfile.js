@@ -89,7 +89,7 @@ module.exports = function(grunt) {
                         'tests/Connection',
                         'tests/Cookies',
                         'tests/Element',
-                        'tests/MediaQuery',
+                        'tests/Media',
                         'tests/Pointer',
                         'tests/Window',
                         'ui/Clock',
@@ -108,8 +108,12 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
 
+
+    // build everything
+    grunt.registerTask('default',['concat','copy','uglify','requirejs']);
+
     // task for building the library
-    grunt.registerTask('default',['concat','copy','uglify']);
+    grunt.registerTask('lib',['concat','copy','uglify']);
 
     // task for optimizing the demo
     grunt.registerTask('demo',['requirejs']);

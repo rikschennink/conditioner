@@ -2825,10 +2825,8 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
         this._options = {
             'attribute':{
                 'module':'data-module',
-                'alternative':'data-module-alt',
                 'conditions':'data-conditions',
                 'options':'data-options',
-                'options-alt':'data-options-alt',
                 'priority':'data-priority'
             },
             'modules':{}
@@ -2932,8 +2930,7 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
                     {
                         'target':element,
                         'conditions':spec.conditions,
-                        'options':spec.options,
-                        'suitable':spec.suitable
+                        'options':spec.options
                     }
                 );
 
@@ -2973,7 +2970,7 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
     /**
      * Reads specifications for module from the element attributes
      *
-     * @method _getBehaviorSpecificationsByElement
+     * @method _getModuleSpecificationsByElement
      * @param {Element} element - Element to parse
      * @return {Array} behavior specifications
      */
@@ -2981,64 +2978,48 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
 
         var path = element.getAttribute(this._options.attribute.module),
             multiple = path.charAt(0) === '[',
-            result = [],
-            conditions,
-            alternate;
+            result = [],specs;
 
         // get multiple specs
         if (multiple) {
 
-            // get conditions
-            conditions = this._getElementAttributeAsObject(element,this._options.attribute.conditions);
+            try {
+                specs = JSON.parse(path);
+            }
+            catch(e) {
+                // failed parsing spec
+            }
 
-            // specific vars for multiple elements
-            var paths = this._getElementAttributeAsObject(element,this._options.attribute.module),
-                options = this._getElementAttributeAsObject(element,this._options.attribute.options),
-                priorities = this._getElementAttributeAsObject(element,this._options.attribute.priority),
-                l=paths.length,
-                i=0;
+            // no specification found or specification parsing failed
+            if (!specs) {
+                return result;
+            }
 
+            var l=specs.length,
+                i=0,
+                spec;
+
+            // create specs
             for (;i<l;i++) {
 
+                spec = specs[i];
                 result.push({
-                    'path':paths[i],
-                    'conditions':conditions.length ? conditions[i] : conditions,
-                    'options':options.length ? options[i] : options,
-                    'priority':priorities.length ? priorities[i] : priorities,
-                    'suitable':true
+                    'path':spec.path,
+                    'conditions':spec.conditions,
+                    'options':spec.options,
+                    'priority':spec.priority
                 });
 
             }
-
         }
         else {
 
-            // get conditions, these are shared among default and alternate module
-            conditions = element.getAttribute(this._options.attribute.conditions);
-
-            // add default module
+            // set single module spec
             result.push({
                 'path':path,
-                'conditions':conditions,
+                'conditions':element.getAttribute(this._options.attribute.conditions),
                 'options':element.getAttribute(this._options.attribute.options),
-                'priority':element.getAttribute(this._options.attribute.priority),
-                'suitable':true
-            });
-
-            // test if alternate module specified
-            alternate = element.getAttribute(this._options.attribute.alternative);
-
-        }
-
-        // if alternate specified
-        if (alternate) {
-
-            result.push({
-                'path':alternate,
-                'conditions':conditions,
-                'options':null,
-                'priority':element.getAttribute(this._options.attribute.priority),
-                'suitable':false
+                'priority':element.getAttribute(this._options.attribute.priority)
             });
 
         }
@@ -3331,9 +3312,9 @@ define('tests/Element',['Conditioner'],function(Conditioner){
 
 /**
  * Tests if a media query is matched or not and listens to changes
- * @module tests/MediaQuery
+ * @module tests/Media
  */
-define('tests/MediaQuery',['Conditioner'],function(Conditioner){
+define('tests/Media',['Conditioner'],function(Conditioner){
 
     
 
