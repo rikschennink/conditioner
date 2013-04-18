@@ -82,36 +82,49 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
     p._loadModule = function() {
 
         var self = this;
-
-        require([this._path],function(klass){
-
-            // get module specification
-            var specification = ModuleRegister.getModuleByPath(self._path),
-                moduleOptions = specification ? specification.config : {},
-                elementOptions = {},
-                options;
-
-            // parse element options
-            if (typeof self._options.options == 'string') {
-                try {
-                    elementOptions = JSON.parse(self._options.options);
-                }
-                catch(e) {}
-            }
-            else {
-                elementOptions = self._options.options;
-            }
-
-            // merge options if necessary
-            options = moduleOptions ? mergeObjects(moduleOptions,elementOptions) : elementOptions;
-
-            // create instance of behavior klass
-            self._module = new klass(self._options.target,options);
-
-            // propagate events from behavior to behaviorController
-            Observer.setupPropagationTarget(self._module,self);
-
+        require([this._path],function(Module){
+            self._onLoadModule(Module);
         });
+
+    };
+
+    /**
+     * Called when the module has loaded and is ready to be instantiated
+     * @method _onLoadModule
+     * @param {object} Module - The module that was loaded
+     */
+    p._onLoadModule = function(Module) {
+
+        // test if still suitable (could have changed while async loading the module)
+        if (!this._conditionManager.getSuitability()) {
+            return;
+        }
+
+        // get module specification
+        var specification = ModuleRegister.getModuleByPath(this._path),
+            moduleOptions = specification ? specification.config : {},
+            elementOptions = {},
+            options;
+
+        // parse element options
+        if (typeof this._options.options == 'string') {
+            try {
+                elementOptions = JSON.parse(this._options.options);
+            }
+            catch(e) {}
+        }
+        else {
+            elementOptions = this._options.options;
+        }
+
+        // merge options if necessary
+        options = moduleOptions ? mergeObjects(moduleOptions,elementOptions) : elementOptions;
+
+        // create instance of behavior klass
+        this._module = new Module(this._options.target,options);
+
+        // propagate events from behavior to behaviorController
+        Observer.setupPropagationTarget(this._module,this);
 
     };
 
