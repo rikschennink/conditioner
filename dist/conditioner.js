@@ -688,19 +688,6 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
         return this._ready;
     };
 
-
-    /**
-     * Initializes the module controller
-     * @method init
-     */
-    //p.init = function() {
-
-        // if already suitable, module is available
-       //if (this._conditionManager.getSuitability() == true) {
-        //}
-
-    //};
-
     p._onReady = function(suitable) {
 
         // module is now ready (this does not mean it's available)
