@@ -123,11 +123,12 @@ demo.loadModules(document);
 
         <h3>Based on the availability of a pointer device</h3>
         <p>Clock will be active as long as we can detect the user has a pointer device.</p>
-        <pre><code data-language="html">&lt;div data-module="IClock" data-module-alt="IClock" data-conditions='{"Pointer":true}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
+        <pre><code data-language="html">&lt;div data-module="IClock" data-conditions='{"Pointer":true}'&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component">
             <div data-module="IClock"
                  data-conditions='{"Pointer":true}'>Clock is inactive</div>
         </div>
+
 
 
         <h3>Based on multiple conditions</h3>
@@ -138,7 +139,6 @@ demo.loadModules(document);
                  data-priority="2"
                  data-conditions='{"Connection":"any","Media":"(min-width:40em)","Element":{"visible":true}}'>Map is inactive</div>
         </div>
-
 
         <h3>Based on custom conditions</h3>
         <p>The first Clock will be activated the moment all cookies are allowed. The second Clock is only inactive when the user accepts no cookies.</p>
@@ -161,12 +161,18 @@ demo.loadModules(document);
                  data-conditions='{"Cookies":["all","incognito"]}'>Clock is inactive</div>
         </div>
 
-
         <h3>Multiple modules on a single element</h3>
         <p>Clock will be active as long as element has a maximum width of 300 pixels, if the element width gets above 400 pixels another Clock becomes active which also shows the time.</p>
-        <pre><code data-language="html">&lt;div data-module='[{"path":"IClock","conditions":{"Element":{"max-width":300}},"options":{"time":false},"priority":1},{"path":"IClock","conditions":{"Element":{"min-width":400}},"priority":2}]'&gt;Clock is inactive&lt;/div&gt;</code></pre>
+        <pre><code data-language="html">&lt;div data-module='[{"path":"IClock","conditions":{"Element":{"max-width":300}},"options":{"time":false}},{"path":"IClock","conditions":{"Element":{"min-width":400}}}]' data-priority="1"&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component alt">
-            <div data-module='[{"path":"IClock","conditions":{"Element":{"max-width":300}},"options":{"time":false},"priority":1},{"path":"IClock","conditions":{"Element":{"min-width":400}},"priority":2}]'>Clock is inactive</div>
+            <div data-module='[{"path":"IClock","conditions":{"Element":{"max-width":300}},"options":{"time":false}},{"path":"IClock","conditions":{"Element":{"min-width":400}}}]' data-priority="1">Clock is inactive</div>
+        </div>
+
+        <h3>Using a conditioned and a wildcard module on a single element</h3>
+        <p>Clock will be active as long as element has a maximum width of 300 pixels, if the element gets above 300 pixels the wildcard Clock element is loaded which shows the time.</p>
+        <pre><code data-language="html">&lt;div data-module='[{"path":"IClock","conditions":{"Element":{"max-width":300}},"options":{"time":false}},{"path":"IClock"}]'&gt;Clock is inactive&lt;/div&gt;</code></pre>
+        <div class="component alt">
+            <div data-module='[{"path":"IClock","conditions":{"Element":{"max-width":300}},"options":{"time":false}},{"path":"IClock"}]'>Clock is inactive</div>
         </div>
 
 
@@ -191,6 +197,10 @@ demo.loadModules(document);
 
         <!-- Load minimized library (require + modules) -->
         <script src="js.min/built.js"></script>
+
+        <!--
+        <script src="js/lib/jrburke/require.js"></script>
+        -->
 
 
         <script>
