@@ -32,6 +32,7 @@ module.exports = function(grunt) {
                     '<%= path.conditioner %>ModuleRegister.js',
                     '<%= path.conditioner %>ConditionManager.js',
                     '<%= path.conditioner %>ModuleController.js',
+                    '<%= path.conditioner %>Node.js',
                     '<%= path.conditioner %>Conditioner.js',
 
                     '<%= path.wrapper %>outro.js'

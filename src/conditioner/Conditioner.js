@@ -2,7 +2,7 @@
 /**
  * @class Conditioner
  */
-var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Module,Observer){
+var Conditioner = (function(ModuleRegister,ModuleController,Node,Test,Module,Observer,mergeObjects){
 
 
     /**
@@ -21,8 +21,8 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
             'modules':{}
         };
 
-        // array of all active controllers
-        this._controllers = [];
+        // array of all parsed nodes
+        this._nodes = [];
 
     };
 
@@ -79,14 +79,10 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
 
         // register vars and get elements
         var elements = context.querySelectorAll('[' + this._options.attribute.module + ']'),
-            i = 0,
             l = elements.length,
-            controllers = [],
-            priorityList = [],
-            controller,
-            element,
-            specs,
-            spec;
+            i = 0,
+            nodes = [],
+            element;
 
         // if no elements do nothing
         if (!elements) {
@@ -99,121 +95,34 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
             // set element reference
             element = elements[i];
 
-            // skip element if already processed
-            if (element.getAttribute('data-processed') == 'true') {
+            // test if already processed
+            if (Node.hasProcessed(element)) {
                 continue;
             }
 
-            // has been processed
-            element.setAttribute('data-processed','true');
-
-            // get specs
-            specs = this._getModuleSpecificationsByElement(element);
-
-            // apply specs
-            while (spec = specs.shift()) {
-
-                // create controller instance
-                controller = new ModuleController(
-                    spec.path,
-                    {
-                        'target':element,
-                        'conditions':spec.conditions,
-                        'options':spec.options
-                    }
-                );
-
-                // add to priority list
-                priorityList.push({
-                    'controller':controller,
-                    'priority':spec.priority
-                });
-
-                // add to controllers
-                controllers.push(controller);
-            }
+            // create new node
+            nodes.push(new Node(element));
         }
 
-        // sort controllers by priority:
+        // sort nodes by priority:
         // higher numbers go first,
         // then 0 (or no priority assigned),
         // then negative numbers
-        priorityList.sort(function(a,b){
-            return b.priority - a.priority;
+        nodes.sort(function(a,b){
+            return b.getPriority() - a.getPriority();
         });
 
         // initialize modules depending on assigned priority
-        l = controllers.length;
+        l = nodes.length;
         for (i=0; i<l; i++) {
-            priorityList[i].controller.init();
+            nodes[i].init();
         }
 
-        // merge new controllers with current controllers
-        this._controllers = this._controllers.concat(controllers);
+        // merge new nodes with currently active nodes list
+        this._nodes = this._nodes.concat(nodes);
 
-        // returns copy of controllers so it is possible to later unload modules manually if necessary
-        return controllers;
-    };
-
-
-    /**
-     * Reads specifications for module from the element attributes
-     *
-     * @method _getModuleSpecificationsByElement
-     * @param {Element} element - Element to parse
-     * @return {Array} behavior specifications
-     */
-    p._getModuleSpecificationsByElement = function(element) {
-
-        var path = element.getAttribute(this._options.attribute.module),
-            advanced = path.charAt(0) === '[',
-            result = [],specs;
-
-        // if advanced specifications parse path
-        if (advanced) {
-
-            try {
-                specs = JSON.parse(path);
-            }
-            catch(e) {
-                // failed parsing spec
-            }
-
-            // no specification found or specification parsing failed
-            if (!specs) {
-                return result;
-            }
-
-            // setup vars
-            var l=specs.length,i=0,spec;
-
-            // create specs
-            for (;i<l;i++) {
-
-                spec = specs[i];
-                result.push({
-                    'path':spec.path,
-                    'conditions':spec.conditions,
-                    'options':spec.options,
-                    'priority':spec.priority
-                });
-
-            }
-        }
-        else {
-
-            // set single module spec
-            result.push({
-                'path':path,
-                'conditions':element.getAttribute(this._options.attribute.conditions),
-                'options':element.getAttribute(this._options.attribute.options),
-                'priority':element.getAttribute(this._options.attribute.priority)
-            });
-
-        }
-
-        return result;
-
+        // returns nodes so it is possible to later unload nodes manually if necessary
+        return nodes;
     };
 
 
@@ -225,11 +134,11 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
      * @return {object} controller - First matched ModuleController
      */
     p.getModule = function(query) {
-        var controller,i=0,l = this._controllers.length;
+        var i=0,l = this._nodes.length,node;
         for (;i<l;i++) {
-            controller = this._controllers[i];
-            if (controller.matchesQuery(query)) {
-                return controller;
+            node = this._nodes[i];
+            if (node.matchesQuery(query)) {
+                return node;
             }
         }
         return null;
@@ -245,13 +154,13 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
      */
     p.getModuleAll = function(query) {
         if (typeof query == 'undefined') {
-            return this._controllers.concat();
+            return this._nodes.concat();
         }
-        var controller,i=0,l = this._controllers.length,results=[];
+        var i=0,l = this._node.length,results=[],node;
         for (;i<l;i++) {
-            controller = this._controllers[i];
-            if (controller.matchesQuery(query)) {
-                results.push(controller);
+            node = this._nodes[i];
+            if (node.matchesQuery(query)) {
+                results.push(node);
             }
         }
         return results;
@@ -295,4 +204,4 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
 
     };
 
-}(ModuleRegister,ModuleController,mergeObjects,Test,Module,Observer));
+}(ModuleRegister,ModuleController,Node,Test,Module,Observer,mergeObjects));

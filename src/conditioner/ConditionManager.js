@@ -63,6 +63,14 @@ var ConditionManager = (function(require){
     // prototype shortcut
     ConditionManager.prototype = {
 
+        /**
+         * Returns true if the current conditions are suitable
+         * @method getSuitability
+         */
+        getSuitability:function() {
+            return this._suitable;
+        },
+
 
         /**
          * Called to load a test
@@ -113,8 +121,10 @@ var ConditionManager = (function(require){
          */
         _onReady:function() {
 
+            // setup
             var l = this._tests.length,test,i;
             for (i=0;i<l;i++) {
+
                 test = this._tests[i];
 
                 // arrange test
@@ -129,6 +139,10 @@ var ConditionManager = (function(require){
 
             // test current state
             this.test();
+
+            // we are now ready to start testing
+            Observer.publish(this,'ready',this._suitable);
+
         },
 
 
@@ -163,16 +177,8 @@ var ConditionManager = (function(require){
                 Observer.publish(this,'change');
             }
 
-        },
-
-
-        /**
-         * Returns true if the current conditions are suitable
-         * @method getSuitability
-         */
-        getSuitability:function() {
-            return this._suitable;
         }
+
     };
 
     return ConditionManager;

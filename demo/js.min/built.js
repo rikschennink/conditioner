@@ -2194,12 +2194,18 @@ var Observer = (function(){
             }
             
             // find and execute callback
-            var test,i=0,l = obj._subscriptions.length;
-            for (; i<l; i++) {
-                test = obj._subscriptions[i];
-                if (test.type == type) {
-                    test.fn(data);
+            var subscriptions=[],subscription,i=0,l = obj._subscriptions.length;
+            for (;i<l; i++) {
+                subscription = obj._subscriptions[i];
+                if (subscription.type == type) {
+                    subscriptions.push(subscription);
                 }
+            }
+
+            // call callbacks
+            l = subscriptions.length;
+            for (i=0;i<l;i++) {
+                subscriptions[i].fn(data)
             }
 
             // see if should be propagated
@@ -2220,6 +2226,13 @@ var Observer = (function(){
                 return;
             }
             obj._eventPropagationTarget = target;
+        },
+
+        removePropagationTarget:function(obj,target) {
+            if (!obj) {
+                return;
+            }
+            obj._eventPropagationTarget = null;
         }
 
     };
@@ -2501,6 +2514,14 @@ var ConditionManager = (function(require){
     // prototype shortcut
     ConditionManager.prototype = {
 
+        /**
+         * Returns true if the current conditions are suitable
+         * @method getSuitability
+         */
+        getSuitability:function() {
+            return this._suitable;
+        },
+
 
         /**
          * Called to load a test
@@ -2551,8 +2572,10 @@ var ConditionManager = (function(require){
          */
         _onReady:function() {
 
+            // setup
             var l = this._tests.length,test,i;
             for (i=0;i<l;i++) {
+
                 test = this._tests[i];
 
                 // arrange test
@@ -2567,6 +2590,10 @@ var ConditionManager = (function(require){
 
             // test current state
             this.test();
+
+            // we are now ready to start testing
+            Observer.publish(this,'ready',this._suitable);
+
         },
 
 
@@ -2601,16 +2628,8 @@ var ConditionManager = (function(require){
                 Observer.publish(this,'change');
             }
 
-        },
-
-
-        /**
-         * Returns true if the current conditions are suitable
-         * @method getSuitability
-         */
-        getSuitability:function() {
-            return this._suitable;
         }
+
     };
 
     return ConditionManager;
@@ -2640,10 +2659,26 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
 
         // options for behavior controller
         this._options = options || {};
-        this._options.suitable = typeof this._options.suitable === 'undefined' ? true : this._options.suitable;
 
         // module reference
-        this._module = null;
+        this._Module = null;
+        
+        // module instance reference
+        this._moduleInstance = null;
+
+        // check if conditions specified
+        this._conditionManager = new ConditionManager(
+            this._options.conditions,
+            this._options.target
+        );
+
+        // listen to ready event on condition manager
+        Observer.subscribe(this._conditionManager,'ready',this._onReady.bind(this));
+
+        // by default module is not ready and not available unless it's not conditioned or conditions are already suitable
+        this._ready = !this.isConditioned() || this._conditionManager.getSuitability();
+        this._available = false;
+
 
     };
 
@@ -2653,24 +2688,65 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
 
 
     /**
+     * Returns true if the module is ready to be initialized
+     * @method isAvailable
+     */
+    p.isAvailable = function() {
+        this._available = this._conditionManager.getSuitability();
+        return this._available;
+    };
+
+
+    /**
+     * Returns true if the module has no conditions defined
+     * @method isReady
+     */
+    p.isConditioned = function() {
+        return typeof this._options.conditions !== 'undefined';
+    };
+
+
+    p.isReady = function() {
+        return this._ready;
+    };
+
+
+    /**
      * Initializes the module controller
      * @method init
      */
-    p.init = function() {
+    //p.init = function() {
 
-        // check if conditions specified
-        this._conditionManager = new ConditionManager(
-            this._options.conditions,
-            this._options.target
-        );
+        // if already suitable, module is available
+       //if (this._conditionManager.getSuitability() == true) {
+        //}
+
+    //};
+
+    p._onReady = function(suitable) {
+
+        // module is now ready (this does not mean it's available)
+        this._ready = true;
 
         // listen to changes in conditions
         Observer.subscribe(this._conditionManager,'change',this._onConditionsChange.bind(this));
 
-        // if already suitable, load module
-        if (this._conditionManager.getSuitability() === this._options.suitable) {
-            this._loadModule();
+        // let others know we are ready
+        Observer.publish(this,'ready');
+
+        // are we available
+        if (suitable) {
+            this._onAvailable();
         }
+    };
+
+    p._onAvailable = function() {
+
+        // module is now available
+        this._available = true;
+
+        // let other know we are available
+        Observer.publish(this,'available',this);
 
     };
 
@@ -2680,79 +2756,122 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
      * @method _onConditionsChange
      */
     p._onConditionsChange = function() {
-
+        
         var suitable = this._conditionManager.getSuitability();
-
-        if (this._module && suitable !== this._options.suitable) {
-            this.unloadModule();
+        
+        if (this._moduleInstance && !suitable) {
+            this.unload();
         }
-
-        if (!this._module && suitable === this._options.suitable) {
-            this._loadModule();
+        
+        if (!this._moduleInstance && suitable) {
+            this._onAvailable();
         }
-
+        
     };
+
+
 
 
     /**
      * Load the module set in the referenced in the path property
-     * @method _loadModule
+     * @method load
      */
-    p._loadModule = function() {
+    p.load = function() {
 
+        // if module available no need to require it
+        if (this._Module) {
+            this._onLoad();
+            return;
+        }
+
+        // load module, and remember reference
         var self = this;
+        require([this._path],function(Module){
 
-        require([this._path],function(klass){
+            // set reference to Module
+            self._Module = Module;
 
-            // get module specification
-            var specification = ModuleRegister.getModuleByPath(self._path),
-                moduleOptions = specification ? specification.config : {},
-                elementOptions = {},
-                options;
-
-            // parse element options
-            if (typeof self._options.options == 'string') {
-                try {
-                    elementOptions = JSON.parse(self._options.options);
-                }
-                catch(e) {}
-            }
-            else {
-                elementOptions = self._options.options;
-            }
-
-            // merge options if necessary
-            options = moduleOptions ? mergeObjects(moduleOptions,elementOptions) : elementOptions;
-
-            // create instance of behavior klass
-            self._module = new klass(self._options.target,options);
-
-            // propagate events from behavior to behaviorController
-            Observer.setupPropagationTarget(self._module,self);
+            // module is now ready to be loaded
+            self._onLoad();
 
         });
 
     };
 
+    /**
+     * Public method for loading the module
+     * @method _onLoad
+     */
+    p._onLoad = function() {
+        
+        // if no longer available
+        if (!this.isAvailable()) {
+            return;
+        }
+
+        // get module specification
+        var specification = ModuleRegister.getModuleByPath(this._path),
+            moduleOptions = specification ? specification.config : {},
+            elementOptions = {},
+            options;
+
+        // parse element options
+        if (typeof this._options.options == 'string') {
+            try {
+                elementOptions = JSON.parse(this._options.options);
+            }
+            catch(e) {
+                throw new Error('ModuleController.loadModule(): "options" is not a valid JSON string.');
+            }
+        }
+        else {
+            elementOptions = this._options.options;
+        }
+
+        // merge module default options with element options if found
+        options = moduleOptions ? mergeObjects(moduleOptions,elementOptions) : elementOptions;
+
+        // create instance
+        this._moduleInstance = new this._Module(this._options.target,options);
+
+        // propagate events from actual module to module controller
+        // this way it is possible to listen to events on the controller which is always there
+        Observer.setupPropagationTarget(this._moduleInstance,this);
+
+        // publish load event
+        Observer.publish(this,'load',this);
+        
+    };
+
 
     /**
      * Public method for unloading the module
-     * @method unloadModule
+     * @method unload
      * @return {boolean}
      */
-    p.unloadModule = function() {
+    p.unload = function() {
 
-        if (!this._module) {
+        // module is now no longer ready to be loaded
+        this._available = false;
+
+        // if no module, module has already been unloaded or was never loaded
+        if (!this._moduleInstance) {
             return false;
         }
 
+        // clean propagation target
+        Observer.removePropagationTarget(this._moduleInstance,this);
+
         // unload behavior if possible
-        if (this._module._unload) {
-            this._module._unload();
+        if (this._moduleInstance._unload) {
+            this._moduleInstance._unload();
         }
 
         // reset property
-        this._module = null;
+        this._moduleInstance = null;
+
+        // publish unload event
+        Observer.publish(this,'unload',this);
 
         return true;
     };
@@ -2790,18 +2909,18 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
     p.execute = function(method,params) {
 
         // if behavior not loaded
-        if (!this._module) {
+        if (!this._moduleInstance) {
             return null;
         }
 
         // get function reference
-        var F = this._module[method];
+        var F = this._moduleInstance[method];
         if (!F) {
-            throw new Error('Conditioner(method,params): "method" not found on module.');
+            throw new Error('ModuleController.execute(method,params): function specified in "method" not found on module.');
         }
 
         // once loaded call method and pass parameters
-        return F.apply(this._module,params);
+        return F.apply(this._moduleInstance,params);
 
     };
 
@@ -2811,9 +2930,313 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
 
 
 /**
+ * @class Node
+ */
+var Node = (function(Observer){
+
+
+    /**
+     * @constructor
+     * @param {Element} element
+     */
+    var Node = function(element) {
+
+        // set element reference
+        this._element = element;
+
+        // has been processed
+        this._element.setAttribute('data-processed','true');
+
+        // set priority
+        this._priority = this._element.getAttribute('data-priority');
+
+        // contains references to all module controllers
+        this._moduleControllers = [];
+
+        // contains reference to currently active module controller
+        this._activeModuleController = null;
+
+        // method to unbind
+        this._activeModuleUnloadBind = this._onActiveModuleUnload.bind(this);
+        
+    };
+
+    var p = Node.prototype;
+
+
+    /**
+     * Static method testing if the current element has been processed already
+     * @method getPriority
+     */
+    Node.hasProcessed = function(element) {
+        return element.getAttribute('data-processed') === 'true';
+    };
+
+
+    /**
+     * Returns the set priority for this node
+     * @method getPriority
+     */
+    p.getPriority = function() {
+        return this._priority;
+    };
+
+
+    /**
+     * Initializes the node
+     * @method init
+     */
+    p.init = function() {
+
+        // parse element module attributes
+        this._moduleControllers = this._getModuleControllers();
+
+        // listen to ready events on module controllers
+        var l=this._moduleControllers.length,i,mc;
+
+        // initialize modules
+        for (i=0;i<l;i++) {
+
+            mc = this._moduleControllers[i];
+
+            // if module already ready, check if all modules loaded now
+            if (mc.isReady()) {
+                this._onModuleReady();
+                continue;
+            }
+
+            // otherwise, listen to ready event
+            Observer.subscribe(mc,'ready',this._onModuleReady.bind(this));
+
+        }
+
+    };
+
+    p._onModuleReady = function() {
+
+        // check if all modules ready, if so, call on modules ready
+        var i=0,l=this._moduleControllers.length;
+
+        for (;i<l;i++) {
+            if (!this._moduleControllers[i].isReady()) {
+                return;
+            }
+        }
+
+        // all modules ready
+        this._onModulesReady();
+
+    };
+
+    p._onModulesReady = function() {
+
+        // find suitable active module controller
+        var moduleController = this._getSuitableActiveModuleController();
+        if (moduleController) {
+            this._setActiveModuleController(moduleController);
+        }
+
+        // listen to available events on controllers
+        var i=0,l=this._moduleControllers.length;
+        for (;i<l;i++) {
+            Observer.subscribe(this._moduleControllers[i],'available',this._onModuleAvailable.bind(this));
+        }
+
+    };
+
+
+    /**
+     * Called when a module controller has indicated it is ready to be loaded
+     * @method _onModuleReady
+     */
+    p._onModuleAvailable = function(moduleController) {
+
+        // setup vars
+        var i=0,l=this._moduleControllers.length,mc;
+
+        for (;i<l;i++) {
+
+            mc = this._moduleControllers[i];
+
+            if (mc !== moduleController &&
+                mc.isAvailable() &&
+                mc.isConditioned()) {
+
+                // earlier or conditioned module is ready, therefor cannot load this module
+
+                return;
+            }
+        }
+
+        // load supplied module controller as active module
+        this._setActiveModuleController(moduleController);
+
+    };
+
+    p._setActiveModuleController = function(moduleController) {
+
+        // clean up active module controller reference
+        this._cleanActiveModuleController();
+
+        // set new active module controller
+        this._activeModuleController = moduleController;
+        Observer.subscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
+        this._activeModuleController.load();
+
+    };
+
+    p._cleanActiveModuleController = function() {
+
+        // if no module controller defined do nothing
+        if (!this._activeModuleController) {
+            return;
+        }
+
+        // stop listening to unload
+        Observer.unsubscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
+
+        // unload controller
+        this._activeModuleController.unload();
+
+        // remove reference
+        this._activeModuleController = null;
+    };
+
+    p._onActiveModuleUnload = function() {
+
+        // clean up active module controller reference
+        this._cleanActiveModuleController();
+
+        // active module was unloaded, find another active module
+        var moduleController = this._getSuitableActiveModuleController();
+        if(!moduleController) {
+            return;
+        }
+
+        // set found module controller as new active module controller
+        this._setActiveModuleController(moduleController);
+    };
+
+    p._getSuitableActiveModuleController = function() {
+
+        // test if other module is ready, if so load first module to be fitting
+        var i=0,l=this._moduleControllers.length,mc;
+        for (;i<l;i++) {
+
+            mc = this._moduleControllers[i];
+
+            // if not ready, skip to next controller
+            if (!mc.isAvailable()) {
+                continue;
+            }
+
+            return mc;
+        }
+
+        return null;
+    };
+
+
+    /**
+     * Returns an array of module controllers found specified on the element
+     * @method _getModuleControllers
+     */
+    p._getModuleControllers = function() {
+
+        var result = [];
+        var config = this._element.getAttribute('data-module');
+        var advanced = config.charAt(0) == '[';
+
+        if (advanced) {
+
+            var specs;
+
+            // add multiple module controllers
+            try {
+                specs = JSON.parse(config);
+            }
+            catch(e) {
+                // failed parsing spec
+            }
+
+            // no specification found or specification parsing failed
+            if (!specs) {
+                return [];
+            }
+
+            // setup vars
+            var l=specs.length,i=0,spec;
+
+            // create specs
+            for (;i<l;i++) {
+
+                spec = specs[i];
+
+                result.push(
+                    new ModuleController(spec.path,{
+                        'conditions':spec.conditions,
+                        'options':spec.options,
+                        'target':this._element
+                    })
+                );
+
+            }
+
+
+        }
+        else {
+
+            // add default module controller
+            result.push(
+                new ModuleController(config,{
+                    'conditions':this._element.getAttribute('data-conditions'),
+                    'options':this._element.getAttribute('data-options'),
+                    'target':this._element
+                })
+            );
+
+        }
+
+        return result;
+
+    };
+
+
+    /**
+     * Public method to check if the module matches the given query
+     * @method matchesQuery
+     * @param {object || string} query - string query to match or object to match
+     * @return {boolean} if matched
+     */
+    p.matchesQuery = function(query) {
+
+        return null; // todo: link to controller
+
+    };
+
+
+    /**
+     * Public method for safely executing methods on the loaded module
+     * @method execute
+     * @param {string} method - method key
+     * @param {Array} [params] - array containing the method parameters
+     * @return
+     */
+    p.execute = function(method,params) {
+
+        return null; // todo: link to controller
+
+    };
+
+    return Node;
+    
+}(Observer));
+
+
+/**
  * @class Conditioner
  */
-var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Module,Observer){
+var Conditioner = (function(ModuleRegister,ModuleController,Node,Test,Module,Observer,mergeObjects){
 
 
     /**
@@ -2832,8 +3255,8 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
             'modules':{}
         };
 
-        // array of all active controllers
-        this._controllers = [];
+        // array of all parsed nodes
+        this._nodes = [];
 
     };
 
@@ -2890,14 +3313,10 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
 
         // register vars and get elements
         var elements = context.querySelectorAll('[' + this._options.attribute.module + ']'),
-            i = 0,
             l = elements.length,
-            controllers = [],
-            priorityList = [],
-            controller,
-            element,
-            specs,
-            spec;
+            i = 0,
+            nodes = [],
+            element;
 
         // if no elements do nothing
         if (!elements) {
@@ -2910,121 +3329,34 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
             // set element reference
             element = elements[i];
 
-            // skip element if already processed
-            if (element.getAttribute('data-processed') == 'true') {
+            // test if already processed
+            if (Node.hasProcessed(element)) {
                 continue;
             }
 
-            // has been processed
-            element.setAttribute('data-processed','true');
-
-            // get specs
-            specs = this._getModuleSpecificationsByElement(element);
-
-            // apply specs
-            while (spec = specs.shift()) {
-
-                // create controller instance
-                controller = new ModuleController(
-                    spec.path,
-                    {
-                        'target':element,
-                        'conditions':spec.conditions,
-                        'options':spec.options
-                    }
-                );
-
-                // add to priority list
-                priorityList.push({
-                    'controller':controller,
-                    'priority':spec.priority
-                });
-
-                // add to controllers
-                controllers.push(controller);
-            }
+            // create new node
+            nodes.push(new Node(element));
         }
 
-        // sort controllers by priority:
+        // sort nodes by priority:
         // higher numbers go first,
         // then 0 (or no priority assigned),
         // then negative numbers
-        priorityList.sort(function(a,b){
-            return b.priority - a.priority;
+        nodes.sort(function(a,b){
+            return b.getPriority() - a.getPriority();
         });
 
         // initialize modules depending on assigned priority
-        l = controllers.length;
+        l = nodes.length;
         for (i=0; i<l; i++) {
-            priorityList[i].controller.init();
+            nodes[i].init();
         }
 
-        // merge new controllers with current controllers
-        this._controllers = this._controllers.concat(controllers);
+        // merge new nodes with currently active nodes list
+        this._nodes = this._nodes.concat(nodes);
 
-        // returns copy of controllers so it is possible to later unload modules manually if necessary
-        return controllers;
-    };
-
-
-    /**
-     * Reads specifications for module from the element attributes
-     *
-     * @method _getModuleSpecificationsByElement
-     * @param {Element} element - Element to parse
-     * @return {Array} behavior specifications
-     */
-    p._getModuleSpecificationsByElement = function(element) {
-
-        var path = element.getAttribute(this._options.attribute.module),
-            advanced = path.charAt(0) === '[',
-            result = [],specs;
-
-        // if advanced specifications parse path
-        if (advanced) {
-
-            try {
-                specs = JSON.parse(path);
-            }
-            catch(e) {
-                // failed parsing spec
-            }
-
-            // no specification found or specification parsing failed
-            if (!specs) {
-                return result;
-            }
-
-            // setup vars
-            var l=specs.length,i=0,spec;
-
-            // create specs
-            for (;i<l;i++) {
-
-                spec = specs[i];
-                result.push({
-                    'path':spec.path,
-                    'conditions':spec.conditions,
-                    'options':spec.options,
-                    'priority':spec.priority
-                });
-
-            }
-        }
-        else {
-
-            // set single module spec
-            result.push({
-                'path':path,
-                'conditions':element.getAttribute(this._options.attribute.conditions),
-                'options':element.getAttribute(this._options.attribute.options),
-                'priority':element.getAttribute(this._options.attribute.priority)
-            });
-
-        }
-
-        return result;
-
+        // returns nodes so it is possible to later unload nodes manually if necessary
+        return nodes;
     };
 
 
@@ -3036,11 +3368,11 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
      * @return {object} controller - First matched ModuleController
      */
     p.getModule = function(query) {
-        var controller,i=0,l = this._controllers.length;
+        var i=0,l = this._nodes.length,node;
         for (;i<l;i++) {
-            controller = this._controllers[i];
-            if (controller.matchesQuery(query)) {
-                return controller;
+            node = this._nodes[i];
+            if (node.matchesQuery(query)) {
+                return node;
             }
         }
         return null;
@@ -3056,13 +3388,13 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
      */
     p.getModuleAll = function(query) {
         if (typeof query == 'undefined') {
-            return this._controllers.concat();
+            return this._nodes.concat();
         }
-        var controller,i=0,l = this._controllers.length,results=[];
+        var i=0,l = this._node.length,results=[],node;
         for (;i<l;i++) {
-            controller = this._controllers[i];
-            if (controller.matchesQuery(query)) {
-                results.push(controller);
+            node = this._nodes[i];
+            if (node.matchesQuery(query)) {
+                results.push(node);
             }
         }
         return results;
@@ -3106,7 +3438,7 @@ var Conditioner = (function(ModuleRegister,ModuleController,mergeObjects,Test,Mo
 
     };
 
-}(ModuleRegister,ModuleController,mergeObjects,Test,Module,Observer));
+}(ModuleRegister,ModuleController,Node,Test,Module,Observer,mergeObjects));
 
 
 // expose conditioner

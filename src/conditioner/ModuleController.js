@@ -21,10 +21,26 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
 
         // options for behavior controller
         this._options = options || {};
-        this._options.suitable = typeof this._options.suitable === 'undefined' ? true : this._options.suitable;
 
         // module reference
-        this._module = null;
+        this._Module = null;
+        
+        // module instance reference
+        this._moduleInstance = null;
+
+        // check if conditions specified
+        this._conditionManager = new ConditionManager(
+            this._options.conditions,
+            this._options.target
+        );
+
+        // listen to ready event on condition manager
+        Observer.subscribe(this._conditionManager,'ready',this._onReady.bind(this));
+
+        // by default module is not ready and not available unless it's not conditioned or conditions are already suitable
+        this._ready = !this.isConditioned() || this._conditionManager.getSuitability();
+        this._available = false;
+
 
     };
 
@@ -34,24 +50,52 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
 
 
     /**
-     * Initializes the module controller
-     * @method init
+     * Returns true if the module is ready to be initialized
+     * @method isAvailable
      */
-    p.init = function() {
+    p.isAvailable = function() {
+        this._available = this._conditionManager.getSuitability();
+        return this._available;
+    };
 
-        // check if conditions specified
-        this._conditionManager = new ConditionManager(
-            this._options.conditions,
-            this._options.target
-        );
+
+    /**
+     * Returns true if the module has no conditions defined
+     * @method isReady
+     */
+    p.isConditioned = function() {
+        return typeof this._options.conditions !== 'undefined';
+    };
+
+
+    p.isReady = function() {
+        return this._ready;
+    };
+
+    p._onReady = function(suitable) {
+
+        // module is now ready (this does not mean it's available)
+        this._ready = true;
 
         // listen to changes in conditions
         Observer.subscribe(this._conditionManager,'change',this._onConditionsChange.bind(this));
 
-        // if already suitable, load module
-        if (this._conditionManager.getSuitability() === this._options.suitable) {
-            this._loadModule();
+        // let others know we are ready
+        Observer.publish(this,'ready');
+
+        // are we available
+        if (suitable) {
+            this._onAvailable();
         }
+    };
+
+    p._onAvailable = function() {
+
+        // module is now available
+        this._available = true;
+
+        // let other know we are available
+        Observer.publish(this,'available',this);
 
     };
 
@@ -61,42 +105,56 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
      * @method _onConditionsChange
      */
     p._onConditionsChange = function() {
-
+        
         var suitable = this._conditionManager.getSuitability();
-
-        if (this._module && suitable !== this._options.suitable) {
-            this.unloadModule();
+        
+        if (this._moduleInstance && !suitable) {
+            this.unload();
         }
-
-        if (!this._module && suitable === this._options.suitable) {
-            this._loadModule();
+        
+        if (!this._moduleInstance && suitable) {
+            this._onAvailable();
         }
-
+        
     };
+
+
 
 
     /**
      * Load the module set in the referenced in the path property
-     * @method _loadModule
+     * @method load
      */
-    p._loadModule = function() {
+    p.load = function() {
 
+        // if module available no need to require it
+        if (this._Module) {
+            this._onLoad();
+            return;
+        }
+
+        // load module, and remember reference
         var self = this;
         require([this._path],function(Module){
-            self._onLoadModule(Module);
+
+            // set reference to Module
+            self._Module = Module;
+
+            // module is now ready to be loaded
+            self._onLoad();
+
         });
 
     };
 
     /**
-     * Called when the module has loaded and is ready to be instantiated
-     * @method _onLoadModule
-     * @param {object} Module - The module that was loaded
+     * Public method for loading the module
+     * @method _onLoad
      */
-    p._onLoadModule = function(Module) {
-
-        // test if still suitable (could have changed while async loading the module)
-        if (!this._conditionManager.getSuitability()) {
+    p._onLoad = function() {
+        
+        // if no longer available
+        if (!this.isAvailable()) {
             return;
         }
 
@@ -111,42 +169,58 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
             try {
                 elementOptions = JSON.parse(this._options.options);
             }
-            catch(e) {}
+            catch(e) {
+                throw new Error('ModuleController.loadModule(): "options" is not a valid JSON string.');
+            }
         }
         else {
             elementOptions = this._options.options;
         }
 
-        // merge options if necessary
+        // merge module default options with element options if found
         options = moduleOptions ? mergeObjects(moduleOptions,elementOptions) : elementOptions;
 
-        // create instance of behavior klass
-        this._module = new Module(this._options.target,options);
+        // create instance
+        this._moduleInstance = new this._Module(this._options.target,options);
 
-        // propagate events from behavior to behaviorController
-        Observer.setupPropagationTarget(this._module,this);
+        // propagate events from actual module to module controller
+        // this way it is possible to listen to events on the controller which is always there
+        Observer.setupPropagationTarget(this._moduleInstance,this);
 
+        // publish load event
+        Observer.publish(this,'load',this);
+        
     };
 
 
     /**
      * Public method for unloading the module
-     * @method unloadModule
+     * @method unload
      * @return {boolean}
      */
-    p.unloadModule = function() {
+    p.unload = function() {
 
-        if (!this._module) {
+        // module is now no longer ready to be loaded
+        this._available = false;
+
+        // if no module, module has already been unloaded or was never loaded
+        if (!this._moduleInstance) {
             return false;
         }
 
+        // clean propagation target
+        Observer.removePropagationTarget(this._moduleInstance,this);
+
         // unload behavior if possible
-        if (this._module._unload) {
-            this._module._unload();
+        if (this._moduleInstance._unload) {
+            this._moduleInstance._unload();
         }
 
         // reset property
-        this._module = null;
+        this._moduleInstance = null;
+
+        // publish unload event
+        Observer.publish(this,'unload',this);
 
         return true;
     };
@@ -184,18 +258,18 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
     p.execute = function(method,params) {
 
         // if behavior not loaded
-        if (!this._module) {
+        if (!this._moduleInstance) {
             return null;
         }
 
         // get function reference
-        var F = this._module[method];
+        var F = this._moduleInstance[method];
         if (!F) {
-            throw new Error('Conditioner(method,params): "method" not found on module.');
+            throw new Error('ModuleController.execute(method,params): function specified in "method" not found on module.');
         }
 
         // once loaded call method and pass parameters
-        return F.apply(this._module,params);
+        return F.apply(this._moduleInstance,params);
 
     };
 

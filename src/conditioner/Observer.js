@@ -70,12 +70,18 @@ var Observer = (function(){
             }
             
             // find and execute callback
-            var test,i=0,l = obj._subscriptions.length;
-            for (; i<l; i++) {
-                test = obj._subscriptions[i];
-                if (test.type == type) {
-                    test.fn(data);
+            var subscriptions=[],subscription,i=0,l = obj._subscriptions.length;
+            for (;i<l; i++) {
+                subscription = obj._subscriptions[i];
+                if (subscription.type == type) {
+                    subscriptions.push(subscription);
                 }
+            }
+
+            // call callbacks
+            l = subscriptions.length;
+            for (i=0;i<l;i++) {
+                subscriptions[i].fn(data)
             }
 
             // see if should be propagated
@@ -96,6 +102,13 @@ var Observer = (function(){
                 return;
             }
             obj._eventPropagationTarget = target;
+        },
+
+        removePropagationTarget:function(obj,target) {
+            if (!obj) {
+                return;
+            }
+            obj._eventPropagationTarget = null;
         }
 
     };
