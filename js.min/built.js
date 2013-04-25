@@ -2294,25 +2294,14 @@ var Test = (function(Observer){
      */
     var Test = function(expected,element) {
 
+        // store expected value
+        this._expected = expected;
+
         // store element
         this._element = element;
 
         // set default state
         this._state = true;
-
-        // rules to test
-        this._rules = [];
-
-        // transform expected object into separate rules
-        if (expected instanceof Array || typeof expected != 'object') {
-            this._addRule(expected);
-        }
-        else if (typeof expected == 'object') {
-            for (var key in expected) {
-                if (!expected.hasOwnProperty(key)){continue;}
-                this._addRule(expected[key],key);
-            }
-        }
 
     };
 
@@ -2326,20 +2315,7 @@ var Test = (function(Observer){
 
     var p = Test.prototype;
 
-    p._addRule = function(value,key) {
-
-        if (!value) {
-            throw new Error('TestBase._addRule(value,key): "value" is a required parameter.');
-        }
-
-        this._rules.push({
-            'key':typeof key == 'undefined' ? 'default' : key,
-            'value':value
-        });
-
-    };
-
-    p._test = function(rule) {
+    p._test = function(expected) {
 
         // override in subclass
 
@@ -2353,17 +2329,13 @@ var Test = (function(Observer){
 
     p.assert = function() {
 
-        var i=0,l=this._rules.length,result = true;
-        for (;i<l;i++) {
-            if (!this._test(this._rules[i])) {
-                result = false;
-                break;
-            }
-        }
+        // call test
+        var state = this._test(this._expected);
 
-        if (this._state!= result) {
-            this._state = result;
-            Observer.publish(this,'change',result);
+        // check if result changed
+        if (this._state !== state) {
+            this._state = state;
+            Observer.publish(this,'change',state);
         }
 
     };
@@ -2451,68 +2423,273 @@ var ModuleRegister = {
 };
 
 /**
- * @class ConditionManager
+ * @class ConditionsManager
  */
-var ConditionManager = (function(require){
+var ConditionsManager = (function(require){
+
+
+
+
+
+    // helper method
+    var makeImplicit = function(level) {
+
+        var i=0,l=level.length;
+
+        for (;i<l;i++) {
+
+            if (l>3) {
+
+                // binary expression found merge into new level
+                level.splice(i,3,level.slice(i,i+3));
+
+                // set new length
+                l = level.length;
+
+                // move back to start
+                i=-1;
+
+            }
+            else if (typeof level[i] !== 'string') {
+
+                // level okay, check lower level
+                makeImplicit(level[i]);
+
+            }
+
+        }
+
+    };
+
+    // helper method
+    var parseCondition = function(condition) {
+
+        var i=0,
+            c,
+            k,
+            n,
+            operator,
+            path = '',
+            tree = [],
+            value = '',
+            isValue = false,
+            target = null,
+            flattened = null,
+            parent = null,
+            parents = [],
+            l=condition.length;
+
+
+        if (!target) {
+            target = tree;
+        }
+
+        // read explicit expressions
+        for (;i<l;i++) {
+
+            c = condition.charAt(i);
+
+            // check if an expression
+            if (c === '{') {
+
+                // now reading the expression
+                isValue = true;
+
+                // reset name var
+                path = '';
+
+                // fetch name
+                k = i-2;
+                while(k>=0) {
+                    n = condition.charAt(k);
+                    if (n === ' ' || n === '(') {
+                        break;
+                    }
+                    path = n + path;
+                    k--;
+                }
+
+                // on to the next character
+                continue;
+
+            }
+            else if (c === '}') {
+
+                // add value and
+                target.push({'path':path,'value':value});
+
+                // reset vars
+                path = '';
+                value = '';
+
+                // no longer a value
+                isValue = false;
+
+                // on to the next character
+                continue;
+            }
+
+            // if we are reading an expression add characters to expression
+            if (isValue) {
+                value += c;
+                continue;
+            }
+
+            // if not in expression
+            if (c === ' ') {
+
+                // get operator
+                operator = condition.substr(i,4).match(/and|or/g);
+
+                // if operator found
+                if (operator) {
+
+                    // add operator
+                    target.push(operator[0]);
+
+                    // skip over operator
+                    i+=operator[0].length+1;
+                }
+
+                continue;
+            }
+
+            // check if goes up a level
+            if (c === '(') {
+
+                // create new empty array in target
+                target.push([]);
+
+                // remember current target (is parent)
+                parents.push(target);
+
+                // set new child slot as new target
+                target = target[target.length-1];
+
+            }
+            else if (c === ')' || i === l-1) {
+
+                // reset flattened data
+                flattened = null;
+
+                // get parent
+                parent = parents.pop();
+
+                // if only contains single element flatten array
+                if (target.length === 1 || (parent && parent.length===1 && i===l-1)) {
+                    flattened = target.concat();
+                }
+
+                // restore parent
+                target = parent;
+
+                // if data defined
+                if (flattened && target) {
+
+                    target.pop();
+
+                    for (k=0;k<flattened.length;k++) {
+                        target.push(flattened[k]);
+                    }
+
+                }
+
+            }
+        }
+
+        // derive implicit expressions
+        makeImplicit(tree);
+
+        // return final expression tree
+        return tree.length === 1 ? tree[0] : tree;
+    };
+
+
+    // ExpressionBase
+    var ExpressionBase = {
+        succeeds:function() {
+            // override in subclass
+        }
+    };
+
+
+    // UnaryExpression
+    var UnaryExpression = function(test) {
+        this._test = test;
+    };
+    UnaryExpression.prototype = Object.create(ExpressionBase);
+    UnaryExpression.prototype.setTest = function(test) {
+        this._test = test;
+    };
+    UnaryExpression.prototype.succeeds = function() {
+        return this._test.succeeds();
+    };
+
+
+    //BinaryExpression
+    var BinaryExpression = function(a,o,b) {
+        this._a = a;
+        this._o = o;
+        this._b = b;
+    };
+    BinaryExpression.prototype = Object.create(ExpressionBase);
+    BinaryExpression.prototype.succeeds = function() {
+
+        return this._o==='and' ?
+
+        // is 'and' operator
+        this._a.succeeds() && this._b.succeeds() :
+
+        // is 'or' operator
+        this._a.succeeds() || this._b.succeeds();
+
+    };
+
+
+
 
     /**
      * @constructor
-     * @param {object} expected - expected conditions to be met
+     * @param {string} conditions - conditions to be met
      * @param {Element} [element] - optional element to measure these conditions on
      */
-    var ConditionManager = function(expected,element) {
+    var ConditionsManager = function(conditions,element) {
 
         // if the conditions are suitable, by default they are
         this._suitable = true;
 
         // if no conditions, conditions will always be suitable
-        if (!expected) {
+        if (typeof conditions !== 'string') {
             return;
         }
 
         // conditions supplied, conditions are now unsuitable by default
         this._suitable = false;
 
-        // if expected is in string format try to parse as JSON
-        if (typeof expected == 'string') {
-            try {
-                expected = JSON.parse(expected);
-            }
-            catch(e) {
-                console.warn('ConditionManager(expected,element): expected conditions should be in JSON format.');
-                return;
-            }
-        }
+        // set element reference
+        this._element = element;
 
-        // event bind
-        this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
-
-        // set properties
+        // load tests
         this._tests = [];
 
-        // set conditions array
-        this._count = 0;
+        // change event bind
+        this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
 
-        // parse expected
-        var key;
-        for (key in expected) {
+        // read test count
+        this._count = conditions.match(/(\:\{)/g).length;
 
-            // skip if not own property
-            if (!expected.hasOwnProperty(key)) {continue;}
+        // derive plain expression
+        var expression = parseCondition(conditions);
 
-            // up count
-            this._count++;
+        // load to expression tree
+        this._expression = this._loadExpression(expression);
 
-            // load test for expectation with supplied key
-            this._loadTest(key,expected,element);
-
-        }
     };
 
 
 
     // prototype shortcut
-    ConditionManager.prototype = {
+    ConditionsManager.prototype = {
 
         /**
          * Returns true if the current conditions are suitable
@@ -2524,47 +2701,62 @@ var ConditionManager = (function(require){
 
 
         /**
-         * Called to load a test
-         * @method _loadTest
-         * @param {string} path - path to the test module
-         * @param {object} expected - Expected value for this test
-         * @param {node} [element] - Element related to this test
+         * Loads expression
+         * @method _loadExpression
          */
-        _loadTest:function(path,expected,element) {
+        _loadExpression:function(expression) {
 
-            var self = this;
+            // if expression is array
+            if (expression.length === 3) {
 
-            require(['tests/' + path],function(Test){
+                // is binary expression, create test
+                return new BinaryExpression(
+                    this._loadExpression(expression[0]),
+                    expression[1],
+                    this._loadExpression(expression[2])
+                );
 
-                //condition = new Condition(
-                var test = new Test(expected[path],element);
-
-                // add to tests array
-                self._tests.push(test);
-
-                // another test loaded
-                self._onLoadTest();
-
-            });
+            }
+            else {
+                return this._createUnaryExpressionFromTest(expression);
+            }
 
         },
 
 
         /**
-         * Called when a test was loaded
-         * @method _onLoadTest
+         * Called to create a unary expression
+         * @method _createUnaryExpressionFromTest
+         * @param {Object} test
+         * @return {UnaryExpression}
          */
-        _onLoadTest:function() {
+        _createUnaryExpressionFromTest:function(test) {
 
-            // lower count if test loaded
-            this._count--;
+            var unaryExpression = new UnaryExpression(null);
+            var instance = null;
+            var self = this;
 
-            // if count reaches zero all tests have been loaded
-            if (this._count==0) {
-                this._onReady();
-            }
+            require(['tests/' + test.path],function(Test){
 
+                // create test instance
+                instance = new Test(test.value,self._element);
+
+                // add instance to test set
+                self._tests.push(instance);
+
+                // set test to unary expression
+                unaryExpression.setTest(instance);
+
+                // lower test count
+                self._count--;
+                if (self._count===0) {
+                    self._onReady();
+                }
+            });
+
+            return unaryExpression;
         },
+
 
         /**
          * Called when all tests are ready
@@ -2612,15 +2804,8 @@ var ConditionManager = (function(require){
          */
         test:function() {
 
-            // check all conditions on suitability
-            var suitable = true,l = this._tests.length,test,i;
-            for (i=0;i<l;i++) {
-                test = this._tests[i];
-                if (!test.succeeds()) {
-                    suitable = false;
-                    break;
-                }
-            }
+            // test expression success state
+            var suitable = this._expression.succeeds();
 
             // fire changed event if environment suitability changed
             if (suitable != this._suitable) {
@@ -2632,7 +2817,7 @@ var ConditionManager = (function(require){
 
     };
 
-    return ConditionManager;
+    return ConditionsManager;
 
 }(require));
 
@@ -2640,7 +2825,7 @@ var ConditionManager = (function(require){
 /**
  * @class ModuleController
  */
-var ModuleController = (function(require,ModuleRegister,ConditionManager,matchesSelector,mergeObjects){
+var ModuleController = (function(require,ModuleRegister,ConditionsManager,matchesSelector,mergeObjects){
 
     /**
      * @constructor
@@ -2667,7 +2852,7 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
         this._moduleInstance = null;
 
         // check if conditions specified
-        this._conditionManager = new ConditionManager(
+        this._conditionManager = new ConditionsManager(
             this._options.conditions,
             this._options.target
         );
@@ -2913,7 +3098,7 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
 
     return ModuleController;
 
-}(require,ModuleRegister,ConditionManager,matchesSelector,mergeObjects));
+}(require,ModuleRegister,ConditionsManager,matchesSelector,mergeObjects));
 
 
 /**
@@ -3061,6 +3246,11 @@ var Node = (function(Observer){
     };
 
     p._setActiveModuleController = function(moduleController) {
+
+        // if not already loaded
+        if (moduleController === this._activeModuleController) {
+            return;
+        }
 
         // clean up active module controller reference
         this._cleanActiveModuleController();
@@ -3436,9 +3626,9 @@ return Conditioner;
 
 /**
  * Tests if an active network connection is available and monitors this connection
- * @module tests/Connection
+ * @module tests/connection
  */
-define('tests/Connection',['Conditioner'],function(Conditioner){
+define('tests/connection',['Conditioner'],function(Conditioner){
 
     
 
@@ -3455,8 +3645,8 @@ define('tests/Connection',['Conditioner'],function(Conditioner){
         }
     };
 
-    p._test = function(rule) {
-        return rule.value == 'any' && navigator.onLine;
+    p._test = function(expected) {
+        return expected === 'any' && navigator.onLine;
     };
 
     return Test;
@@ -3538,30 +3728,29 @@ define('security/StorageConsentGuard',['Conditioner','module'],function(Conditio
 
 /**
  * Tests if what consent the user has given concerning cookie storage
- * @module security/StorageConsentGuard
+ * @module tests/cookie
  */
-define('tests/Cookies',['Conditioner','security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
+define('tests/cookies',['Conditioner','security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
 
     var Test = Conditioner.Test.inherit(),
         p = Test.prototype;
 
     p.arrange = function() {
 
-        var guard = StorageConsentGuard.getInstance();
-
-        var self = this;
+        var guard = StorageConsentGuard.getInstance(),self = this;
         Conditioner.Observer.subscribe(guard,'change',function() {
             self.assert();
         });
+
     };
 
-    p._test = function(rule) {
+    p._test = function(expected) {
 
         var guard = StorageConsentGuard.getInstance(),
-            level = guard.getActiveLevel();
+            level = guard.getActiveLevel(),
+            result = expected.match(new RegExp(level,'g'));
 
-        return rule.value.indexOf(level) > -1;
-
+        return result ? true : false;
     };
 
     return Test;
@@ -3570,9 +3759,9 @@ define('tests/Cookies',['Conditioner','security/StorageConsentGuard'],function(C
 
 /**
  * Tests if an elements dimensions match certain expectations
- * @module tests/Element
+ * @module tests/element
  */
-define('tests/Element',['Conditioner'],function(Conditioner){
+define('tests/element',['Conditioner'],function(Conditioner){
 
     
 
@@ -3588,19 +3777,41 @@ define('tests/Element',['Conditioner'],function(Conditioner){
         window.addEventListener('scroll',this,false);
     };
 
-    p._test = function(rule) {
+    p._test = function(expected) {
 
-        switch(rule.key) {
+        var parts = expected.split(':'),key,value;
+        if (parts) {
+            key = parts[0];
+            value = parseInt(parts[1],10);
+        }
+        else {
+            key = expected;
+        }
+
+        switch(key) {
             case 'min-width':{
-                return this._element.offsetWidth >= rule.value;
+                return this._element.offsetWidth >= value;
             }
             case 'max-width':{
-                return this._element.offsetWidth <= rule.value;
+                return this._element.offsetWidth <= value;
+            }
+            case 'seen':{
+                return this._seen === true;
             }
             case 'visible':{
-                var viewHeight = window.innerHeight;
-                var bounds = this._element.getBoundingClientRect();
-                return ((bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight)) === rule.value;
+
+                // test is element is visible
+                var viewHeight = window.innerHeight,
+                    bounds = this._element.getBoundingClientRect(),
+                    visible = (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
+
+                // remember if seen
+                if (!this._seen && visible) {
+                    this._seen = true;
+                }
+
+                // let know if visible
+                return visible;
             }
         }
 
@@ -3614,28 +3825,42 @@ define('tests/Element',['Conditioner'],function(Conditioner){
 
 /**
  * Tests if a media query is matched or not and listens to changes
- * @module tests/Media
+ * @module tests/media
  */
-define('tests/Media',['Conditioner'],function(Conditioner){
+define('tests/media',['Conditioner'],function(Conditioner){
 
     
 
     var Test = Conditioner.Test.inherit(),
     p = Test.prototype;
 
-    p._mql = null;
-
     p.arrange = function() {
 
+        if (!window.matchMedia) {
+            return;
+        }
+
         var self = this;
-        this._mql = window.matchMedia(this._rules[0].value);
+        this._mql = window.matchMedia(this._expected);
         this._mql.addListener(function(){
             self.assert();
         });
 
     };
 
-    p._test = function() {
+    p._test = function(expected) {
+
+        // see if checking if supported
+        if (expected === 'supported') {
+            return typeof this._mql !== 'undefined';
+        }
+
+        // if no media query list defined, no support
+        if (typeof this._mql === 'undefined') {
+            return false;
+        }
+
+        // test media query
         return this._mql.matches;
     };
 
@@ -3646,9 +3871,9 @@ define('tests/Media',['Conditioner'],function(Conditioner){
 
 /**
  * Tests if the user is using a pointer device
- * @module tests/Pointer
+ * @module tests/pointer
  */
-define('tests/Pointer',['Conditioner'],function(Conditioner){
+define('tests/pointer',['Conditioner'],function(Conditioner){
 
     
 
@@ -3686,8 +3911,12 @@ define('tests/Pointer',['Conditioner'],function(Conditioner){
         },10000);
     };
 
-    p._test = function(rule) {
-        return (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) === rule.value;
+    p._test = function(expected) {
+        var result = '';
+        if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
+            result = 'available';
+        }
+        return result === expected;
     };
 
     return Test;
@@ -3697,9 +3926,9 @@ define('tests/Pointer',['Conditioner'],function(Conditioner){
 
 /**
  * Tests if the window dimensions match certain expectations
- * @module tests/Window
+ * @module tests/window
  */
-define('tests/Window',['Conditioner'],function(Conditioner){
+define('tests/window',['Conditioner'],function(Conditioner){
 
     
 
@@ -3714,16 +3943,19 @@ define('tests/Window',['Conditioner'],function(Conditioner){
         window.addEventListener('resize',this,false);
     };
 
-    p._test = function(rule) {
+    p._test = function(expected) {
 
-        var innerWidth = window.innerWidth || document.documentElement.clientWidth;
+        var innerWidth = window.innerWidth || document.documentElement.clientWidth,
+            parts = expected.split(':'),
+            key = parts[0],
+            value = parseInt(parts[1],10);
 
-        switch(rule.key) {
+        switch(key) {
             case 'min-width':{
-                return innerWidth >= rule.value;
+                return innerWidth >= value;
             }
             case 'max-width':{
-                return innerWidth <= rule.value;
+                return innerWidth <= value;
             }
         }
 

@@ -1,7 +1,7 @@
 
 /**
  * Tests if what consent the user has given concerning cookie storage
- * @module security/StorageConsentGuard
+ * @module tests/cookie
  */
 define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
 
@@ -10,21 +10,20 @@ define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,Stora
 
     p.arrange = function() {
 
-        var guard = StorageConsentGuard.getInstance();
-
-        var self = this;
+        var guard = StorageConsentGuard.getInstance(),self = this;
         Conditioner.Observer.subscribe(guard,'change',function() {
             self.assert();
         });
+
     };
 
-    p._test = function(rule) {
+    p._test = function(expected) {
 
         var guard = StorageConsentGuard.getInstance(),
-            level = guard.getActiveLevel();
+            level = guard.getActiveLevel(),
+            result = expected.match(new RegExp(level,'g'));
 
-        return rule.value.indexOf(level) > -1;
-
+        return result ? true : false;
     };
 
     return Test;
