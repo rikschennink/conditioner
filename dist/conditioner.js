@@ -272,25 +272,14 @@ var Test = (function(Observer){
      */
     var Test = function(expected,element) {
 
+        // store expected value
+        this._expected = expected;
+
         // store element
         this._element = element;
 
         // set default state
         this._state = true;
-
-        // rules to test
-        this._rules = [];
-
-        // transform expected object into separate rules
-        if (expected instanceof Array || typeof expected != 'object') {
-            this._addRule(expected);
-        }
-        else if (typeof expected == 'object') {
-            for (var key in expected) {
-                if (!expected.hasOwnProperty(key)){continue;}
-                this._addRule(expected[key],key);
-            }
-        }
 
     };
 
@@ -304,20 +293,7 @@ var Test = (function(Observer){
 
     var p = Test.prototype;
 
-    p._addRule = function(value,key) {
-
-        if (!value) {
-            throw new Error('TestBase._addRule(value,key): "value" is a required parameter.');
-        }
-
-        this._rules.push({
-            'key':typeof key == 'undefined' ? 'default' : key,
-            'value':value
-        });
-
-    };
-
-    p._test = function(rule) {
+    p._test = function(expected) {
 
         // override in subclass
 
@@ -331,17 +307,13 @@ var Test = (function(Observer){
 
     p.assert = function() {
 
-        var i=0,l=this._rules.length,result = true;
-        for (;i<l;i++) {
-            if (!this._test(this._rules[i])) {
-                result = false;
-                break;
-            }
-        }
+        // call test
+        var state = this._test(this._expected);
 
-        if (this._state!= result) {
-            this._state = result;
-            Observer.publish(this,'change',result);
+        // check if result changed
+        if (this._state !== state) {
+            this._state = state;
+            Observer.publish(this,'change',state);
         }
 
     };
@@ -434,48 +406,6 @@ var ModuleRegister = {
 var ConditionsManager = (function(require){
 
 
-    /**
-     * @class UnaryExpression
-     * @constructor
-     * @param {Test || BinaryExpression} a - expression
-     * @param {string} o - operator (and|or)
-     */
-    var UnaryExpression = function(a,o) {
-
-        this._a = a;
-        this._o = o;
-
-    };
-
-    UnaryExpression.prototype.equals = function(value) {
-
-
-
-    };
-
-
-    /**
-     * @class BinaryExpression
-     * @constructor
-     * @param {Test || BinaryExpression || UnaryExpression} a - expression
-     * @param {string} o - operator (and|or)
-     * @param {Test || BinaryExpression || UnaryExpression} b - expression
-     */
-    var BinaryExpression = function(a,o,b) {
-
-        this._a = a;
-        this._o = o;
-        this._b = b;
-
-    };
-
-    BinaryExpression.prototype.equals = function(value) {
-
-
-
-    };
-
-
 
 
 
@@ -517,7 +447,7 @@ var ConditionsManager = (function(require){
             k,
             n,
             operator,
-            name = '',
+            path = '',
             tree = [],
             value = '',
             isValue = false,
@@ -544,7 +474,7 @@ var ConditionsManager = (function(require){
                 isValue = true;
 
                 // reset name var
-                name = '';
+                path = '';
 
                 // fetch name
                 k = i-2;
@@ -553,7 +483,7 @@ var ConditionsManager = (function(require){
                     if (n === ' ' || n === '(') {
                         break;
                     }
-                    name = n + name;
+                    path = n + path;
                     k--;
                 }
 
@@ -564,10 +494,10 @@ var ConditionsManager = (function(require){
             else if (c === '}') {
 
                 // add value and
-                target.push(name + ':' + value);
+                target.push({'path':path,'value':value});
 
                 // reset vars
-                name = '';
+                path = '';
                 value = '';
 
                 // no longer a value
@@ -649,62 +579,115 @@ var ConditionsManager = (function(require){
         makeImplicit(tree);
 
         // return final expression tree
-        return tree;
+        return tree.length === 1 ? tree[0] : tree;
     };
 
 
+    /**
+     * @class ExpressionBase
+     * @constructor
+     */
+    var ExpressionBase = {
+
+        succeeds:function() {
+            // override in subclass
+        }
+
+    };
+
+
+    /**
+     * @class UnaryExpression
+     * @constructor
+     * @param {Object} test
+     */
+    var UnaryExpression = function(test) {
+
+        // test holder
+        this._test = test;
+
+    };
+
+
+    UnaryExpression.prototype = Object.create(ExpressionBase);
+
+    UnaryExpression.prototype.setTest = function(test) {
+        this._test = test;
+    };
+
+    UnaryExpression.prototype.succeeds = function() {
+        return this._test.succeeds();
+    };
+
+
+    /**
+     * @class BinaryExpression
+     * @constructor
+     * @param {Test || BinaryExpression || UnaryExpression} a - expression
+     * @param {string} o - operator (and|or)
+     * @param {Test || BinaryExpression || UnaryExpression} b - expression
+     */
+    var BinaryExpression = function(a,o,b) {
+
+        this._a = a;
+        this._o = o;
+        this._b = b;
+
+    };
+
+    BinaryExpression.prototype = Object.create(ExpressionBase);
+
+    BinaryExpression.prototype.succeeds = function() {
+
+        return this._o==='and' ?
+
+        // is 'and' operator
+        this._a.succeeds() && this._b.succeeds() :
+
+        // is 'or' operator
+        this._a.succeeds() || this._b.succeeds();
+
+    };
 
 
 
 
     /**
      * @constructor
-     * @param {object} expected - expected conditions to be met
+     * @param {string} conditions - conditions to be met
      * @param {Element} [element] - optional element to measure these conditions on
      */
-    var ConditionsManager = function(expected,element) {
+    var ConditionsManager = function(conditions,element) {
 
         // if the conditions are suitable, by default they are
         this._suitable = true;
 
         // if no conditions, conditions will always be suitable
-        if (typeof expected !== 'string') {
+        if (typeof conditions !== 'string') {
             return;
         }
 
         // conditions supplied, conditions are now unsuitable by default
         this._suitable = false;
 
+        // set element reference
+        this._element = element;
 
-
-        console.log('expected:',expected);
-        console.log('result:',parseCondition(expected));
-
-        return;
-
-        // event bind
-        this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
-
-        // set properties
+        // load tests
         this._tests = [];
 
-        // set conditions array
-        this._count = 0;
+        // change event bind
+        this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
 
-        // parse expected
-        var key;
-        for (key in expected) {
+        // read test count
+        this._count = conditions.match(/(\:\{)/g).length;
 
-            // skip if not own property
-            if (!expected.hasOwnProperty(key)) {continue;}
+        // derive expression
+        var expression = parseCondition(conditions);
 
-            // up count
-            this._count++;
+        // load expression
+        this._expression = this._loadExpression(expression);
 
-            // load test for expectation with supplied key
-            this._loadTest(key,expected,element);
-
-        }
     };
 
 
@@ -722,47 +705,62 @@ var ConditionsManager = (function(require){
 
 
         /**
-         * Called to load a test
-         * @method _loadTest
-         * @param {string} path - path to the test module
-         * @param {object} expected - Expected value for this test
-         * @param {node} [element] - Element related to this test
+         * Loads expression
+         * @method _loadExpression
          */
-        _loadTest:function(path,expected,element) {
+        _loadExpression:function(expression) {
 
-            var self = this;
+            // if expression is array
+            if (expression.length === 3) {
 
-            require(['tests/' + path],function(Test){
+                // is binary expression, create test
+                return new BinaryExpression(
+                    this._loadExpression(expression[0]),
+                    expression[1],
+                    this._loadExpression(expression[2])
+                );
 
-                //condition = new Condition(
-                var test = new Test(expected[path],element);
-
-                // add to tests array
-                self._tests.push(test);
-
-                // another test loaded
-                self._onLoadTest();
-
-            });
+            }
+            else {
+                return this._createUnaryExpressionFromTest(expression);
+            }
 
         },
 
 
         /**
-         * Called when a test was loaded
-         * @method _onLoadTest
+         * Called to create a unary expression
+         * @method _createUnaryExpressionFromTest
+         * @param {Object} test
+         * @return {UnaryExpression}
          */
-        _onLoadTest:function() {
+        _createUnaryExpressionFromTest:function(test) {
 
-            // lower count if test loaded
-            this._count--;
+            var unaryExpression = new UnaryExpression(null);
+            var instance = null;
+            var self = this;
 
-            // if count reaches zero all tests have been loaded
-            if (this._count==0) {
-                this._onReady();
-            }
+            require(['tests/' + test.path],function(Test){
 
+                // create test instance
+                instance = new Test(test.value,self._element);
+
+                // add instance to test set
+                self._tests.push(instance);
+
+                // set test to unary expression
+                unaryExpression.setTest(instance);
+
+                // lower test count
+                self._count--;
+                if (self._count===0) {
+                    self._onReady();
+                }
+            });
+
+            return unaryExpression;
         },
+
 
         /**
          * Called when all tests are ready
@@ -810,15 +808,8 @@ var ConditionsManager = (function(require){
          */
         test:function() {
 
-            // check all conditions on suitability
-            var suitable = true,l = this._tests.length,test,i;
-            for (i=0;i<l;i++) {
-                test = this._tests[i];
-                if (!test.succeeds()) {
-                    suitable = false;
-                    break;
-                }
-            }
+            // test expression success state
+            var suitable = this._expression.succeeds();
 
             // fire changed event if environment suitability changed
             if (suitable != this._suitable) {

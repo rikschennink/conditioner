@@ -18,16 +18,19 @@ define(['Conditioner'],function(Conditioner){
         window.addEventListener('resize',this,false);
     };
 
-    p._test = function(rule) {
+    p._test = function(expected) {
 
-        var innerWidth = window.innerWidth || document.documentElement.clientWidth;
+        var innerWidth = window.innerWidth || document.documentElement.clientWidth,
+            parts = expected.split(':'),
+            key = parts[0],
+            value = parseInt(parts[1],10);
 
-        switch(rule.key) {
+        switch(key) {
             case 'min-width':{
-                return innerWidth >= rule.value;
+                return innerWidth >= value;
             }
             case 'max-width':{
-                return innerWidth <= rule.value;
+                return innerWidth <= value;
             }
         }
 

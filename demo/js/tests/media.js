@@ -15,7 +15,7 @@ define(['Conditioner'],function(Conditioner){
     p.arrange = function() {
 
         var self = this;
-        this._mql = window.matchMedia(this._rules[0].value);
+        this._mql = window.matchMedia(this._expected);
         this._mql.addListener(function(){
             self.assert();
         });

@@ -16,6 +16,10 @@ define(['Conditioner'],function(Conditioner){
         // Call BehaviourBase constructor
         _parent.call(this,element);
 
+        // event binds
+        this._onSuccessBind = this._onSuccess.bind(this);
+        this._onErrorBind = this._onError.bind(this);
+
         // backup content
         this._inner = this._element.innerHTML;
 
@@ -23,14 +27,14 @@ define(['Conditioner'],function(Conditioner){
         this._element.innerHTML = 'Loading map...';
 
         // get position
-        navigator.geolocation.getCurrentPosition(this._success.bind(this),this._error.bind(this));
+        navigator.geolocation.getCurrentPosition(this._onSuccessBind,this._onErrorBind);
     };
 
     // Extend from BehaviourBase
     var p = Map.prototype = Object.create(_parent.prototype);
 
     // get position success
-    p._success = function(position) {
+    p._onSuccess = function(position) {
 
         // clear
         this._element.innerHTML = '';
@@ -45,7 +49,7 @@ define(['Conditioner'],function(Conditioner){
     };
 
     // get position fail
-    p._error = function(error) {
+    p._onError = function(error) {
         this._element.innerHTML = error.message;
     };
 

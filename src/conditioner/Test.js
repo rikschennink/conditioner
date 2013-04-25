@@ -11,25 +11,14 @@ var Test = (function(Observer){
      */
     var Test = function(expected,element) {
 
+        // store expected value
+        this._expected = expected;
+
         // store element
         this._element = element;
 
         // set default state
         this._state = true;
-
-        // rules to test
-        this._rules = [];
-
-        // transform expected object into separate rules
-        if (expected instanceof Array || typeof expected != 'object') {
-            this._addRule(expected);
-        }
-        else if (typeof expected == 'object') {
-            for (var key in expected) {
-                if (!expected.hasOwnProperty(key)){continue;}
-                this._addRule(expected[key],key);
-            }
-        }
 
     };
 
@@ -43,20 +32,7 @@ var Test = (function(Observer){
 
     var p = Test.prototype;
 
-    p._addRule = function(value,key) {
-
-        if (!value) {
-            throw new Error('TestBase._addRule(value,key): "value" is a required parameter.');
-        }
-
-        this._rules.push({
-            'key':typeof key == 'undefined' ? 'default' : key,
-            'value':value
-        });
-
-    };
-
-    p._test = function(rule) {
+    p._test = function(expected) {
 
         // override in subclass
 
@@ -70,17 +46,13 @@ var Test = (function(Observer){
 
     p.assert = function() {
 
-        var i=0,l=this._rules.length,result = true;
-        for (;i<l;i++) {
-            if (!this._test(this._rules[i])) {
-                result = false;
-                break;
-            }
-        }
+        // call test
+        var state = this._test(this._expected);
 
-        if (this._state!= result) {
-            this._state = result;
-            Observer.publish(this,'change',result);
+        // check if result changed
+        if (this._state !== state) {
+            this._state = state;
+            Observer.publish(this,'change',state);
         }
 
     };

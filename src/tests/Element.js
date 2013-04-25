@@ -19,19 +19,31 @@ define(['Conditioner'],function(Conditioner){
         window.addEventListener('scroll',this,false);
     };
 
-    p._test = function(rule) {
+    p._test = function(expected) {
 
-        switch(rule.key) {
+        var parts = expected.split(':'),key,value;
+        if (parts) {
+            key = parts[0];
+            value = parseInt(parts[1],10);
+        }
+        else {
+            key = expected;
+        }
+
+        switch(key) {
             case 'min-width':{
-                return this._element.offsetWidth >= rule.value;
+                return this._element.offsetWidth >= value;
             }
             case 'max-width':{
-                return this._element.offsetWidth <= rule.value;
+                return this._element.offsetWidth <= value;
+            }
+            case 'seen':{
+                return true;
             }
             case 'visible':{
                 var viewHeight = window.innerHeight;
                 var bounds = this._element.getBoundingClientRect();
-                return ((bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight)) === rule.value;
+                return (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
             }
         }
 

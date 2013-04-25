@@ -20,8 +20,8 @@ define(['Conditioner'],function(Conditioner){
         }
     };
 
-    p._test = function(rule) {
-        return rule.value == 'any' && navigator.onLine;
+    p._test = function(expected) {
+        return expected === 'any' && navigator.onLine;
     };
 
     return Test;

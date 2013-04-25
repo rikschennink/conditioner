@@ -41,8 +41,12 @@ define(['Conditioner'],function(Conditioner){
         },10000);
     };
 
-    p._test = function(rule) {
-        return (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) === rule.value;
+    p._test = function(expected) {
+        var result = '';
+        if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
+            result = 'available';
+        }
+        return result === expected;
     };
 
     return Test;
