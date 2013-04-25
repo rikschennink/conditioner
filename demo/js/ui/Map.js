@@ -26,8 +26,8 @@ define(['Conditioner'],function(Conditioner){
         // loading map
         this._element.innerHTML = 'Loading map...';
 
-        // get position
-        navigator.geolocation.getCurrentPosition(this._onSuccessBind,this._onErrorBind);
+        // get position (wait max 5 seconds for it)
+        navigator.geolocation.getCurrentPosition(this._onSuccessBind,this._onErrorBind,{timeout:5000});
     };
 
     // Extend from BehaviourBase
