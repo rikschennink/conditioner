@@ -1251,6 +1251,11 @@ var Node = (function(Observer){
 
     p._setActiveModuleController = function(moduleController) {
 
+        // if not already loaded
+        if (moduleController === this._activeModuleController) {
+            return;
+        }
+
         // clean up active module controller reference
         this._cleanActiveModuleController();
 
