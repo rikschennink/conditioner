@@ -4,6 +4,10 @@
  */
 var matchesSelector = (function() {
 
+    if (!document.body) {
+        return null;
+    }
+
     var _method = null;
     var el = document.body;
     if (el.matches) {

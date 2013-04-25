@@ -224,7 +224,6 @@ var ConditionsManager = (function(require){
 
 
 
-
     /**
      * @constructor
      * @param {string} conditions - conditions to be met

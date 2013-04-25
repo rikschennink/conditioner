@@ -3,16 +3,35 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg:grunt.file.readJSON('package.json'),
         path:{
-            src:'src/',
-            demo:'demo/',
-            conditioner:'<%= path.src %>conditioner/',
-            wrapper:'<%= path.src %>wrapper/',
-            tests:'<%= path.src %>tests/'
+            src:'src',
+            spec:'spec',
+            demo:'demo',
+            conditioner:'<%= path.src %>/conditioner',
+            wrapper:'<%= path.src %>/wrapper',
+            tests:'<%= path.src %>/tests'
         },
         meta: {
             banner: '// <%= pkg.name %> v<%= pkg.version %> - <%= pkg.description %>\n' +
                     '// Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> - <%= pkg.homepage %>\n' +
                     '// License: <%= _.map(pkg.licenses, function(x) {return x.type + " (" + x.url + ")";}).join(", ") %>\n'
+        },
+        jasmine:{
+            src:[
+                '<%= path.conditioner %>/mergeObjects.js',
+                '<%= path.conditioner %>/matchesSelector.js',
+                '<%= path.conditioner %>/Observer.js',
+                '<%= path.conditioner %>/Module.js',
+                '<%= path.conditioner %>/Test.js',
+                '<%= path.conditioner %>/ModuleRegister.js',
+                '<%= path.conditioner %>/ConditionsManager.js',
+                '<%= path.conditioner %>/ModuleController.js',
+                '<%= path.conditioner %>/Node.js',
+                '<%= path.conditioner %>/Conditioner.js',
+            ],
+            options:{
+                specs:'<%= path.spec %>/*.js',
+                helpers:'<%= path.spec %>/lib/require.js'
+            }
         },
         concat:{
             options: {
@@ -21,21 +40,21 @@ module.exports = function(grunt) {
             dist:{
                 src:[
                     '<%= meta.banner %>',
-                    '<%= path.wrapper %>intro.js',
+                    '<%= path.wrapper %>/intro.js',
 
-                    '<%= path.conditioner %>mergeObjects.js',
-                    '<%= path.conditioner %>matchesSelector.js',
-                    '<%= path.conditioner %>Observer.js',
+                    '<%= path.conditioner %>/mergeObjects.js',
+                    '<%= path.conditioner %>/matchesSelector.js',
+                    '<%= path.conditioner %>/Observer.js',
 
-                    '<%= path.conditioner %>Module.js',
-                    '<%= path.conditioner %>Test.js',
-                    '<%= path.conditioner %>ModuleRegister.js',
-                    '<%= path.conditioner %>ConditionsManager.js',
-                    '<%= path.conditioner %>ModuleController.js',
-                    '<%= path.conditioner %>Node.js',
-                    '<%= path.conditioner %>Conditioner.js',
+                    '<%= path.conditioner %>/Module.js',
+                    '<%= path.conditioner %>/Test.js',
+                    '<%= path.conditioner %>/ModuleRegister.js',
+                    '<%= path.conditioner %>/ConditionsManager.js',
+                    '<%= path.conditioner %>/ModuleController.js',
+                    '<%= path.conditioner %>/Node.js',
+                    '<%= path.conditioner %>/Conditioner.js',
 
-                    '<%= path.wrapper %>outro.js'
+                    '<%= path.wrapper %>/outro.js'
                 ],
                 dest:'dist/<%= pkg.name %>.js'
             }
@@ -51,7 +70,7 @@ module.exports = function(grunt) {
                 expand:true,
                 cwd: '<%= path.tests %>',
                 src:'*',
-                dest:'<%= path.demo %>js/tests/'
+                dest:'<%= path.demo %>/js/tests/'
             }
         },
         uglify: {
@@ -78,7 +97,7 @@ module.exports = function(grunt) {
                     findNestedDependencies:true,
                     optimize:'none',
 
-                    baseUrl:'<%= path.demo %>js/',
+                    baseUrl:'<%= path.demo %>/js/',
                     paths:{
                         'Conditioner':'../../dist/conditioner'
                     },
@@ -102,18 +121,27 @@ module.exports = function(grunt) {
 
                 }
             }
+        },
+        watch: {
+            files:['<%= path.src %>/**/*.js','<%= path.spec %>/*.js'],
+            tasks:'test'
         }
 
     });
 
+    grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
 
     // build everything
-    grunt.registerTask('default',['concat','copy','uglify','requirejs']);
+    grunt.registerTask('default',['jasmine','concat','copy','uglify','requirejs']);
+
+    // test
+    grunt.registerTask('test',['jasmine']);
 
     // task for building the library
     grunt.registerTask('lib',['concat','copy','uglify']);
