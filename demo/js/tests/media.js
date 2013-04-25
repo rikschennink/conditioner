@@ -1,7 +1,7 @@
 
 /**
  * Tests if a media query is matched or not and listens to changes
- * @module tests/Media
+ * @module tests/media
  */
 define(['Conditioner'],function(Conditioner){
 

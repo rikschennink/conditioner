@@ -1,7 +1,7 @@
 
 /**
  * Tests if the window dimensions match certain expectations
- * @module tests/Window
+ * @module tests/window
  */
 define(['Conditioner'],function(Conditioner){
 

@@ -1,7 +1,7 @@
 
 /**
  * Tests if an elements dimensions match certain expectations
- * @module tests/Element
+ * @module tests/element
  */
 define(['Conditioner'],function(Conditioner){
 
