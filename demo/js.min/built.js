@@ -3796,7 +3796,7 @@ define('tests/element',['Conditioner'],function(Conditioner){
         }
         else if (key==='seen' || key ==='visible') {
 
-            // test is element is visible
+            // test if element is visible
             var viewHeight = window.innerHeight,
                 bounds = this._element.getBoundingClientRect(),
                 visible = (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
@@ -3817,7 +3817,7 @@ define('tests/element',['Conditioner'],function(Conditioner){
             }
         }
 
-        return true;
+        return false;
     };
 
     return Test;
@@ -3961,7 +3961,7 @@ define('tests/window',['Conditioner'],function(Conditioner){
             }
         }
 
-        return true;
+        return false;
     };
 
     return Test;
