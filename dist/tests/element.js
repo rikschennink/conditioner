@@ -1,4 +1,3 @@
-
 /**
  * Tests if an elements dimensions match certain expectations
  * @module tests/element

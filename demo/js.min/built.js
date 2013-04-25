@@ -3725,7 +3725,6 @@ define('security/StorageConsentGuard',['Conditioner','module'],function(Conditio
     };
 
 });
-
 /**
  * Tests if what consent the user has given concerning cookie storage
  * @module tests/cookie
@@ -3870,7 +3869,6 @@ define('tests/media',['Conditioner'],function(Conditioner){
 
 });
 
-
 /**
  * Tests if the user is using a pointer device
  * @module tests/pointer
@@ -3924,7 +3922,6 @@ define('tests/pointer',['Conditioner'],function(Conditioner){
     return Test;
 
 });
-
 
 /**
  * Tests if the window dimensions match certain expectations

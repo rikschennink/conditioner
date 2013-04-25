@@ -1,4 +1,3 @@
-
 /**
  * Tests if the user is using a pointer device
  * @module tests/pointer

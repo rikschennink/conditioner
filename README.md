@@ -8,7 +8,7 @@ Introduction
 
 Conditioner is a JavaScript framework based on requirejs, it allows you to conditionally load your javascript modules based on certain environment requirements.
 
-Supose you have a Google Maps module which transforms an anchor to a full blown Google Map. It would make sense to only activate this module when there's enough real estate on the screen to render a decent sized map. It would look something like this:
+Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map. It would make sense to only activate this module when there's enough real estate on the screen to render a decent sized map. It would look something like this:
 
 ```html
 <div data-module="IMap" data-conditions="media:{(min-width:30em)}">

@@ -1,4 +1,3 @@
-
 /**
  * Tests if the window dimensions match certain expectations
  * @module tests/window
