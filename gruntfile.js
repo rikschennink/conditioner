@@ -30,7 +30,7 @@ module.exports = function(grunt) {
                     '<%= path.conditioner %>Module.js',
                     '<%= path.conditioner %>Test.js',
                     '<%= path.conditioner %>ModuleRegister.js',
-                    '<%= path.conditioner %>ConditionManager.js',
+                    '<%= path.conditioner %>ConditionsManager.js',
                     '<%= path.conditioner %>ModuleController.js',
                     '<%= path.conditioner %>Node.js',
                     '<%= path.conditioner %>Conditioner.js',
@@ -87,12 +87,14 @@ module.exports = function(grunt) {
                     out:'<%= path.demo %>/js.min/built.js',
                     include:[
                         'Conditioner',
-                        'tests/Connection',
-                        'tests/Cookies',
-                        'tests/Element',
-                        'tests/Media',
-                        'tests/Pointer',
-                        'tests/Window',
+
+                        'tests/connection',
+                        'tests/cookies',
+                        'tests/element',
+                        'tests/media',
+                        'tests/pointer',
+                        'tests/window',
+
                         'ui/Clock',
                         'ui/StorageConsentSelect',
                         'security/StorageConsentGuard'

@@ -1,7 +1,7 @@
 
 /**
  * Tests if what consent the user has given concerning cookie storage
- * @module security/StorageConsentGuard
+ * @module tests/cookie
  */
 define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
 

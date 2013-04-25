@@ -1,7 +1,7 @@
 
 /**
  * Tests if the user is using a pointer device
- * @module tests/Pointer
+ * @module tests/pointer
  */
 define(['Conditioner'],function(Conditioner){
 

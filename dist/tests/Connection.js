@@ -1,7 +1,7 @@
 
 /**
  * Tests if an active network connection is available and monitors this connection
- * @module tests/Connection
+ * @module tests/connection
  */
 define(['Conditioner'],function(Conditioner){
 

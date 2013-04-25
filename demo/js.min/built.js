@@ -2451,38 +2451,258 @@ var ModuleRegister = {
 };
 
 /**
- * @class ConditionManager
+ * @class ConditionsManager
  */
-var ConditionManager = (function(require){
+var ConditionsManager = (function(require){
+
+
+    /**
+     * @class UnaryExpression
+     * @constructor
+     * @param {Test || BinaryExpression} a - expression
+     * @param {string} o - operator (and|or)
+     */
+    var UnaryExpression = function(a,o) {
+
+        this._a = a;
+        this._o = o;
+
+    };
+
+    UnaryExpression.prototype.equals = function(value) {
+
+
+
+    };
+
+
+    /**
+     * @class BinaryExpression
+     * @constructor
+     * @param {Test || BinaryExpression || UnaryExpression} a - expression
+     * @param {string} o - operator (and|or)
+     * @param {Test || BinaryExpression || UnaryExpression} b - expression
+     */
+    var BinaryExpression = function(a,o,b) {
+
+        this._a = a;
+        this._o = o;
+        this._b = b;
+
+    };
+
+    BinaryExpression.prototype.equals = function(value) {
+
+
+
+    };
+
+
+
+
+
+    // helper method
+    var makeImplicit = function(level) {
+
+        var i=0,l=level.length;
+
+        for (;i<l;i++) {
+
+            if (l>3) {
+
+                // binary expression found merge into new level
+                level.splice(i,3,level.slice(i,i+3));
+
+                // set new length
+                l = level.length;
+
+                // move back to start
+                i=-1;
+
+            }
+            else if (typeof level[i] !== 'string') {
+
+                // level okay, check lower level
+                makeImplicit(level[i]);
+
+            }
+
+        }
+
+    };
+
+    // helper method
+    var parseCondition = function(condition) {
+
+        var i=0,
+            c,
+            k,
+            n,
+            operator,
+            name = '',
+            tree = [],
+            value = '',
+            isValue = false,
+            target = null,
+            flattened = null,
+            parent = null,
+            parents = [],
+            l=condition.length;
+
+
+        if (!target) {
+            target = tree;
+        }
+
+        // read explicit expressions
+        for (;i<l;i++) {
+
+            c = condition.charAt(i);
+
+            // check if an expression
+            if (c === '{') {
+
+                // now reading the expression
+                isValue = true;
+
+                // reset name var
+                name = '';
+
+                // fetch name
+                k = i-2;
+                while(k>=0) {
+                    n = condition.charAt(k);
+                    if (n === ' ' || n === '(') {
+                        break;
+                    }
+                    name = n + name;
+                    k--;
+                }
+
+                // on to the next character
+                continue;
+
+            }
+            else if (c === '}') {
+
+                // add value and
+                target.push(name + ':' + value);
+
+                // reset vars
+                name = '';
+                value = '';
+
+                // no longer a value
+                isValue = false;
+
+                // on to the next character
+                continue;
+            }
+
+            // if we are reading an expression add characters to expression
+            if (isValue) {
+                value += c;
+                continue;
+            }
+
+            // if not in expression
+            if (c === ' ') {
+
+                // get operator
+                operator = condition.substr(i,4).match(/and|or/g);
+
+                // if operator found
+                if (operator) {
+
+                    // add operator
+                    target.push(operator[0]);
+
+                    // skip over operator
+                    i+=operator[0].length+1;
+                }
+
+                continue;
+            }
+
+            // check if goes up a level
+            if (c === '(') {
+
+                // create new empty array in target
+                target.push([]);
+
+                // remember current target (is parent)
+                parents.push(target);
+
+                // set new child slot as new target
+                target = target[target.length-1];
+
+            }
+            else if (c === ')' || i === l-1) {
+
+                // reset flattened data
+                flattened = null;
+
+                // get parent
+                parent = parents.pop();
+
+                // if only contains single element flatten array
+                if (target.length === 1 || (parent && parent.length===1 && i===l-1)) {
+                    flattened = target.concat();
+                }
+
+                // restore parent
+                target = parent;
+
+                // if data defined
+                if (flattened && target) {
+
+                    target.pop();
+
+                    for (k=0;k<flattened.length;k++) {
+                        target.push(flattened[k]);
+                    }
+
+                }
+
+            }
+        }
+
+        // derive implicit expressions
+        makeImplicit(tree);
+
+        // return final expression tree
+        return tree;
+    };
+
+
+
+
+
 
     /**
      * @constructor
      * @param {object} expected - expected conditions to be met
      * @param {Element} [element] - optional element to measure these conditions on
      */
-    var ConditionManager = function(expected,element) {
+    var ConditionsManager = function(expected,element) {
 
         // if the conditions are suitable, by default they are
         this._suitable = true;
 
         // if no conditions, conditions will always be suitable
-        if (!expected) {
+        if (typeof expected !== 'string') {
             return;
         }
 
         // conditions supplied, conditions are now unsuitable by default
         this._suitable = false;
 
-        // if expected is in string format try to parse as JSON
-        if (typeof expected == 'string') {
-            try {
-                expected = JSON.parse(expected);
-            }
-            catch(e) {
-                console.warn('ConditionManager(expected,element): expected conditions should be in JSON format.');
-                return;
-            }
-        }
+
+
+        console.log('expected:',expected);
+        console.log('result:',parseCondition(expected));
+
+        return;
 
         // event bind
         this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
@@ -2512,7 +2732,7 @@ var ConditionManager = (function(require){
 
 
     // prototype shortcut
-    ConditionManager.prototype = {
+    ConditionsManager.prototype = {
 
         /**
          * Returns true if the current conditions are suitable
@@ -2632,7 +2852,7 @@ var ConditionManager = (function(require){
 
     };
 
-    return ConditionManager;
+    return ConditionsManager;
 
 }(require));
 
@@ -2640,7 +2860,7 @@ var ConditionManager = (function(require){
 /**
  * @class ModuleController
  */
-var ModuleController = (function(require,ModuleRegister,ConditionManager,matchesSelector,mergeObjects){
+var ModuleController = (function(require,ModuleRegister,ConditionsManager,matchesSelector,mergeObjects){
 
     /**
      * @constructor
@@ -2667,7 +2887,7 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
         this._moduleInstance = null;
 
         // check if conditions specified
-        this._conditionManager = new ConditionManager(
+        this._conditionManager = new ConditionsManager(
             this._options.conditions,
             this._options.target
         );
@@ -2913,7 +3133,7 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
 
     return ModuleController;
 
-}(require,ModuleRegister,ConditionManager,matchesSelector,mergeObjects));
+}(require,ModuleRegister,ConditionsManager,matchesSelector,mergeObjects));
 
 
 /**
@@ -3436,9 +3656,9 @@ return Conditioner;
 
 /**
  * Tests if an active network connection is available and monitors this connection
- * @module tests/Connection
+ * @module tests/connection
  */
-define('tests/Connection',['Conditioner'],function(Conditioner){
+define('tests/connection',['Conditioner'],function(Conditioner){
 
     
 
@@ -3538,9 +3758,9 @@ define('security/StorageConsentGuard',['Conditioner','module'],function(Conditio
 
 /**
  * Tests if what consent the user has given concerning cookie storage
- * @module security/StorageConsentGuard
+ * @module tests/cookie
  */
-define('tests/Cookies',['Conditioner','security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
+define('tests/cookies',['Conditioner','security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
 
     var Test = Conditioner.Test.inherit(),
         p = Test.prototype;
@@ -3570,9 +3790,9 @@ define('tests/Cookies',['Conditioner','security/StorageConsentGuard'],function(C
 
 /**
  * Tests if an elements dimensions match certain expectations
- * @module tests/Element
+ * @module tests/element
  */
-define('tests/Element',['Conditioner'],function(Conditioner){
+define('tests/element',['Conditioner'],function(Conditioner){
 
     
 
@@ -3614,9 +3834,9 @@ define('tests/Element',['Conditioner'],function(Conditioner){
 
 /**
  * Tests if a media query is matched or not and listens to changes
- * @module tests/Media
+ * @module tests/media
  */
-define('tests/Media',['Conditioner'],function(Conditioner){
+define('tests/media',['Conditioner'],function(Conditioner){
 
     
 
@@ -3646,9 +3866,9 @@ define('tests/Media',['Conditioner'],function(Conditioner){
 
 /**
  * Tests if the user is using a pointer device
- * @module tests/Pointer
+ * @module tests/pointer
  */
-define('tests/Pointer',['Conditioner'],function(Conditioner){
+define('tests/pointer',['Conditioner'],function(Conditioner){
 
     
 
@@ -3697,9 +3917,9 @@ define('tests/Pointer',['Conditioner'],function(Conditioner){
 
 /**
  * Tests if the window dimensions match certain expectations
- * @module tests/Window
+ * @module tests/window
  */
-define('tests/Window',['Conditioner'],function(Conditioner){
+define('tests/window',['Conditioner'],function(Conditioner){
 
     
 

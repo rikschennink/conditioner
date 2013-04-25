@@ -2,7 +2,7 @@
 /**
  * @class ModuleController
  */
-var ModuleController = (function(require,ModuleRegister,ConditionManager,matchesSelector,mergeObjects){
+var ModuleController = (function(require,ModuleRegister,ConditionsManager,matchesSelector,mergeObjects){
 
     /**
      * @constructor
@@ -29,7 +29,7 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
         this._moduleInstance = null;
 
         // check if conditions specified
-        this._conditionManager = new ConditionManager(
+        this._conditionManager = new ConditionsManager(
             this._options.conditions,
             this._options.target
         );
@@ -275,4 +275,4 @@ var ModuleController = (function(require,ModuleRegister,ConditionManager,matches
 
     return ModuleController;
 
-}(require,ModuleRegister,ConditionManager,matchesSelector,mergeObjects));
+}(require,ModuleRegister,ConditionsManager,matchesSelector,mergeObjects));
