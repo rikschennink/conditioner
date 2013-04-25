@@ -30,29 +30,31 @@ define(['Conditioner'],function(Conditioner){
             key = expected;
         }
 
-        switch(key) {
-            case 'min-width':{
-                return this._element.offsetWidth >= value;
-            }
-            case 'max-width':{
-                return this._element.offsetWidth <= value;
-            }
-            case 'seen':{
-                return this._seen === true;
-            }
-            case 'visible':{
+        if (key==='min-width') {
+            return this._element.offsetWidth >= value;
+        }
+        else if (key==='max-width') {
+            return this._element.offsetWidth <= value;
+        }
+        else if (key==='seen' || key ==='visible') {
 
-                // test is element is visible
-                var viewHeight = window.innerHeight,
-                    bounds = this._element.getBoundingClientRect(),
-                    visible = (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
+            // test is element is visible
+            var viewHeight = window.innerHeight,
+                bounds = this._element.getBoundingClientRect(),
+                visible = (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
+
+            if (key === 'seen') {
 
                 // remember if seen
-                if (!this._seen && visible) {
+                if (typeof this._seen === 'undefined' && visible) {
                     this._seen = true;
                 }
 
-                // let know if visible
+                // if seen
+                return this._seen === true;
+            }
+
+            if (key === 'visible') {
                 return visible;
             }
         }
