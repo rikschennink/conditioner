@@ -100,6 +100,7 @@ demo.loadModules(document);
                  data-conditions="element:{min-width:350}">Clock is inactive</div>
         </div>
 
+
         <h3>Based on multiple window dimensions</h3>
         <p>Clock will be active as long as window width falls between 450 and 750 pixels. Priority of this component has a value of 1 which causes it to be loaded before all components without and explicit priority.</p>
         <pre><code data-language="html">&lt;div data-module="IClock" data-conditions="window:{min-width:450} and window:{max-width:750}" data-priority="1"&gt;Clock is inactive&lt;/div&gt;</code></pre>
@@ -129,7 +130,6 @@ demo.loadModules(document);
         </div>
 
 
-
         <h3>Based on multiple conditions</h3>
         <p>Map will be active as long as there is any network connection, the media query is matched and the element is in view.</p>
         <pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions="connection:{any} and media:{(min-width:40em)} and element:{seen}"&gt;Map is inactive&lt;/div&gt;</code></pre>
@@ -138,6 +138,7 @@ demo.loadModules(document);
                  data-priority="2"
                  data-conditions="connection:{any} and media:{(min-width:40em)} and element:{seen}">Map is inactive</div>
         </div>
+
 
         <h3>Based on custom conditions</h3>
         <p>The first Clock will be activated the moment all cookies are allowed. The second Clock is only inactive when the user accepts no cookies.</p>
@@ -153,12 +154,12 @@ demo.loadModules(document);
             <div data-module="IClock"
                  data-conditions="cookies:{all}">Clock is inactive</div>
         </div>
-
         <pre><code data-language="html">&lt;div data-module="IClock" data-conditions="cookies:{all,incognito}"&gt;Clock is inactive&lt;/div&gt;</code></pre>
         <div class="component">
             <div data-module="IClock"
                  data-conditions="cookies:{all,incognito}">Clock is inactive</div>
         </div>
+
 
         <h3>Multiple modules on a single element</h3>
         <p>Clock will be active as long as element has a maximum width of 300 pixels, if the element width gets above 400 pixels another Clock becomes active which also shows the time.</p>
@@ -166,6 +167,7 @@ demo.loadModules(document);
         <div class="component alt">
             <div data-module='[{"path":"IClock","conditions":"element:{max-width:300}","options":{"time":false}},{"path":"IClock","conditions":"element:{min-width:400}"}]' data-priority="1">Clock is inactive</div>
         </div>
+
 
         <h3>Using a conditioned and a wildcard module on a single element</h3>
         <p>Clock will be active as long as element has a maximum width of 300 pixels, if the element gets above 300 pixels the wildcard Clock element is loaded which shows the time.</p>
@@ -195,7 +197,8 @@ demo.loadModules(document);
 
         <!-- Load minimized library (require + modules) -->
         <script src="js.min/built.js"></script>
-        
+
+
         <script>
 
         // Setup module configuration
