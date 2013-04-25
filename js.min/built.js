@@ -3725,7 +3725,6 @@ define('security/StorageConsentGuard',['Conditioner','module'],function(Conditio
     };
 
 });
-
 /**
  * Tests if what consent the user has given concerning cookie storage
  * @module tests/cookie
@@ -3796,7 +3795,7 @@ define('tests/element',['Conditioner'],function(Conditioner){
         }
         else if (key==='seen' || key ==='visible') {
 
-            // test is element is visible
+            // test if element is visible
             var viewHeight = window.innerHeight,
                 bounds = this._element.getBoundingClientRect(),
                 visible = (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
@@ -3817,7 +3816,7 @@ define('tests/element',['Conditioner'],function(Conditioner){
             }
         }
 
-        return true;
+        return false;
     };
 
     return Test;
@@ -3869,7 +3868,6 @@ define('tests/media',['Conditioner'],function(Conditioner){
     return Test;
 
 });
-
 
 /**
  * Tests if the user is using a pointer device
@@ -3925,7 +3923,6 @@ define('tests/pointer',['Conditioner'],function(Conditioner){
 
 });
 
-
 /**
  * Tests if the window dimensions match certain expectations
  * @module tests/window
@@ -3961,7 +3958,7 @@ define('tests/window',['Conditioner'],function(Conditioner){
             }
         }
 
-        return true;
+        return false;
     };
 
     return Test;
