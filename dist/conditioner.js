@@ -659,8 +659,6 @@ var ConditionsManager = (function(require){
         // derive plain expression
         var expression = parseCondition(conditions);
 
-        console.log(expression);
-
         // load to expression tree
         this._expression = this._loadExpression(expression);
 
