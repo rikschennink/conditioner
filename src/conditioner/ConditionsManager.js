@@ -182,60 +182,34 @@ var ConditionsManager = (function(require){
     };
 
 
-    /**
-     * @class ExpressionBase
-     * @constructor
-     */
+    // ExpressionBase
     var ExpressionBase = {
-
         succeeds:function() {
             // override in subclass
         }
-
     };
 
 
-    /**
-     * @class UnaryExpression
-     * @constructor
-     * @param {Object} test
-     */
+    // UnaryExpression
     var UnaryExpression = function(test) {
-
-        // test holder
         this._test = test;
-
     };
-
-
     UnaryExpression.prototype = Object.create(ExpressionBase);
-
     UnaryExpression.prototype.setTest = function(test) {
         this._test = test;
     };
-
     UnaryExpression.prototype.succeeds = function() {
         return this._test.succeeds();
     };
 
 
-    /**
-     * @class BinaryExpression
-     * @constructor
-     * @param {Test || BinaryExpression || UnaryExpression} a - expression
-     * @param {string} o - operator (and|or)
-     * @param {Test || BinaryExpression || UnaryExpression} b - expression
-     */
+    //BinaryExpression
     var BinaryExpression = function(a,o,b) {
-
         this._a = a;
         this._o = o;
         this._b = b;
-
     };
-
     BinaryExpression.prototype = Object.create(ExpressionBase);
-
     BinaryExpression.prototype.succeeds = function() {
 
         return this._o==='and' ?
@@ -281,10 +255,10 @@ var ConditionsManager = (function(require){
         // read test count
         this._count = conditions.match(/(\:\{)/g).length;
 
-        // derive expression
+        // derive plain expression
         var expression = parseCondition(conditions);
 
-        // load expression
+        // load to expression tree
         this._expression = this._loadExpression(expression);
 
     };

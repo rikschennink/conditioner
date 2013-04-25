@@ -2605,60 +2605,34 @@ var ConditionsManager = (function(require){
     };
 
 
-    /**
-     * @class ExpressionBase
-     * @constructor
-     */
+    // ExpressionBase
     var ExpressionBase = {
-
         succeeds:function() {
             // override in subclass
         }
-
     };
 
 
-    /**
-     * @class UnaryExpression
-     * @constructor
-     * @param {Object} test
-     */
+    // UnaryExpression
     var UnaryExpression = function(test) {
-
-        // test holder
         this._test = test;
-
     };
-
-
     UnaryExpression.prototype = Object.create(ExpressionBase);
-
     UnaryExpression.prototype.setTest = function(test) {
         this._test = test;
     };
-
     UnaryExpression.prototype.succeeds = function() {
         return this._test.succeeds();
     };
 
 
-    /**
-     * @class BinaryExpression
-     * @constructor
-     * @param {Test || BinaryExpression || UnaryExpression} a - expression
-     * @param {string} o - operator (and|or)
-     * @param {Test || BinaryExpression || UnaryExpression} b - expression
-     */
+    //BinaryExpression
     var BinaryExpression = function(a,o,b) {
-
         this._a = a;
         this._o = o;
         this._b = b;
-
     };
-
     BinaryExpression.prototype = Object.create(ExpressionBase);
-
     BinaryExpression.prototype.succeeds = function() {
 
         return this._o==='and' ?
@@ -2704,10 +2678,12 @@ var ConditionsManager = (function(require){
         // read test count
         this._count = conditions.match(/(\:\{)/g).length;
 
-        // derive expression
+        // derive plain expression
         var expression = parseCondition(conditions);
 
-        // load expression
+        console.log(expression);
+
+        // load to expression tree
         this._expression = this._loadExpression(expression);
 
     };
@@ -3822,12 +3798,22 @@ define('tests/element',['Conditioner'],function(Conditioner){
                 return this._element.offsetWidth <= value;
             }
             case 'seen':{
-                return true;
+                return this._seen === true;
             }
             case 'visible':{
-                var viewHeight = window.innerHeight;
-                var bounds = this._element.getBoundingClientRect();
-                return (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
+
+                // test is element is visible
+                var viewHeight = window.innerHeight,
+                    bounds = this._element.getBoundingClientRect(),
+                    visible = (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
+
+                // remember if seen
+                if (!this._seen && visible) {
+                    this._seen = true;
+                }
+
+                // let know if visible
+                return visible;
             }
         }
 
@@ -3850,9 +3836,11 @@ define('tests/media',['Conditioner'],function(Conditioner){
     var Test = Conditioner.Test.inherit(),
     p = Test.prototype;
 
-    p._mql = null;
-
     p.arrange = function() {
+
+        if (!window.matchMedia) {
+            return;
+        }
 
         var self = this;
         this._mql = window.matchMedia(this._expected);
@@ -3862,7 +3850,19 @@ define('tests/media',['Conditioner'],function(Conditioner){
 
     };
 
-    p._test = function() {
+    p._test = function(expected) {
+
+        // see if checking if supported
+        if (expected === 'supported') {
+            return typeof this._mql !== 'undefined';
+        }
+
+        // if no media query list defined, no support
+        if (typeof this._mql === 'undefined') {
+            return false;
+        }
+
+        // test media query
         return this._mql.matches;
     };
 

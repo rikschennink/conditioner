@@ -38,12 +38,22 @@ define(['Conditioner'],function(Conditioner){
                 return this._element.offsetWidth <= value;
             }
             case 'seen':{
-                return true;
+                return this._seen === true;
             }
             case 'visible':{
-                var viewHeight = window.innerHeight;
-                var bounds = this._element.getBoundingClientRect();
-                return (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
+
+                // test is element is visible
+                var viewHeight = window.innerHeight,
+                    bounds = this._element.getBoundingClientRect(),
+                    visible = (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
+
+                // remember if seen
+                if (!this._seen && visible) {
+                    this._seen = true;
+                }
+
+                // let know if visible
+                return visible;
             }
         }
 
