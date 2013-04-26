@@ -3,7 +3,7 @@
  * @exports ModuleBase
  * @class
  * @constructor
- * @param {Element} element - DOM Element to apply this behavior to
+ * @param {element} element - DOM Element to apply this behavior to
  * @param {object} [options] - Custom options to pass to this behavior
  * @abstract
  */

@@ -44,7 +44,7 @@ var ModuleController = function(path,options) {
 
 /**
  * Returns true if the module is ready to be initialized
- * @return {Boolean}
+ * @return {boolean}
  * @public
  */
 ModuleController.prototype.isAvailable = function() {
@@ -55,7 +55,7 @@ ModuleController.prototype.isAvailable = function() {
 
 /**
  * Returns true if the module has no conditions defined
- * @return {Boolean}
+ * @return {boolean}
  * @public
  */
 ModuleController.prototype.isConditioned = function() {
@@ -65,7 +65,7 @@ ModuleController.prototype.isConditioned = function() {
 
 /**
  * Returns true if the module is ready
- * @return {Boolean}
+ * @return {boolean}
  * @public
  */
 ModuleController.prototype.isReady = function() {
@@ -188,7 +188,7 @@ ModuleController.prototype._onLoad = function() {
     }
 
     // merge module default options with element options if found
-    options = moduleOptions ? mergeObjects(moduleOptions,elementOptions) : elementOptions;
+    options = moduleOptions ? Utils.mergeObjects(moduleOptions,elementOptions) : elementOptions;
 
     // create instance
     this._moduleInstance = new this._Module(this._options.target,options);
@@ -248,7 +248,7 @@ ModuleController.prototype.matchesQuery = function(query) {
     if (typeof query == 'string') {
 
         // check if matches query
-        if (matchesSelector(this._options.target,query)) {
+        if (Utils.matchesSelector(this._options.target,query)) {
             return true;
         }
 

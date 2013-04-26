@@ -4,7 +4,7 @@
  * @class
  * @constructor
  * @param {string} conditions - conditions to be met
- * @param {Element} [element] - optional element to measure these conditions on
+ * @param {element} [element] - optional element to measure these conditions on
  */
 var ConditionsManager = function(conditions,element) {
 
@@ -263,7 +263,7 @@ ConditionsManager.prototype = {
 
     /**
      * Called to create a unary expression
-     * @param {Object} test
+     * @param {object} test
      * @return {UnaryExpression}
      * @private
      */

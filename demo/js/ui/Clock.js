@@ -3,7 +3,7 @@ define(['Conditioner'],function(Conditioner){
     'use strict';
 
     // reference to parent class
-    var _parent = Conditioner.Module;
+    var _parent = Conditioner.ModuleBase;
 
     // Clock Class
     var Clock = function(element,options) {

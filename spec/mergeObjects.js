@@ -1,4 +1,4 @@
-
+/*
 'use strict';
 
 describe('mergeObjects',function(){
@@ -23,3 +23,4 @@ describe('mergeObjects',function(){
     });
 
 });
+*/

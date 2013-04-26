@@ -4,80 +4,18 @@
 
 define(['require'],function(require) {
 
+    'use strict';
+
     /**
      * @module conditioner
      */
-
-    'use strict';
-
 /**
- * Based on https://github.com/nrf110/deepmerge/blob/master/index.js
- * @method
- * @param target {object}
- * @param src {object}
- * @returns {object}
+ * @namespace Utils
  */
-var mergeObjects = function(target, src) {
-
-    var array = Array.isArray(src);
-    var dst = array && [] || {};
-
-    src = src || {};
-
-    if (array) {
-
-        target = target || [];
-        dst = dst.concat(target);
-
-        src.forEach(function(e, i) {
-
-            if (typeof e === 'object') {
-                dst[i] = mergeObjects(target[i], e);
-            }
-            else {
-                if (target.indexOf(e) === -1) {
-                    dst.push(e);
-                }
-            }
-        });
-    }
-    else {
-
-        if (target && typeof target === 'object') {
-
-            Object.keys(target).forEach(function (key) {
-                dst[key] = target[key];
-            });
-
-        }
-
-        Object.keys(src).forEach(function (key) {
-
-            if (typeof src[key] !== 'object' || !src[key]) {
-                dst[key] = src[key];
-            }
-            else {
-                if (!target[key]) {
-                    dst[key] = src[key];
-                }
-                else {
-                    dst[key] = mergeObjects(target[key], src[key]);
-                }
-            }
-
-        });
-    }
-
-    return dst;
-};
+var Utils = (function(){
 
 
-var matchesSelector = (function() {
-
-    if (!document.body) {
-        return null;
-    }
-
+    // define method used for matchesSelector
     var _method = null;
     var el = document.body;
     if (el.matches) {
@@ -96,18 +34,90 @@ var matchesSelector = (function() {
         _method = 'oMatchesSelector';
     }
 
-    /**
-     * @exports matchesSelector
-     */
-    return function(element,selector) {
 
-        if (!element) {
-            return false;
+    var exports = {
+
+        /**
+         * Based on https://github.com/nrf110/deepmerge/blob/master/index.js
+         * @memberof Utils
+         * @param target {object}
+         * @param src {object}
+         * @returns {object}
+         * @static
+         */
+        mergeObjects:function(target, src) {
+
+            var array = Array.isArray(src);
+            var dst = array && [] || {};
+
+            src = src || {};
+
+            if (array) {
+
+                target = target || [];
+                dst = dst.concat(target);
+
+                src.forEach(function(e, i) {
+
+                    if (typeof e === 'object') {
+                        dst[i] = mergeObjects(target[i], e);
+                    }
+                    else {
+                        if (target.indexOf(e) === -1) {
+                            dst.push(e);
+                        }
+                    }
+                });
+            }
+            else {
+
+                if (target && typeof target === 'object') {
+
+                    Object.keys(target).forEach(function (key) {
+                        dst[key] = target[key];
+                    });
+
+                }
+
+                Object.keys(src).forEach(function (key) {
+
+                    if (typeof src[key] !== 'object' || !src[key]) {
+                        dst[key] = src[key];
+                    }
+                    else {
+                        if (!target[key]) {
+                            dst[key] = src[key];
+                        }
+                        else {
+                            dst[key] = exports.mergeObjects(target[key], src[key]);
+                        }
+                    }
+
+                });
+            }
+
+            return dst;
+        },
+
+
+        /**
+         * matches an element to a selector
+         * @memberof Utils
+         * @param {element} element
+         * @param {string} selector
+         * @return {Boolean}
+         * @static
+         */
+        matchesSelector:function(element,selector) {
+            if (!element || !_method) {
+                return false;
+            }
+            return element[_method](selector);
         }
 
-        return element[_method](selector);
-
     };
+
+    return exports;
 
 }());
 
@@ -247,14 +257,14 @@ var Observer = {
 
 
 /**
- * @exports Module
+ * @exports ModuleBase
  * @class
  * @constructor
- * @param {Element} element - DOM Element to apply this behavior to
+ * @param {element} element - DOM Element to apply this behavior to
  * @param {object} [options] - Custom options to pass to this behavior
  * @abstract
  */
-var Module = function(element,options) {
+var ModuleBase = function(element,options) {
 
     // if no element, throw error
     if (!element) {
@@ -267,7 +277,7 @@ var Module = function(element,options) {
 
     // declare options as empty
     this._options = this._options || {};
-    this._options = options ? mergeObjects(this._options,options) : this._options;
+    this._options = options ? Utils.mergeObjects(this._options,options) : this._options;
 
 };
 
@@ -277,19 +287,19 @@ var Module = function(element,options) {
  * Override to clean up your control, remove event listeners, restore original state, etc.
  * @private
  */
-Module.prototype._unload = function() {
+ModuleBase.prototype._unload = function() {
     this._element.removeAttribute('data-initialized');
 };
 
 
 /**
- * @exports Test
+ * @exports TestBase
  * @constructor
  * @param {object} expected - expected conditions to be met
- * @param {Element} [element] - optional element to measure these conditions on
+ * @param {element} [element] - optional element to measure these conditions on
  * @abstract
  */
-var Test = function(expected,element) {
+var TestBase = function(expected,element) {
 
     // store expected value
     this._expected = expected;
@@ -302,11 +312,11 @@ var Test = function(expected,element) {
 
 };
 
-Test.inherit = function() {
+TestBase.inherit = function() {
     var T = function(expected,element) {
-        Test.call(this,expected,element);
+        TestBase.call(this,expected,element);
     };
-    T.prototype = Object.create(Test.prototype);
+    T.prototype = Object.create(TestBase.prototype);
     return T;
 };
 
@@ -315,7 +325,7 @@ Test.inherit = function() {
  * @param {string} expected - expected value
  * @private
  */
-Test.prototype._test = function(expected) {
+TestBase.prototype._test = function(expected) {
 
     // override in subclass
 
@@ -324,7 +334,7 @@ Test.prototype._test = function(expected) {
 /**
  * Called to setup the test
  */
-Test.prototype.arrange = function() {
+TestBase.prototype.arrange = function() {
 
     // override in subclass
 
@@ -334,7 +344,7 @@ Test.prototype.arrange = function() {
  * @fires change
  * @public
  */
-Test.prototype.assert = function() {
+TestBase.prototype.assert = function() {
 
     // call test
     var state = this._test(this._expected);
@@ -348,17 +358,17 @@ Test.prototype.assert = function() {
 };
 
 /**
- * @returns {Booleana}
+ * @returns {boolean}
  * @public
  */
-Test.prototype.succeeds = function() {
+TestBase.prototype.succeeds = function() {
     return this._state;
 };
 
 
 
 /**
- * @static
+ * @namespace ModuleRegister
  */
 var ModuleRegister = {
 
@@ -369,6 +379,7 @@ var ModuleRegister = {
      * @param {string} path - path to module
      * @param {object} config - configuration to setupe for module
      * @param {string} alias - alias name for module
+     * @static
      */
     registerModule:function(path,config,alias) {
 
@@ -414,6 +425,7 @@ var ModuleRegister = {
      * Get a registered module by path
      * @param {string} path - path to module
      * @return {object} - module specification object
+     * @static
      */
     getModuleByPath:function(path) {
 
@@ -491,7 +503,7 @@ BinaryExpression.prototype = Object.create(ExpressionBase);
 
 /**
  * Tests if valid expression
- * @returns {Boolean}
+ * @returns {boolean}
  */
 BinaryExpression.prototype.succeeds = function() {
 
@@ -506,13 +518,12 @@ BinaryExpression.prototype.succeeds = function() {
 };
 
 
-
 /**
  * @exports ConditionsManager
  * @class
  * @constructor
  * @param {string} conditions - conditions to be met
- * @param {Element} [element] - optional element to measure these conditions on
+ * @param {element} [element] - optional element to measure these conditions on
  */
 var ConditionsManager = function(conditions,element) {
 
@@ -771,7 +782,7 @@ ConditionsManager.prototype = {
 
     /**
      * Called to create a unary expression
-     * @param {Object} test
+     * @param {object} test
      * @return {UnaryExpression}
      * @private
      */
@@ -909,7 +920,7 @@ var ModuleController = function(path,options) {
 
 /**
  * Returns true if the module is ready to be initialized
- * @return {Boolean}
+ * @return {boolean}
  * @public
  */
 ModuleController.prototype.isAvailable = function() {
@@ -920,7 +931,7 @@ ModuleController.prototype.isAvailable = function() {
 
 /**
  * Returns true if the module has no conditions defined
- * @return {Boolean}
+ * @return {boolean}
  * @public
  */
 ModuleController.prototype.isConditioned = function() {
@@ -930,7 +941,7 @@ ModuleController.prototype.isConditioned = function() {
 
 /**
  * Returns true if the module is ready
- * @return {Boolean}
+ * @return {boolean}
  * @public
  */
 ModuleController.prototype.isReady = function() {
@@ -1053,7 +1064,7 @@ ModuleController.prototype._onLoad = function() {
     }
 
     // merge module default options with element options if found
-    options = moduleOptions ? mergeObjects(moduleOptions,elementOptions) : elementOptions;
+    options = moduleOptions ? Utils.mergeObjects(moduleOptions,elementOptions) : elementOptions;
 
     // create instance
     this._moduleInstance = new this._Module(this._options.target,options);
@@ -1113,7 +1124,7 @@ ModuleController.prototype.matchesQuery = function(query) {
     if (typeof query == 'string') {
 
         // check if matches query
-        if (matchesSelector(this._options.target,query)) {
+        if (Utils.matchesSelector(this._options.target,query)) {
             return true;
         }
 
@@ -1155,7 +1166,7 @@ ModuleController.prototype.execute = function(method,params) {
  * @exports Node
  * @class
  * @constructor
- * @param {Element} element
+ * @param {element} element
  */
 var Node = function(element) {
 
@@ -1511,7 +1522,7 @@ Conditioner.prototype = {
     setOptions:function(options) {
 
         // update options
-        this._options = mergeObjects(this._options,options);
+        this._options = Utils.mergeObjects(this._options,options);
 
         // loop over modules
         var config,path,mod,alias;
@@ -1537,7 +1548,7 @@ Conditioner.prototype = {
     /**
      * Loads modules within the given context.
      *
-     * @param {Element} context - Context to find modules in
+     * @param {element} context - Context to find modules in
      * @return {Array} - Array of initialized ModuleControllers
      */
     loadModules:function(context) {
@@ -1624,7 +1635,7 @@ Conditioner.prototype = {
         if (typeof query == 'undefined') {
             return this._nodes.concat();
         }
-        var i=0,l = this._node.length,results=[],node;
+        var i=0,l = this._nodes.length,results=[],node;
         for (;i<l;i++) {
             node = this._nodes[i];
             if (node.matchesQuery(query)) {
@@ -1639,8 +1650,32 @@ Conditioner.prototype = {
     // singleton reference
     var _instance;
 
-    // expose conditioner
+    // expose
     return {
+
+        /**
+         * Reference to Observer class
+         * @type {Observer}
+         */
+        Observer:Observer,
+
+        /**
+         * Reference to TestBase Class
+         * @memberof module:conditioner
+         */
+        TestBase:TestBase,
+
+        /**
+         * Reference to ModuleBase Class
+         * @memberof module:conditioner
+         */
+        ModuleBase:ModuleBase,
+
+        /**
+         * Reference to mergeObject method
+         * @memberof module:conditioner
+         */
+        mergeObjects:Utils.mergeObjects,
 
         /**
          * Returns an instance of the Conditioner
@@ -1649,30 +1684,7 @@ Conditioner.prototype = {
         getInstance:function() {
             if (!_instance) {_instance = new Conditioner();}
             return _instance;
-        },
-
-        /**
-         * Reference to Test base class
-         */
-        Test:Test,
-
-        /**
-         * Reference to Module base class
-         * @inner
-         */
-        Module:Module,
-
-        /**
-         * Reference to Observer class
-         * @type {object}
-         */
-        Observer:Observer,
-
-        /**
-         * Reference to mergeObject method
-         * @type {function}
-         */
-        mergeObjects:mergeObjects
+        }
 
     };
 

@@ -53,12 +53,11 @@ module.exports = function(grunt) {
                     '<%= meta.banner %>',
                     '<%= path.wrapper %>/intro.js',
 
-                    '<%= path.conditioner %>/mergeObjects.js',
-                    '<%= path.conditioner %>/matchesSelector.js',
+                    '<%= path.conditioner %>/Utils.js',
                     '<%= path.conditioner %>/Observer.js',
 
-                    '<%= path.conditioner %>/Module.js',
-                    '<%= path.conditioner %>/Test.js',
+                    '<%= path.conditioner %>/ModuleBase.js',
+                    '<%= path.conditioner %>/TestBase.js',
                     '<%= path.conditioner %>/ModuleRegister.js',
                     '<%= path.conditioner %>/ExpressionBase.js',
                     '<%= path.conditioner %>/UnaryExpression.js',

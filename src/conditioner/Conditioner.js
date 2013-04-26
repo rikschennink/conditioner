@@ -33,7 +33,7 @@ Conditioner.prototype = {
     setOptions:function(options) {
 
         // update options
-        this._options = mergeObjects(this._options,options);
+        this._options = Utils.mergeObjects(this._options,options);
 
         // loop over modules
         var config,path,mod,alias;
@@ -59,7 +59,7 @@ Conditioner.prototype = {
     /**
      * Loads modules within the given context.
      *
-     * @param {Element} context - Context to find modules in
+     * @param {element} context - Context to find modules in
      * @return {Array} - Array of initialized ModuleControllers
      */
     loadModules:function(context) {
@@ -146,7 +146,7 @@ Conditioner.prototype = {
         if (typeof query == 'undefined') {
             return this._nodes.concat();
         }
-        var i=0,l = this._node.length,results=[],node;
+        var i=0,l = this._nodes.length,results=[],node;
         for (;i<l;i++) {
             node = this._nodes[i];
             if (node.matchesQuery(query)) {

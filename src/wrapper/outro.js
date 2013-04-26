@@ -2,8 +2,32 @@
     // singleton reference
     var _instance;
 
-    // expose conditioner
+    // expose
     return {
+
+        /**
+         * Reference to Observer class
+         * @type {Observer}
+         */
+        Observer:Observer,
+
+        /**
+         * Reference to TestBase Class
+         * @memberof module:conditioner
+         */
+        TestBase:TestBase,
+
+        /**
+         * Reference to ModuleBase Class
+         * @memberof module:conditioner
+         */
+        ModuleBase:ModuleBase,
+
+        /**
+         * Reference to mergeObject method
+         * @memberof module:conditioner
+         */
+        mergeObjects:Utils.mergeObjects,
 
         /**
          * Returns an instance of the Conditioner
@@ -12,30 +36,7 @@
         getInstance:function() {
             if (!_instance) {_instance = new Conditioner();}
             return _instance;
-        },
-
-        /**
-         * Reference to Test base class
-         */
-        Test:Test,
-
-        /**
-         * Reference to Module base class
-         * @inner
-         */
-        Module:Module,
-
-        /**
-         * Reference to Observer class
-         * @type {object}
-         */
-        Observer:Observer,
-
-        /**
-         * Reference to mergeObject method
-         * @type {function}
-         */
-        mergeObjects:mergeObjects
+        }
 
     };
 

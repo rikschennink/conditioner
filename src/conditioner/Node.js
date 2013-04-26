@@ -4,7 +4,7 @@
  * @exports Node
  * @class
  * @constructor
- * @param {Element} element
+ * @param {element} element
  */
 var Node = function(element) {
 

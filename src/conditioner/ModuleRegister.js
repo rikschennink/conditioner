@@ -1,6 +1,6 @@
 
 /**
- * @static
+ * @namespace ModuleRegister
  */
 var ModuleRegister = {
 
@@ -11,6 +11,7 @@ var ModuleRegister = {
      * @param {string} path - path to module
      * @param {object} config - configuration to setupe for module
      * @param {string} alias - alias name for module
+     * @static
      */
     registerModule:function(path,config,alias) {
 
@@ -56,6 +57,7 @@ var ModuleRegister = {
      * Get a registered module by path
      * @param {string} path - path to module
      * @return {object} - module specification object
+     * @static
      */
     getModuleByPath:function(path) {
 

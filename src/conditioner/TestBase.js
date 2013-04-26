@@ -1,12 +1,12 @@
 
 /**
- * @exports Test
+ * @exports TestBase
  * @constructor
  * @param {object} expected - expected conditions to be met
- * @param {Element} [element] - optional element to measure these conditions on
+ * @param {element} [element] - optional element to measure these conditions on
  * @abstract
  */
-var Test = function(expected,element) {
+var TestBase = function(expected,element) {
 
     // store expected value
     this._expected = expected;
@@ -19,11 +19,11 @@ var Test = function(expected,element) {
 
 };
 
-Test.inherit = function() {
+TestBase.inherit = function() {
     var T = function(expected,element) {
-        Test.call(this,expected,element);
+        TestBase.call(this,expected,element);
     };
-    T.prototype = Object.create(Test.prototype);
+    T.prototype = Object.create(TestBase.prototype);
     return T;
 };
 
@@ -32,7 +32,7 @@ Test.inherit = function() {
  * @param {string} expected - expected value
  * @private
  */
-Test.prototype._test = function(expected) {
+TestBase.prototype._test = function(expected) {
 
     // override in subclass
 
@@ -41,7 +41,7 @@ Test.prototype._test = function(expected) {
 /**
  * Called to setup the test
  */
-Test.prototype.arrange = function() {
+TestBase.prototype.arrange = function() {
 
     // override in subclass
 
@@ -51,7 +51,7 @@ Test.prototype.arrange = function() {
  * @fires change
  * @public
  */
-Test.prototype.assert = function() {
+TestBase.prototype.assert = function() {
 
     // call test
     var state = this._test(this._expected);
@@ -65,10 +65,10 @@ Test.prototype.assert = function() {
 };
 
 /**
- * @returns {Booleana}
+ * @returns {boolean}
  * @public
  */
-Test.prototype.succeeds = function() {
+TestBase.prototype.succeeds = function() {
     return this._state;
 };
 

@@ -2024,89 +2024,20 @@ define("lib/jrburke/require", function(){});
 // Copyright (c) 2013 Rik Schennink - https://github.com/rikschennink/conditioner
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
+define('Conditioner',['require'],function(require) {
 
-define('Conditioner',['require'],
     
+
     /**
      * @module conditioner
      */
-
-    function(require) {
-
-
-
 /**
- * Based on https://github.com/nrf110/deepmerge/blob/master/index.js
- *
- * @memberof conditioner
- * @param target {object}
- * @param src {object}
- * @returns {object}
+ * @namespace Utils
  */
-var mergeObjects = function(target, src) {
-
-    var array = Array.isArray(src);
-    var dst = array && [] || {};
-
-    src = src || {};
-
-    if (array) {
-
-        target = target || [];
-        dst = dst.concat(target);
-
-        src.forEach(function(e, i) {
-
-            if (typeof e === 'object') {
-                dst[i] = mergeObjects(target[i], e);
-            }
-            else {
-                if (target.indexOf(e) === -1) {
-                    dst.push(e);
-                }
-            }
-        });
-    }
-    else {
-
-        if (target && typeof target === 'object') {
-
-            Object.keys(target).forEach(function (key) {
-                dst[key] = target[key];
-            });
-
-        }
-
-        Object.keys(src).forEach(function (key) {
-
-            if (typeof src[key] !== 'object' || !src[key]) {
-                dst[key] = src[key];
-            }
-            else {
-                if (!target[key]) {
-                    dst[key] = src[key];
-                }
-                else {
-                    dst[key] = mergeObjects(target[key], src[key]);
-                }
-            }
-
-        });
-    }
-
-    return dst;
-};
+var Utils = (function(){
 
 
-/**
- * @memberof conditioner
- */
-var matchesSelector = (function() {
-
-    if (!document.body) {
-        return null;
-    }
-
+    // define method used for matchesSelector
     var _method = null;
     var el = document.body;
     if (el.matches) {
@@ -2125,29 +2056,106 @@ var matchesSelector = (function() {
         _method = 'oMatchesSelector';
     }
 
-    return function(element,selector) {
 
-        if (!element) {
-            return false;
+    var exports = {
+
+        /**
+         * Based on https://github.com/nrf110/deepmerge/blob/master/index.js
+         * @memberof Utils
+         * @param target {object}
+         * @param src {object}
+         * @returns {object}
+         * @static
+         */
+        mergeObjects:function(target, src) {
+
+            var array = Array.isArray(src);
+            var dst = array && [] || {};
+
+            src = src || {};
+
+            if (array) {
+
+                target = target || [];
+                dst = dst.concat(target);
+
+                src.forEach(function(e, i) {
+
+                    if (typeof e === 'object') {
+                        dst[i] = mergeObjects(target[i], e);
+                    }
+                    else {
+                        if (target.indexOf(e) === -1) {
+                            dst.push(e);
+                        }
+                    }
+                });
+            }
+            else {
+
+                if (target && typeof target === 'object') {
+
+                    Object.keys(target).forEach(function (key) {
+                        dst[key] = target[key];
+                    });
+
+                }
+
+                Object.keys(src).forEach(function (key) {
+
+                    if (typeof src[key] !== 'object' || !src[key]) {
+                        dst[key] = src[key];
+                    }
+                    else {
+                        if (!target[key]) {
+                            dst[key] = src[key];
+                        }
+                        else {
+                            dst[key] = exports.mergeObjects(target[key], src[key]);
+                        }
+                    }
+
+                });
+            }
+
+            return dst;
+        },
+
+
+        /**
+         * matches an element to a selector
+         * @memberof Utils
+         * @param {element} element
+         * @param {string} selector
+         * @return {Boolean}
+         * @static
+         */
+        matchesSelector:function(element,selector) {
+            if (!element || !_method) {
+                return false;
+            }
+            return element[_method](selector);
         }
 
-        return element[_method](selector);
-
     };
+
+    return exports;
 
 }());
 
 
 /**
- * @static Observer
+ * @namespace Observer
  */
 var Observer = {
 
     /**
      * Subscribe to an event
+     * @memberof Observer
      * @param {object} obj - Object to subscribe to
      * @param {string} type - Event type to listen for
      * @param {Function} fn - Function to call when event fires
+     * @static
      */
     subscribe:function(obj,type,fn) {
 
@@ -2170,9 +2178,11 @@ var Observer = {
 
     /**
      * Unsubscribe from further notifications
+     * @memberof Observer
      * @param {object} obj - Object to unsubscribe from
      * @param {string} type - Event type to match
      * @param {Function} fn - Function to match
+     * @static
      */
     unsubscribe:function(obj,type,fn) {
 
@@ -2193,9 +2203,11 @@ var Observer = {
 
     /**
      * Publish an event
+     * @memberof Observer
      * @param {object} obj - Object to fire the event on
      * @param {string} type - Event type to fire
      * @param {object} data - Any type of data
+     * @static
      */
     publish:function(obj,type,data) {
 
@@ -2227,9 +2239,11 @@ var Observer = {
 
     /**
      * Setup propagation target for events so they can bubble up the object tree
+     * @memberof Observer
      * @param {object} obj - Object to set as origin
      * @param {object} target - Object to set as target
      * @return {Boolean} if setup was successful
+     * @static
      */
     setupPropagationTarget:function(obj,target) {
         if (!obj || !target) {
@@ -2241,9 +2255,11 @@ var Observer = {
 
     /**
      * Remove propagation target
+     * @memberof Observer
      * @param {object} obj - Object set as origin
      * @param {object} target - Object set as target
      * @return {Boolean} if removed successful
+     * @static
      */
     removePropagationTarget:function(obj,target) {
 
@@ -2263,12 +2279,14 @@ var Observer = {
 
 
 /**
+ * @exports ModuleBase
  * @class
  * @constructor
- * @param {Element} element - DOM Element to apply this behavior to
+ * @param {element} element - DOM Element to apply this behavior to
  * @param {object} [options] - Custom options to pass to this behavior
+ * @abstract
  */
-var Module = function(element,options) {
+var ModuleBase = function(element,options) {
 
     // if no element, throw error
     if (!element) {
@@ -2281,7 +2299,7 @@ var Module = function(element,options) {
 
     // declare options as empty
     this._options = this._options || {};
-    this._options = options ? mergeObjects(this._options,options) : this._options;
+    this._options = options ? Utils.mergeObjects(this._options,options) : this._options;
 
 };
 
@@ -2291,17 +2309,19 @@ var Module = function(element,options) {
  * Override to clean up your control, remove event listeners, restore original state, etc.
  * @private
  */
-Module.prototype._unload = function() {
+ModuleBase.prototype._unload = function() {
     this._element.removeAttribute('data-initialized');
 };
 
 
 /**
+ * @exports TestBase
  * @constructor
  * @param {object} expected - expected conditions to be met
- * @param {Element} [element] - optional element to measure these conditions on
+ * @param {element} [element] - optional element to measure these conditions on
+ * @abstract
  */
-var Test = function(expected,element) {
+var TestBase = function(expected,element) {
 
     // store expected value
     this._expected = expected;
@@ -2314,20 +2334,20 @@ var Test = function(expected,element) {
 
 };
 
-Test.inherit = function() {
+TestBase.inherit = function() {
     var T = function(expected,element) {
-        Test.call(this,expected,element);
+        TestBase.call(this,expected,element);
     };
-    T.prototype = Object.create(Test.prototype);
+    T.prototype = Object.create(TestBase.prototype);
     return T;
 };
 
 /**
  * Called to run the test
- * @param {string} expected
+ * @param {string} expected - expected value
  * @private
  */
-Test.prototype._test = function(expected) {
+TestBase.prototype._test = function(expected) {
 
     // override in subclass
 
@@ -2336,13 +2356,17 @@ Test.prototype._test = function(expected) {
 /**
  * Called to setup the test
  */
-Test.prototype.arrange = function() {
+TestBase.prototype.arrange = function() {
 
     // override in subclass
 
 };
 
-Test.prototype.assert = function() {
+/**
+ * @fires change
+ * @public
+ */
+TestBase.prototype.assert = function() {
 
     // call test
     var state = this._test(this._expected);
@@ -2355,7 +2379,11 @@ Test.prototype.assert = function() {
 
 };
 
-Test.prototype.succeeds = function() {
+/**
+ * @returns {boolean}
+ * @public
+ */
+TestBase.prototype.succeeds = function() {
     return this._state;
 };
 
@@ -2432,9 +2460,6 @@ var ModuleRegister = {
 
 };
 
-/**
- * @memberof Conditioner
- */
 var ExpressionBase = {
 
     /**
@@ -2451,6 +2476,7 @@ var ExpressionBase = {
 /**
  * @class
  * @constructor
+ * @augments ExpressionBase
  * @param {Test|null} test
  */
 var UnaryExpression = function(test) {
@@ -2482,6 +2508,7 @@ UnaryExpression.prototype.succeeds = function() {
 /**
  * @class
  * @constructor
+ * @augments ExpressionBase
  * @param {UnaryExpression} a
  * @param {string} o
  * @param {UnaryExpression} b
@@ -2496,7 +2523,7 @@ BinaryExpression.prototype = Object.create(ExpressionBase);
 
 /**
  * Tests if valid expression
- * @returns {Boolean}
+ * @returns {boolean}
  */
 BinaryExpression.prototype.succeeds = function() {
 
@@ -2511,12 +2538,12 @@ BinaryExpression.prototype.succeeds = function() {
 };
 
 
-
 /**
+ * @exports ConditionsManager
  * @class
  * @constructor
  * @param {string} conditions - conditions to be met
- * @param {Element} [element] - optional element to measure these conditions on
+ * @param {element} [element] - optional element to measure these conditions on
  */
 var ConditionsManager = function(conditions,element) {
 
@@ -2558,6 +2585,8 @@ ConditionsManager.prototype = {
 
     /**
      * Returns true if the current conditions are suitable
+     * @return {Boolean}
+     * @public
      */
     getSuitability:function() {
         return this._suitable;
@@ -2714,6 +2743,7 @@ ConditionsManager.prototype = {
 
     /**
      * @param {Array} level
+     * @private
      */
     _makeImplicit:function(level) {
 
@@ -2747,6 +2777,8 @@ ConditionsManager.prototype = {
 
     /**
      * Loads expression
+     * @return {ExpressionBase}
+     * @private
      */
     _loadExpression:function(expression) {
 
@@ -2770,8 +2802,9 @@ ConditionsManager.prototype = {
 
     /**
      * Called to create a unary expression
-     * @param {Object} test
+     * @param {object} test
      * @return {UnaryExpression}
+     * @private
      */
     _createUnaryExpressionFromTest:function(test) {
 
@@ -2863,6 +2896,7 @@ ConditionsManager.prototype = {
 
 
 /**
+ * @exports ModuleController
  * @class
  * @constructor
  * @param {string} path - reference to module
@@ -2906,7 +2940,7 @@ var ModuleController = function(path,options) {
 
 /**
  * Returns true if the module is ready to be initialized
- * @return {Boolean}
+ * @return {boolean}
  * @public
  */
 ModuleController.prototype.isAvailable = function() {
@@ -2917,7 +2951,7 @@ ModuleController.prototype.isAvailable = function() {
 
 /**
  * Returns true if the module has no conditions defined
- * @return {Boolean}
+ * @return {boolean}
  * @public
  */
 ModuleController.prototype.isConditioned = function() {
@@ -2927,7 +2961,7 @@ ModuleController.prototype.isConditioned = function() {
 
 /**
  * Returns true if the module is ready
- * @return {Boolean}
+ * @return {boolean}
  * @public
  */
 ModuleController.prototype.isReady = function() {
@@ -3050,7 +3084,7 @@ ModuleController.prototype._onLoad = function() {
     }
 
     // merge module default options with element options if found
-    options = moduleOptions ? mergeObjects(moduleOptions,elementOptions) : elementOptions;
+    options = moduleOptions ? Utils.mergeObjects(moduleOptions,elementOptions) : elementOptions;
 
     // create instance
     this._moduleInstance = new this._Module(this._options.target,options);
@@ -3110,7 +3144,7 @@ ModuleController.prototype.matchesQuery = function(query) {
     if (typeof query == 'string') {
 
         // check if matches query
-        if (matchesSelector(this._options.target,query)) {
+        if (Utils.matchesSelector(this._options.target,query)) {
             return true;
         }
 
@@ -3149,9 +3183,10 @@ ModuleController.prototype.execute = function(method,params) {
 
 
 /**
+ * @exports Node
  * @class
  * @constructor
- * @param {Element} element
+ * @param {element} element
  */
 var Node = function(element) {
 
@@ -3474,7 +3509,7 @@ Node.prototype.execute = function(method,params) {
 
 
 /**
- * @lends conditioner~Conditioner
+ * @exports Conditioner
  * @class
  * @constructor
  * @private
@@ -3497,178 +3532,181 @@ var Conditioner = function() {
 
 };
 
-
-/**
- * Set custom options
- * @param {object} options - options to override
- * @public
- */
-Conditioner.prototype.setOptions = function(options) {
-
-    // update options
-    this._options = mergeObjects(this._options,options);
-
-    // loop over modules
-    var config,path,mod,alias;
-    for (path in this._options.modules) {
-
-        if (!this._options.modules.hasOwnProperty(path)){continue;}
-
-        // get module reference
-        mod = this._options.modules[path];
-
-        // get alias
-        alias = typeof mod === 'string' ? mod : mod.alias;
-
-        // get config
-        config = typeof mod === 'string' ? null : mod.options || {};
-
-        // register this module
-        ModuleRegister.registerModule(path,config,alias);
-
-    }
-
-
-};
-
-
-/**
- * Loads modules within the given context.
- *
- * @param {Element} context - Context to find modules in
- * @return {Array} - Array of initialized ModuleControllers
- */
-Conditioner.prototype.loadModules = function(context) {
-
-    // if no context supplied throw error
-    if (!context) {
-        throw new Error('Conditioner.loadModules(context): "context" is a required parameter.');
-    }
-
-    // register vars and get elements
-    var elements = context.querySelectorAll('[' + this._options.attribute.module + ']'),
-        l = elements.length,
-        i = 0,
-        nodes = [],
-        element;
-
-    // if no elements do nothing
-    if (!elements) {
-        return [];
-    }
-
-    // process elements
-    for (; i<l; i++) {
-
-        // set element reference
-        element = elements[i];
-
-        // test if already processed
-        if (Node.hasProcessed(element)) {
-            continue;
-        }
-
-        // create new node
-        nodes.push(new Node(element));
-    }
-
-    // sort nodes by priority:
-    // higher numbers go first,
-    // then 0 (or no priority assigned),
-    // then negative numbers
-    nodes.sort(function(a,b){
-        return b.getPriority() - a.getPriority();
-    });
-
-    // initialize modules depending on assigned priority
-    l = nodes.length;
-    for (i=0; i<l; i++) {
-        nodes[i].init();
-    }
-
-    // merge new nodes with currently active nodes list
-    this._nodes = this._nodes.concat(nodes);
-
-    // returns nodes so it is possible to later unload nodes manually if necessary
-    return nodes;
-};
-
-
-/**
- * Returns ModuleControllers matching the selector
- *
- * @param {object|string} query - Query to match the ModuleController to, could be ClassPath, Element or CSS Selector
- * @return {object} controller - First matched ModuleController
- */
-Conditioner.prototype.getModule = function(query) {
-    var i=0,l = this._nodes.length,node;
-    for (;i<l;i++) {
-        node = this._nodes[i];
-        if (node.matchesQuery(query)) {
-            return node;
-        }
-    }
-    return null;
-};
-
-
-/**
- * Returns all ModuleControllers matching the selector
- *
- * @param {object|string} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
- * @return {Array} results - Array containing matched behavior controllers
- */
-Conditioner.prototype.getModuleAll = function(query) {
-    if (typeof query == 'undefined') {
-        return this._nodes.concat();
-    }
-    var i=0,l = this._node.length,results=[],node;
-    for (;i<l;i++) {
-        node = this._nodes[i];
-        if (node.matchesQuery(query)) {
-            results.push(node);
-        }
-    }
-    return results;
-};
-
-
-// singleton reference
-var _instance;
-
-// expose conditioner
-return {
+Conditioner.prototype = {
 
     /**
-     * Returns an instance of the Conditioner
-     * @return {Conditioner}
+     * Set custom options
+     * @param {object} options - options to override
+     * @public
      */
-    getInstance:function() {
-        if (!_instance) {_instance = new Conditioner();}
-        return _instance;
+    setOptions:function(options) {
+
+        // update options
+        this._options = Utils.mergeObjects(this._options,options);
+
+        // loop over modules
+        var config,path,mod,alias;
+        for (path in this._options.modules) {
+
+            if (!this._options.modules.hasOwnProperty(path)){continue;}
+
+            // get module reference
+            mod = this._options.modules[path];
+
+            // get alias
+            alias = typeof mod === 'string' ? mod : mod.alias;
+
+            // get config
+            config = typeof mod === 'string' ? null : mod.options || {};
+
+            // register this module
+            ModuleRegister.registerModule(path,config,alias);
+
+        }
     },
 
     /**
-     * Reference to Test base class
+     * Loads modules within the given context.
+     *
+     * @param {element} context - Context to find modules in
+     * @return {Array} - Array of initialized ModuleControllers
      */
-    Test:Test,
+    loadModules:function(context) {
+
+        // if no context supplied throw error
+        if (!context) {
+            throw new Error('Conditioner.loadModules(context): "context" is a required parameter.');
+        }
+
+        // register vars and get elements
+        var elements = context.querySelectorAll('[' + this._options.attribute.module + ']'),
+            l = elements.length,
+            i = 0,
+            nodes = [],
+            element;
+
+        // if no elements do nothing
+        if (!elements) {
+            return [];
+        }
+
+        // process elements
+        for (; i<l; i++) {
+
+            // set element reference
+            element = elements[i];
+
+            // test if already processed
+            if (Node.hasProcessed(element)) {
+                continue;
+            }
+
+            // create new node
+            nodes.push(new Node(element));
+        }
+
+        // sort nodes by priority:
+        // higher numbers go first,
+        // then 0 (or no priority assigned),
+        // then negative numbers
+        nodes.sort(function(a,b){
+            return b.getPriority() - a.getPriority();
+        });
+
+        // initialize modules depending on assigned priority
+        l = nodes.length;
+        for (i=0; i<l; i++) {
+            nodes[i].init();
+        }
+
+        // merge new nodes with currently active nodes list
+        this._nodes = this._nodes.concat(nodes);
+
+        // returns nodes so it is possible to later unload nodes manually if necessary
+        return nodes;
+    },
+
 
     /**
-     * Reference to Module base class
+     * Returns ModuleControllers matching the selector
+     *
+     * @param {object|string} query - Query to match the ModuleController to, could be ClassPath, Element or CSS Selector
+     * @return {object} controller - First matched ModuleController
      */
-    Module:Module,
+    getModule:function(query) {
+        var i=0,l = this._nodes.length,node;
+        for (;i<l;i++) {
+            node = this._nodes[i];
+            if (node.matchesQuery(query)) {
+                return node;
+            }
+        }
+        return null;
+    },
+
 
     /**
-     * Reference to Observer class
+     * Returns all ModuleControllers matching the selector
+     *
+     * @param {object|string} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
+     * @return {Array} results - Array containing matched behavior controllers
      */
-    Observer:Observer,
-
-    /**
-     * Reference to mergeObject method
-     */
-    mergeObjects:mergeObjects
+    getModuleAll:function(query) {
+        if (typeof query == 'undefined') {
+            return this._nodes.concat();
+        }
+        var i=0,l = this._nodes.length,results=[],node;
+        for (;i<l;i++) {
+            node = this._nodes[i];
+            if (node.matchesQuery(query)) {
+                results.push(node);
+            }
+        }
+        return results;
+    }
 
 };
+
+    // singleton reference
+    var _instance;
+
+    // expose
+    return {
+
+        /**
+         * Reference to Observer class
+         * @type {Observer}
+         */
+        Observer:Observer,
+
+        /**
+         * Reference to TestBase Class
+         * @memberof module:conditioner
+         */
+        TestBase:TestBase,
+
+        /**
+         * Reference to ModuleBase Class
+         * @memberof module:conditioner
+         */
+        ModuleBase:ModuleBase,
+
+        /**
+         * Reference to mergeObject method
+         * @memberof module:conditioner
+         */
+        mergeObjects:Utils.mergeObjects,
+
+        /**
+         * Returns an instance of the Conditioner
+         * @return {Conditioner}
+         */
+        getInstance:function() {
+            if (!_instance) {_instance = new Conditioner();}
+            return _instance;
+        }
+
+    };
 
 });
 
@@ -3681,7 +3719,7 @@ define('tests/connection',['Conditioner'],function(Conditioner){
 
     
 
-    var Test = Conditioner.Test.inherit(),
+    var Test = Conditioner.TestBase.inherit(),
     p = Test.prototype;
 
     p.handleEvent = function(e) {
@@ -3780,7 +3818,7 @@ define('security/StorageConsentGuard',['Conditioner','module'],function(Conditio
  */
 define('tests/cookies',['Conditioner','security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
 
-    var Test = Conditioner.Test.inherit(),
+    var Test = Conditioner.TestBase.inherit(),
         p = Test.prototype;
 
     p.arrange = function() {
@@ -3813,7 +3851,7 @@ define('tests/element',['Conditioner'],function(Conditioner){
 
     
 
-    var Test = Conditioner.Test.inherit(),
+    var Test = Conditioner.TestBase.inherit(),
     p = Test.prototype;
 
     p.handleEvent = function(e) {
@@ -3881,7 +3919,7 @@ define('tests/media',['Conditioner'],function(Conditioner){
 
     
 
-    var Test = Conditioner.Test.inherit(),
+    var Test = Conditioner.TestBase.inherit(),
     p = Test.prototype;
 
     p.arrange = function() {
@@ -3926,7 +3964,7 @@ define('tests/pointer',['Conditioner'],function(Conditioner){
 
     
 
-    var Test = Conditioner.Test.inherit(),
+    var Test = Conditioner.TestBase.inherit(),
     p = Test.prototype,
     MOUSE_MOVES_REQUIRED = 2;
 
@@ -3980,7 +4018,7 @@ define('tests/window',['Conditioner'],function(Conditioner){
 
     
 
-    var Test = Conditioner.Test.inherit(),
+    var Test = Conditioner.TestBase.inherit(),
     p = Test.prototype;
 
     p.handleEvent = function(e) {
@@ -4019,7 +4057,7 @@ define('ui/Clock',['Conditioner'],function(Conditioner){
     
 
     // reference to parent class
-    var _parent = Conditioner.Module;
+    var _parent = Conditioner.ModuleBase;
 
     // Clock Class
     var Clock = function(element,options) {
@@ -4087,7 +4125,7 @@ define('ui/StorageConsentSelect',['Conditioner','security/StorageConsentGuard'],
     
 
     // reference to parent class
-    var _parent = Conditioner.Module;
+    var _parent = Conditioner.ModuleBase;
 
     // StorageConsentSelect Class
     var StorageConsentSelect = function(element,options) {

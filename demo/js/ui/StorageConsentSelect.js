@@ -3,7 +3,7 @@ define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,IStor
     'use strict';
 
     // reference to parent class
-    var _parent = Conditioner.Module;
+    var _parent = Conditioner.ModuleBase;
 
     // StorageConsentSelect Class
     var StorageConsentSelect = function(element,options) {

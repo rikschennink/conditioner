@@ -17,7 +17,7 @@ BinaryExpression.prototype = Object.create(ExpressionBase);
 
 /**
  * Tests if valid expression
- * @returns {Boolean}
+ * @returns {boolean}
  */
 BinaryExpression.prototype.succeeds = function() {
 
@@ -30,4 +30,3 @@ BinaryExpression.prototype.succeeds = function() {
         this._a.succeeds() || this._b.succeeds();
 
 };
-

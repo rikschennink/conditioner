@@ -4,7 +4,7 @@
  */
 define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
 
-    var Test = Conditioner.Test.inherit(),
+    var Test = Conditioner.TestBase.inherit(),
         p = Test.prototype;
 
     p.arrange = function() {
