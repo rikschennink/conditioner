@@ -1,14 +1,16 @@
 
 /**
- * @static Observer
+ * @namespace Observer
  */
 var Observer = {
 
     /**
      * Subscribe to an event
+     * @memberof Observer
      * @param {object} obj - Object to subscribe to
      * @param {string} type - Event type to listen for
      * @param {Function} fn - Function to call when event fires
+     * @static
      */
     subscribe:function(obj,type,fn) {
 
@@ -31,9 +33,11 @@ var Observer = {
 
     /**
      * Unsubscribe from further notifications
+     * @memberof Observer
      * @param {object} obj - Object to unsubscribe from
      * @param {string} type - Event type to match
      * @param {Function} fn - Function to match
+     * @static
      */
     unsubscribe:function(obj,type,fn) {
 
@@ -54,9 +58,11 @@ var Observer = {
 
     /**
      * Publish an event
+     * @memberof Observer
      * @param {object} obj - Object to fire the event on
      * @param {string} type - Event type to fire
      * @param {object} data - Any type of data
+     * @static
      */
     publish:function(obj,type,data) {
 
@@ -88,9 +94,11 @@ var Observer = {
 
     /**
      * Setup propagation target for events so they can bubble up the object tree
+     * @memberof Observer
      * @param {object} obj - Object to set as origin
      * @param {object} target - Object to set as target
      * @return {Boolean} if setup was successful
+     * @static
      */
     setupPropagationTarget:function(obj,target) {
         if (!obj || !target) {
@@ -102,9 +110,11 @@ var Observer = {
 
     /**
      * Remove propagation target
+     * @memberof Observer
      * @param {object} obj - Object set as origin
      * @param {object} target - Object set as target
      * @return {Boolean} if removed successful
+     * @static
      */
     removePropagationTarget:function(obj,target) {
 

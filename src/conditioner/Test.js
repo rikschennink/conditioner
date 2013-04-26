@@ -47,6 +47,10 @@ Test.prototype.arrange = function() {
 
 };
 
+/**
+ * @fires change
+ * @public
+ */
 Test.prototype.assert = function() {
 
     // call test
@@ -60,6 +64,10 @@ Test.prototype.assert = function() {
 
 };
 
+/**
+ * @returns {Booleana}
+ * @public
+ */
 Test.prototype.succeeds = function() {
     return this._state;
 };
