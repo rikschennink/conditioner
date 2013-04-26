@@ -18,7 +18,7 @@ define(['Conditioner'],function(Conditioner){
         window.addEventListener('scroll',this,false);
     };
 
-    p._test = function(expected) {
+    p._onAssert = function(expected) {
 
         var parts = expected.split(':'),key,value;
         if (parts) {
@@ -37,7 +37,7 @@ define(['Conditioner'],function(Conditioner){
         }
         else if (key==='seen' || key ==='visible') {
 
-            // test if element is visible
+            // measure if element is visible
             var viewHeight = window.innerHeight,
                 bounds = this._element.getBoundingClientRect(),
                 visible = (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);

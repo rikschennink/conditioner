@@ -2342,25 +2342,17 @@ TestBase.inherit = function() {
     return T;
 };
 
-/**
- * Called to run the test
- * @param {string} expected - expected value
- * @private
- */
-TestBase.prototype._test = function(expected) {
-
-    // override in subclass
-
-};
 
 /**
  * Called to setup the test
+ * @abstract
  */
 TestBase.prototype.arrange = function() {
 
     // override in subclass
 
 };
+
 
 /**
  * @fires change
@@ -2369,7 +2361,7 @@ TestBase.prototype.arrange = function() {
 TestBase.prototype.assert = function() {
 
     // call test
-    var state = this._test(this._expected);
+    var state = this._onAssert(this._expected);
 
     // check if result changed
     if (this._state !== state) {
@@ -2378,6 +2370,22 @@ TestBase.prototype.assert = function() {
     }
 
 };
+
+
+/**
+ * Called when asserting the test
+ * @param {string} expected - expected value
+ * @return {boolean}
+ * @abstract
+ */
+TestBase.prototype._onAssert = function(expected) {
+
+    console.log('jaj');
+
+    return false;
+
+};
+
 
 /**
  * @returns {boolean}
@@ -2390,7 +2398,7 @@ TestBase.prototype.succeeds = function() {
 
 
 /**
- * @static
+ * @namespace ModuleRegister
  */
 var ModuleRegister = {
 
@@ -2401,6 +2409,7 @@ var ModuleRegister = {
      * @param {string} path - path to module
      * @param {object} config - configuration to setupe for module
      * @param {string} alias - alias name for module
+     * @static
      */
     registerModule:function(path,config,alias) {
 
@@ -2446,6 +2455,7 @@ var ModuleRegister = {
      * Get a registered module by path
      * @param {string} path - path to module
      * @return {object} - module specification object
+     * @static
      */
     getModuleByPath:function(path) {
 
@@ -2846,10 +2856,10 @@ ConditionsManager.prototype = {
 
             test = this._tests[i];
 
-            // arrange test
+            // arrange test (tests will assert themselves)
             test.arrange();
 
-            // execute test
+            // assert test to determine initial state
             test.assert();
 
             // listen to changes
@@ -3732,7 +3742,7 @@ define('tests/connection',['Conditioner'],function(Conditioner){
         }
     };
 
-    p._test = function(expected) {
+    p._onAssert = function(expected) {
         return expected === 'any' && navigator.onLine;
     };
 
@@ -3830,7 +3840,7 @@ define('tests/cookies',['Conditioner','security/StorageConsentGuard'],function(C
 
     };
 
-    p._test = function(expected) {
+    p._onAssert = function(expected) {
 
         var guard = StorageConsentGuard.getInstance(),
             level = guard.getActiveLevel(),
@@ -3863,7 +3873,7 @@ define('tests/element',['Conditioner'],function(Conditioner){
         window.addEventListener('scroll',this,false);
     };
 
-    p._test = function(expected) {
+    p._onAssert = function(expected) {
 
         var parts = expected.split(':'),key,value;
         if (parts) {
@@ -3882,7 +3892,7 @@ define('tests/element',['Conditioner'],function(Conditioner){
         }
         else if (key==='seen' || key ==='visible') {
 
-            // test if element is visible
+            // measure if element is visible
             var viewHeight = window.innerHeight,
                 bounds = this._element.getBoundingClientRect(),
                 visible = (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
@@ -3936,7 +3946,7 @@ define('tests/media',['Conditioner'],function(Conditioner){
 
     };
 
-    p._test = function(expected) {
+    p._onAssert = function(expected) {
 
         // see if checking if supported
         if (expected === 'supported') {
@@ -3998,7 +4008,7 @@ define('tests/pointer',['Conditioner'],function(Conditioner){
         },10000);
     };
 
-    p._test = function(expected) {
+    p._onAssert = function(expected) {
         var result = '';
         if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
             result = 'available';
@@ -4029,7 +4039,7 @@ define('tests/window',['Conditioner'],function(Conditioner){
         window.addEventListener('resize',this,false);
     };
 
-    p._test = function(expected) {
+    p._onAssert = function(expected) {
 
         var innerWidth = window.innerWidth || document.documentElement.clientWidth,
             parts = expected.split(':'),

@@ -307,10 +307,10 @@ ConditionsManager.prototype = {
 
             test = this._tests[i];
 
-            // arrange test
+            // arrange test (tests will assert themselves)
             test.arrange();
 
-            // execute test
+            // assert test to determine initial state
             test.assert();
 
             // listen to changes

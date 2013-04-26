@@ -20,7 +20,7 @@ define(['Conditioner'],function(Conditioner){
         }
     };
 
-    p._test = function(expected) {
+    p._onAssert = function(expected) {
         return expected === 'any' && navigator.onLine;
     };
 

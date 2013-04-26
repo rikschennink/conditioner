@@ -17,7 +17,7 @@ define(['Conditioner'],function(Conditioner){
         window.addEventListener('resize',this,false);
     };
 
-    p._test = function(expected) {
+    p._onAssert = function(expected) {
 
         var innerWidth = window.innerWidth || document.documentElement.clientWidth,
             parts = expected.split(':'),

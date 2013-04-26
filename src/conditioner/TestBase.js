@@ -27,25 +27,17 @@ TestBase.inherit = function() {
     return T;
 };
 
-/**
- * Called to run the test
- * @param {string} expected - expected value
- * @private
- */
-TestBase.prototype._test = function(expected) {
-
-    // override in subclass
-
-};
 
 /**
  * Called to setup the test
+ * @abstract
  */
 TestBase.prototype.arrange = function() {
 
     // override in subclass
 
 };
+
 
 /**
  * @fires change
@@ -54,7 +46,7 @@ TestBase.prototype.arrange = function() {
 TestBase.prototype.assert = function() {
 
     // call test
-    var state = this._test(this._expected);
+    var state = this._onAssert(this._expected);
 
     // check if result changed
     if (this._state !== state) {
@@ -63,6 +55,22 @@ TestBase.prototype.assert = function() {
     }
 
 };
+
+
+/**
+ * Called when asserting the test
+ * @param {string} expected - expected value
+ * @return {boolean}
+ * @abstract
+ */
+TestBase.prototype._onAssert = function(expected) {
+
+    console.log('jaj');
+
+    return false;
+
+};
+
 
 /**
  * @returns {boolean}

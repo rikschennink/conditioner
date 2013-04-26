@@ -24,7 +24,7 @@ define(['Conditioner'],function(Conditioner){
 
     };
 
-    p._test = function(expected) {
+    p._onAssert = function(expected) {
 
         // see if checking if supported
         if (expected === 'supported') {

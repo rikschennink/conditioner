@@ -16,7 +16,7 @@ define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,Stora
 
     };
 
-    p._test = function(expected) {
+    p._onAssert = function(expected) {
 
         var guard = StorageConsentGuard.getInstance(),
             level = guard.getActiveLevel(),

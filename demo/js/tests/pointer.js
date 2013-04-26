@@ -40,7 +40,7 @@ define(['Conditioner'],function(Conditioner){
         },10000);
     };
 
-    p._test = function(expected) {
+    p._onAssert = function(expected) {
         var result = '';
         if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
             result = 'available';
