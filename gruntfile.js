@@ -15,6 +15,17 @@ module.exports = function(grunt) {
                     '// Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> - <%= pkg.homepage %>\n' +
                     '// License: <%= _.map(pkg.licenses, function(x) {return x.type + " (" + x.url + ")";}).join(", ") %>\n'
         },
+        jsdoc:{
+            dist:{
+                src:[
+                    '<%= concat.dist.dest %>',
+                    '<%= path.src %>/tests/*.js'
+                ],
+                options: {
+                    destination: 'docs'
+                }
+            }
+        },
         jasmine:{
             src:[
                 '<%= path.conditioner %>/mergeObjects.js',
@@ -49,6 +60,9 @@ module.exports = function(grunt) {
                     '<%= path.conditioner %>/Module.js',
                     '<%= path.conditioner %>/Test.js',
                     '<%= path.conditioner %>/ModuleRegister.js',
+                    '<%= path.conditioner %>/ExpressionBase.js',
+                    '<%= path.conditioner %>/UnaryExpression.js',
+                    '<%= path.conditioner %>/BinaryExpression.js',
                     '<%= path.conditioner %>/ConditionsManager.js',
                     '<%= path.conditioner %>/ModuleController.js',
                     '<%= path.conditioner %>/Node.js',
@@ -129,6 +143,8 @@ module.exports = function(grunt) {
 
     });
 
+
+    grunt.loadNpmTasks('grunt-jsdoc');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
@@ -139,6 +155,9 @@ module.exports = function(grunt) {
 
     // build everything
     grunt.registerTask('default',['jasmine','concat','copy','uglify','requirejs']);
+
+    // test
+    grunt.registerTask('docs',['concat','copy','jsdoc']);
 
     // test
     grunt.registerTask('test',['jasmine']);

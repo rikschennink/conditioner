@@ -1,45 +1,65 @@
 
 /**
- * @class ConditionsManager
+ * @exports ConditionsManager
+ * @class
+ * @constructor
+ * @param {string} conditions - conditions to be met
+ * @param {Element} [element] - optional element to measure these conditions on
  */
-var ConditionsManager = (function(require){
+var ConditionsManager = function(conditions,element) {
+
+    // if the conditions are suitable, by default they are
+    this._suitable = true;
+
+    // if no conditions, conditions will always be suitable
+    if (typeof conditions !== 'string') {
+        return;
+    }
+
+    // conditions supplied, conditions are now unsuitable by default
+    this._suitable = false;
+
+    // set element reference
+    this._element = element;
+
+    // load tests
+    this._tests = [];
+
+    // change event bind
+    this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
+
+    // read test count
+    this._count = conditions.match(/(\:\{)/g).length;
+
+    // derive plain expression
+    var expression = this._parseCondition(conditions);
+
+    // load to expression tree
+    this._expression = this._loadExpression(expression);
+
+};
 
 
 
+// prototype shortcut
+ConditionsManager.prototype = {
+
+    /**
+     * Returns true if the current conditions are suitable
+     * @return {Boolean}
+     * @public
+     */
+    getSuitability:function() {
+        return this._suitable;
+    },
 
 
-    // helper method
-    var makeImplicit = function(level) {
-
-        var i=0,l=level.length;
-
-        for (;i<l;i++) {
-
-            if (l>3) {
-
-                // binary expression found merge into new level
-                level.splice(i,3,level.slice(i,i+3));
-
-                // set new length
-                l = level.length;
-
-                // move back to start
-                i=-1;
-
-            }
-            else if (typeof level[i] !== 'string') {
-
-                // level okay, check lower level
-                makeImplicit(level[i]);
-
-            }
-
-        }
-
-    };
-
-    // helper method
-    var parseCondition = function(condition) {
+    /**
+     * @param condition
+     * @returns {Array}
+     * @private
+     */
+    _parseCondition:function(condition) {
 
         var i=0,
             c,
@@ -175,224 +195,162 @@ var ConditionsManager = (function(require){
         }
 
         // derive implicit expressions
-        makeImplicit(tree);
+        this._makeImplicit(tree);
 
         // return final expression tree
         return tree.length === 1 ? tree[0] : tree;
-    };
-
-
-    // ExpressionBase
-    var ExpressionBase = {
-        succeeds:function() {
-            // override in subclass
-        }
-    };
-
-
-    // UnaryExpression
-    var UnaryExpression = function(test) {
-        this._test = test;
-    };
-    UnaryExpression.prototype = Object.create(ExpressionBase);
-    UnaryExpression.prototype.setTest = function(test) {
-        this._test = test;
-    };
-    UnaryExpression.prototype.succeeds = function() {
-        return this._test.succeeds();
-    };
-
-
-    //BinaryExpression
-    var BinaryExpression = function(a,o,b) {
-        this._a = a;
-        this._o = o;
-        this._b = b;
-    };
-    BinaryExpression.prototype = Object.create(ExpressionBase);
-    BinaryExpression.prototype.succeeds = function() {
-
-        return this._o==='and' ?
-
-        // is 'and' operator
-        this._a.succeeds() && this._b.succeeds() :
-
-        // is 'or' operator
-        this._a.succeeds() || this._b.succeeds();
-
-    };
-
+    },
 
 
     /**
-     * @constructor
-     * @param {string} conditions - conditions to be met
-     * @param {Element} [element] - optional element to measure these conditions on
+     * @param {Array} level
+     * @private
      */
-    var ConditionsManager = function(conditions,element) {
+    _makeImplicit:function(level) {
 
-        // if the conditions are suitable, by default they are
-        this._suitable = true;
+        var i=0,l=level.length;
 
-        // if no conditions, conditions will always be suitable
-        if (typeof conditions !== 'string') {
-            return;
-        }
+        for (;i<l;i++) {
 
-        // conditions supplied, conditions are now unsuitable by default
-        this._suitable = false;
+            if (l>3) {
 
-        // set element reference
-        this._element = element;
+                // binary expression found merge into new level
+                level.splice(i,3,level.slice(i,i+3));
 
-        // load tests
-        this._tests = [];
+                // set new length
+                l = level.length;
 
-        // change event bind
-        this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
-
-        // read test count
-        this._count = conditions.match(/(\:\{)/g).length;
-
-        // derive plain expression
-        var expression = parseCondition(conditions);
-
-        // load to expression tree
-        this._expression = this._loadExpression(expression);
-
-    };
-
-
-
-    // prototype shortcut
-    ConditionsManager.prototype = {
-
-        /**
-         * Returns true if the current conditions are suitable
-         * @method getSuitability
-         */
-        getSuitability:function() {
-            return this._suitable;
-        },
-
-
-        /**
-         * Loads expression
-         * @method _loadExpression
-         */
-        _loadExpression:function(expression) {
-
-            // if expression is array
-            if (expression.length === 3) {
-
-                // is binary expression, create test
-                return new BinaryExpression(
-                    this._loadExpression(expression[0]),
-                    expression[1],
-                    this._loadExpression(expression[2])
-                );
+                // move back to start
+                i=-1;
 
             }
-            else {
-                return this._createUnaryExpressionFromTest(expression);
-            }
+            else if (typeof level[i] !== 'string') {
 
-        },
+                // level okay, check lower level
+                this._makeImplicit(level[i]);
 
-
-        /**
-         * Called to create a unary expression
-         * @method _createUnaryExpressionFromTest
-         * @param {Object} test
-         * @return {UnaryExpression}
-         */
-        _createUnaryExpressionFromTest:function(test) {
-
-            var unaryExpression = new UnaryExpression(null);
-            var instance = null;
-            var self = this;
-
-            require(['tests/' + test.path],function(Test){
-
-                // create test instance
-                instance = new Test(test.value,self._element);
-
-                // add instance to test set
-                self._tests.push(instance);
-
-                // set test to unary expression
-                unaryExpression.setTest(instance);
-
-                // lower test count
-                self._count--;
-                if (self._count===0) {
-                    self._onReady();
-                }
-            });
-
-            return unaryExpression;
-        },
-
-
-        /**
-         * Called when all tests are ready
-         * @method _onReady
-         */
-        _onReady:function() {
-
-            // setup
-            var l = this._tests.length,test,i;
-            for (i=0;i<l;i++) {
-
-                test = this._tests[i];
-
-                // arrange test
-                test.arrange();
-
-                // execute test
-                test.assert();
-
-                // listen to changes
-                Observer.subscribe(test,'change',this._onResultsChangedBind);
-            }
-
-            // test current state
-            this.test();
-
-            // we are now ready to start testing
-            Observer.publish(this,'ready',this._suitable);
-
-        },
-
-
-        /**
-         * Called when a condition has changed
-         * @method _onConditionsChanged
-         */
-        _onTestResultsChanged:function() {
-            this.test();
-        },
-
-
-        /**
-         * Tests if conditions are suitable
-         * @method test
-         */
-        test:function() {
-
-            // test expression success state
-            var suitable = this._expression.succeeds();
-
-            // fire changed event if environment suitability changed
-            if (suitable != this._suitable) {
-                this._suitable = suitable;
-                Observer.publish(this,'change');
             }
 
         }
 
-    };
+    },
 
-    return ConditionsManager;
 
-}(require));
+    /**
+     * Loads expression
+     * @return {ExpressionBase}
+     * @private
+     */
+    _loadExpression:function(expression) {
+
+        // if expression is array
+        if (expression.length === 3) {
+
+            // is binary expression, create test
+            return new BinaryExpression(
+                this._loadExpression(expression[0]),
+                expression[1],
+                this._loadExpression(expression[2])
+            );
+
+        }
+        else {
+            return this._createUnaryExpressionFromTest(expression);
+        }
+
+    },
+
+
+    /**
+     * Called to create a unary expression
+     * @param {Object} test
+     * @return {UnaryExpression}
+     * @private
+     */
+    _createUnaryExpressionFromTest:function(test) {
+
+        var unaryExpression = new UnaryExpression(null);
+        var instance = null;
+        var self = this;
+
+        require(['tests/' + test.path],function(Test){
+
+            // create test instance
+            instance = new Test(test.value,self._element);
+
+            // add instance to test set
+            self._tests.push(instance);
+
+            // set test to unary expression
+            unaryExpression.setTest(instance);
+
+            // lower test count
+            self._count--;
+            if (self._count===0) {
+                self._onReady();
+            }
+        });
+
+        return unaryExpression;
+    },
+
+    /**
+     * Called when all tests are ready
+     * @fires ready
+     * @private
+     */
+    _onReady:function() {
+
+        // setup
+        var l = this._tests.length,test,i;
+        for (i=0;i<l;i++) {
+
+            test = this._tests[i];
+
+            // arrange test
+            test.arrange();
+
+            // execute test
+            test.assert();
+
+            // listen to changes
+            Observer.subscribe(test,'change',this._onResultsChangedBind);
+        }
+
+        // test current state
+        this.test();
+
+        // we are now ready to start testing
+        Observer.publish(this,'ready',this._suitable);
+
+    },
+
+
+    /**
+     * Called when a condition has changed
+     * @private
+     */
+    _onTestResultsChanged:function() {
+        this.test();
+    },
+
+
+    /**
+     * Tests if conditions are suitable
+     * @fires change
+     * @public
+    */
+    test:function() {
+
+        // test expression success state
+        var suitable = this._expression.succeeds();
+
+        // fire changed event if environment suitability changed
+        if (suitable != this._suitable) {
+            this._suitable = suitable;
+            Observer.publish(this,'change');
+        }
+
+    }
+
+};

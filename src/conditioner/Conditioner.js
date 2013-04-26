@@ -1,40 +1,36 @@
 
 /**
- * @class Conditioner
+ * @exports Conditioner
+ * @class
+ * @constructor
+ * @private
  */
-var Conditioner = (function(ModuleRegister,ModuleController,Node,Test,Module,Observer,mergeObjects){
+var Conditioner = function() {
 
-
-    /**
-     * @constructor
-     */
-    var Conditioner = function() {
-
-        // options for conditioner
-        this._options = {
-            'attribute':{
-                'module':'data-module',
-                'conditions':'data-conditions',
-                'options':'data-options',
-                'priority':'data-priority'
-            },
-            'modules':{}
-        };
-
-        // array of all parsed nodes
-        this._nodes = [];
-
+    // options for conditioner
+    this._options = {
+        'attribute':{
+            'module':'data-module',
+            'conditions':'data-conditions',
+            'options':'data-options',
+            'priority':'data-priority'
+        },
+        'modules':{}
     };
 
-    // prototype shortcut
-    var p = Conditioner.prototype;
+    // array of all parsed nodes
+    this._nodes = [];
 
+};
+
+Conditioner.prototype = {
 
     /**
-     * @method setOptions, set custom options
+     * Set custom options
      * @param {object} options - options to override
+     * @public
      */
-    p.setOptions = function(options) {
+    setOptions:function(options) {
 
         // update options
         this._options = mergeObjects(this._options,options);
@@ -58,19 +54,15 @@ var Conditioner = (function(ModuleRegister,ModuleController,Node,Test,Module,Obs
             ModuleRegister.registerModule(path,config,alias);
 
         }
-
-
-    };
-
+    },
 
     /**
      * Loads modules within the given context.
      *
-     * @method loadModules
      * @param {Element} context - Context to find modules in
      * @return {Array} - Array of initialized ModuleControllers
      */
-    p.loadModules = function(context) {
+    loadModules:function(context) {
 
         // if no context supplied throw error
         if (!context) {
@@ -123,17 +115,16 @@ var Conditioner = (function(ModuleRegister,ModuleController,Node,Test,Module,Obs
 
         // returns nodes so it is possible to later unload nodes manually if necessary
         return nodes;
-    };
+    },
 
 
     /**
      * Returns ModuleControllers matching the selector
      *
-     * @method getModule
-     * @param {object} query - Query to match the ModuleController to, could be ClassPath, Element or CSS Selector
+     * @param {object|string} query - Query to match the ModuleController to, could be ClassPath, Element or CSS Selector
      * @return {object} controller - First matched ModuleController
      */
-    p.getModule = function(query) {
+    getModule:function(query) {
         var i=0,l = this._nodes.length,node;
         for (;i<l;i++) {
             node = this._nodes[i];
@@ -142,17 +133,16 @@ var Conditioner = (function(ModuleRegister,ModuleController,Node,Test,Module,Obs
             }
         }
         return null;
-    };
+    },
 
 
     /**
      * Returns all ModuleControllers matching the selector
      *
-     * @method getModuleAll
-     * @param {object} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
+     * @param {object|string} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
      * @return {Array} results - Array containing matched behavior controllers
      */
-    p.getModuleAll = function(query) {
+    getModuleAll:function(query) {
         if (typeof query == 'undefined') {
             return this._nodes.concat();
         }
@@ -164,44 +154,6 @@ var Conditioner = (function(ModuleRegister,ModuleController,Node,Test,Module,Obs
             }
         }
         return results;
-    };
+    }
 
-
-    // Singleton structure
-    var _instance;
-
-    return {
-
-        /**
-         * Returns an instance of the Conditioner
-         * @method getInstance
-         * @return instance of Conditioner
-         */
-        getInstance:function() {
-            if (!_instance) {_instance = new Conditioner();}
-            return _instance;
-        },
-
-        /**
-         * Reference to Test base class
-         */
-        Test:Test,
-
-        /**
-         * Reference to Module base class
-         */
-        Module:Module,
-
-        /**
-         * Reference to Observer class
-         */
-        Observer:Observer,
-
-        /**
-         * Reference to updateObject method
-         */
-        mergeObjects:mergeObjects
-
-    };
-
-}(ModuleRegister,ModuleController,Node,Test,Module,Observer,mergeObjects));
+};

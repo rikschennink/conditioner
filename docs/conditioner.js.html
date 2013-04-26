@@ -1,4 +1,31 @@
-// conditioner v0.8.1 - A JavaScript framework for conditionally loading UI classes
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: dist/conditioner.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: dist/conditioner.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>// conditioner v0.8.1 - A JavaScript framework for conditionally loading UI classes
 // Copyright (c) 2013 Rik Schennink - https://github.com/rikschennink/conditioner
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -131,7 +158,7 @@ var Observer = {
 
         // check if already added
         var test,i=0,l = obj._subscriptions;
-        for (; i<l; i++) {
+        for (; i&lt;l; i++) {
             test = obj._subscriptions[i];
             if (test.type == type && test.fn == fn) {
                 return;
@@ -179,7 +206,7 @@ var Observer = {
 
         // find and execute callback
         var subscriptions=[],subscription,i=0,l = obj._subscriptions.length;
-        for (;i<l; i++) {
+        for (;i&lt;l; i++) {
             subscription = obj._subscriptions[i];
             if (subscription.type == type) {
                 subscriptions.push(subscription);
@@ -188,7 +215,7 @@ var Observer = {
 
         // call callbacks
         l = subscriptions.length;
-        for (i=0;i<l;i++) {
+        for (i=0;i&lt;l;i++) {
             subscriptions[i].fn(data)
         }
 
@@ -572,7 +599,7 @@ ConditionsManager.prototype = {
         }
 
         // read explicit expressions
-        for (;i<l;i++) {
+        for (;i&lt;l;i++) {
 
             c = condition.charAt(i);
 
@@ -675,7 +702,7 @@ ConditionsManager.prototype = {
 
                     target.pop();
 
-                    for (k=0;k<flattened.length;k++) {
+                    for (k=0;k&lt;flattened.length;k++) {
                         target.push(flattened[k]);
                     }
 
@@ -700,7 +727,7 @@ ConditionsManager.prototype = {
 
         var i=0,l=level.length;
 
-        for (;i<l;i++) {
+        for (;i&lt;l;i++) {
 
             if (l>3) {
 
@@ -793,7 +820,7 @@ ConditionsManager.prototype = {
 
         // setup
         var l = this._tests.length,test,i;
-        for (i=0;i<l;i++) {
+        for (i=0;i&lt;l;i++) {
 
             test = this._tests[i];
 
@@ -1193,7 +1220,7 @@ Node.prototype.init = function() {
     var l=this._moduleControllers.length,i,mc;
 
     // initialize modules
-    for (i=0;i<l;i++) {
+    for (i=0;i&lt;l;i++) {
 
         mc = this._moduleControllers[i];
 
@@ -1219,7 +1246,7 @@ Node.prototype._onModuleReady = function() {
     // check if all modules ready, if so, call on modules ready
     var i=0,l=this._moduleControllers.length;
 
-    for (;i<l;i++) {
+    for (;i&lt;l;i++) {
         if (!this._moduleControllers[i].isReady()) {
             return;
         }
@@ -1244,7 +1271,7 @@ Node.prototype._onModulesReady = function() {
 
     // listen to available events on controllers
     var i=0,l=this._moduleControllers.length;
-    for (;i<l;i++) {
+    for (;i&lt;l;i++) {
         Observer.subscribe(this._moduleControllers[i],'available',this._onModuleAvailable.bind(this));
     }
 
@@ -1261,7 +1288,7 @@ Node.prototype._onModuleAvailable = function(moduleController) {
     // setup vars
     var i=0,l=this._moduleControllers.length,mc;
 
-    for (;i<l;i++) {
+    for (;i&lt;l;i++) {
 
         mc = this._moduleControllers[i];
 
@@ -1351,7 +1378,7 @@ Node.prototype._getSuitableActiveModuleController = function() {
 
     // test if other module is ready, if so load first module to be fitting
     var i=0,l=this._moduleControllers.length,mc;
-    for (;i<l;i++) {
+    for (;i&lt;l;i++) {
 
         mc = this._moduleControllers[i];
 
@@ -1399,7 +1426,7 @@ Node.prototype._getModuleControllers = function() {
         var l=specs.length,i=0,spec;
 
         // create specs
-        for (;i<l;i++) {
+        for (;i&lt;l;i++) {
 
             spec = specs[i];
 
@@ -1542,7 +1569,7 @@ Conditioner.prototype = {
         }
 
         // process elements
-        for (; i<l; i++) {
+        for (; i&lt;l; i++) {
 
             // set element reference
             element = elements[i];
@@ -1566,7 +1593,7 @@ Conditioner.prototype = {
 
         // initialize modules depending on assigned priority
         l = nodes.length;
-        for (i=0; i<l; i++) {
+        for (i=0; i&lt;l; i++) {
             nodes[i].init();
         }
 
@@ -1586,7 +1613,7 @@ Conditioner.prototype = {
      */
     getModule:function(query) {
         var i=0,l = this._nodes.length,node;
-        for (;i<l;i++) {
+        for (;i&lt;l;i++) {
             node = this._nodes[i];
             if (node.matchesQuery(query)) {
                 return node;
@@ -1607,7 +1634,7 @@ Conditioner.prototype = {
             return this._nodes.concat();
         }
         var i=0,l = this._node.length,results=[],node;
-        for (;i<l;i++) {
+        for (;i&lt;l;i++) {
             node = this._nodes[i];
             if (node.matchesQuery(query)) {
                 results.push(node);
@@ -1660,3 +1687,25 @@ Conditioner.prototype = {
     };
 
 });
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-conditioner.html">conditioner</a></li><li><a href="connection.html">tests/connection</a></li><li><a href="element.html">tests/element</a></li><li><a href="media.html">tests/media</a></li><li><a href="pointer.html">tests/pointer</a></li><li><a href="window.html">tests/window</a></li></ul><h3>Classes</h3><ul><li><a href="Conditioner.html">Conditioner</a></li><li><a href="ConditionsManager.html">ConditionsManager</a></li><li><a href="Module.html">Module</a></li><li><a href="ModuleController.html">ModuleController</a></li><li><a href="Node.html">Node</a></li><li><a href="Test.html">Test</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri Apr 26 2013 15:57:09 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+</body>
+</html>

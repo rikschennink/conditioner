@@ -1,6 +1,6 @@
 
 /**
- * @class ModuleRegister
+ * @static
  */
 var ModuleRegister = {
 
@@ -8,7 +8,6 @@ var ModuleRegister = {
 
     /**
      * Register a module
-     * @method registerModule
      * @param {string} path - path to module
      * @param {object} config - configuration to setupe for module
      * @param {string} alias - alias name for module
@@ -55,7 +54,6 @@ var ModuleRegister = {
 
     /**
      * Get a registered module by path
-     * @method getModuleByPath
      * @param {string} path - path to module
      * @return {object} - module specification object
      */

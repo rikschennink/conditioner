@@ -1,7 +1,4 @@
 
-/**
- * @method matchesSelector
- */
 var matchesSelector = (function() {
 
     if (!document.body) {
@@ -26,6 +23,9 @@ var matchesSelector = (function() {
         _method = 'oMatchesSelector';
     }
 
+    /**
+     * @exports matchesSelector
+     */
     return function(element,selector) {
 
         if (!element) {

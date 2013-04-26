@@ -1,8 +1,8 @@
 
-define(['require'],function(require){
+define(['require'],function(require) {
 
-/**
- * @module Conditioner
- */
+    /**
+     * @module conditioner
+     */
 
-'use strict';
+    'use strict';

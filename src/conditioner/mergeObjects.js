@@ -1,5 +1,11 @@
-// based on https://github.com/nrf110/deepmerge/blob/master/index.js
-function mergeObjects(target, src) {
+/**
+ * Based on https://github.com/nrf110/deepmerge/blob/master/index.js
+ *
+ * @param target {object}
+ * @param src {object}
+ * @returns {object}
+ */
+var mergeObjects = function(target, src) {
 
     var array = Array.isArray(src);
     var dst = array && [] || {};
@@ -51,4 +57,4 @@ function mergeObjects(target, src) {
     }
 
     return dst;
-}
+};
