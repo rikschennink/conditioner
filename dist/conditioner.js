@@ -12,7 +12,7 @@ define(['require'],function(require) {
 
 /**
  * Based on https://github.com/nrf110/deepmerge/blob/master/index.js
- *
+ * @method
  * @param target {object}
  * @param src {object}
  * @returns {object}
@@ -1635,13 +1635,12 @@ Conditioner.prototype = {
 
         /**
          * Reference to Test base class
-         * @static
          */
         Test:Test,
 
         /**
          * Reference to Module base class
-         * @static
+         * @inner
          */
         Module:Module,
 

@@ -16,13 +16,12 @@
 
         /**
          * Reference to Test base class
-         * @static
          */
         Test:Test,
 
         /**
          * Reference to Module base class
-         * @static
+         * @inner
          */
         Module:Module,
 

@@ -1,6 +1,6 @@
 /**
  * Based on https://github.com/nrf110/deepmerge/blob/master/index.js
- *
+ * @method
  * @param target {object}
  * @param src {object}
  * @returns {object}
