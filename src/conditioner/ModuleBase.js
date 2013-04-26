@@ -1,13 +1,13 @@
 
 /**
- * @exports Module
+ * @exports ModuleBase
  * @class
  * @constructor
  * @param {Element} element - DOM Element to apply this behavior to
  * @param {object} [options] - Custom options to pass to this behavior
  * @abstract
  */
-var Module = function(element,options) {
+var ModuleBase = function(element,options) {
 
     // if no element, throw error
     if (!element) {
@@ -20,7 +20,7 @@ var Module = function(element,options) {
 
     // declare options as empty
     this._options = this._options || {};
-    this._options = options ? mergeObjects(this._options,options) : this._options;
+    this._options = options ? Utils.mergeObjects(this._options,options) : this._options;
 
 };
 
@@ -30,6 +30,6 @@ var Module = function(element,options) {
  * Override to clean up your control, remove event listeners, restore original state, etc.
  * @private
  */
-Module.prototype._unload = function() {
+ModuleBase.prototype._unload = function() {
     this._element.removeAttribute('data-initialized');
 };
