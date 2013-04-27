@@ -6,7 +6,7 @@ define(['Conditioner'],function(Conditioner){
     var _parent = Conditioner.ModuleBase;
 
     // Clock Class
-    var Clock = function(element,options) {
+    var exports = function(element,options) {
 
         // set default options
         this._options = {
@@ -24,7 +24,7 @@ define(['Conditioner'],function(Conditioner){
     };
 
     // Extend from BehaviourBase
-    var p = Clock.prototype = Object.create(_parent.prototype);
+    var p = exports.prototype = Object.create(_parent.prototype);
 
     // Update time
     p._tick = function() {
@@ -63,6 +63,6 @@ define(['Conditioner'],function(Conditioner){
         this._element.innerHTML = this._inner;
     };
 
-    return Clock;
+    return exports;
 
 });

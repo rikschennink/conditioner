@@ -6,7 +6,7 @@ define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,IStor
     var _parent = Conditioner.ModuleBase;
 
     // StorageConsentSelect Class
-    var StorageConsentSelect = function(element,options) {
+    var exports = function(element,options) {
 
         // default options for this class
         this._options = {
@@ -47,7 +47,7 @@ define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,IStor
     };
 
     // Extend from BehaviourBase
-    var p = StorageConsentSelect.prototype = Object.create(_parent.prototype);
+    var p = exports.prototype = Object.create(_parent.prototype);
 
     // Handle events
     p.handleEvent = function(e) {
@@ -74,6 +74,6 @@ define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,IStor
 
     };
 
-    return StorageConsentSelect;
+    return exports;
 
 });
