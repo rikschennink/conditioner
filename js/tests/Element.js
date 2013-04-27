@@ -1,13 +1,12 @@
-
 /**
  * Tests if an elements dimensions match certain expectations
- * @module tests/Element
+ * @module tests/element
  */
 define(['Conditioner'],function(Conditioner){
 
     'use strict';
 
-    var Test = Conditioner.Test.inherit(),
+    var Test = Conditioner.TestBase.inherit(),
     p = Test.prototype;
 
     p.handleEvent = function(e) {
@@ -19,23 +18,47 @@ define(['Conditioner'],function(Conditioner){
         window.addEventListener('scroll',this,false);
     };
 
-    p._test = function(rule) {
+    p._onAssert = function(expected) {
 
-        switch(rule.key) {
-            case 'min-width':{
-                return this._element.offsetWidth >= rule.value;
+        var parts = expected.split(':'),key,value;
+        if (parts) {
+            key = parts[0];
+            value = parseInt(parts[1],10);
+        }
+        else {
+            key = expected;
+        }
+
+        if (key==='min-width') {
+            return this._element.offsetWidth >= value;
+        }
+        else if (key==='max-width') {
+            return this._element.offsetWidth <= value;
+        }
+        else if (key==='seen' || key ==='visible') {
+
+            // measure if element is visible
+            var viewHeight = window.innerHeight,
+                bounds = this._element.getBoundingClientRect(),
+                visible = (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
+
+            if (key === 'seen') {
+
+                // remember if seen
+                if (typeof this._seen === 'undefined' && visible) {
+                    this._seen = true;
+                }
+
+                // if seen
+                return this._seen === true;
             }
-            case 'max-width':{
-                return this._element.offsetWidth <= rule.value;
-            }
-            case 'visible':{
-                var viewHeight = window.innerHeight;
-                var bounds = this._element.getBoundingClientRect();
-                return ((bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight)) === rule.value;
+
+            if (key === 'visible') {
+                return visible;
             }
         }
 
-        return true;
+        return false;
     };
 
     return Test;

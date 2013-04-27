@@ -3,10 +3,10 @@ define(['Conditioner'],function(Conditioner){
     "use strict";
 
     // reference to parent class
-    var _parent = Conditioner.Module;
+    var _parent = Conditioner.ModuleBase;
 
     // Map Class
-    var Map = function(element) {
+    var exports = function(element) {
 
         // test if geolocation support, otherwise map won't function
         if (!navigator.geolocation) {
@@ -31,7 +31,7 @@ define(['Conditioner'],function(Conditioner){
     };
 
     // Extend from BehaviourBase
-    var p = Map.prototype = Object.create(_parent.prototype);
+    var p = exports.prototype = Object.create(_parent.prototype);
 
     // get position success
     p._onSuccess = function(position) {
@@ -64,6 +64,6 @@ define(['Conditioner'],function(Conditioner){
 
     };
 
-    return Map;
+    return exports;
 
 });

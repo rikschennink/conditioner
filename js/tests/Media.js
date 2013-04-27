@@ -1,28 +1,42 @@
 
 /**
  * Tests if a media query is matched or not and listens to changes
- * @module tests/Media
+ * @module tests/media
  */
 define(['Conditioner'],function(Conditioner){
 
     'use strict';
 
-    var Test = Conditioner.Test.inherit(),
+    var Test = Conditioner.TestBase.inherit(),
     p = Test.prototype;
-
-    p._mql = null;
 
     p.arrange = function() {
 
+        if (!window.matchMedia) {
+            return;
+        }
+
         var self = this;
-        this._mql = window.matchMedia(this._rules[0].value);
+        this._mql = window.matchMedia(this._expected);
         this._mql.addListener(function(){
             self.assert();
         });
 
     };
 
-    p._test = function() {
+    p._onAssert = function(expected) {
+
+        // see if checking if supported
+        if (expected === 'supported') {
+            return typeof this._mql !== 'undefined';
+        }
+
+        // if no media query list defined, no support
+        if (typeof this._mql === 'undefined') {
+            return false;
+        }
+
+        // test media query
         return this._mql.matches;
     };
 

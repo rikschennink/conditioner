@@ -1,13 +1,13 @@
 
 /**
  * Tests if an active network connection is available and monitors this connection
- * @module tests/Connection
+ * @module tests/connection
  */
 define(['Conditioner'],function(Conditioner){
 
     'use strict';
 
-    var Test = Conditioner.Test.inherit(),
+    var Test = Conditioner.TestBase.inherit(),
     p = Test.prototype;
 
     p.handleEvent = function(e) {
@@ -20,8 +20,8 @@ define(['Conditioner'],function(Conditioner){
         }
     };
 
-    p._test = function(rule) {
-        return rule.value == 'any' && navigator.onLine;
+    p._onAssert = function(expected) {
+        return expected === 'any' && navigator.onLine;
     };
 
     return Test;

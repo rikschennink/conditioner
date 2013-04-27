@@ -1,11 +1,10 @@
-
 /**
  * Tests if what consent the user has given concerning cookie storage
  * @module tests/cookie
  */
 define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
 
-    var Test = Conditioner.Test.inherit(),
+    var Test = Conditioner.TestBase.inherit(),
         p = Test.prototype;
 
     p.arrange = function() {
@@ -17,7 +16,7 @@ define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,Stora
 
     };
 
-    p._test = function(expected) {
+    p._onAssert = function(expected) {
 
         var guard = StorageConsentGuard.getInstance(),
             level = guard.getActiveLevel(),

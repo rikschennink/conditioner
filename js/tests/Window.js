@@ -1,13 +1,12 @@
-
 /**
  * Tests if the window dimensions match certain expectations
- * @module tests/Window
+ * @module tests/window
  */
 define(['Conditioner'],function(Conditioner){
 
     'use strict';
 
-    var Test = Conditioner.Test.inherit(),
+    var Test = Conditioner.TestBase.inherit(),
     p = Test.prototype;
 
     p.handleEvent = function(e) {
@@ -18,20 +17,23 @@ define(['Conditioner'],function(Conditioner){
         window.addEventListener('resize',this,false);
     };
 
-    p._test = function(rule) {
+    p._onAssert = function(expected) {
 
-        var innerWidth = window.innerWidth || document.documentElement.clientWidth;
+        var innerWidth = window.innerWidth || document.documentElement.clientWidth,
+            parts = expected.split(':'),
+            key = parts[0],
+            value = parseInt(parts[1],10);
 
-        switch(rule.key) {
+        switch(key) {
             case 'min-width':{
-                return innerWidth >= rule.value;
+                return innerWidth >= value;
             }
             case 'max-width':{
-                return innerWidth <= rule.value;
+                return innerWidth <= value;
             }
         }
 
-        return true;
+        return false;
     };
 
     return Test;

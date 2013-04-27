@@ -1,13 +1,12 @@
-
 /**
  * Tests if the user is using a pointer device
- * @module tests/Pointer
+ * @module tests/pointer
  */
 define(['Conditioner'],function(Conditioner){
 
     'use strict';
 
-    var Test = Conditioner.Test.inherit(),
+    var Test = Conditioner.TestBase.inherit(),
     p = Test.prototype,
     MOUSE_MOVES_REQUIRED = 2;
 
@@ -41,8 +40,12 @@ define(['Conditioner'],function(Conditioner){
         },10000);
     };
 
-    p._test = function(rule) {
-        return (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) === rule.value;
+    p._onAssert = function(expected) {
+        var result = '';
+        if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
+            result = 'available';
+        }
+        return result === expected;
     };
 
     return Test;
