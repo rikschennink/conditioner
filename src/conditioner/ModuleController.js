@@ -223,8 +223,8 @@ ModuleController.prototype.unload = function() {
     Observer.removePropagationTarget(this._moduleInstance,this);
 
     // unload behavior if possible
-    if (this._moduleInstance._unload) {
-        this._moduleInstance._unload();
+    if (this._moduleInstance.unload) {
+        this._moduleInstance.unload();
     }
 
     // reset property
@@ -263,7 +263,7 @@ ModuleController.prototype.matchesQuery = function(query) {
  * Executes a methods on the loaded module
  * @param {string} method - method key
  * @param {Array} params - optional array containing the method parameters
- * @return {null|object} return value of executed method or null if no module set
+ * @return value of executed method or null if no module set
  * @public
  */
 ModuleController.prototype.execute = function(method,params) {

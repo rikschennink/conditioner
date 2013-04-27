@@ -2293,11 +2293,19 @@ var ModuleBase = function(element,options) {
         throw new Error('BehaviorBase(element,options): "element" is a required parameter.');
     }
 
-    // element reference
+    /**
+     * Reference to the element this module is active on
+     * @type {element}
+     * @protected
+     */
     this._element = element;
     this._element.setAttribute('data-initialized','true');
 
-    // declare options as empty
+    /**
+     * Options in place for this module
+     * @type {object}
+     * @protected
+     */
     this._options = this._options || {};
     this._options = options ? Utils.mergeObjects(this._options,options) : this._options;
 
@@ -2307,9 +2315,9 @@ var ModuleBase = function(element,options) {
 /**
  * Unloads behaviour by removing data initialized property
  * Override to clean up your control, remove event listeners, restore original state, etc.
- * @private
+ * @public
  */
-ModuleBase.prototype._unload = function() {
+ModuleBase.prototype.unload = function() {
     this._element.removeAttribute('data-initialized');
 };
 
@@ -2317,19 +2325,31 @@ ModuleBase.prototype._unload = function() {
 /**
  * @exports TestBase
  * @constructor
- * @param {object} expected - expected conditions to be met
- * @param {element} [element] - optional element to measure these conditions on
+ * @param {string} expected - expected conditions to be met
+ * @param {element} element - optional element to measure these conditions on
  * @abstract
  */
 var TestBase = function(expected,element) {
 
-    // store expected value
+    /**
+     * Expected conditions to match
+     * @type {string}
+     * @protected
+     */
     this._expected = expected;
 
-    // store element
+    /**
+     * Reference to element
+     * @type {element}
+     * @protected
+     */
     this._element = element;
 
-    // set default state
+    /**
+     * Contains current test state
+     * @type {boolean}
+     * @private
+     */
     this._state = true;
 
 };
@@ -2490,7 +2510,13 @@ var ExpressionBase = {
  * @param {Test|null} test
  */
 var UnaryExpression = function(test) {
+
+    /**
+     * @type {Test|null}
+     * @private
+     */
     this._test = test;
+
 };
 
 UnaryExpression.prototype = Object.create(ExpressionBase);
@@ -2524,8 +2550,23 @@ UnaryExpression.prototype.succeeds = function() {
  * @param {UnaryExpression} b
  */
 var BinaryExpression = function(a,o,b) {
+
+    /**
+     * @type {UnaryExpression}
+     * @private
+     */
     this._a = a;
+
+    /**
+     * @type {string}
+     * @private
+     */
     this._o = o;
+
+    /**
+     * @type {UnaryExpression}
+     * @private
+     */
     this._b = b;
 };
 
@@ -3129,8 +3170,8 @@ ModuleController.prototype.unload = function() {
     Observer.removePropagationTarget(this._moduleInstance,this);
 
     // unload behavior if possible
-    if (this._moduleInstance._unload) {
-        this._moduleInstance._unload();
+    if (this._moduleInstance.unload) {
+        this._moduleInstance.unload();
     }
 
     // reset property
@@ -3169,7 +3210,7 @@ ModuleController.prototype.matchesQuery = function(query) {
  * Executes a methods on the loaded module
  * @param {string} method - method key
  * @param {Array} params - optional array containing the method parameters
- * @return {null|object} return value of executed method or null if no module set
+ * @return value of executed method or null if no module set
  * @public
  */
 ModuleController.prototype.execute = function(method,params) {
@@ -4070,7 +4111,7 @@ define('ui/Clock',['Conditioner'],function(Conditioner){
     var _parent = Conditioner.ModuleBase;
 
     // Clock Class
-    var Clock = function(element,options) {
+    var exports = function(element,options) {
 
         // set default options
         this._options = {
@@ -4088,7 +4129,7 @@ define('ui/Clock',['Conditioner'],function(Conditioner){
     };
 
     // Extend from BehaviourBase
-    var p = Clock.prototype = Object.create(_parent.prototype);
+    var p = exports.prototype = Object.create(_parent.prototype);
 
     // Update time
     p._tick = function() {
@@ -4127,7 +4168,7 @@ define('ui/Clock',['Conditioner'],function(Conditioner){
         this._element.innerHTML = this._inner;
     };
 
-    return Clock;
+    return exports;
 
 });
 define('ui/StorageConsentSelect',['Conditioner','security/StorageConsentGuard'],function(Conditioner,IStorageGuard){
@@ -4138,7 +4179,7 @@ define('ui/StorageConsentSelect',['Conditioner','security/StorageConsentGuard'],
     var _parent = Conditioner.ModuleBase;
 
     // StorageConsentSelect Class
-    var StorageConsentSelect = function(element,options) {
+    var exports = function(element,options) {
 
         // default options for this class
         this._options = {
@@ -4179,7 +4220,7 @@ define('ui/StorageConsentSelect',['Conditioner','security/StorageConsentGuard'],
     };
 
     // Extend from BehaviourBase
-    var p = StorageConsentSelect.prototype = Object.create(_parent.prototype);
+    var p = exports.prototype = Object.create(_parent.prototype);
 
     // Handle events
     p.handleEvent = function(e) {
@@ -4206,6 +4247,6 @@ define('ui/StorageConsentSelect',['Conditioner','security/StorageConsentGuard'],
 
     };
 
-    return StorageConsentSelect;
+    return exports;
 
 });

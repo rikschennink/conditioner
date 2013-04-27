@@ -6,7 +6,13 @@
  * @param {Test|null} test
  */
 var UnaryExpression = function(test) {
+
+    /**
+     * @type {Test|null}
+     * @private
+     */
     this._test = test;
+
 };
 
 UnaryExpression.prototype = Object.create(ExpressionBase);

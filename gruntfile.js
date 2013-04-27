@@ -153,7 +153,7 @@ module.exports = function(grunt) {
 
 
     // build everything
-    grunt.registerTask('default',['jasmine','concat','copy','uglify','requirejs']);
+    grunt.registerTask('default',['jasmine','concat','copy','uglify','requirejs','jsdoc']);
 
     // test
     grunt.registerTask('docs',['concat','copy','jsdoc']);
@@ -162,7 +162,7 @@ module.exports = function(grunt) {
     grunt.registerTask('test',['jasmine']);
 
     // task for building the library
-    grunt.registerTask('lib',['concat','copy','uglify']);
+    grunt.registerTask('lib',['concat','copy','uglify','requirejs','jsdoc']);
 
     // task for optimizing the demo
     grunt.registerTask('demo',['requirejs']);

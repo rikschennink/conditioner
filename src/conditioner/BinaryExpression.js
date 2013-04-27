@@ -8,8 +8,23 @@
  * @param {UnaryExpression} b
  */
 var BinaryExpression = function(a,o,b) {
+
+    /**
+     * @type {UnaryExpression}
+     * @private
+     */
     this._a = a;
+
+    /**
+     * @type {string}
+     * @private
+     */
     this._o = o;
+
+    /**
+     * @type {UnaryExpression}
+     * @private
+     */
     this._b = b;
 };
 

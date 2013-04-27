@@ -14,11 +14,19 @@ var ModuleBase = function(element,options) {
         throw new Error('BehaviorBase(element,options): "element" is a required parameter.');
     }
 
-    // element reference
+    /**
+     * Reference to the element this module is active on
+     * @type {element}
+     * @protected
+     */
     this._element = element;
     this._element.setAttribute('data-initialized','true');
 
-    // declare options as empty
+    /**
+     * Options in place for this module
+     * @type {object}
+     * @protected
+     */
     this._options = this._options || {};
     this._options = options ? Utils.mergeObjects(this._options,options) : this._options;
 
@@ -28,8 +36,8 @@ var ModuleBase = function(element,options) {
 /**
  * Unloads behaviour by removing data initialized property
  * Override to clean up your control, remove event listeners, restore original state, etc.
- * @private
+ * @public
  */
-ModuleBase.prototype._unload = function() {
+ModuleBase.prototype.unload = function() {
     this._element.removeAttribute('data-initialized');
 };

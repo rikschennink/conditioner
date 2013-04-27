@@ -2,19 +2,31 @@
 /**
  * @exports TestBase
  * @constructor
- * @param {object} expected - expected conditions to be met
- * @param {element} [element] - optional element to measure these conditions on
+ * @param {string} expected - expected conditions to be met
+ * @param {element} element - optional element to measure these conditions on
  * @abstract
  */
 var TestBase = function(expected,element) {
 
-    // store expected value
+    /**
+     * Expected conditions to match
+     * @type {string}
+     * @protected
+     */
     this._expected = expected;
 
-    // store element
+    /**
+     * Reference to element
+     * @type {element}
+     * @protected
+     */
     this._element = element;
 
-    // set default state
+    /**
+     * Contains current test state
+     * @type {boolean}
+     * @private
+     */
     this._state = true;
 
 };
