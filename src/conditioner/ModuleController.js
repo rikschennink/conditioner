@@ -54,6 +54,16 @@ ModuleController.prototype.isAvailable = function() {
 
 
 /**
+ * Returns true if module is currently active
+ * @returns {boolean}
+ * @public
+ */
+ModuleController.prototype.isActive = function() {
+    return this._moduleInstance !== null;
+};
+
+
+/**
  * Returns true if the module has no conditions defined
  * @return {boolean}
  * @public
