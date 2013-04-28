@@ -1,5 +1,4 @@
 
-
 /**
  * @exports Node
  * @class
@@ -31,6 +30,7 @@ var Node = function(element) {
 
 /**
  * Static method testing if the current element has been processed already
+ * @param {element} element
  * @static
  */
 Node.hasProcessed = function(element) {
@@ -302,25 +302,62 @@ Node.prototype._getModuleControllers = function() {
 
 /**
  * Public method to check if the module matches the given query
- * @param {object|string} query - string query to match or object to match
- * @return {boolean} if matched
+ * @param {string} selector
+ * @return {boolean}
  * @public
  */
-Node.prototype.matchesQuery = function(query) {
-
-    return null; // todo: link to controller
-
+Node.prototype.matchesSelector = function(selector) {
+    return Utils.matchesSelector(this._element,selector);
 };
+
+
+/**
+ * @return {ModuleController}
+ * @public
+ */
+Node.prototype.getActiveModuleController = function() {
+    return this._activeModuleController;
+};
+
+
+/**
+ * @param path {string} path to module
+ * @return {ModuleController}
+ * @public
+ */
+Node.prototype.getModuleControllerByPath = function(path) {
+
+    // test if other module is ready, if so load first module to be fitting
+    var i=0,l=this._moduleControllers.length,mc;
+    for (;i<l;i++) {
+        mc = this._moduleControllers[i];
+        if (mc.matchesPath(path)) {
+            return mc;
+        }
+    }
+
+    return null;
+};
+
 
 /**
  * Public method for safely executing methods on the loaded module
  * @param {string} method - method key
  * @param {Array} params - array containing the method parameters
- * @return {object} return value of executed method
+ * @return {object} returns object containing status code and possible response data
  * @public
  */
 Node.prototype.execute = function(method,params) {
 
-    return null; // todo: link to controller
+    // if active module controller defined
+    if (this._activeModuleController) {
+        return this._activeModuleController.execute(method,params);
+    }
+
+    // no active module
+    return {
+        'status':404,
+        'response':null
+    };
 
 };

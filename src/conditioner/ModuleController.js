@@ -72,6 +72,18 @@ ModuleController.prototype.isReady = function() {
     return this._ready;
 };
 
+
+/**
+ * Checks if the module matches the path
+ * @param {string} path - path of module to test for
+ * @return {boolean} if matched
+ * @public
+ */
+ModuleController.prototype.matchesPath = function(path) {
+    return this._path === path;
+};
+
+
 /**
  * @private
  * @fires ready
@@ -238,39 +250,22 @@ ModuleController.prototype.unload = function() {
 
 
 /**
- * Checks if the module matches the given query
- * @param {object|string} query - string query to match or object to match
- * @return {boolean} if matched
- * @public
- */
-ModuleController.prototype.matchesQuery = function(query) {
-
-    if (typeof query == 'string') {
-
-        // check if matches query
-        if (Utils.matchesSelector(this._options.target,query)) {
-            return true;
-        }
-
-    }
-
-    return (query == this._options.target);
-};
-
-
-
-/**
  * Executes a methods on the loaded module
  * @param {string} method - method key
  * @param {Array} params - optional array containing the method parameters
- * @return value of executed method or null if no module set
+ * @return {object} containing response of executed method and a status code
  * @public
  */
 ModuleController.prototype.execute = function(method,params) {
 
+    // todo: always return object containing status code and response
+
     // if behavior not loaded
     if (!this._moduleInstance) {
-        return null;
+        return {
+            'status':404,
+            'response':null
+        };
     }
 
     // get function reference
@@ -280,6 +275,9 @@ ModuleController.prototype.execute = function(method,params) {
     }
 
     // once loaded call method and pass parameters
-    return F.apply(this._moduleInstance,params);
+    return {
+        'status':200,
+        'response':F.apply(this._moduleInstance,params)
+    };
 
 };

@@ -121,14 +121,19 @@ Conditioner.prototype = {
     /**
      * Returns ModuleControllers matching the selector
      *
-     * @param {object|string} query - Query to match the ModuleController to, could be ClassPath, Element or CSS Selector
-     * @return {object} controller - First matched ModuleController
+     * @param {string} selector - Selector to match the nodes to
+     * @return {Node} First matched node
      */
-    getModule:function(query) {
+    getNode:function(selector) {
+
+        if (typeof query ==='undefined') {
+            return null;
+        }
+
         var i=0,l = this._nodes.length,node;
         for (;i<l;i++) {
             node = this._nodes[i];
-            if (node.matchesQuery(query)) {
+            if (node.matchesSelector(selector)) {
                 return node;
             }
         }
@@ -139,17 +144,21 @@ Conditioner.prototype = {
     /**
      * Returns all ModuleControllers matching the selector
      *
-     * @param {object|string} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
-     * @return {Array} results - Array containing matched behavior controllers
+     * @param {string} selector - Optional selector to match the nodes to
+     * @return {Array} Array containing matched nodes
      */
-    getModuleAll:function(query) {
-        if (typeof query == 'undefined') {
+    getNodesAll:function(selector) {
+
+        // if no query supplied
+        if (typeof query ==='undefined') {
             return this._nodes.concat();
         }
+
+        // find matches
         var i=0,l = this._nodes.length,results=[],node;
         for (;i<l;i++) {
             node = this._nodes[i];
-            if (node.matchesQuery(query)) {
+            if (node.matchesSelector(selector)) {
                 results.push(node);
             }
         }
