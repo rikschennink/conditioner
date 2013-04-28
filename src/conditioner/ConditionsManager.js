@@ -55,7 +55,8 @@ ConditionsManager.prototype = {
 
 
     /**
-     * @param condition
+     * Parses condition and returns an expression array
+     * @param condition {string}
      * @returns {Array}
      * @private
      */
@@ -195,7 +196,7 @@ ConditionsManager.prototype = {
         }
 
         // derive implicit expressions
-        this._makeImplicit(tree);
+        this._makeExplicit(tree);
 
         // return final expression tree
         return tree.length === 1 ? tree[0] : tree;
@@ -203,10 +204,11 @@ ConditionsManager.prototype = {
 
 
     /**
+     * Turns an implicit array of expressions into an explicit array of expressions
      * @param {Array} level
      * @private
      */
-    _makeImplicit:function(level) {
+    _makeExplicit:function(level) {
 
         var i=0,l=level.length;
 
@@ -227,7 +229,7 @@ ConditionsManager.prototype = {
             else if (typeof level[i] !== 'string') {
 
                 // level okay, check lower level
-                this._makeImplicit(level[i]);
+                this._makeExplicit(level[i]);
 
             }
 
@@ -237,7 +239,8 @@ ConditionsManager.prototype = {
 
 
     /**
-     * Loads expression
+     * Turns an expression array into an actual expression tree
+     * @param expression {Array}
      * @return {ExpressionBase}
      * @private
      */
@@ -262,7 +265,7 @@ ConditionsManager.prototype = {
 
 
     /**
-     * Called to create a unary expression
+     * Called to create a UnaryExpression from a test and loads the test
      * @param {object} test
      * @return {UnaryExpression}
      * @private
@@ -293,6 +296,7 @@ ConditionsManager.prototype = {
 
         return unaryExpression;
     },
+
 
     /**
      * Called when all tests are ready

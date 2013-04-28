@@ -54,17 +54,16 @@ Node.prototype.getPriority = function() {
 Node.prototype.init = function() {
 
     // parse element module attributes
-    this._moduleControllers = this._getModuleControllers();
+    this._moduleControllers = this._createModuleControllers();
+
+    var i=0,l=this._moduleControllers.length,mc;
 
     // listen to ready events on module controllers
-    var l=this._moduleControllers.length,i,mc;
-
-    // initialize modules
-    for (i=0;i<l;i++) {
+    for (;i<l;i++) {
 
         mc = this._moduleControllers[i];
 
-        // if module already ready, check if all modules loaded now
+        // if module already ready, jump to onready method and don't bind listener
         if (mc.isReady()) {
             this._onModuleReady();
             continue;
@@ -77,17 +76,22 @@ Node.prototype.init = function() {
 
 };
 
+
 /**
  * Called when a module has indicated it is ready
  * @private
  */
 Node.prototype._onModuleReady = function() {
 
-    // check if all modules ready, if so, call on modules ready
-    var i=0,l=this._moduleControllers.length;
+    var i=0,l=this._moduleControllers.length,mc;
 
+    // check if all modules ready, if so, call on modules ready
     for (;i<l;i++) {
-        if (!this._moduleControllers[i].isReady()) {
+
+        mc = this._moduleControllers[i];
+
+        // if module controller is no tready, stop here, we wait for all module controllers to be ready
+        if (!mc.isReady()) {
             return;
         }
     }
@@ -96,6 +100,7 @@ Node.prototype._onModuleReady = function() {
     this._onModulesReady();
 
 };
+
 
 /**
  * Called when all modules are ready
@@ -239,7 +244,7 @@ Node.prototype._getSuitableActiveModuleController = function() {
  * @returns {Array}
  * @private
  */
-Node.prototype._getModuleControllers = function() {
+Node.prototype._createModuleControllers = function() {
 
     var result = [];
     var config = this._element.getAttribute('data-module');
@@ -312,6 +317,7 @@ Node.prototype.matchesSelector = function(selector) {
 
 
 /**
+ * Returns a reference to the currently active module controller
  * @return {ModuleController}
  * @public
  */
@@ -321,22 +327,46 @@ Node.prototype.getActiveModuleController = function() {
 
 
 /**
+ * Returns the first module controller matching the given path
  * @param path {string} path to module
  * @return {ModuleController}
  * @public
  */
 Node.prototype.getModuleControllerByPath = function(path) {
+    return this._filterModuleControllers(path,true);
+};
 
-    // test if other module is ready, if so load first module to be fitting
-    var i=0,l=this._moduleControllers.length,mc;
+
+/**
+ * Returns the first module controller matching the given path
+ * @param path {string} path to module
+ * @return {Array}
+ * @public
+ */
+Node.prototype.getModuleControllerAllByPath = function(path) {
+    return this._filterModuleControllers(path,false);
+};
+
+
+/**
+ * Returns a single or multiple module controllers depending on input
+ * @param path {string}
+ * @param single {boolean}
+ * @returns {Array|ModuleController}
+ * @private
+ */
+Node.prototype._filterModuleControllers = function(path,single) {
+    var i=0,l=this._moduleControllers.length,result=[],mc;
     for (;i<l;i++) {
         mc = this._moduleControllers[i];
         if (mc.matchesPath(path)) {
-            return mc;
+            if (single) {
+                return mc;
+            }
+            result.push(mc);
         }
     }
-
-    return null;
+    return single ? null : result;
 };
 
 
@@ -359,5 +389,4 @@ Node.prototype.execute = function(method,params) {
         'status':404,
         'response':null
     };
-
 };

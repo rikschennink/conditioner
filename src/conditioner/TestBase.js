@@ -76,11 +76,7 @@ TestBase.prototype.assert = function() {
  * @abstract
  */
 TestBase.prototype._onAssert = function(expected) {
-
-    console.log('jaj');
-
     return false;
-
 };
 
 

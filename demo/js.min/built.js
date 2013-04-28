@@ -2399,11 +2399,7 @@ TestBase.prototype.assert = function() {
  * @abstract
  */
 TestBase.prototype._onAssert = function(expected) {
-
-    console.log('jaj');
-
     return false;
-
 };
 
 
@@ -2645,7 +2641,8 @@ ConditionsManager.prototype = {
 
 
     /**
-     * @param condition
+     * Parses condition and returns an expression array
+     * @param condition {string}
      * @returns {Array}
      * @private
      */
@@ -2785,7 +2782,7 @@ ConditionsManager.prototype = {
         }
 
         // derive implicit expressions
-        this._makeImplicit(tree);
+        this._makeExplicit(tree);
 
         // return final expression tree
         return tree.length === 1 ? tree[0] : tree;
@@ -2793,10 +2790,11 @@ ConditionsManager.prototype = {
 
 
     /**
+     * Turns an implicit array of expressions into an explicit array of expressions
      * @param {Array} level
      * @private
      */
-    _makeImplicit:function(level) {
+    _makeExplicit:function(level) {
 
         var i=0,l=level.length;
 
@@ -2817,7 +2815,7 @@ ConditionsManager.prototype = {
             else if (typeof level[i] !== 'string') {
 
                 // level okay, check lower level
-                this._makeImplicit(level[i]);
+                this._makeExplicit(level[i]);
 
             }
 
@@ -2827,7 +2825,8 @@ ConditionsManager.prototype = {
 
 
     /**
-     * Loads expression
+     * Turns an expression array into an actual expression tree
+     * @param expression {Array}
      * @return {ExpressionBase}
      * @private
      */
@@ -2852,7 +2851,7 @@ ConditionsManager.prototype = {
 
 
     /**
-     * Called to create a unary expression
+     * Called to create a UnaryExpression from a test and loads the test
      * @param {object} test
      * @return {UnaryExpression}
      * @private
@@ -2883,6 +2882,7 @@ ConditionsManager.prototype = {
 
         return unaryExpression;
     },
+
 
     /**
      * Called when all tests are ready
@@ -2973,16 +2973,16 @@ var ModuleController = function(path,options) {
     this._moduleInstance = null;
 
     // check if conditions specified
-    this._conditionManager = new ConditionsManager(
+    this._conditionsManager = new ConditionsManager(
         this._options.conditions,
         this._options.target
     );
 
     // listen to ready event on condition manager
-    Observer.subscribe(this._conditionManager,'ready',this._onReady.bind(this));
+    Observer.subscribe(this._conditionsManager,'ready',this._onReady.bind(this));
 
     // by default module is not ready and not available unless it's not conditioned or conditions are already suitable
-    this._ready = !this.isConditioned() || this._conditionManager.getSuitability();
+    this._ready = !this.isConditioned() || this._conditionsManager.getSuitability();
     this._available = false;
 
 
@@ -2990,18 +2990,28 @@ var ModuleController = function(path,options) {
 
 
 /**
- * Returns true if the module is ready to be initialized
+ * Returns true if the module is available for initialisation, this is true when conditions have been met
  * @return {boolean}
  * @public
  */
 ModuleController.prototype.isAvailable = function() {
-    this._available = this._conditionManager.getSuitability();
+    this._available = this._conditionsManager.getSuitability();
     return this._available;
 };
 
 
 /**
- * Returns true if the module has no conditions defined
+ * Returns true if module is currently active and loaded
+ * @returns {boolean}
+ * @public
+ */
+ModuleController.prototype.isActive = function() {
+    return this._moduleInstance !== null;
+};
+
+
+/**
+ * Returns true if the module is dependent on certain conditions
  * @return {boolean}
  * @public
  */
@@ -3011,7 +3021,7 @@ ModuleController.prototype.isConditioned = function() {
 
 
 /**
- * Returns true if the module is ready
+ * Returns true if the module is ready, this is true when conditions have been read for the first time
  * @return {boolean}
  * @public
  */
@@ -3041,7 +3051,7 @@ ModuleController.prototype._onReady = function(suitable) {
     this._ready = true;
 
     // listen to changes in conditions
-    Observer.subscribe(this._conditionManager,'change',this._onConditionsChange.bind(this));
+    Observer.subscribe(this._conditionsManager,'change',this._onConditionsChange.bind(this));
 
     // let others know we are ready
     Observer.publish(this,'ready');
@@ -3074,7 +3084,7 @@ ModuleController.prototype._onAvailable = function() {
  */
 ModuleController.prototype._onConditionsChange = function() {
 
-    var suitable = this._conditionManager.getSuitability();
+    var suitable = this._conditionsManager.getSuitability();
 
     if (this._moduleInstance && !suitable) {
         this.unload();
@@ -3285,17 +3295,16 @@ Node.prototype.getPriority = function() {
 Node.prototype.init = function() {
 
     // parse element module attributes
-    this._moduleControllers = this._getModuleControllers();
+    this._moduleControllers = this._createModuleControllers();
+
+    var i=0,l=this._moduleControllers.length,mc;
 
     // listen to ready events on module controllers
-    var l=this._moduleControllers.length,i,mc;
-
-    // initialize modules
-    for (i=0;i<l;i++) {
+    for (;i<l;i++) {
 
         mc = this._moduleControllers[i];
 
-        // if module already ready, check if all modules loaded now
+        // if module already ready, jump to onready method and don't bind listener
         if (mc.isReady()) {
             this._onModuleReady();
             continue;
@@ -3308,17 +3317,22 @@ Node.prototype.init = function() {
 
 };
 
+
 /**
  * Called when a module has indicated it is ready
  * @private
  */
 Node.prototype._onModuleReady = function() {
 
-    // check if all modules ready, if so, call on modules ready
-    var i=0,l=this._moduleControllers.length;
+    var i=0,l=this._moduleControllers.length,mc;
 
+    // check if all modules ready, if so, call on modules ready
     for (;i<l;i++) {
-        if (!this._moduleControllers[i].isReady()) {
+
+        mc = this._moduleControllers[i];
+
+        // if module controller is no tready, stop here, we wait for all module controllers to be ready
+        if (!mc.isReady()) {
             return;
         }
     }
@@ -3327,6 +3341,7 @@ Node.prototype._onModuleReady = function() {
     this._onModulesReady();
 
 };
+
 
 /**
  * Called when all modules are ready
@@ -3470,7 +3485,7 @@ Node.prototype._getSuitableActiveModuleController = function() {
  * @returns {Array}
  * @private
  */
-Node.prototype._getModuleControllers = function() {
+Node.prototype._createModuleControllers = function() {
 
     var result = [];
     var config = this._element.getAttribute('data-module');
@@ -3543,6 +3558,7 @@ Node.prototype.matchesSelector = function(selector) {
 
 
 /**
+ * Returns a reference to the currently active module controller
  * @return {ModuleController}
  * @public
  */
@@ -3552,22 +3568,46 @@ Node.prototype.getActiveModuleController = function() {
 
 
 /**
+ * Returns the first module controller matching the given path
  * @param path {string} path to module
  * @return {ModuleController}
  * @public
  */
 Node.prototype.getModuleControllerByPath = function(path) {
+    return this._filterModuleControllers(path,true);
+};
 
-    // test if other module is ready, if so load first module to be fitting
-    var i=0,l=this._moduleControllers.length,mc;
+
+/**
+ * Returns the first module controller matching the given path
+ * @param path {string} path to module
+ * @return {Array}
+ * @public
+ */
+Node.prototype.getModuleControllerAllByPath = function(path) {
+    return this._filterModuleControllers(path,false);
+};
+
+
+/**
+ * Returns a single or multiple module controllers depending on input
+ * @param path {string}
+ * @param single {boolean}
+ * @returns {Array|ModuleController}
+ * @private
+ */
+Node.prototype._filterModuleControllers = function(path,single) {
+    var i=0,l=this._moduleControllers.length,result=[],mc;
     for (;i<l;i++) {
         mc = this._moduleControllers[i];
         if (mc.matchesPath(path)) {
-            return mc;
+            if (single) {
+                return mc;
+            }
+            result.push(mc);
         }
     }
-
-    return null;
+    return single ? null : result;
 };
 
 
@@ -3590,7 +3630,6 @@ Node.prototype.execute = function(method,params) {
         'status':404,
         'response':null
     };
-
 };
 
 
@@ -3605,10 +3644,7 @@ var Conditioner = function() {
     // options for conditioner
     this._options = {
         'attribute':{
-            'module':'data-module',
-            'conditions':'data-conditions',
-            'options':'data-options',
-            'priority':'data-priority'
+            'module':'data-module'
         },
         'modules':{}
     };
@@ -3652,8 +3688,7 @@ Conditioner.prototype = {
     },
 
     /**
-     * Loads modules within the given context.
-     *
+     * Loads modules within the given context
      * @param {element} context - Context to find modules in
      * @return {Array} - Array of initialized ModuleControllers
      */
@@ -3715,38 +3750,36 @@ Conditioner.prototype = {
 
     /**
      * Returns ModuleControllers matching the selector
-     *
      * @param {string} selector - Selector to match the nodes to
      * @return {Node} First matched node
      */
     getNode:function(selector) {
-
-        if (typeof query ==='undefined') {
-            return null;
-        }
-
-        var i=0,l = this._nodes.length,node;
-        for (;i<l;i++) {
-            node = this._nodes[i];
-            if (node.matchesSelector(selector)) {
-                return node;
-            }
-        }
-        return null;
+        return this._filterNodes(selector,true);
     },
 
 
     /**
      * Returns all ModuleControllers matching the selector
-     *
      * @param {string} selector - Optional selector to match the nodes to
      * @return {Array} Array containing matched nodes
      */
     getNodesAll:function(selector) {
+        return this._filterNodes(selector,false);
+    },
+
+
+    /**
+     * Returns a single or multiple module controllers matching the given selector
+     * @param selector {string}
+     * @param single {boolean}
+     * @returns {Array|Node}
+     * @private
+     */
+    _filterNodes:function(selector,single) {
 
         // if no query supplied
-        if (typeof query ==='undefined') {
-            return this._nodes.concat();
+        if (typeof selector === 'undefined') {
+            return single ? null : [];
         }
 
         // find matches
@@ -3754,10 +3787,15 @@ Conditioner.prototype = {
         for (;i<l;i++) {
             node = this._nodes[i];
             if (node.matchesSelector(selector)) {
+                if (single) {
+                    return node;
+                }
                 results.push(node);
             }
         }
-        return results;
+
+        return single ? null : results;
+
     }
 
 };

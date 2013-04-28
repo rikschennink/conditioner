@@ -10,10 +10,7 @@ var Conditioner = function() {
     // options for conditioner
     this._options = {
         'attribute':{
-            'module':'data-module',
-            'conditions':'data-conditions',
-            'options':'data-options',
-            'priority':'data-priority'
+            'module':'data-module'
         },
         'modules':{}
     };
@@ -57,8 +54,7 @@ Conditioner.prototype = {
     },
 
     /**
-     * Loads modules within the given context.
-     *
+     * Loads modules within the given context
      * @param {element} context - Context to find modules in
      * @return {Array} - Array of initialized ModuleControllers
      */
@@ -120,38 +116,36 @@ Conditioner.prototype = {
 
     /**
      * Returns ModuleControllers matching the selector
-     *
      * @param {string} selector - Selector to match the nodes to
      * @return {Node} First matched node
      */
     getNode:function(selector) {
-
-        if (typeof query ==='undefined') {
-            return null;
-        }
-
-        var i=0,l = this._nodes.length,node;
-        for (;i<l;i++) {
-            node = this._nodes[i];
-            if (node.matchesSelector(selector)) {
-                return node;
-            }
-        }
-        return null;
+        return this._filterNodes(selector,true);
     },
 
 
     /**
      * Returns all ModuleControllers matching the selector
-     *
      * @param {string} selector - Optional selector to match the nodes to
      * @return {Array} Array containing matched nodes
      */
     getNodesAll:function(selector) {
+        return this._filterNodes(selector,false);
+    },
+
+
+    /**
+     * Returns a single or multiple module controllers matching the given selector
+     * @param selector {string}
+     * @param single {boolean}
+     * @returns {Array|Node}
+     * @private
+     */
+    _filterNodes:function(selector,single) {
 
         // if no query supplied
-        if (typeof query ==='undefined') {
-            return this._nodes.concat();
+        if (typeof selector === 'undefined') {
+            return single ? null : [];
         }
 
         // find matches
@@ -159,10 +153,15 @@ Conditioner.prototype = {
         for (;i<l;i++) {
             node = this._nodes[i];
             if (node.matchesSelector(selector)) {
+                if (single) {
+                    return node;
+                }
                 results.push(node);
             }
         }
-        return results;
+
+        return single ? null : results;
+
     }
 
 };

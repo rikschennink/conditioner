@@ -26,16 +26,16 @@ var ModuleController = function(path,options) {
     this._moduleInstance = null;
 
     // check if conditions specified
-    this._conditionManager = new ConditionsManager(
+    this._conditionsManager = new ConditionsManager(
         this._options.conditions,
         this._options.target
     );
 
     // listen to ready event on condition manager
-    Observer.subscribe(this._conditionManager,'ready',this._onReady.bind(this));
+    Observer.subscribe(this._conditionsManager,'ready',this._onReady.bind(this));
 
     // by default module is not ready and not available unless it's not conditioned or conditions are already suitable
-    this._ready = !this.isConditioned() || this._conditionManager.getSuitability();
+    this._ready = !this.isConditioned() || this._conditionsManager.getSuitability();
     this._available = false;
 
 
@@ -43,18 +43,18 @@ var ModuleController = function(path,options) {
 
 
 /**
- * Returns true if the module is ready to be initialized
+ * Returns true if the module is available for initialisation, this is true when conditions have been met
  * @return {boolean}
  * @public
  */
 ModuleController.prototype.isAvailable = function() {
-    this._available = this._conditionManager.getSuitability();
+    this._available = this._conditionsManager.getSuitability();
     return this._available;
 };
 
 
 /**
- * Returns true if module is currently active
+ * Returns true if module is currently active and loaded
  * @returns {boolean}
  * @public
  */
@@ -64,7 +64,7 @@ ModuleController.prototype.isActive = function() {
 
 
 /**
- * Returns true if the module has no conditions defined
+ * Returns true if the module is dependent on certain conditions
  * @return {boolean}
  * @public
  */
@@ -74,7 +74,7 @@ ModuleController.prototype.isConditioned = function() {
 
 
 /**
- * Returns true if the module is ready
+ * Returns true if the module is ready, this is true when conditions have been read for the first time
  * @return {boolean}
  * @public
  */
@@ -104,7 +104,7 @@ ModuleController.prototype._onReady = function(suitable) {
     this._ready = true;
 
     // listen to changes in conditions
-    Observer.subscribe(this._conditionManager,'change',this._onConditionsChange.bind(this));
+    Observer.subscribe(this._conditionsManager,'change',this._onConditionsChange.bind(this));
 
     // let others know we are ready
     Observer.publish(this,'ready');
@@ -137,7 +137,7 @@ ModuleController.prototype._onAvailable = function() {
  */
 ModuleController.prototype._onConditionsChange = function() {
 
-    var suitable = this._conditionManager.getSuitability();
+    var suitable = this._conditionsManager.getSuitability();
 
     if (this._moduleInstance && !suitable) {
         this.unload();

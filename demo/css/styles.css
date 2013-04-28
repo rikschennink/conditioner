@@ -52,6 +52,9 @@ code{
 	padding:.375em .5em .25em;
 }
 
+p>code {
+    white-space:nowrap;
+}
 
 .component {
 	box-sizing:border-box;
