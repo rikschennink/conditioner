@@ -28,6 +28,7 @@ define(['Conditioner'],function(Conditioner){
             case 'min-width':{
                 return innerWidth >= value;
             }
+                break;
             case 'max-width':{
                 return innerWidth <= value;
             }

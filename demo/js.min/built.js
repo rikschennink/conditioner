@@ -2227,7 +2227,7 @@ var Observer = {
         // call callbacks
         l = subscriptions.length;
         for (i=0;i<l;i++) {
-            subscriptions[i].fn(data)
+            subscriptions[i].fn(data);
         }
 
         // see if should be propagated
@@ -4173,6 +4173,7 @@ define('tests/window',['Conditioner'],function(Conditioner){
             case 'min-width':{
                 return innerWidth >= value;
             }
+                break;
             case 'max-width':{
                 return innerWidth <= value;
             }

@@ -82,7 +82,7 @@ var Observer = {
         // call callbacks
         l = subscriptions.length;
         for (i=0;i<l;i++) {
-            subscriptions[i].fn(data)
+            subscriptions[i].fn(data);
         }
 
         // see if should be propagated

@@ -135,6 +135,12 @@ module.exports = function(grunt) {
                 }
             }
         },
+        jshint:{
+            all:[
+                '<%=path.src %>/conditioner/*.js',
+                '<%=path.src %>/tests/*.js'
+            ]
+        },
         watch: {
             files:['<%= path.src %>/**/*.js','<%= path.spec %>/*.js'],
             tasks:'test'
@@ -144,6 +150,7 @@ module.exports = function(grunt) {
 
 
     grunt.loadNpmTasks('grunt-jsdoc');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
@@ -153,13 +160,13 @@ module.exports = function(grunt) {
 
 
     // build everything
-    grunt.registerTask('default',['jasmine','concat','copy','uglify','requirejs','jsdoc']);
+    grunt.registerTask('default',['jshint','jasmine','concat','copy','uglify','requirejs','jsdoc']);
 
     // test
     grunt.registerTask('docs',['concat','copy','jsdoc']);
 
     // test
-    grunt.registerTask('test',['jasmine']);
+    grunt.registerTask('test',['jshint','jasmine']);
 
     // task for building the library
     grunt.registerTask('lib',['concat','copy','uglify','requirejs','jsdoc']);
