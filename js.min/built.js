@@ -3019,6 +3019,18 @@ ModuleController.prototype.isReady = function() {
     return this._ready;
 };
 
+
+/**
+ * Checks if the module matches the path
+ * @param {string} path - path of module to test for
+ * @return {boolean} if matched
+ * @public
+ */
+ModuleController.prototype.matchesPath = function(path) {
+    return this._path === path;
+};
+
+
 /**
  * @private
  * @fires ready
@@ -3185,39 +3197,22 @@ ModuleController.prototype.unload = function() {
 
 
 /**
- * Checks if the module matches the given query
- * @param {object|string} query - string query to match or object to match
- * @return {boolean} if matched
- * @public
- */
-ModuleController.prototype.matchesQuery = function(query) {
-
-    if (typeof query == 'string') {
-
-        // check if matches query
-        if (Utils.matchesSelector(this._options.target,query)) {
-            return true;
-        }
-
-    }
-
-    return (query == this._options.target);
-};
-
-
-
-/**
  * Executes a methods on the loaded module
  * @param {string} method - method key
  * @param {Array} params - optional array containing the method parameters
- * @return value of executed method or null if no module set
+ * @return {object} containing response of executed method and a status code
  * @public
  */
 ModuleController.prototype.execute = function(method,params) {
 
+    // todo: always return object containing status code and response
+
     // if behavior not loaded
     if (!this._moduleInstance) {
-        return null;
+        return {
+            'status':404,
+            'response':null
+        };
     }
 
     // get function reference
@@ -3227,10 +3222,12 @@ ModuleController.prototype.execute = function(method,params) {
     }
 
     // once loaded call method and pass parameters
-    return F.apply(this._moduleInstance,params);
+    return {
+        'status':200,
+        'response':F.apply(this._moduleInstance,params)
+    };
 
 };
-
 
 
 /**
@@ -3264,6 +3261,7 @@ var Node = function(element) {
 
 /**
  * Static method testing if the current element has been processed already
+ * @param {element} element
  * @static
  */
 Node.hasProcessed = function(element) {
@@ -3535,26 +3533,63 @@ Node.prototype._getModuleControllers = function() {
 
 /**
  * Public method to check if the module matches the given query
- * @param {object|string} query - string query to match or object to match
- * @return {boolean} if matched
+ * @param {string} selector
+ * @return {boolean}
  * @public
  */
-Node.prototype.matchesQuery = function(query) {
-
-    return null; // todo: link to controller
-
+Node.prototype.matchesSelector = function(selector) {
+    return Utils.matchesSelector(this._element,selector);
 };
+
+
+/**
+ * @return {ModuleController}
+ * @public
+ */
+Node.prototype.getActiveModuleController = function() {
+    return this._activeModuleController;
+};
+
+
+/**
+ * @param path {string} path to module
+ * @return {ModuleController}
+ * @public
+ */
+Node.prototype.getModuleControllerByPath = function(path) {
+
+    // test if other module is ready, if so load first module to be fitting
+    var i=0,l=this._moduleControllers.length,mc;
+    for (;i<l;i++) {
+        mc = this._moduleControllers[i];
+        if (mc.matchesPath(path)) {
+            return mc;
+        }
+    }
+
+    return null;
+};
+
 
 /**
  * Public method for safely executing methods on the loaded module
  * @param {string} method - method key
  * @param {Array} params - array containing the method parameters
- * @return {object} return value of executed method
+ * @return {object} returns object containing status code and possible response data
  * @public
  */
 Node.prototype.execute = function(method,params) {
 
-    return null; // todo: link to controller
+    // if active module controller defined
+    if (this._activeModuleController) {
+        return this._activeModuleController.execute(method,params);
+    }
+
+    // no active module
+    return {
+        'status':404,
+        'response':null
+    };
 
 };
 
@@ -3681,14 +3716,19 @@ Conditioner.prototype = {
     /**
      * Returns ModuleControllers matching the selector
      *
-     * @param {object|string} query - Query to match the ModuleController to, could be ClassPath, Element or CSS Selector
-     * @return {object} controller - First matched ModuleController
+     * @param {string} selector - Selector to match the nodes to
+     * @return {Node} First matched node
      */
-    getModule:function(query) {
+    getNode:function(selector) {
+
+        if (typeof query ==='undefined') {
+            return null;
+        }
+
         var i=0,l = this._nodes.length,node;
         for (;i<l;i++) {
             node = this._nodes[i];
-            if (node.matchesQuery(query)) {
+            if (node.matchesSelector(selector)) {
                 return node;
             }
         }
@@ -3699,17 +3739,21 @@ Conditioner.prototype = {
     /**
      * Returns all ModuleControllers matching the selector
      *
-     * @param {object|string} query - Query to match the controller to, could be ClassPath, Element or CSS Selector
-     * @return {Array} results - Array containing matched behavior controllers
+     * @param {string} selector - Optional selector to match the nodes to
+     * @return {Array} Array containing matched nodes
      */
-    getModuleAll:function(query) {
-        if (typeof query == 'undefined') {
+    getNodesAll:function(selector) {
+
+        // if no query supplied
+        if (typeof query ==='undefined') {
             return this._nodes.concat();
         }
+
+        // find matches
         var i=0,l = this._nodes.length,results=[],node;
         for (;i<l;i++) {
             node = this._nodes[i];
-            if (node.matchesQuery(query)) {
+            if (node.matchesSelector(selector)) {
                 results.push(node);
             }
         }
