@@ -28,6 +28,8 @@ var ExpressionFormatter = {
             c,
             k,
             n,
+            op,
+            ol,
             operator,
             path = '',
             tree = [],
@@ -55,10 +57,10 @@ var ExpressionFormatter = {
                 // now reading the expression
                 isValue = true;
 
-                // reset name var
+                // reset path var
                 path = '';
 
-                // fetch name
+                // fetch path
                 k = i-2;
                 while(k>=0) {
                     n = expression.charAt(k);
@@ -96,22 +98,25 @@ var ExpressionFormatter = {
             }
 
             // if not in expression
-            if (c === ' ') {
+            if (c === ' ' || i===0) {
 
                 // get operator
-                operator = expression.substr(i,4).match(/and|or/g);
+                operator = expression.substr(i,5).match(/and |or |not /g);
 
                 // if operator found
                 if (operator) {
 
+                    // get reference and calculate length
+                    op = operator[0];
+                    ol = op.length-1;
+
                     // add operator
-                    target.push(operator[0]);
+                    target.push(op.substring(0,ol));
 
                     // skip over operator
-                    i+=operator[0].length+1;
-                }
+                    i+=ol;
 
-                continue;
+                }
             }
 
             // check if goes up a level
@@ -160,6 +165,8 @@ var ExpressionFormatter = {
         // turn into explicit expression
         ExpressionFormatter._makeExplicit(tree);
 
+        console.log(JSON.stringify(tree));
+
         // return final expression tree
         return tree.length === 1 ? tree[0] : tree;
 
@@ -173,27 +180,31 @@ var ExpressionFormatter = {
      */
     _makeExplicit:function(level) {
 
-        var i=0,l=level.length;
+        var i=0,l=level.length,groupSize=0;
 
         for (;i<l;i++) {
 
-            if (l>3) {
+            // count amount of objects at this level
+            if (typeof level[i] === 'object') {
+                groupSize++;
+            }
 
-                // binary expression found merge into new level
-                level.splice(i,3,level.slice(i,i+3));
+            // if has two objects and not end of level
+            if (groupSize === 2 && i+1<l) {
+
+                level.splice(0,i+1,level.slice(0,i+1));
 
                 // set new length
                 l = level.length;
 
                 // move back to start
                 i=-1;
+                groupSize = 0;
 
             }
-            else if (typeof level[i] !== 'string') {
 
-                // level okay, check lower level
+            if (level[i] instanceof Array) {
                 ExpressionFormatter._makeExplicit(level[i]);
-
             }
 
         }

@@ -29,6 +29,17 @@ describe('ExpressionFormatter.toExpressionTree',function(){
 
     expressions['foo:{bar:1} or foo:{bar:2} and foo:{bar:3} or foo:{bar:4} and foo:{bar:4}'] = '[[[[{"path":"foo","value":"bar:1"},"or",{"path":"foo","value":"bar:2"}],"and",{"path":"foo","value":"bar:3"}],"or",{"path":"foo","value":"bar:4"}],"and",{"path":"foo","value":"bar:4"}]';
 
+
+
+
+    //expressions['not foo:{bar:1}'] = '{"negate":true,"path":"foo","value":"bar:1"}';
+
+    //expressions['foo:{bar:1} and not foo:{bar:2}'] = '[{"path":"foo","value":"bar:1"},"and",{"negate":true,"path":"foo","value":"bar:2"}]';
+
+    //expressions['foo:{bar:1} and not (foo:{bar:2_1} or foo{bar:2_2})'] = '';
+
+
+
     // test
     for (key in expressions) {
 

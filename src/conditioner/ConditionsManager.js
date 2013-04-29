@@ -62,6 +62,32 @@ ConditionsManager.prototype = {
      */
     _loadExpression:function(expression) {
 
+        console.log('load:  ',expression);
+
+        var exp=[],op,n;
+
+        var i=0,l=expression.length;
+
+
+        // if more than two items on this level mean binary expression
+
+        // mean two unary expressions with possible negate statements
+
+
+        /*
+
+
+        for (;i<l;i++) {
+
+            if (expression[i] instanceof Array) {
+
+                this._loadExpression(expression[i]);
+
+            }
+
+        }
+
+
         // if expression is array
         if (expression.length === 3) {
 
@@ -69,13 +95,15 @@ ConditionsManager.prototype = {
             return new BinaryExpression(
                 this._loadExpression(expression[0]),
                 expression[1],
-                this._loadExpression(expression[2])
+                this._loadExpression(expression[2]),
+                false
             );
 
         }
         else {
-            return this._createUnaryExpressionFromTest(expression);
+            return this._createUnaryExpressionFromTest(expression,false);
         }
+        */
 
     },
 
@@ -86,9 +114,9 @@ ConditionsManager.prototype = {
      * @return {UnaryExpression}
      * @private
      */
-    _createUnaryExpressionFromTest:function(test) {
+    _createUnaryExpressionFromTest:function(test,negate) {
 
-        var unaryExpression = new UnaryExpression(null);
+        var unaryExpression = new UnaryExpression(null,negate);
         var instance = null;
         var self = this;
 

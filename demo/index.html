@@ -136,7 +136,7 @@ demo.loadModules(document);
         <div class="component">
             <div data-module="IMap"
                  data-priority="2"
-                 data-conditions="connection:{any} and media:{(min-width:40em)} and element:{seen}">Map is inactive</div>
+                 data-conditions="(connection:{any} and media:{(min-width:40em)} and element:{seen}) or not media:{supported}">Map is inactive</div>
         </div>
 
 
@@ -201,6 +201,7 @@ demo.loadModules(document);
 
         <script>
 
+
         // Setup module configuration
         requirejs.config({
             baseUrl:'js/',
@@ -213,6 +214,31 @@ demo.loadModules(document);
         requirejs(['Conditioner'],
 
             function(Conditioner) {
+
+
+                var expressions = [
+
+                    'foo:{bar:1} and foo:{bar:2}',
+
+                    'not foo:{bar:1} or not foo:{bar:2}',
+
+                    'not foo:{bar:1} and not foo:{bar:2} and not foo:{bar:3} or not foo:{bar:4}',
+
+                    '(not foo:{bar:1} and not foo:{bar:2}) and not (foo:{bar:3} or not foo:{bar:4})',
+
+                    'foo:{bar:1} and not (foo:{bar:2} and foo:{bar:3})',
+
+                    'foo:{bar:1} and foo:{bar:2} and foo:{bar:3} or foo:{bar:4}'
+
+                ];
+
+                for (var i=0;i<expressions.length;i++) {
+                    console.log(expressions[i]);
+                    console.log(ExpressionFormatter.toExpressionTree(expressions[i]));
+                    console.log('------------');
+                    console.log('');
+                }
+
 
                 // Get instance of conditioner
                 var demo = Conditioner.getInstance();
@@ -250,6 +276,10 @@ demo.loadModules(document);
 
         </script>
 
-
     </body>
 </html>
+
+
+
+
+

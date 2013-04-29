@@ -3,15 +3,17 @@
  * @class
  * @constructor
  * @augments ExpressionBase
- * @param {Test|null} test
+ * @param {BinaryExpression|Test|null} expression
+ * @param {boolean} negate
  */
-var UnaryExpression = function(test) {
+var UnaryExpression = function(expression,negate) {
 
     /**
-     * @type {Test|null}
+     * @type {BinaryExpression|Test|null}
      * @private
      */
-    this._test = test;
+    this._expression = expression;
+    this._negate = typeof negate === 'undefined' ? false : negate;
 
 };
 
@@ -22,7 +24,9 @@ UnaryExpression.prototype = Object.create(ExpressionBase);
  * @param {Test} test
  */
 UnaryExpression.prototype.setTest = function(test) {
-    this._test = test;
+
+    this._expression = test;
+
 };
 
 /**
@@ -30,8 +34,11 @@ UnaryExpression.prototype.setTest = function(test) {
  * @returns {Boolean}
  */
 UnaryExpression.prototype.succeeds = function() {
-    if (!this._test) {
+
+    if (!this._expression) {
         return false;
     }
-    return this._test.succeeds();
+
+    return this._expression.succeeds() !== this._negate;
+
 };
