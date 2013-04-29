@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: Utils</title>
+    <title>JSDoc: Namespace: ExpressionFormatter</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Namespace: Utils</h1>
+    <h1 class="page-title">Namespace: ExpressionFormatter</h1>
     
     
 
@@ -27,7 +27,7 @@
     
 <header>
     <h2>
-    Utils
+    ExpressionFormatter
     </h2>
     
 </header>  
@@ -62,7 +62,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="conditioner.js.html">dist/conditioner.js</a>, line 10
+        <a href="conditioner.js.html">dist/conditioner.js</a>, line 259
     </li></ul></dd>
     
     
@@ -96,7 +96,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="matchesSelector"><span class="type-signature">&lt;static> </span>matchesSelector<span class="signature">(element, selector)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    <h4 class="name" id="_makeExplicit"><span class="type-signature">&lt;private, static> </span>_makeExplicit<span class="signature">(level)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -104,7 +104,7 @@
     
     
     <div class="description">
-        matches an element to a selector
+        Turns an implicit array of expressions into an explicit array of expressions
     </div>
     
 
@@ -138,13 +138,13 @@
 	
         <tr>
             
-                <td class="name"><code>element</code></td>
+                <td class="name"><code>level</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">element</span>
+<span class="param-type">Array</span>
 
 
             
@@ -158,10 +158,100 @@
         </tr>
 	
 	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="conditioner.js.html">dist/conditioner.js</a>, line 431
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getExpressionsCount"><span class="type-signature">&lt;static> </span>getExpressionsCount<span class="signature">(expression)</span><span class="type-signature"> &rarr; {Number}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns the amount of sub expressions contained in the supplied expression
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
 	
         <tr>
             
-                <td class="name"><code>selector</code></td>
+                <td class="name"><code>expression</code></td>
             
             
             <td class="type">
@@ -208,7 +298,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="conditioner.js.html">dist/conditioner.js</a>, line 111
+        <a href="conditioner.js.html">dist/conditioner.js</a>, line 271
     </li></ul></dd>
     
     
@@ -236,7 +326,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type">Boolean</span>
+<span class="param-type">Number</span>
 
 
 	</dd>
@@ -250,7 +340,7 @@
         
             
 <dt>
-    <h4 class="name" id="mergeObjects"><span class="type-signature">&lt;static> </span>mergeObjects<span class="signature">(target, src)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="toExpressionTree"><span class="type-signature">&lt;static> </span>toExpressionTree<span class="signature">(expression)</span><span class="type-signature"> &rarr; {Array}</span></h4>
     
     
 </dt>
@@ -258,7 +348,7 @@
     
     
     <div class="description">
-        Based on https://github.com/nrf110/deepmerge/blob/master/index.js
+        Parses an expression in string format and returns the same expression formatted as an expression tree
     </div>
     
 
@@ -292,36 +382,13 @@
 	
         <tr>
             
-                <td class="name"><code>target</code></td>
+                <td class="name"><code>expression</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">object</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last"></td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>src</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
+<span class="param-type">string</span>
 
 
             
@@ -362,7 +429,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="conditioner.js.html">dist/conditioner.js</a>, line 48
+        <a href="conditioner.js.html">dist/conditioner.js</a>, line 282
     </li></ul></dd>
     
     
@@ -390,7 +457,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type">object</span>
+<span class="param-type">Array</span>
 
 
 	</dd>

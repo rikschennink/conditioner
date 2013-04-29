@@ -5,10 +5,22 @@
 var ExpressionFormatter = {
 
     /**
+     * Returns the amount of sub expressions contained in the supplied expression
+     * @memberof ExpressionFormatter
+     * @param expression {string}
+     * @returns {Number}
+     * @public
+     */
+    getExpressionsCount:function(expression) {
+        return expression.match(/(\:\{)/g).length;
+    },
+
+    /**
      * Parses an expression in string format and returns the same expression formatted as an expression tree
+     * @memberof ExpressionFormatter
      * @param expression {string}
      * @returns {Array}
-     * @private
+     * @public
      */
     toExpressionTree:function(expression) {
 
@@ -155,6 +167,7 @@ var ExpressionFormatter = {
 
     /**
      * Turns an implicit array of expressions into an explicit array of expressions
+     * @memberof ExpressionFormatter
      * @param {Array} level
      * @private
      */
@@ -188,3 +201,5 @@ var ExpressionFormatter = {
     }
 
 };
+
+window.ExpressionFormatter = ExpressionFormatter;

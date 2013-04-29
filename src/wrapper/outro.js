@@ -37,7 +37,6 @@
             if (!_instance) {_instance = new Conditioner();}
             return _instance;
         }
-
     };
 
 });

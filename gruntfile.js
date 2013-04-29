@@ -28,16 +28,7 @@ module.exports = function(grunt) {
         },
         jasmine:{
             src:[
-                '<%= path.conditioner %>/mergeObjects.js',
-                '<%= path.conditioner %>/matchesSelector.js',
-                '<%= path.conditioner %>/Observer.js',
-                '<%= path.conditioner %>/Module.js',
-                '<%= path.conditioner %>/Test.js',
-                '<%= path.conditioner %>/ModuleRegister.js',
-                '<%= path.conditioner %>/ConditionsManager.js',
-                '<%= path.conditioner %>/ModuleController.js',
-                '<%= path.conditioner %>/Node.js',
-                '<%= path.conditioner %>/Conditioner.js',
+                '<%= path.conditioner %>/ExpressionFormatter.js'
             ],
             options:{
                 specs:'<%= path.spec %>/*.js',
@@ -55,6 +46,7 @@ module.exports = function(grunt) {
 
                     '<%= path.conditioner %>/Utils.js',
                     '<%= path.conditioner %>/Observer.js',
+                    '<%= path.conditioner %>/ExpressionFormatter.js',
 
                     '<%= path.conditioner %>/ModuleBase.js',
                     '<%= path.conditioner %>/TestBase.js',
