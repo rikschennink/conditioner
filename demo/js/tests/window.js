@@ -2,12 +2,12 @@
  * Tests if the window dimensions match certain expectations
  * @module tests/window
  */
-define(['Conditioner'],function(Conditioner){
+define(['conditioner'],function(conditioner){
 
     'use strict';
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype;
 
     p.handleEvent = function(e) {
         this.assert();
@@ -37,6 +37,6 @@ define(['Conditioner'],function(Conditioner){
         return false;
     };
 
-    return Test;
+    return exports;
 
 });

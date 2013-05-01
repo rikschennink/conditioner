@@ -47,13 +47,10 @@
 
         <h3>Javascript Kickoff</h3>
 
-        <p>To initiate the <code>Conditioner</code> request an instance and have it <code>loadModules</code> passing the document as the context.</p>
+        <p>To initiate the <code>conditioner</code> set it's options have it <code>loadModules</code> passing the document as the context.</p>
 
-<pre><code data-language="javascript">// get instance of conditioner
-var demo = Conditioner.getInstance();
-
-// set custom module options
-demo.setOptions({
+<pre><code data-language="javascript">// set custom module options
+conditioner.setOptions({
     'modules':{
         'ui/Map':'IMap',
         'ui/Clock':'IClock',
@@ -76,8 +73,8 @@ demo.setOptions({
     }
 });
 
-// apply behavior to document scope
-demo.loadModules(document);
+// Load all modules contained within the document scope
+conditioner.loadModules(document);
 </code></pre>
 
 
@@ -176,7 +173,6 @@ demo.loadModules(document);
         </div>
 
 
-
         <!-- For pretty javascript code examples -->
         <script src="js/lib/ccampbell/rainbow/rainbow.min.js"></script>
         <script src="js/lib/ccampbell/rainbow/html.js"></script>
@@ -199,27 +195,23 @@ demo.loadModules(document);
         <script src="js.min/built.js"></script>
 
 
-
         <script>
 
         // Setup module configuration
         requirejs.config({
             baseUrl:'js/',
             paths:{
-                Conditioner:'../../dist/conditioner'
+                conditioner:'../../dist/conditioner'
             }
         });
 
         // Load Conditioner and default set of Tests
-        requirejs(['Conditioner'],
+        requirejs(['conditioner'],
 
-            function(Conditioner) {
-
-                // Get instance of conditioner
-                var demo = Conditioner.getInstance();
+            function(conditioner) {
 
                 // Set custom module options
-                demo.setOptions({
+                conditioner.setOptions({
                     'modules':{
                         'ui/Map':'IMap',
                         'ui/Clock':'IClock',
@@ -242,8 +234,8 @@ demo.loadModules(document);
                     }
                 });
 
-                // Apply behavior to document scope
-                demo.loadModules(document);
+                // Load all modules contained within the document scope
+                conditioner.loadModules(document);
 
             }
 

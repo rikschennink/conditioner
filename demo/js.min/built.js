@@ -2020,11 +2020,11 @@ var requirejs, require, define;
 }(this));
 define("lib/jrburke/require", function(){});
 
-// conditioner v0.8.1 - A JavaScript framework for conditionally loading UI classes
+// conditioner v0.8.5 - ConditionerJS, detangle your javascript and make it shine.
 // Copyright (c) 2013 Rik Schennink - https://github.com/rikschennink/conditioner
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-define('Conditioner',['require'],function(require) {
+define('conditioner',['require'],function(require) {
 
     
 
@@ -2533,7 +2533,7 @@ var ModuleBase = function(element,options) {
 
     // if no element, throw error
     if (!element) {
-        throw new Error('BehaviorBase(element,options): "element" is a required parameter.');
+        throw new Error('ModuleBase(element,options): "element" is a required parameter.');
     }
 
     /**
@@ -3708,7 +3708,6 @@ Node.prototype.execute = function(method,params) {
  * @exports Conditioner
  * @class
  * @constructor
- * @private
  */
 var Conditioner = function() {
 
@@ -3722,6 +3721,30 @@ var Conditioner = function() {
 
     // array of all parsed nodes
     this._nodes = [];
+
+    /**
+     * Reference to Observer class
+     * @property {Observer}
+     */
+    this.Observer = Observer;
+
+    /**
+     * Reference to TestBase Class
+     * @property {TestBase}
+     */
+    this.TestBase = TestBase;
+
+    /**
+     * Reference to ModuleBase Class
+     * @property {ModuleBase}
+     */
+    this.ModuleBase = ModuleBase;
+
+    /**
+     * Reference to mergeObject method
+     * @property {function} mergeObjects
+     */
+     this.mergeObjects = Utils.mergeObjects;
 
 };
 
@@ -3871,45 +3894,7 @@ Conditioner.prototype = {
 
 };
 
-    // singleton reference
-    var _instance;
-
-    // expose
-    return {
-
-        /**
-         * Reference to Observer class
-         * @type {Observer}
-         */
-        Observer:Observer,
-
-        /**
-         * Reference to TestBase Class
-         * @memberof module:conditioner
-         */
-        TestBase:TestBase,
-
-        /**
-         * Reference to ModuleBase Class
-         * @memberof module:conditioner
-         */
-        ModuleBase:ModuleBase,
-
-        /**
-         * Reference to mergeObject method
-         * @memberof module:conditioner
-         */
-        mergeObjects:Utils.mergeObjects,
-
-        /**
-         * Returns an instance of the Conditioner
-         * @return {Conditioner}
-         */
-        getInstance:function() {
-            if (!_instance) {_instance = new Conditioner();}
-            return _instance;
-        }
-    };
+    return new Conditioner();
 
 });
 
@@ -3918,12 +3903,12 @@ Conditioner.prototype = {
  * Tests if an active network connection is available and monitors this connection
  * @module tests/connection
  */
-define('tests/connection',['Conditioner'],function(Conditioner){
+define('tests/connection',['conditioner'],function(conditioner){
 
     
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+    p = exports.prototype;
 
     p.handleEvent = function(e) {
         this.assert();
@@ -3939,11 +3924,11 @@ define('tests/connection',['Conditioner'],function(Conditioner){
         return expected === 'any' && navigator.onLine;
     };
 
-    return Test;
+    return exports;
 
 });
 
-define('security/StorageConsentGuard',['Conditioner','module'],function(Conditioner,module){
+define('security/StorageConsentGuard',['conditioner','module'],function(conditioner,module){
 
     
 
@@ -3975,7 +3960,7 @@ define('security/StorageConsentGuard',['Conditioner','module'],function(Conditio
         }
 
         // sets initial options
-        this._options = Conditioner.mergeObjects(this._options,options);
+        this._options = conditioner.mergeObjects(this._options,options);
 
         this._setDefaultLevel();
     };
@@ -4000,7 +3985,7 @@ define('security/StorageConsentGuard',['Conditioner','module'],function(Conditio
 
         this._level = level;
 
-        Conditioner.Observer.publish(this,'change',this._level);
+        conditioner.Observer.publish(this,'change',this._level);
     };
 
 
@@ -4019,15 +4004,15 @@ define('security/StorageConsentGuard',['Conditioner','module'],function(Conditio
  * Tests if what consent the user has given concerning cookie storage
  * @module tests/cookie
  */
-define('tests/cookies',['Conditioner','security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
+define('tests/cookies',['conditioner','security/StorageConsentGuard'],function(conditioner,StorageConsentGuard){
 
-    var Test = Conditioner.TestBase.inherit(),
-        p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype;
 
     p.arrange = function() {
 
         var guard = StorageConsentGuard.getInstance(),self = this;
-        Conditioner.Observer.subscribe(guard,'change',function() {
+        conditioner.Observer.subscribe(guard,'change',function() {
             self.assert();
         });
 
@@ -4042,7 +4027,7 @@ define('tests/cookies',['Conditioner','security/StorageConsentGuard'],function(C
         return result ? true : false;
     };
 
-    return Test;
+    return exports;
 
 });
 
@@ -4050,12 +4035,12 @@ define('tests/cookies',['Conditioner','security/StorageConsentGuard'],function(C
  * Tests if an elements dimensions match certain expectations
  * @module tests/element
  */
-define('tests/element',['Conditioner'],function(Conditioner){
+define('tests/element',['conditioner'],function(conditioner){
 
     
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype;
 
     p.handleEvent = function(e) {
         this.assert();
@@ -4109,7 +4094,7 @@ define('tests/element',['Conditioner'],function(Conditioner){
         return false;
     };
 
-    return Test;
+    return exports;
 
 });
 
@@ -4118,12 +4103,12 @@ define('tests/element',['Conditioner'],function(Conditioner){
  * Tests if a media query is matched or not and listens to changes
  * @module tests/media
  */
-define('tests/media',['Conditioner'],function(Conditioner){
+define('tests/media',['conditioner'],function(conditioner){
 
     
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype;
 
     p.arrange = function() {
 
@@ -4155,7 +4140,7 @@ define('tests/media',['Conditioner'],function(Conditioner){
         return this._mql.matches;
     };
 
-    return Test;
+    return exports;
 
 });
 
@@ -4163,13 +4148,13 @@ define('tests/media',['Conditioner'],function(Conditioner){
  * Tests if the user is using a pointer device
  * @module tests/pointer
  */
-define('tests/pointer',['Conditioner'],function(Conditioner){
+define('tests/pointer',['conditioner'],function(conditioner){
 
     
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype,
-    MOUSE_MOVES_REQUIRED = 2;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype,
+        MOUSE_MOVES_REQUIRED = 2;
 
     p._totalMouseMoves = 0;
 
@@ -4209,7 +4194,7 @@ define('tests/pointer',['Conditioner'],function(Conditioner){
         return result === expected;
     };
 
-    return Test;
+    return exports;
 
 });
 
@@ -4217,12 +4202,12 @@ define('tests/pointer',['Conditioner'],function(Conditioner){
  * Tests if the window dimensions match certain expectations
  * @module tests/window
  */
-define('tests/window',['Conditioner'],function(Conditioner){
+define('tests/window',['conditioner'],function(conditioner){
 
     
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype;
 
     p.handleEvent = function(e) {
         this.assert();
@@ -4252,16 +4237,16 @@ define('tests/window',['Conditioner'],function(Conditioner){
         return false;
     };
 
-    return Test;
+    return exports;
 
 });
 
-define('ui/Clock',['Conditioner'],function(Conditioner){
+define('ui/Clock',['conditioner'],function(conditioner){
 
     
 
     // reference to parent class
-    var _parent = Conditioner.ModuleBase;
+    var _parent = conditioner.ModuleBase;
 
     // Clock Class
     var exports = function(element,options) {
@@ -4271,7 +4256,7 @@ define('ui/Clock',['Conditioner'],function(Conditioner){
             'time':true
         };
 
-        // call BehaviourBase constructor
+        // call ModuleBase constructor
         _parent.call(this,element,options);
 
         // backup content
@@ -4281,7 +4266,7 @@ define('ui/Clock',['Conditioner'],function(Conditioner){
         this._tick();
     };
 
-    // Extend from BehaviourBase
+    // Extend from ModuleBase
     var p = exports.prototype = Object.create(_parent.prototype);
 
     // Update time
@@ -4311,7 +4296,7 @@ define('ui/Clock',['Conditioner'],function(Conditioner){
     // Unload Clock behaviour
     p.unload = function() {
 
-        // call BehaviourBase unload method
+        // call ModuleBase unload method
         _parent.prototype.unload.call(this);
 
         // stop ticking
@@ -4324,12 +4309,12 @@ define('ui/Clock',['Conditioner'],function(Conditioner){
     return exports;
 
 });
-define('ui/StorageConsentSelect',['Conditioner','security/StorageConsentGuard'],function(Conditioner,IStorageGuard){
+define('ui/StorageConsentSelect',['conditioner','security/StorageConsentGuard'],function(conditioner,IStorageGuard){
 
     
 
     // reference to parent class
-    var _parent = Conditioner.ModuleBase;
+    var _parent = conditioner.ModuleBase;
 
     // StorageConsentSelect Class
     var exports = function(element,options) {
@@ -4345,7 +4330,7 @@ define('ui/StorageConsentSelect',['Conditioner','security/StorageConsentGuard'],
             }
         };
 
-        // Call BehaviourBase constructor
+        // Call ModuleBase constructor
         _parent.call(this,element,options);
 
         // set reference to storage guard
@@ -4372,7 +4357,7 @@ define('ui/StorageConsentSelect',['Conditioner','security/StorageConsentGuard'],
 
     };
 
-    // Extend from BehaviourBase
+    // Extend from ModuleBase
     var p = exports.prototype = Object.create(_parent.prototype);
 
     // Handle events
@@ -4389,7 +4374,7 @@ define('ui/StorageConsentSelect',['Conditioner','security/StorageConsentGuard'],
     // Unload StorageConsentSelect behaviour
     p.unload = function() {
 
-        // call BehaviourBase unload method
+        // call ModuleBase unload method
         _parent.prototype.unload.call(this);
 
         // remove event listener

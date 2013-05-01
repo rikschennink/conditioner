@@ -220,7 +220,7 @@ var Module = (function(mergeObjects) {
 
         // if no element, throw error
         if (!element) {
-            throw new Error('BehaviorBase(element,options): "element" is a required parameter.');
+            throw new Error('ModuleBase(element,options): "element" is a required parameter.');
         }
 
         // element reference

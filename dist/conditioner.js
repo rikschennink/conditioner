@@ -1,4 +1,4 @@
-// conditioner v0.8.1 - A JavaScript framework for conditionally loading UI classes
+// conditioner v0.8.5 - ConditionerJS, detangle your javascript and make it shine.
 // Copyright (c) 2013 Rik Schennink - https://github.com/rikschennink/conditioner
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
@@ -511,7 +511,7 @@ var ModuleBase = function(element,options) {
 
     // if no element, throw error
     if (!element) {
-        throw new Error('BehaviorBase(element,options): "element" is a required parameter.');
+        throw new Error('ModuleBase(element,options): "element" is a required parameter.');
     }
 
     /**
@@ -1686,7 +1686,6 @@ Node.prototype.execute = function(method,params) {
  * @exports Conditioner
  * @class
  * @constructor
- * @private
  */
 var Conditioner = function() {
 
@@ -1700,6 +1699,30 @@ var Conditioner = function() {
 
     // array of all parsed nodes
     this._nodes = [];
+
+    /**
+     * Reference to Observer class
+     * @property {Observer}
+     */
+    this.Observer = Observer;
+
+    /**
+     * Reference to TestBase Class
+     * @property {TestBase}
+     */
+    this.TestBase = TestBase;
+
+    /**
+     * Reference to ModuleBase Class
+     * @property {ModuleBase}
+     */
+    this.ModuleBase = ModuleBase;
+
+    /**
+     * Reference to mergeObject method
+     * @property {function} mergeObjects
+     */
+     this.mergeObjects = Utils.mergeObjects;
 
 };
 
@@ -1849,44 +1872,6 @@ Conditioner.prototype = {
 
 };
 
-    // singleton reference
-    var _instance;
-
-    // expose
-    return {
-
-        /**
-         * Reference to Observer class
-         * @type {Observer}
-         */
-        Observer:Observer,
-
-        /**
-         * Reference to TestBase Class
-         * @memberof module:conditioner
-         */
-        TestBase:TestBase,
-
-        /**
-         * Reference to ModuleBase Class
-         * @memberof module:conditioner
-         */
-        ModuleBase:ModuleBase,
-
-        /**
-         * Reference to mergeObject method
-         * @memberof module:conditioner
-         */
-        mergeObjects:Utils.mergeObjects,
-
-        /**
-         * Returns an instance of the Conditioner
-         * @return {Conditioner}
-         */
-        getInstance:function() {
-            if (!_instance) {_instance = new Conditioner();}
-            return _instance;
-        }
-    };
+    return new Conditioner();
 
 });

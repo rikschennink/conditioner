@@ -3,7 +3,6 @@
  * @exports Conditioner
  * @class
  * @constructor
- * @private
  */
 var Conditioner = function() {
 
@@ -17,6 +16,30 @@ var Conditioner = function() {
 
     // array of all parsed nodes
     this._nodes = [];
+
+    /**
+     * Reference to Observer class
+     * @property {Observer}
+     */
+    this.Observer = Observer;
+
+    /**
+     * Reference to TestBase Class
+     * @property {TestBase}
+     */
+    this.TestBase = TestBase;
+
+    /**
+     * Reference to ModuleBase Class
+     * @property {ModuleBase}
+     */
+    this.ModuleBase = ModuleBase;
+
+    /**
+     * Reference to mergeObject method
+     * @property {function} mergeObjects
+     */
+     this.mergeObjects = Utils.mergeObjects;
 
 };
 

@@ -107,13 +107,13 @@ module.exports = function(grunt) {
 
                     baseUrl:'<%= path.demo %>/js/',
                     paths:{
-                        'Conditioner':'../../dist/conditioner'
+                        'conditioner':'../../dist/conditioner'
                     },
 
                     name:'lib/jrburke/require',
                     out:'<%= path.demo %>/js.min/built.js',
                     include:[
-                        'Conditioner',
+                        'conditioner',
 
                         'tests/connection',
                         'tests/cookies',

@@ -1,7 +1,7 @@
 {
   "name": "conditioner",
-  "version": "0.8.1",
-  "description": "A JavaScript framework for conditionally loading UI classes",
+  "version": "0.8.5",
+  "description": "ConditionerJS, detangle your javascript and make it shine.",
   "homepage": "https://github.com/rikschennink/conditioner",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,8 @@
     "media queries",
     "media query",
     "requirejs",
-    "conditions"
+    "conditions",
+    "shampoo"
   ],
   "author": {
     "name": "Rik Schennink",

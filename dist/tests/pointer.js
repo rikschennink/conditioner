@@ -2,13 +2,13 @@
  * Tests if the user is using a pointer device
  * @module tests/pointer
  */
-define(['Conditioner'],function(Conditioner){
+define(['conditioner'],function(conditioner){
 
     'use strict';
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype,
-    MOUSE_MOVES_REQUIRED = 2;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype,
+        MOUSE_MOVES_REQUIRED = 2;
 
     p._totalMouseMoves = 0;
 
@@ -48,6 +48,6 @@ define(['Conditioner'],function(Conditioner){
         return result === expected;
     };
 
-    return Test;
+    return exports;
 
 });

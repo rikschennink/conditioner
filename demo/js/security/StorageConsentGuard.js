@@ -1,4 +1,4 @@
-define(['Conditioner','module'],function(Conditioner,module){
+define(['conditioner','module'],function(conditioner,module){
 
     'use strict';
 
@@ -30,7 +30,7 @@ define(['Conditioner','module'],function(Conditioner,module){
         }
 
         // sets initial options
-        this._options = Conditioner.mergeObjects(this._options,options);
+        this._options = conditioner.mergeObjects(this._options,options);
 
         this._setDefaultLevel();
     };
@@ -55,7 +55,7 @@ define(['Conditioner','module'],function(Conditioner,module){
 
         this._level = level;
 
-        Conditioner.Observer.publish(this,'change',this._level);
+        conditioner.Observer.publish(this,'change',this._level);
     };
 
 

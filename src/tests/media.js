@@ -3,12 +3,12 @@
  * Tests if a media query is matched or not and listens to changes
  * @module tests/media
  */
-define(['Conditioner'],function(Conditioner){
+define(['conditioner'],function(conditioner){
 
     'use strict';
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype;
 
     p.arrange = function() {
 
@@ -40,6 +40,6 @@ define(['Conditioner'],function(Conditioner){
         return this._mql.matches;
     };
 
-    return Test;
+    return exports;
 
 });

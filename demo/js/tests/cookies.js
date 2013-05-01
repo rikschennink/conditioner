@@ -2,15 +2,15 @@
  * Tests if what consent the user has given concerning cookie storage
  * @module tests/cookie
  */
-define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
+define(['conditioner','security/StorageConsentGuard'],function(conditioner,StorageConsentGuard){
 
-    var Test = Conditioner.TestBase.inherit(),
-        p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype;
 
     p.arrange = function() {
 
         var guard = StorageConsentGuard.getInstance(),self = this;
-        Conditioner.Observer.subscribe(guard,'change',function() {
+        conditioner.Observer.subscribe(guard,'change',function() {
             self.assert();
         });
 
@@ -25,6 +25,6 @@ define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,Stora
         return result ? true : false;
     };
 
-    return Test;
+    return exports;
 
 });
