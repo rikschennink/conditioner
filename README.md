@@ -25,9 +25,6 @@ An example setup using ConditionerJS:
 conditioner.loadModules(document);
 ```
 
-You can see it in action here http://rikschennink.github.io/conditioner/
-
-
 
 Quick Overview
 --------------------------------
@@ -42,7 +39,7 @@ The string contained in the `data-module` attribute points to the location of th
 ```
 
 #### data-conditions
-The conditions attributes allows you to control the conditions under which a module is loaded. For instance, below is an example condition which loads the module once the supplied media query is matched or the browser lacks media query support.
+The conditions attributes allows you to control the conditions under which a module is loaded. For instance, below is an example condition which only loads the module if the supplied media query is matched or if the browser lacks media query support.
 ```html
 <div data-module="ui/Clock" data-conditions="media:{(min-width:30em)} or not media:{supported}"> ... </div>
 ```
@@ -55,4 +52,11 @@ The options attribute allows you to set specific options for the module, these o
 
 #### data-priority
 The priority attributes allows you to control the order in which a module is loaded. Positive numbers give a module priority over other modules, a negative number moves it to the back of the initialisation queue.
+```html
 <div data-module="ui/Clock" data-priority="1"> ... </div>
+```
+
+
+Demo
+--------------------------------
+You can see it in action here http://rikschennink.github.io/conditioner/
