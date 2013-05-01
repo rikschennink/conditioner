@@ -51,10 +51,10 @@ define(['Conditioner'],function(Conditioner){
     };
 
     // Unload Clock behaviour
-    p._unload = function() {
+    p.unload = function() {
 
         // call BehaviourBase unload method
-        _parent.prototype._unload.call(this);
+        _parent.prototype.unload.call(this);
 
         // stop ticking
         clearTimeout(this._timer);

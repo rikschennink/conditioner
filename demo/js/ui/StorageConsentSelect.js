@@ -61,10 +61,10 @@ define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,IStor
     };
 
     // Unload StorageConsentSelect behaviour
-    p._unload = function() {
+    p.unload = function() {
 
         // call BehaviourBase unload method
-        _parent.prototype._unload.call(this);
+        _parent.prototype.unload.call(this);
 
         // remove event listener
         this._element.querySelector('select').removeEventListener('change',this);

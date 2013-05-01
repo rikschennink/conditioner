@@ -282,22 +282,25 @@ var ExpressionFormatter = {
     toExpressionTree:function(expression) {
 
         var i=0,
+            path = '',
+            tree = [],
+            value = '',
+            negate = false,
+            isValue = false,
+            target = null,
+            parent = null,
+            parents = [],
+            l=expression.length,
+            lastIndex,
+            index,
+            operator,
+            j,
             c,
             k,
             n,
             op,
             ol,
-            operator,
-            path = '',
-            tree = [],
-            value = '',
-            isValue = false,
-            target = null,
-            flattened = null,
-            parent = null,
-            parents = [],
-            l=expression.length;
-
+            tl;
 
         if (!target) {
             target = tree;
@@ -334,18 +337,26 @@ var ExpressionFormatter = {
             }
             else if (c === '}') {
 
-                // add value and
-                target.push({'path':path,'value':value});
+                lastIndex = target.length-1;
+                index = lastIndex+1;
+
+                // negate if last index contains not operator
+                negate = target[lastIndex] === 'not';
+
+                // if negate overwrite not operator location in array
+                index = negate ? lastIndex : lastIndex+1;
+
+                // add expression
+                target[index] = new UnaryExpression({'path':path,'value':value},negate);
 
                 // reset vars
                 path = '';
                 value = '';
 
+                negate = false;
+
                 // no longer a value
                 isValue = false;
-
-                // on to the next character
-                continue;
             }
 
             // if we are reading an expression add characters to expression
@@ -355,27 +366,6 @@ var ExpressionFormatter = {
             }
 
             // if not in expression
-            if (c === ' ' || i===0) {
-
-                // get operator
-                operator = expression.substr(i,5).match(/and |or |not /g);
-
-                // if operator found
-                if (operator) {
-
-                    // get reference and calculate length
-                    op = operator[0];
-                    ol = op.length-1;
-
-                    // add operator
-                    target.push(op.substring(0,ol));
-
-                    // skip over operator
-                    i+=ol;
-
-                }
-            }
-
             // check if goes up a level
             if (c === '(') {
 
@@ -389,88 +379,125 @@ var ExpressionFormatter = {
                 target = target[target.length-1];
 
             }
-            else if (c === ')' || i === l-1) {
 
-                // reset flattened data
-                flattened = null;
+            // find out if next set of characters is a logical operator
+            if (c === ' ' || i===0 || c === '(') {
 
-                // get parent
-                parent = parents.pop();
-
-                // if only contains single element flatten array
-                if (target.length === 1 || (parent && parent.length===1 && i===l-1)) {
-                    flattened = target.concat();
+                operator = expression.substr(i,5).match(/and |or |not /g);
+                if (!operator) {
+                    continue;
                 }
 
-                // restore parent
-                target = parent;
+                // get reference and calculate length
+                op = operator[0];
+                ol = op.length-1;
 
-                // if data defined
-                if (flattened && target) {
+                // add operator
+                target.push(op.substring(0,ol));
 
-                    target.pop();
+                // skip over operator
+                i+=ol;
+            }
 
-                    for (k=0;k<flattened.length;k++) {
-                        target.push(flattened[k]);
+            // expression or level finished, time to clean up
+            if (c === ')' || i === l-1) {
+
+                //console.log('');
+                //console.log('encoutered closing statement at:',i,i===l-1);
+
+                do {
+
+                    //console.log('initial target:',target,target.length);
+
+                    //console.log('target parents:',parents);
+
+                    // get parent reference
+                    parent = parents.pop();
+
+                    //console.log('current parent:',parent);
+
+                    // if contains zero elements = ()
+                    if (target.length === 0) {
+
+                        // zero elements added revert to parent
+                        target = parent;
+
+                        continue;
                     }
 
+                    // if more elements start the grouping process
+                    j=0;
+                    tl=target.length;
+
+                    for (;j<tl;j++) {
+
+                        if (typeof target[j] !== 'string') {
+                            continue;
+                        }
+
+                        // handle not expressions first
+                        if (target[j] === 'not') {
+                            target.splice(j,2,new UnaryExpression(target[j+1],true));
+
+                            // rewind
+                            j = -1;
+                            tl = target.length;
+                        }
+                        // handle binary expression
+                        else if (target[j+1] !== 'not') {
+                            target.splice(j-1,3,new BinaryExpression(target[j-1],target[j],target[j+1]));
+
+                            // rewind
+                            j = -1;
+                            tl = target.length;
+                        }
+
+                    }
+
+                    // if contains only one element
+                    if (target.length === 1 && parent) {
+
+                        //console.log('only one element:',target);
+
+                        // overwrite target index with target content
+                        parent[parent.length-1] = target[0];
+
+                        // set target to parent array
+                        target = parent;
+
+                    }
+
+                    //console.log('resulting target:',target);
+
+
                 }
+                while(i === l-1 && parent);
+
+
+
 
             }
+            // end of ')' character or last index
+
         }
 
-        // turn into explicit expression
-        ExpressionFormatter._makeExplicit(tree);
+        //console.log('done');
 
-        console.log(JSON.stringify(tree));
+        //console.log(JSON.stringify(tree));
+
+        // turn into explicit expression
+        //ExpressionFormatter._makeExplicit(tree);
+
+        //console.log(JSON.stringify(tree));
 
         // return final expression tree
         return tree.length === 1 ? tree[0] : tree;
-
-    },
-
-    /**
-     * Turns an implicit array of expressions into an explicit array of expressions
-     * @memberof ExpressionFormatter
-     * @param {Array} level
-     * @private
-     */
-    _makeExplicit:function(level) {
-
-        var i=0,l=level.length,groupSize=0;
-
-        for (;i<l;i++) {
-
-            // count amount of objects at this level
-            if (typeof level[i] === 'object') {
-                groupSize++;
-            }
-
-            // if has two objects and not end of level
-            if (groupSize === 2 && i+1<l) {
-
-                level.splice(0,i+1,level.slice(0,i+1));
-
-                // set new length
-                l = level.length;
-
-                // move back to start
-                i=-1;
-                groupSize = 0;
-
-            }
-
-            if (level[i] instanceof Array) {
-                ExpressionFormatter._makeExplicit(level[i]);
-            }
-
-        }
 
     }
 
 };
 
-window.ExpressionFormatter = ExpressionFormatter;
+//window.ExpressionFormatter = ExpressionFormatter;
 
 /**
  * @exports ModuleBase
@@ -680,12 +707,21 @@ var ModuleRegister = {
 
 };
 
-var ExpressionBase = {
+var ExpressionBase = function() {};
+
+ExpressionBase.prototype = {
 
     /**
      * @abstract
      */
     succeeds:function() {
+        // override in subclass
+    },
+
+    /**
+     * @abstract
+     */
+    getConfig:function() {
         // override in subclass
     }
 
@@ -697,16 +733,15 @@ var ExpressionBase = {
  * @class
  * @constructor
  * @augments ExpressionBase
- * @param {BinaryExpression|Test|null} expression
+ * @param {BinaryExpression|TestBase|object} expression
  * @param {boolean} negate
  */
 var UnaryExpression = function(expression,negate) {
 
-    /**
-     * @type {BinaryExpression|Test|null}
-     * @private
-     */
-    this._expression = expression;
+    this._expression = expression instanceof BinaryExpression ? expression : null;
+
+    this._config = this._expression ? null : expression;
+
     this._negate = typeof negate === 'undefined' ? false : negate;
 
 };
@@ -715,7 +750,7 @@ UnaryExpression.prototype = Object.create(ExpressionBase);
 
 /**
  * Sets test reference
- * @param {Test} test
+ * @param {TestBase} test
  */
 UnaryExpression.prototype.setTest = function(test) {
 
@@ -723,18 +758,29 @@ UnaryExpression.prototype.setTest = function(test) {
 
 };
 
+UnaryExpression.prototype.getConfig = function() {
+
+    return this._config ? [{'expression':this,'config':this._config}] : this._expression.getConfig();
+
+};
+
+
 /**
  * Tests if valid expression
- * @returns {Boolean}
+ * @returns {boolean}
  */
 UnaryExpression.prototype.succeeds = function() {
 
-    if (!this._expression) {
+    if (!this._expression.succeeds) {
         return false;
     }
 
     return this._expression.succeeds() !== this._negate;
 
+};
+
+UnaryExpression.prototype.toString = function() {
+    return (this._negate ? 'not' : '') + this._expression.toString();
 };
 
 
@@ -748,23 +794,10 @@ UnaryExpression.prototype.succeeds = function() {
  */
 var BinaryExpression = function(a,o,b) {
 
-    /**
-     * @type {UnaryExpression}
-     * @private
-     */
     this._a = a;
-
-    /**
-     * @type {string}
-     * @private
-     */
     this._o = o;
-
-    /**
-     * @type {UnaryExpression}
-     * @private
-     */
     this._b = b;
+
 };
 
 BinaryExpression.prototype = Object.create(ExpressionBase);
@@ -782,6 +815,16 @@ BinaryExpression.prototype.succeeds = function() {
 
         // is 'or' operator
         this._a.succeeds() || this._b.succeeds();
+
+};
+
+BinaryExpression.prototype.toString = function() {
+    return '(' + this._a.toString() + ' ' + this._o + ' ' + this._b.toString() + ')';
+};
+
+BinaryExpression.prototype.getConfig = function() {
+
+    return [this._a.getConfig(),this._b.getConfig()];
 
 };
 
@@ -818,11 +861,11 @@ var ConditionsManager = function(conditions,element) {
     // returns the amount of expressions in this expression
     this._count = ExpressionFormatter.getExpressionsCount(conditions);
 
-    // derive expression tree
-    var expression = ExpressionFormatter.toExpressionTree(conditions);
-
     // load to expression tree
-    this._expression = this._loadExpression(expression);
+    this._expression = ExpressionFormatter.toExpressionTree(conditions);
+
+    // load tests to expression tree
+    this._loadExpressionTests(this._expression.getConfig());
 
 };
 
@@ -840,78 +883,64 @@ ConditionsManager.prototype = {
         return this._suitable;
     },
 
-
     /**
-     * Turns an expression array into an actual expression tree
-     * @param expression {Array}
-     * @return {ExpressionBase}
-     * @private
+     * Tests if conditions are suitable
+     * @fires change
+     * @public
      */
-    _loadExpression:function(expression) {
+    test:function() {
 
-        console.log('load:  ',expression);
+        // test expression success state
+        var suitable = this._expression.succeeds();
 
-        var exp=[],op,n;
-
-        var i=0,l=expression.length;
-
-
-        /*
-
-
-        for (;i<l;i++) {
-
-            if (expression[i] instanceof Array) {
-
-                this._loadExpression(expression[i]);
-
-            }
-
+        // fire changed event if environment suitability changed
+        if (suitable != this._suitable) {
+            this._suitable = suitable;
+            Observer.publish(this,'change');
         }
-
-
-        // if expression is array
-        if (expression.length === 3) {
-
-            // is binary expression, create test
-            return new BinaryExpression(
-                this._loadExpression(expression[0]),
-                expression[1],
-                this._loadExpression(expression[2]),
-                false
-            );
-
-        }
-        else {
-            return this._createUnaryExpressionFromTest(expression,false);
-        }
-        */
 
     },
 
 
     /**
-     * Called to create a UnaryExpression from a test and loads the test
-     * @param {object} test
-     * @return {UnaryExpression}
+     * Loads test configurations contained in expressions
+     * @param {Array} configuration
      * @private
      */
-    _createUnaryExpressionFromTest:function(test,negate) {
+    _loadExpressionTests:function(configuration) {
 
-        var unaryExpression = new UnaryExpression(null,negate);
-        var instance = null;
+        for (var i=0;i<configuration.length;i++) {
+
+            if (configuration[i] instanceof Array) {
+                this._loadExpressionTests(configuration[i]);
+                continue;
+            }
+
+            this._loadTestToExpression(configuration[i].config,configuration[i].expression);
+        }
+    },
+
+
+    /**
+     * Loads test configuration to supplied expression
+     * @param {Object} config
+     * @param {UnaryExpression} expression
+     * @private
+     */
+    _loadTestToExpression:function(config,expression) {
+
         var self = this;
 
-        require(['tests/' + test.path],function(Test){
+        require(['tests/' + config.path],function(Test){
 
             // create test instance
-            instance = new Test(test.value,self._element);
+            var instance = new Test(config.value,self._element);
 
             // add instance to test set
             self._tests.push(instance);
 
             // set test to unary expression
-            unaryExpression.setTest(instance);
+            expression.setTest(instance);
 
             // lower test count
             self._count--;
@@ -920,7 +949,6 @@ ConditionsManager.prototype = {
             }
         });
 
-        return unaryExpression;
     },
 
 
@@ -962,25 +990,6 @@ ConditionsManager.prototype = {
      */
     _onTestResultsChanged:function() {
         this.test();
-    },
-
-
-    /**
-     * Tests if conditions are suitable
-     * @fires change
-     * @public
-    */
-    test:function() {
-
-        // test expression success state
-        var suitable = this._expression.succeeds();
-
-        // fire changed event if environment suitability changed
-        if (suitable != this._suitable) {
-            this._suitable = suitable;
-            Observer.publish(this,'change');
-        }
-
     }
 
 };

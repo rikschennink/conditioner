@@ -9,23 +9,10 @@
  */
 var BinaryExpression = function(a,o,b) {
 
-    /**
-     * @type {UnaryExpression}
-     * @private
-     */
     this._a = a;
-
-    /**
-     * @type {string}
-     * @private
-     */
     this._o = o;
-
-    /**
-     * @type {UnaryExpression}
-     * @private
-     */
     this._b = b;
+
 };
 
 BinaryExpression.prototype = Object.create(ExpressionBase);
@@ -43,5 +30,15 @@ BinaryExpression.prototype.succeeds = function() {
 
         // is 'or' operator
         this._a.succeeds() || this._b.succeeds();
+
+};
+
+BinaryExpression.prototype.toString = function() {
+    return '(' + this._a.toString() + ' ' + this._o + ' ' + this._b.toString() + ')';
+};
+
+BinaryExpression.prototype.getConfig = function() {
+
+    return [this._a.getConfig(),this._b.getConfig()];
 
 };

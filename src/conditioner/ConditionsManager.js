@@ -31,11 +31,11 @@ var ConditionsManager = function(conditions,element) {
     // returns the amount of expressions in this expression
     this._count = ExpressionFormatter.getExpressionsCount(conditions);
 
-    // derive expression tree
-    var expression = ExpressionFormatter.toExpressionTree(conditions);
-
     // load to expression tree
-    this._expression = this._loadExpression(expression);
+    this._expression = ExpressionFormatter.toExpressionTree(conditions);
+
+    // load tests to expression tree
+    this._loadExpressionTests(this._expression.getConfig());
 
 };
 
@@ -53,83 +53,64 @@ ConditionsManager.prototype = {
         return this._suitable;
     },
 
-
     /**
-     * Turns an expression array into an actual expression tree
-     * @param expression {Array}
-     * @return {ExpressionBase}
-     * @private
+     * Tests if conditions are suitable
+     * @fires change
+     * @public
      */
-    _loadExpression:function(expression) {
+    test:function() {
 
-        console.log('load:  ',expression);
+        // test expression success state
+        var suitable = this._expression.succeeds();
 
-        var exp=[],op,n;
-
-        var i=0,l=expression.length;
-
-
-        // if more than two items on this level mean binary expression
-
-        // mean two unary expressions with possible negate statements
-
-
-        /*
-
-
-        for (;i<l;i++) {
-
-            if (expression[i] instanceof Array) {
-
-                this._loadExpression(expression[i]);
-
-            }
-
+        // fire changed event if environment suitability changed
+        if (suitable != this._suitable) {
+            this._suitable = suitable;
+            Observer.publish(this,'change');
         }
-
-
-        // if expression is array
-        if (expression.length === 3) {
-
-            // is binary expression, create test
-            return new BinaryExpression(
-                this._loadExpression(expression[0]),
-                expression[1],
-                this._loadExpression(expression[2]),
-                false
-            );
-
-        }
-        else {
-            return this._createUnaryExpressionFromTest(expression,false);
-        }
-        */
 
     },
 
 
     /**
-     * Called to create a UnaryExpression from a test and loads the test
-     * @param {object} test
-     * @return {UnaryExpression}
+     * Loads test configurations contained in expressions
+     * @param {Array} configuration
      * @private
      */
-    _createUnaryExpressionFromTest:function(test,negate) {
+    _loadExpressionTests:function(configuration) {
 
-        var unaryExpression = new UnaryExpression(null,negate);
-        var instance = null;
+        for (var i=0;i<configuration.length;i++) {
+
+            if (configuration[i] instanceof Array) {
+                this._loadExpressionTests(configuration[i]);
+                continue;
+            }
+
+            this._loadTestToExpression(configuration[i].config,configuration[i].expression);
+        }
+    },
+
+
+    /**
+     * Loads test configuration to supplied expression
+     * @param {Object} config
+     * @param {UnaryExpression} expression
+     * @private
+     */
+    _loadTestToExpression:function(config,expression) {
+
         var self = this;
 
-        require(['tests/' + test.path],function(Test){
+        require(['tests/' + config.path],function(Test){
 
             // create test instance
-            instance = new Test(test.value,self._element);
+            var instance = new Test(config.value,self._element);
 
             // add instance to test set
             self._tests.push(instance);
 
             // set test to unary expression
-            unaryExpression.setTest(instance);
+            expression.setTest(instance);
 
             // lower test count
             self._count--;
@@ -138,7 +119,6 @@ ConditionsManager.prototype = {
             }
         });
 
-        return unaryExpression;
     },
 
 
@@ -180,25 +160,6 @@ ConditionsManager.prototype = {
      */
     _onTestResultsChanged:function() {
         this.test();
-    },
-
-
-    /**
-     * Tests if conditions are suitable
-     * @fires change
-     * @public
-    */
-    test:function() {
-
-        // test expression success state
-        var suitable = this._expression.succeeds();
-
-        // fire changed event if environment suitability changed
-        if (suitable != this._suitable) {
-            this._suitable = suitable;
-            Observer.publish(this,'change');
-        }
-
     }
 
 };

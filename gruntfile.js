@@ -160,6 +160,8 @@ module.exports = function(grunt) {
     // test
     grunt.registerTask('test',['jshint','jasmine']);
 
+    grunt.registerTask('quick',['concat','copy','uglify','requirejs']);
+
     // task for building the library
     grunt.registerTask('lib',['concat','copy','uglify','requirejs','jsdoc']);
 

@@ -131,14 +131,13 @@ demo.loadModules(document);
 
 
         <h3>Based on multiple conditions</h3>
-        <p>Map will be active as long as there is any network connection, the media query is matched and the element is in view.</p>
-        <pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions="connection:{any} and media:{(min-width:40em)} and element:{seen}"&gt; ... &lt;/div&gt;</code></pre>
+        <p>Map will be active as long as there is any network connection, the media query is matched and the element is in view. If there is no media query support, the map may also be loaded.</p>
+        <pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions="connection:{any} and media:{(min-width:40em)} and element:{seen} or not media:{supported}"&gt; ... &lt;/div&gt;</code></pre>
         <div class="component">
             <div data-module="IMap"
                  data-priority="2"
                  data-conditions="(connection:{any} and media:{(min-width:40em)} and element:{seen}) or not media:{supported}">Map is inactive</div>
         </div>
-
 
         <h3>Based on custom conditions</h3>
         <p>The first Clock will be activated the moment all cookies are allowed. The second Clock is only inactive when the user accepts no cookies.</p>
@@ -177,6 +176,7 @@ demo.loadModules(document);
         </div>
 
 
+
         <!-- For pretty javascript code examples -->
         <script src="js/lib/ccampbell/rainbow/rainbow.min.js"></script>
         <script src="js/lib/ccampbell/rainbow/html.js"></script>
@@ -199,8 +199,8 @@ demo.loadModules(document);
         <script src="js.min/built.js"></script>
 
 
-        <script>
 
+        <script>
 
         // Setup module configuration
         requirejs.config({
@@ -214,31 +214,6 @@ demo.loadModules(document);
         requirejs(['Conditioner'],
 
             function(Conditioner) {
-
-
-                var expressions = [
-
-                    'foo:{bar:1} and foo:{bar:2}',
-
-                    'not foo:{bar:1} or not foo:{bar:2}',
-
-                    'not foo:{bar:1} and not foo:{bar:2} and not foo:{bar:3} or not foo:{bar:4}',
-
-                    '(not foo:{bar:1} and not foo:{bar:2}) and not (foo:{bar:3} or not foo:{bar:4})',
-
-                    'foo:{bar:1} and not (foo:{bar:2} and foo:{bar:3})',
-
-                    'foo:{bar:1} and foo:{bar:2} and foo:{bar:3} or foo:{bar:4}'
-
-                ];
-
-                for (var i=0;i<expressions.length;i++) {
-                    console.log(expressions[i]);
-                    console.log(ExpressionFormatter.toExpressionTree(expressions[i]));
-                    console.log('------------');
-                    console.log('');
-                }
-
 
                 // Get instance of conditioner
                 var demo = Conditioner.getInstance();

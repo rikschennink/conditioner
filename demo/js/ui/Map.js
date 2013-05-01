@@ -54,10 +54,10 @@ define(['Conditioner'],function(Conditioner){
     };
 
     // Unload Map behaviour
-    p._unload = function() {
+    p.unload = function() {
 
         // call BehaviourBase unload method
-        _parent.prototype._unload.call(this);
+        _parent.prototype.unload.call(this);
 
         // restore content
         this._element.innerHTML = this._inner;

@@ -25,22 +25,25 @@ var ExpressionFormatter = {
     toExpressionTree:function(expression) {
 
         var i=0,
+            path = '',
+            tree = [],
+            value = '',
+            negate = false,
+            isValue = false,
+            target = null,
+            parent = null,
+            parents = [],
+            l=expression.length,
+            lastIndex,
+            index,
+            operator,
+            j,
             c,
             k,
             n,
             op,
             ol,
-            operator,
-            path = '',
-            tree = [],
-            value = '',
-            isValue = false,
-            target = null,
-            flattened = null,
-            parent = null,
-            parents = [],
-            l=expression.length;
-
+            tl;
 
         if (!target) {
             target = tree;
@@ -77,18 +80,26 @@ var ExpressionFormatter = {
             }
             else if (c === '}') {
 
-                // add value and
-                target.push({'path':path,'value':value});
+                lastIndex = target.length-1;
+                index = lastIndex+1;
+
+                // negate if last index contains not operator
+                negate = target[lastIndex] === 'not';
+
+                // if negate overwrite not operator location in array
+                index = negate ? lastIndex : lastIndex+1;
+
+                // add expression
+                target[index] = new UnaryExpression({'path':path,'value':value},negate);
 
                 // reset vars
                 path = '';
                 value = '';
 
+                negate = false;
+
                 // no longer a value
                 isValue = false;
-
-                // on to the next character
-                continue;
             }
 
             // if we are reading an expression add characters to expression
@@ -98,27 +109,6 @@ var ExpressionFormatter = {
             }
 
             // if not in expression
-            if (c === ' ' || i===0) {
-
-                // get operator
-                operator = expression.substr(i,5).match(/and |or |not /g);
-
-                // if operator found
-                if (operator) {
-
-                    // get reference and calculate length
-                    op = operator[0];
-                    ol = op.length-1;
-
-                    // add operator
-                    target.push(op.substring(0,ol));
-
-                    // skip over operator
-                    i+=ol;
-
-                }
-            }
-
             // check if goes up a level
             if (c === '(') {
 
@@ -132,85 +122,122 @@ var ExpressionFormatter = {
                 target = target[target.length-1];
 
             }
-            else if (c === ')' || i === l-1) {
 
-                // reset flattened data
-                flattened = null;
+            // find out if next set of characters is a logical operator
+            if (c === ' ' || i===0 || c === '(') {
 
-                // get parent
-                parent = parents.pop();
-
-                // if only contains single element flatten array
-                if (target.length === 1 || (parent && parent.length===1 && i===l-1)) {
-                    flattened = target.concat();
+                operator = expression.substr(i,5).match(/and |or |not /g);
+                if (!operator) {
+                    continue;
                 }
 
-                // restore parent
-                target = parent;
+                // get reference and calculate length
+                op = operator[0];
+                ol = op.length-1;
 
-                // if data defined
-                if (flattened && target) {
+                // add operator
+                target.push(op.substring(0,ol));
 
-                    target.pop();
+                // skip over operator
+                i+=ol;
+            }
 
-                    for (k=0;k<flattened.length;k++) {
-                        target.push(flattened[k]);
+            // expression or level finished, time to clean up
+            if (c === ')' || i === l-1) {
+
+                //console.log('');
+                //console.log('encoutered closing statement at:',i,i===l-1);
+
+                do {
+
+                    //console.log('initial target:',target,target.length);
+
+                    //console.log('target parents:',parents);
+
+                    // get parent reference
+                    parent = parents.pop();
+
+                    //console.log('current parent:',parent);
+
+                    // if contains zero elements = ()
+                    if (target.length === 0) {
+
+                        // zero elements added revert to parent
+                        target = parent;
+
+                        continue;
                     }
 
+                    // if more elements start the grouping process
+                    j=0;
+                    tl=target.length;
+
+                    for (;j<tl;j++) {
+
+                        if (typeof target[j] !== 'string') {
+                            continue;
+                        }
+
+                        // handle not expressions first
+                        if (target[j] === 'not') {
+                            target.splice(j,2,new UnaryExpression(target[j+1],true));
+
+                            // rewind
+                            j = -1;
+                            tl = target.length;
+                        }
+                        // handle binary expression
+                        else if (target[j+1] !== 'not') {
+                            target.splice(j-1,3,new BinaryExpression(target[j-1],target[j],target[j+1]));
+
+                            // rewind
+                            j = -1;
+                            tl = target.length;
+                        }
+
+                    }
+
+                    // if contains only one element
+                    if (target.length === 1 && parent) {
+
+                        //console.log('only one element:',target);
+
+                        // overwrite target index with target content
+                        parent[parent.length-1] = target[0];
+
+                        // set target to parent array
+                        target = parent;
+
+                    }
+
+                    //console.log('resulting target:',target);
+
+
                 }
+                while(i === l-1 && parent);
+
+
+
 
             }
+            // end of ')' character or last index
+
         }
 
-        // turn into explicit expression
-        ExpressionFormatter._makeExplicit(tree);
+        //console.log('done');
 
-        console.log(JSON.stringify(tree));
+        //console.log(JSON.stringify(tree));
+
+        // turn into explicit expression
+        //ExpressionFormatter._makeExplicit(tree);
+
+        //console.log(JSON.stringify(tree));
 
         // return final expression tree
         return tree.length === 1 ? tree[0] : tree;
-
-    },
-
-    /**
-     * Turns an implicit array of expressions into an explicit array of expressions
-     * @memberof ExpressionFormatter
-     * @param {Array} level
-     * @private
-     */
-    _makeExplicit:function(level) {
-
-        var i=0,l=level.length,groupSize=0;
-
-        for (;i<l;i++) {
-
-            // count amount of objects at this level
-            if (typeof level[i] === 'object') {
-                groupSize++;
-            }
-
-            // if has two objects and not end of level
-            if (groupSize === 2 && i+1<l) {
-
-                level.splice(0,i+1,level.slice(0,i+1));
-
-                // set new length
-                l = level.length;
-
-                // move back to start
-                i=-1;
-                groupSize = 0;
-
-            }
-
-            if (level[i] instanceof Array) {
-                ExpressionFormatter._makeExplicit(level[i]);
-            }
-
-        }
 
     }
 
 };
 
-window.ExpressionFormatter = ExpressionFormatter;
+//window.ExpressionFormatter = ExpressionFormatter;
