@@ -62,13 +62,13 @@ The `data-options` attribute allows you to set specific options for the module, 
 <div data-module="ui/Map" data-options='{"zoom":10}'> ... </div>
 ```
 
-It's also possible to define options at page level. ConditionerJS will automatically merge page level options with node level options before passing them to the module (node level options will take precedence before page level options).
+It's also possible to define options at page level. ConditionerJS will automatically merge page level options with node level options before passing them to the module (node level options will take precedence over page level options).
 ```javascript
 conditioner.setOptions({
     'modules':{
         'ui/Map':{
             'options':{
-                'zoom':8 // all maps on the page now have "8" set as their zoom level
+                'zoom':8
             }
         }
     }
