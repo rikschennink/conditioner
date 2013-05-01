@@ -27,3 +27,5 @@ conditioner.setOptions({
 // apply behavior to document scope
 conditioner.loadModules(document);
 ```
+
+You can see it in action here http://rikschennink.github.io/conditioner/
