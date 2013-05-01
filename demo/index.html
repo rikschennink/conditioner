@@ -49,7 +49,7 @@
 
         <p>To initiate the <code>conditioner</code> set it's options have it <code>loadModules</code> passing the document as the context.</p>
 
-<pre><code data-language="javascript">// set custom module options
+<pre><code data-language="javascript">// setup modules
 conditioner.setOptions({
     'modules':{
         'ui/Map':'IMap',
@@ -73,12 +73,13 @@ conditioner.setOptions({
     }
 });
 
-// Load all modules contained within the document scope
+// load all modules found within the document scope
 conditioner.loadModules(document);
 </code></pre>
 
 
         <h2>Examples</h2>
+
 
 
         <h3>Always enabled</h3>
@@ -110,11 +111,11 @@ conditioner.loadModules(document);
 
         <h3>Based on Media Query</h3>
         <p>Clock will be active as long as media the media query is matched. Priority of this component has a value of minus 1, which causes it to be loaded after all components without and explicit priority have loaded.</p>
-        <pre><code data-language="html">&lt;div data-module="IClock" data-priority="-1" data-conditions="media:{(min-width:30em) and (max-width:60em)}"&gt; ... &lt;/div&gt;</code></pre>
+        <pre><code data-language="html">&lt;div data-module="IClock" data-priority="-1" data-conditions="media:{(min-width:30em) and (max-width:60em)} or not media:{supported}"&gt; ... &lt;/div&gt;</code></pre>
         <div class="component">
             <div data-module="IClock"
                  data-priority="-1"
-                 data-conditions="media:{(min-width:30em) and (max-width:60em)}">Clock is inactive</div>
+                 data-conditions="media:{(min-width:30em) and (max-width:60em)} or not media:{supported}">Clock is inactive</div>
         </div>
 
 
@@ -181,9 +182,6 @@ conditioner.loadModules(document);
 
 
         <!-- Shims to get this working on some older browsers <= IE9 (please minimize in real life) -->
-        <script src="js/shim/JSON.js"></script>
-        <script src="js/shim/ContentLoaded.js"></script>
-        <script src="js/shim/EventListener.js"></script>
         <script src="js/shim/Array.isArray.js"></script>
         <script src="js/shim/Array.indexOf.js"></script>
         <script src="js/shim/Array.forEach.js"></script>
@@ -193,16 +191,17 @@ conditioner.loadModules(document);
         <script src="js/shim/matchMedia/matchMedia.js"></script>
         <script src="js/shim/matchMedia/matchMedia.addListener.js"></script>
 
+        <!-- ie8 last, matchmedia won't be loaded if browser does not have addeventlistener support -->
+        <script src="js/shim/ContentLoaded.js"></script>
+        <script src="js/shim/EventListener.js"></script>
 
-        <!-- Load minimized library (require + modules)
-        <script src="js.min/built.js"></script>-->
-
-        <script src="js/lib/jrburke/require.js"></script>
+        <!-- Load minimized library (require + modules)-->
+        <script src="js.min/built.js"></script>
 
 
         <script>
 
-        // Setup module configuration
+        // setup requirejs
         requirejs.config({
             baseUrl:'js/',
             paths:{
@@ -210,12 +209,12 @@ conditioner.loadModules(document);
             }
         });
 
-        // Load Conditioner and default set of Tests
+        // load conditioner
         requirejs(['conditioner'],
 
             function(conditioner) {
 
-                // Set custom module options
+                // setup modules
                 conditioner.setOptions({
                     'modules':{
                         'ui/Map':'IMap',
@@ -239,7 +238,7 @@ conditioner.loadModules(document);
                     }
                 });
 
-                // Load all modules contained within the document scope
+                // load all modules found within the document scope
                 conditioner.loadModules(document);
 
             }
