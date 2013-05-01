@@ -22,7 +22,7 @@ var ExpressionFormatter = {
      * @returns {Array}
      * @public
      */
-    toExpressionTree:function(expression) {
+    fromString:function(expression) {
 
         var i=0,
             path = '',
@@ -240,4 +240,4 @@ var ExpressionFormatter = {
 
 };
 
-//window.ExpressionFormatter = ExpressionFormatter;
+window.ExpressionFormatter = ExpressionFormatter;

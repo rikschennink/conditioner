@@ -32,7 +32,7 @@ var ConditionsManager = function(conditions,element) {
     this._count = ExpressionFormatter.getExpressionsCount(conditions);
 
     // load to expression tree
-    this._expression = ExpressionFormatter.toExpressionTree(conditions);
+    this._expression = ExpressionFormatter.fromString(conditions);
 
     // load tests to expression tree
     this._loadExpressionTests(this._expression.getConfig());

@@ -167,7 +167,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="conditioner.js.html">dist/conditioner.js</a>, line 796
+        <a href="conditioner.js.html">dist/conditioner.js</a>, line 839
     </li></ul></dd>
     
     
@@ -209,7 +209,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="_createUnaryExpressionFromTest"><span class="type-signature">&lt;private> </span>_createUnaryExpressionFromTest<span class="signature">(test)</span><span class="type-signature"> &rarr; {UnaryExpression}</span></h4>
+    <h4 class="name" id="_loadExpressionTests"><span class="type-signature">&lt;private> </span>_loadExpressionTests<span class="signature">(configuration)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -217,7 +217,7 @@
     
     
     <div class="description">
-        Called to create a UnaryExpression from a test and loads the test
+        Loads test configurations contained in expressions
     </div>
     
 
@@ -251,138 +251,7 @@
 	
         <tr>
             
-                <td class="name"><code>test</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last"></td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="conditioner.js.html">dist/conditioner.js</a>, line 899
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">UnaryExpression</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="_loadExpression"><span class="type-signature">&lt;private> </span>_loadExpression<span class="signature">(expression)</span><span class="type-signature"> &rarr; {ExpressionBase}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Turns an expression array into an actual expression tree
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>expression</code></td>
+                <td class="name"><code>configuration</code></td>
             
             
             <td class="type">
@@ -429,7 +298,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="conditioner.js.html">dist/conditioner.js</a>, line 850
+        <a href="conditioner.js.html">dist/conditioner.js</a>, line 910
     </li></ul></dd>
     
     
@@ -446,24 +315,142 @@
     
     
     
-    <h5>Returns:</h5>
     
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">ExpressionBase</span>
-
-
-	</dd>
-</dl>
+    
+</dd>
 
         
+            
+<dt>
+    <h4 class="name" id="_loadTestToExpression"><span class="type-signature">&lt;private> </span>_loadTestToExpression<span class="signature">(config, expression)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Loads test configuration to supplied expression
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>config</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last"></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>expression</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">UnaryExpression</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last"></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="conditioner.js.html">dist/conditioner.js</a>, line 930
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
     
     
 </dd>
@@ -512,7 +499,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="conditioner.js.html">dist/conditioner.js</a>, line 932
+        <a href="conditioner.js.html">dist/conditioner.js</a>, line 960
     </li></ul></dd>
     
     
@@ -585,7 +572,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="conditioner.js.html">dist/conditioner.js</a>, line 963
+        <a href="conditioner.js.html">dist/conditioner.js</a>, line 991
     </li></ul></dd>
     
     
@@ -650,7 +637,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="conditioner.js.html">dist/conditioner.js</a>, line 839
+        <a href="conditioner.js.html">dist/conditioner.js</a>, line 882
     </li></ul></dd>
     
     
@@ -733,7 +720,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="conditioner.js.html">dist/conditioner.js</a>, line 973
+        <a href="conditioner.js.html">dist/conditioner.js</a>, line 891
     </li></ul></dd>
     
     
@@ -784,7 +771,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Apr 29 2013 15:57:19 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed May 01 2013 11:23:56 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -28,6 +28,9 @@ module.exports = function(grunt) {
         },
         jasmine:{
             src:[
+                '<%= path.conditioner %>/ExpressionBase.js',
+                '<%= path.conditioner %>/UnaryExpression.js',
+                '<%= path.conditioner %>/BinaryExpression.js',
                 '<%= path.conditioner %>/ExpressionFormatter.js'
             ],
             options:{

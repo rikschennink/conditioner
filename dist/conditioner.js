@@ -279,7 +279,7 @@ var ExpressionFormatter = {
      * @returns {Array}
      * @public
      */
-    toExpressionTree:function(expression) {
+    fromString:function(expression) {
 
         var i=0,
             path = '',
@@ -497,7 +497,7 @@ var ExpressionFormatter = {
 
 };
 
-//window.ExpressionFormatter = ExpressionFormatter;
+window.ExpressionFormatter = ExpressionFormatter;
 
 /**
  * @exports ModuleBase
@@ -738,7 +738,7 @@ ExpressionBase.prototype = {
  */
 var UnaryExpression = function(expression,negate) {
 
-    this._expression = expression instanceof BinaryExpression ? expression : null;
+    this._expression = expression instanceof BinaryExpression || expression instanceof UnaryExpression ? expression : null;
 
     this._config = this._expression ? null : expression;
 
@@ -780,7 +780,7 @@ UnaryExpression.prototype.succeeds = function() {
 };
 
 UnaryExpression.prototype.toString = function() {
-    return (this._negate ? 'not' : '') + this._expression.toString();
+    return (this._negate ? 'not ' : '') + (this._expression ? this._expression.toString() : this._config.path + ':{' + this._config.value + '}');
 };
 
 
@@ -862,7 +862,7 @@ var ConditionsManager = function(conditions,element) {
     this._count = ExpressionFormatter.getExpressionsCount(conditions);
 
     // load to expression tree
-    this._expression = ExpressionFormatter.toExpressionTree(conditions);
+    this._expression = ExpressionFormatter.fromString(conditions);
 
     // load tests to expression tree
     this._loadExpressionTests(this._expression.getConfig());

@@ -8,7 +8,7 @@
  */
 var UnaryExpression = function(expression,negate) {
 
-    this._expression = expression instanceof BinaryExpression ? expression : null;
+    this._expression = expression instanceof BinaryExpression || expression instanceof UnaryExpression ? expression : null;
 
     this._config = this._expression ? null : expression;
 
@@ -50,5 +50,5 @@ UnaryExpression.prototype.succeeds = function() {
 };
 
 UnaryExpression.prototype.toString = function() {
-    return (this._negate ? 'not' : '') + this._expression.toString();
+    return (this._negate ? 'not ' : '') + (this._expression ? this._expression.toString() : this._config.path + ':{' + this._config.value + '}');
 };
