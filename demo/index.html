@@ -16,71 +16,24 @@
 
         <h1>Conditioner Demo</h1>
 
+        <h2>Introduction</h2>
+        <p>Conditioner is a JavaScript framework based on requirejs, it allows you to conditionally load your javascript modules based on certain environment requirements.</p>
 
-        <h2>Setup</h2>
+        <p>Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map.</p>
 
+        <p>It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map.</p>
 
-        <h3>HTML Attributes</h3>
+        <p>An example setup using ConditionerJS:</p>
 
-        <p>You can link javascript modules to your DOM nodes using the <code>data-module</code> attribute.</p>
+        <pre><code data-language="html">&lt;div data-module="ui/Map" data-conditions="media:{(min-width:30em)}"&gt; ... &lt;/div&gt;</code></pre>
 
-
-        <h4>data-module</h4>
-        <p>The string contained in the <code>data-module</code> attribute points to the location of the module. For <code>IClock</code> this would be <code>ui/Clock</code>.</p>
-        <pre><code data-language="html">&lt;div data-module="IClock"&gt; ... &lt;/div&gt;</code></pre>
-
-
-        <h4>data-conditions</h4>
-        <p>The conditions attributes allows you to control the conditions under which a module is loaded. For instance, below is an example condition which loads the module once the window is at least 450 pixels wide.</p>
-        <pre><code data-language="html">&lt;div data-module="IClock" data-conditions="window:{min-width:450}"&gt; ... &lt;/div&gt;</code></pre>
-
-
-        <h4>data-options</h4>
-        <p>The options attribute allows you to set specific options for the module, these options are then passed to the constructor the moment the module is initialized.</p>
-        <pre><code data-language="html">&lt;div data-module="IClock" data-options='{"time":false}'&gt; ... &lt;/div&gt;</code></pre>
-
-
-        <h4>data-priority</h4>
-        <p>The priority attributes allows you to control the order in which a module is loaded. Positive numbers give a module priority over other modules, a negative number moves it to the back of the initialisation queue.</p>
-        <pre><code data-language="html">&lt;div data-module="IClock" data-priority="1"&gt; ... &lt;/div&gt;</code></pre>
-
-
-        <h3>Javascript Kickoff</h3>
-
-        <p>To initiate the <code>conditioner</code> set it's options have it <code>loadModules</code> passing the document as the context.</p>
-
-<pre><code data-language="javascript">// setup modules
-conditioner.setOptions({
-    'modules':{
-        'ui/Map':'IMap',
-        'ui/Clock':'IClock',
-        'ui/StorageConsentSelect':{
-            'alias':'IStorageConsentSelect',
-            'options':{
-                'label':{
-                    'level':{
-                        'incognito':'Incognito'
-                    }
-                }
-            }
-        },
-        'security/StorageConsentGuard':{
-            'options':{
-                'levels':['all','incognito','none'],
-                'initial':'none'
-            }
-        }
-    }
-});
-
-// load all modules found within the document scope
+<pre><code data-language="javascript">// load modules within document context
 conditioner.loadModules(document);
 </code></pre>
 
 
+
         <h2>Examples</h2>
-
-
 
         <h3>Always enabled</h3>
         <p>Clock will be always be active.</p>

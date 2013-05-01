@@ -51,13 +51,13 @@ conditioner.setOptions({
 ```
 
 #### data-conditions
-The conditions attributes allows you to control the conditions under which a module is loaded. For instance, below is an example condition which only loads the module if the supplied media query is matched or if the browser lacks media query support.
+The `data-conditions` attributes allows you to control the conditions under which a module is loaded. For instance, below is an example condition which only loads the module if the supplied media query is matched or if the browser lacks media query support.
 ```html
 <div data-module="ui/Map" data-conditions="media:{(min-width:30em)} or not media:{supported}"> ... </div>
 ```
 
 #### data-options
-The options attribute allows you to set specific options for the module, these options are then passed to the the module the moment it is initialized.
+The `data-options` attribute allows you to set specific options for the module, these options are then passed to the the module the moment it is initialized.
 ```html
 <div data-module="ui/Map" data-options='{"zoom":10}'> ... </div>
 ```
@@ -76,7 +76,7 @@ conditioner.setOptions({
 ```
 
 #### data-priority
-The priority attributes allows you to control the order in which a module is loaded. Positive numbers give a module priority over other modules, a negative number moves it to the back of the initialisation queue.
+The `data-priority` attributes allows you to control the order in which a module is loaded. Positive numbers give a module priority over other modules, a negative number moves it to the back of the initialisation queue.
 ```html
 <div data-module="ui/Map" data-priority="1"> ... </div>
 ```
