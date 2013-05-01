@@ -27,9 +27,9 @@
 
         <pre><code data-language="html">&lt;div data-module="ui/Map" data-conditions="media:{(min-width:30em)}"&gt; ... &lt;/div&gt;</code></pre>
 
-<pre><code data-language="javascript">// load modules within document context
-conditioner.loadModules(document);
-</code></pre>
+        <p>ConditionerJS initialisation:</p>
+
+        <pre><code data-language="javascript">conditioner.loadModules(document);</code></pre>
 
 
 
@@ -163,9 +163,7 @@ conditioner.loadModules(document);
         });
 
         // load conditioner
-        requirejs(['conditioner'],
-
-            function(conditioner) {
+        requirejs(['conditioner'],function(conditioner) {
 
                 // setup modules
                 conditioner.setOptions({
