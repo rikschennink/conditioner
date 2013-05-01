@@ -21,7 +21,7 @@ An example setup using ConditionerJS:
 ```
 
 ```javascript
-// load modules within document context
+// load all modules within document context
 conditioner.loadModules(document);
 ```
 
