@@ -8,11 +8,6 @@ define(['conditioner'],function(conditioner){
     // Map Class
     var exports = function(element) {
 
-        // test if geolocation support, otherwise map won't function
-        if (!navigator.geolocation) {
-            return;
-        }
-
         // Call ModuleBase constructor
         _parent.call(this,element);
 
@@ -23,11 +18,17 @@ define(['conditioner'],function(conditioner){
         // backup content
         this._inner = this._element.innerHTML;
 
+        // test if geolocation support, otherwise map won't function
+        if (!navigator.geolocation) {
+            this._element.innerHTML = 'Your browser does not support the Geolocation API';
+            return;
+        }
+
         // loading map
         this._element.innerHTML = 'Loading map...';
 
         // get position (wait max 5 seconds for it)
-        navigator.geolocation.getCurrentPosition(this._onSuccessBind,this._onErrorBind,{timeout:5000});
+        navigator.geolocation.getCurrentPosition(this._onSuccessBind,this._onErrorBind,{timeout:10000});
     };
 
     // Extend from ModuleBase

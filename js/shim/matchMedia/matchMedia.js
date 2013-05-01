@@ -1,36 +1,39 @@
 /*! matchMedia() polyfill - Test a CSS media type/query in JS. Authors & copyright (c) 2012: Scott Jehl, Paul Irish, Nicholas Zakas. Dual MIT/BSD license */
 
-window.matchMedia = window.matchMedia || (function( doc, undefined ) {
+if (window.addEventListener) {
 
-  "use strict";
+    window.matchMedia = window.matchMedia || (function( doc, undefined ) {
 
-  var bool,
-      docElem = doc.documentElement,
-      refNode = docElem.firstElementChild || docElem.firstChild,
-      // fakeBody required for <FF4 when executed in <head>
-      fakeBody = doc.createElement( "body" ),
-      div = doc.createElement( "div" );
+        "use strict";
 
-  div.id = "mq-test-1";
-  div.style.cssText = "position:absolute;top:-100em";
-  fakeBody.style.background = "none";
-  fakeBody.appendChild(div);
+        var bool,
+            docElem = doc.documentElement,
+            refNode = docElem.firstElementChild || docElem.firstChild,
+        // fakeBody required for <FF4 when executed in <head>
+            fakeBody = doc.createElement( "body" ),
+            div = doc.createElement( "div" );
 
-  return function(q){
+        div.id = "mq-test-1";
+        div.style.cssText = "position:absolute;top:-100em";
+        fakeBody.style.background = "none";
+        fakeBody.appendChild(div);
 
-    div.innerHTML = "&shy;<style media=\"" + q + "\"> #mq-test-1 { width: 42px; }</style>";
+        return function(q){
 
-    docElem.insertBefore( fakeBody, refNode );
-    bool = div.offsetWidth === 42;
-    docElem.removeChild( fakeBody );
+            div.innerHTML = "&shy;<style media=\"" + q + "\"> #mq-test-1 { width: 42px; }</style>";
 
-    return {
-      matches: bool,
-      media: q
-    };
+            docElem.insertBefore( fakeBody, refNode );
+            bool = div.offsetWidth === 42;
+            docElem.removeChild( fakeBody );
 
-  };
+            return {
+                matches: bool,
+                media: q
+            };
 
-}( document ));
+        };
+
+    }( document ));
 
 
+}

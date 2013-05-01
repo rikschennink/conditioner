@@ -2082,7 +2082,7 @@ var Utils = (function(){
                 src.forEach(function(e, i) {
 
                     if (typeof e === 'object') {
-                        dst[i] = mergeObjects(target[i], e);
+                        dst[i] = exports.mergeObjects(target[i], e);
                     }
                     else {
                         if (target.indexOf(e) === -1) {
@@ -2424,19 +2424,10 @@ var ExpressionFormatter = {
             // expression or level finished, time to clean up
             if (c === ')' || i === l-1) {
 
-                //console.log('');
-                //console.log('encoutered closing statement at:',i,i===l-1);
-
                 do {
-
-                    //console.log('initial target:',target,target.length);
-
-                    //console.log('target parents:',parents);
 
                     // get parent reference
                     parent = parents.pop();
-
-                    //console.log('current parent:',parent);
 
                     // if contains zero elements = ()
                     if (target.length === 0) {
@@ -2479,8 +2470,6 @@ var ExpressionFormatter = {
                     // if contains only one element
                     if (target.length === 1 && parent) {
 
-                        //console.log('only one element:',target);
-
                         // overwrite target index with target content
                         parent[parent.length-1] = target[0];
 
@@ -2488,8 +2477,6 @@ var ExpressionFormatter = {
                         target = parent;
 
                     }
-
-                    //console.log('resulting target:',target);
 
 
                 }
@@ -2503,23 +2490,12 @@ var ExpressionFormatter = {
 
         }
 
-        //console.log('done');
-
-        //console.log(JSON.stringify(tree));
-
-        // turn into explicit expression
-        //ExpressionFormatter._makeExplicit(tree);
-
-        //console.log(JSON.stringify(tree));
-
         // return final expression tree
         return tree.length === 1 ? tree[0] : tree;
 
     }
 
 };
-
-window.ExpressionFormatter = ExpressionFormatter;
 
 /**
  * @exports ModuleBase
@@ -2933,7 +2909,7 @@ ConditionsManager.prototype = {
 
         for (var i=0;i<configuration.length;i++) {
 
-            if (configuration[i] instanceof Array) {
+            if (Array.isArray(configuration[i])) {
                 this._loadExpressionTests(configuration[i]);
                 continue;
             }
