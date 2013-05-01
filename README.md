@@ -8,7 +8,11 @@ Introduction
 
 Conditioner is a JavaScript framework based on requirejs, it allows you to conditionally load your javascript modules based on certain environment requirements.
 
-Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map. It would make sense to only activate this module when there's enough real estate on the screen to render a decent sized map. It would look something like this:
+Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map.
+
+It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map.
+
+An example setup using ConditionerJS:
 
 ```html
 <div data-module="IMap" data-conditions="media:{(min-width:30em)}">
@@ -17,14 +21,14 @@ Suppose you have a Google Maps module which transforms an anchor to a full blown
 ```
 
 ```javascript
-// set custom module options
+// setup modules
 conditioner.setOptions({
     'modules':{
         'ui/Map':'IMap'
     }
 });
 
-// apply behavior to document scope
+// load modules within document context
 conditioner.loadModules(document);
 ```
 
