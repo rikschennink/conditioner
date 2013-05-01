@@ -17,15 +17,13 @@ Suppose you have a Google Maps module which transforms an anchor to a full blown
 ```
 
 ```javascript
-var myConditioner = Conditioner.getInstance();
-
 // set custom module options
-myConditioner.setOptions({
+conditioner.setOptions({
     'modules':{
         'ui/Map':'IMap'
     }
 });
 
 // apply behavior to document scope
-myConditioner.loadModules(document);
+conditioner.loadModules(document);
 ```
