@@ -1,9 +1,9 @@
-define(['Conditioner'],function(Conditioner){
+define(['conditioner'],function(conditioner){
 
     'use strict';
 
     // reference to parent class
-    var _parent = Conditioner.ModuleBase;
+    var _parent = conditioner.ModuleBase;
 
     // Clock Class
     var exports = function(element,options) {
@@ -13,7 +13,7 @@ define(['Conditioner'],function(Conditioner){
             'time':true
         };
 
-        // call BehaviourBase constructor
+        // call ModuleBase constructor
         _parent.call(this,element,options);
 
         // backup content
@@ -23,7 +23,7 @@ define(['Conditioner'],function(Conditioner){
         this._tick();
     };
 
-    // Extend from BehaviourBase
+    // Extend from ModuleBase
     var p = exports.prototype = Object.create(_parent.prototype);
 
     // Update time
@@ -51,10 +51,10 @@ define(['Conditioner'],function(Conditioner){
     };
 
     // Unload Clock behaviour
-    p._unload = function() {
+    p.unload = function() {
 
-        // call BehaviourBase unload method
-        _parent.prototype._unload.call(this);
+        // call ModuleBase unload method
+        _parent.prototype.unload.call(this);
 
         // stop ticking
         clearTimeout(this._timer);

@@ -2020,11 +2020,11 @@ var requirejs, require, define;
 }(this));
 define("lib/jrburke/require", function(){});
 
-// conditioner v0.8.1 - A JavaScript framework for conditionally loading UI classes
+// conditioner v0.8.5 - ConditionerJS, detangle your javascript and make it shine.
 // Copyright (c) 2013 Rik Schennink - https://github.com/rikschennink/conditioner
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-define('Conditioner',['require'],function(require) {
+define('conditioner',['require'],function(require) {
 
     
 
@@ -2279,6 +2279,249 @@ var Observer = {
 
 
 /**
+ * @namespace ExpressionFormatter
+ */
+var ExpressionFormatter = {
+
+    /**
+     * Returns the amount of sub expressions contained in the supplied expression
+     * @memberof ExpressionFormatter
+     * @param expression {string}
+     * @returns {Number}
+     * @public
+     */
+    getExpressionsCount:function(expression) {
+        return expression.match(/(\:\{)/g).length;
+    },
+
+    /**
+     * Parses an expression in string format and returns the same expression formatted as an expression tree
+     * @memberof ExpressionFormatter
+     * @param expression {string}
+     * @returns {Array}
+     * @public
+     */
+    fromString:function(expression) {
+
+        var i=0,
+            path = '',
+            tree = [],
+            value = '',
+            negate = false,
+            isValue = false,
+            target = null,
+            parent = null,
+            parents = [],
+            l=expression.length,
+            lastIndex,
+            index,
+            operator,
+            j,
+            c,
+            k,
+            n,
+            op,
+            ol,
+            tl;
+
+        if (!target) {
+            target = tree;
+        }
+
+        // read explicit expressions
+        for (;i<l;i++) {
+
+            c = expression.charAt(i);
+
+            // check if an expression
+            if (c === '{') {
+
+                // now reading the expression
+                isValue = true;
+
+                // reset path var
+                path = '';
+
+                // fetch path
+                k = i-2;
+                while(k>=0) {
+                    n = expression.charAt(k);
+                    if (n === ' ' || n === '(') {
+                        break;
+                    }
+                    path = n + path;
+                    k--;
+                }
+
+                // on to the next character
+                continue;
+
+            }
+            else if (c === '}') {
+
+                lastIndex = target.length-1;
+                index = lastIndex+1;
+
+                // negate if last index contains not operator
+                negate = target[lastIndex] === 'not';
+
+                // if negate overwrite not operator location in array
+                index = negate ? lastIndex : lastIndex+1;
+
+                // add expression
+                target[index] = new UnaryExpression({'path':path,'value':value},negate);
+
+                // reset vars
+                path = '';
+                value = '';
+
+                negate = false;
+
+                // no longer a value
+                isValue = false;
+            }
+
+            // if we are reading an expression add characters to expression
+            if (isValue) {
+                value += c;
+                continue;
+            }
+
+            // if not in expression
+            // check if goes up a level
+            if (c === '(') {
+
+                // create new empty array in target
+                target.push([]);
+
+                // remember current target (is parent)
+                parents.push(target);
+
+                // set new child slot as new target
+                target = target[target.length-1];
+
+            }
+
+            // find out if next set of characters is a logical operator
+            if (c === ' ' || i===0 || c === '(') {
+
+                operator = expression.substr(i,5).match(/and |or |not /g);
+                if (!operator) {
+                    continue;
+                }
+
+                // get reference and calculate length
+                op = operator[0];
+                ol = op.length-1;
+
+                // add operator
+                target.push(op.substring(0,ol));
+
+                // skip over operator
+                i+=ol;
+            }
+
+            // expression or level finished, time to clean up
+            if (c === ')' || i === l-1) {
+
+                //console.log('');
+                //console.log('encoutered closing statement at:',i,i===l-1);
+
+                do {
+
+                    //console.log('initial target:',target,target.length);
+
+                    //console.log('target parents:',parents);
+
+                    // get parent reference
+                    parent = parents.pop();
+
+                    //console.log('current parent:',parent);
+
+                    // if contains zero elements = ()
+                    if (target.length === 0) {
+
+                        // zero elements added revert to parent
+                        target = parent;
+
+                        continue;
+                    }
+
+                    // if more elements start the grouping process
+                    j=0;
+                    tl=target.length;
+
+                    for (;j<tl;j++) {
+
+                        if (typeof target[j] !== 'string') {
+                            continue;
+                        }
+
+                        // handle not expressions first
+                        if (target[j] === 'not') {
+                            target.splice(j,2,new UnaryExpression(target[j+1],true));
+
+                            // rewind
+                            j = -1;
+                            tl = target.length;
+                        }
+                        // handle binary expression
+                        else if (target[j+1] !== 'not') {
+                            target.splice(j-1,3,new BinaryExpression(target[j-1],target[j],target[j+1]));
+
+                            // rewind
+                            j = -1;
+                            tl = target.length;
+                        }
+
+                    }
+
+                    // if contains only one element
+                    if (target.length === 1 && parent) {
+
+                        //console.log('only one element:',target);
+
+                        // overwrite target index with target content
+                        parent[parent.length-1] = target[0];
+
+                        // set target to parent array
+                        target = parent;
+
+                    }
+
+                    //console.log('resulting target:',target);
+
+
+                }
+                while(i === l-1 && parent);
+
+
+
+
+            }
+            // end of ')' character or last index
+
+        }
+
+        //console.log('done');
+
+        //console.log(JSON.stringify(tree));
+
+        // turn into explicit expression
+        //ExpressionFormatter._makeExplicit(tree);
+
+        //console.log(JSON.stringify(tree));
+
+        // return final expression tree
+        return tree.length === 1 ? tree[0] : tree;
+
+    }
+
+};
+
+window.ExpressionFormatter = ExpressionFormatter;
+
+/**
  * @exports ModuleBase
  * @class
  * @constructor
@@ -2290,7 +2533,7 @@ var ModuleBase = function(element,options) {
 
     // if no element, throw error
     if (!element) {
-        throw new Error('BehaviorBase(element,options): "element" is a required parameter.');
+        throw new Error('ModuleBase(element,options): "element" is a required parameter.');
     }
 
     /**
@@ -2486,12 +2729,21 @@ var ModuleRegister = {
 
 };
 
-var ExpressionBase = {
+var ExpressionBase = function() {};
+
+ExpressionBase.prototype = {
 
     /**
      * @abstract
      */
     succeeds:function() {
+        // override in subclass
+    },
+
+    /**
+     * @abstract
+     */
+    getConfig:function() {
         // override in subclass
     }
 
@@ -2503,15 +2755,16 @@ var ExpressionBase = {
  * @class
  * @constructor
  * @augments ExpressionBase
- * @param {Test|null} test
+ * @param {BinaryExpression|TestBase|object} expression
+ * @param {boolean} negate
  */
-var UnaryExpression = function(test) {
+var UnaryExpression = function(expression,negate) {
 
-    /**
-     * @type {Test|null}
-     * @private
-     */
-    this._test = test;
+    this._expression = expression instanceof BinaryExpression || expression instanceof UnaryExpression ? expression : null;
+
+    this._config = this._expression ? null : expression;
+
+    this._negate = typeof negate === 'undefined' ? false : negate;
 
 };
 
@@ -2519,21 +2772,37 @@ UnaryExpression.prototype = Object.create(ExpressionBase);
 
 /**
  * Sets test reference
- * @param {Test} test
+ * @param {TestBase} test
  */
 UnaryExpression.prototype.setTest = function(test) {
-    this._test = test;
+
+    this._expression = test;
+
 };
+
+UnaryExpression.prototype.getConfig = function() {
+
+    return this._config ? [{'expression':this,'config':this._config}] : this._expression.getConfig();
+
+};
+
 
 /**
  * Tests if valid expression
- * @returns {Boolean}
+ * @returns {boolean}
  */
 UnaryExpression.prototype.succeeds = function() {
-    if (!this._test) {
+
+    if (!this._expression.succeeds) {
         return false;
     }
-    return this._test.succeeds();
+
+    return this._expression.succeeds() !== this._negate;
+
+};
+
+UnaryExpression.prototype.toString = function() {
+    return (this._negate ? 'not ' : '') + (this._expression ? this._expression.toString() : this._config.path + ':{' + this._config.value + '}');
 };
 
 
@@ -2547,23 +2816,10 @@ UnaryExpression.prototype.succeeds = function() {
  */
 var BinaryExpression = function(a,o,b) {
 
-    /**
-     * @type {UnaryExpression}
-     * @private
-     */
     this._a = a;
-
-    /**
-     * @type {string}
-     * @private
-     */
     this._o = o;
-
-    /**
-     * @type {UnaryExpression}
-     * @private
-     */
     this._b = b;
+
 };
 
 BinaryExpression.prototype = Object.create(ExpressionBase);
@@ -2581,6 +2837,16 @@ BinaryExpression.prototype.succeeds = function() {
 
         // is 'or' operator
         this._a.succeeds() || this._b.succeeds();
+
+};
+
+BinaryExpression.prototype.toString = function() {
+    return '(' + this._a.toString() + ' ' + this._o + ' ' + this._b.toString() + ')';
+};
+
+BinaryExpression.prototype.getConfig = function() {
+
+    return [this._a.getConfig(),this._b.getConfig()];
 
 };
 
@@ -2614,14 +2880,14 @@ var ConditionsManager = function(conditions,element) {
     // change event bind
     this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
 
-    // read test count
-    this._count = conditions.match(/(\:\{)/g).length;
-
-    // derive plain expression
-    var expression = this._parseCondition(conditions);
+    // returns the amount of expressions in this expression
+    this._count = ExpressionFormatter.getExpressionsCount(conditions);
 
     // load to expression tree
-    this._expression = this._loadExpression(expression);
+    this._expression = ExpressionFormatter.fromString(conditions);
+
+    // load tests to expression tree
+    this._loadExpressionTests(this._expression.getConfig());
 
 };
 
@@ -2639,239 +2905,64 @@ ConditionsManager.prototype = {
         return this._suitable;
     },
 
-
     /**
-     * Parses condition and returns an expression array
-     * @param condition {string}
-     * @returns {Array}
-     * @private
+     * Tests if conditions are suitable
+     * @fires change
+     * @public
      */
-    _parseCondition:function(condition) {
+    test:function() {
 
-        var i=0,
-            c,
-            k,
-            n,
-            operator,
-            path = '',
-            tree = [],
-            value = '',
-            isValue = false,
-            target = null,
-            flattened = null,
-            parent = null,
-            parents = [],
-            l=condition.length;
+        // test expression success state
+        var suitable = this._expression.succeeds();
 
-
-        if (!target) {
-            target = tree;
-        }
-
-        // read explicit expressions
-        for (;i<l;i++) {
-
-            c = condition.charAt(i);
-
-            // check if an expression
-            if (c === '{') {
-
-                // now reading the expression
-                isValue = true;
-
-                // reset name var
-                path = '';
-
-                // fetch name
-                k = i-2;
-                while(k>=0) {
-                    n = condition.charAt(k);
-                    if (n === ' ' || n === '(') {
-                        break;
-                    }
-                    path = n + path;
-                    k--;
-                }
-
-                // on to the next character
-                continue;
-
-            }
-            else if (c === '}') {
-
-                // add value and
-                target.push({'path':path,'value':value});
-
-                // reset vars
-                path = '';
-                value = '';
-
-                // no longer a value
-                isValue = false;
-
-                // on to the next character
-                continue;
-            }
-
-            // if we are reading an expression add characters to expression
-            if (isValue) {
-                value += c;
-                continue;
-            }
-
-            // if not in expression
-            if (c === ' ') {
-
-                // get operator
-                operator = condition.substr(i,4).match(/and|or/g);
-
-                // if operator found
-                if (operator) {
-
-                    // add operator
-                    target.push(operator[0]);
-
-                    // skip over operator
-                    i+=operator[0].length+1;
-                }
-
-                continue;
-            }
-
-            // check if goes up a level
-            if (c === '(') {
-
-                // create new empty array in target
-                target.push([]);
-
-                // remember current target (is parent)
-                parents.push(target);
-
-                // set new child slot as new target
-                target = target[target.length-1];
-
-            }
-            else if (c === ')' || i === l-1) {
-
-                // reset flattened data
-                flattened = null;
-
-                // get parent
-                parent = parents.pop();
-
-                // if only contains single element flatten array
-                if (target.length === 1 || (parent && parent.length===1 && i===l-1)) {
-                    flattened = target.concat();
-                }
-
-                // restore parent
-                target = parent;
-
-                // if data defined
-                if (flattened && target) {
-
-                    target.pop();
-
-                    for (k=0;k<flattened.length;k++) {
-                        target.push(flattened[k]);
-                    }
-
-                }
-
-            }
-        }
-
-        // derive implicit expressions
-        this._makeExplicit(tree);
-
-        // return final expression tree
-        return tree.length === 1 ? tree[0] : tree;
-    },
-
-
-    /**
-     * Turns an implicit array of expressions into an explicit array of expressions
-     * @param {Array} level
-     * @private
-     */
-    _makeExplicit:function(level) {
-
-        var i=0,l=level.length;
-
-        for (;i<l;i++) {
-
-            if (l>3) {
-
-                // binary expression found merge into new level
-                level.splice(i,3,level.slice(i,i+3));
-
-                // set new length
-                l = level.length;
-
-                // move back to start
-                i=-1;
-
-            }
-            else if (typeof level[i] !== 'string') {
-
-                // level okay, check lower level
-                this._makeExplicit(level[i]);
-
-            }
-
+        // fire changed event if environment suitability changed
+        if (suitable != this._suitable) {
+            this._suitable = suitable;
+            Observer.publish(this,'change');
         }
 
     },
 
 
     /**
-     * Turns an expression array into an actual expression tree
-     * @param expression {Array}
-     * @return {ExpressionBase}
+     * Loads test configurations contained in expressions
+     * @param {Array} configuration
      * @private
      */
-    _loadExpression:function(expression) {
+    _loadExpressionTests:function(configuration) {
 
-        // if expression is array
-        if (expression.length === 3) {
+        for (var i=0;i<configuration.length;i++) {
 
-            // is binary expression, create test
-            return new BinaryExpression(
-                this._loadExpression(expression[0]),
-                expression[1],
-                this._loadExpression(expression[2])
-            );
+            if (configuration[i] instanceof Array) {
+                this._loadExpressionTests(configuration[i]);
+                continue;
+            }
 
+            this._loadTestToExpression(configuration[i].config,configuration[i].expression);
         }
-        else {
-            return this._createUnaryExpressionFromTest(expression);
-        }
-
     },
 
 
     /**
-     * Called to create a UnaryExpression from a test and loads the test
-     * @param {object} test
-     * @return {UnaryExpression}
+     * Loads test configuration to supplied expression
+     * @param {Object} config
+     * @param {UnaryExpression} expression
      * @private
      */
-    _createUnaryExpressionFromTest:function(test) {
+    _loadTestToExpression:function(config,expression) {
 
-        var unaryExpression = new UnaryExpression(null);
-        var instance = null;
         var self = this;
 
-        require(['tests/' + test.path],function(Test){
+        require(['tests/' + config.path],function(Test){
 
             // create test instance
-            instance = new Test(test.value,self._element);
+            var instance = new Test(config.value,self._element);
 
             // add instance to test set
             self._tests.push(instance);
 
             // set test to unary expression
-            unaryExpression.setTest(instance);
+            expression.setTest(instance);
 
             // lower test count
             self._count--;
@@ -2880,7 +2971,6 @@ ConditionsManager.prototype = {
             }
         });
 
-        return unaryExpression;
     },
 
 
@@ -2922,25 +3012,6 @@ ConditionsManager.prototype = {
      */
     _onTestResultsChanged:function() {
         this.test();
-    },
-
-
-    /**
-     * Tests if conditions are suitable
-     * @fires change
-     * @public
-    */
-    test:function() {
-
-        // test expression success state
-        var suitable = this._expression.succeeds();
-
-        // fire changed event if environment suitability changed
-        if (suitable != this._suitable) {
-            this._suitable = suitable;
-            Observer.publish(this,'change');
-        }
-
     }
 
 };
@@ -3637,7 +3708,6 @@ Node.prototype.execute = function(method,params) {
  * @exports Conditioner
  * @class
  * @constructor
- * @private
  */
 var Conditioner = function() {
 
@@ -3651,6 +3721,30 @@ var Conditioner = function() {
 
     // array of all parsed nodes
     this._nodes = [];
+
+    /**
+     * Reference to Observer class
+     * @property {Observer}
+     */
+    this.Observer = Observer;
+
+    /**
+     * Reference to TestBase Class
+     * @property {TestBase}
+     */
+    this.TestBase = TestBase;
+
+    /**
+     * Reference to ModuleBase Class
+     * @property {ModuleBase}
+     */
+    this.ModuleBase = ModuleBase;
+
+    /**
+     * Reference to mergeObject method
+     * @property {function} mergeObjects
+     */
+     this.mergeObjects = Utils.mergeObjects;
 
 };
 
@@ -3800,46 +3894,7 @@ Conditioner.prototype = {
 
 };
 
-    // singleton reference
-    var _instance;
-
-    // expose
-    return {
-
-        /**
-         * Reference to Observer class
-         * @type {Observer}
-         */
-        Observer:Observer,
-
-        /**
-         * Reference to TestBase Class
-         * @memberof module:conditioner
-         */
-        TestBase:TestBase,
-
-        /**
-         * Reference to ModuleBase Class
-         * @memberof module:conditioner
-         */
-        ModuleBase:ModuleBase,
-
-        /**
-         * Reference to mergeObject method
-         * @memberof module:conditioner
-         */
-        mergeObjects:Utils.mergeObjects,
-
-        /**
-         * Returns an instance of the Conditioner
-         * @return {Conditioner}
-         */
-        getInstance:function() {
-            if (!_instance) {_instance = new Conditioner();}
-            return _instance;
-        }
-
-    };
+    return new Conditioner();
 
 });
 
@@ -3848,12 +3903,12 @@ Conditioner.prototype = {
  * Tests if an active network connection is available and monitors this connection
  * @module tests/connection
  */
-define('tests/connection',['Conditioner'],function(Conditioner){
+define('tests/connection',['conditioner'],function(conditioner){
 
     
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+    p = exports.prototype;
 
     p.handleEvent = function(e) {
         this.assert();
@@ -3869,11 +3924,11 @@ define('tests/connection',['Conditioner'],function(Conditioner){
         return expected === 'any' && navigator.onLine;
     };
 
-    return Test;
+    return exports;
 
 });
 
-define('security/StorageConsentGuard',['Conditioner','module'],function(Conditioner,module){
+define('security/StorageConsentGuard',['conditioner','module'],function(conditioner,module){
 
     
 
@@ -3905,7 +3960,7 @@ define('security/StorageConsentGuard',['Conditioner','module'],function(Conditio
         }
 
         // sets initial options
-        this._options = Conditioner.mergeObjects(this._options,options);
+        this._options = conditioner.mergeObjects(this._options,options);
 
         this._setDefaultLevel();
     };
@@ -3930,7 +3985,7 @@ define('security/StorageConsentGuard',['Conditioner','module'],function(Conditio
 
         this._level = level;
 
-        Conditioner.Observer.publish(this,'change',this._level);
+        conditioner.Observer.publish(this,'change',this._level);
     };
 
 
@@ -3949,15 +4004,15 @@ define('security/StorageConsentGuard',['Conditioner','module'],function(Conditio
  * Tests if what consent the user has given concerning cookie storage
  * @module tests/cookie
  */
-define('tests/cookies',['Conditioner','security/StorageConsentGuard'],function(Conditioner,StorageConsentGuard){
+define('tests/cookies',['conditioner','security/StorageConsentGuard'],function(conditioner,StorageConsentGuard){
 
-    var Test = Conditioner.TestBase.inherit(),
-        p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype;
 
     p.arrange = function() {
 
         var guard = StorageConsentGuard.getInstance(),self = this;
-        Conditioner.Observer.subscribe(guard,'change',function() {
+        conditioner.Observer.subscribe(guard,'change',function() {
             self.assert();
         });
 
@@ -3972,7 +4027,7 @@ define('tests/cookies',['Conditioner','security/StorageConsentGuard'],function(C
         return result ? true : false;
     };
 
-    return Test;
+    return exports;
 
 });
 
@@ -3980,12 +4035,12 @@ define('tests/cookies',['Conditioner','security/StorageConsentGuard'],function(C
  * Tests if an elements dimensions match certain expectations
  * @module tests/element
  */
-define('tests/element',['Conditioner'],function(Conditioner){
+define('tests/element',['conditioner'],function(conditioner){
 
     
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype;
 
     p.handleEvent = function(e) {
         this.assert();
@@ -4039,7 +4094,7 @@ define('tests/element',['Conditioner'],function(Conditioner){
         return false;
     };
 
-    return Test;
+    return exports;
 
 });
 
@@ -4048,12 +4103,12 @@ define('tests/element',['Conditioner'],function(Conditioner){
  * Tests if a media query is matched or not and listens to changes
  * @module tests/media
  */
-define('tests/media',['Conditioner'],function(Conditioner){
+define('tests/media',['conditioner'],function(conditioner){
 
     
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype;
 
     p.arrange = function() {
 
@@ -4085,7 +4140,7 @@ define('tests/media',['Conditioner'],function(Conditioner){
         return this._mql.matches;
     };
 
-    return Test;
+    return exports;
 
 });
 
@@ -4093,13 +4148,13 @@ define('tests/media',['Conditioner'],function(Conditioner){
  * Tests if the user is using a pointer device
  * @module tests/pointer
  */
-define('tests/pointer',['Conditioner'],function(Conditioner){
+define('tests/pointer',['conditioner'],function(conditioner){
 
     
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype,
-    MOUSE_MOVES_REQUIRED = 2;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype,
+        MOUSE_MOVES_REQUIRED = 2;
 
     p._totalMouseMoves = 0;
 
@@ -4139,7 +4194,7 @@ define('tests/pointer',['Conditioner'],function(Conditioner){
         return result === expected;
     };
 
-    return Test;
+    return exports;
 
 });
 
@@ -4147,12 +4202,12 @@ define('tests/pointer',['Conditioner'],function(Conditioner){
  * Tests if the window dimensions match certain expectations
  * @module tests/window
  */
-define('tests/window',['Conditioner'],function(Conditioner){
+define('tests/window',['conditioner'],function(conditioner){
 
     
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+        p = exports.prototype;
 
     p.handleEvent = function(e) {
         this.assert();
@@ -4182,16 +4237,16 @@ define('tests/window',['Conditioner'],function(Conditioner){
         return false;
     };
 
-    return Test;
+    return exports;
 
 });
 
-define('ui/Clock',['Conditioner'],function(Conditioner){
+define('ui/Clock',['conditioner'],function(conditioner){
 
     
 
     // reference to parent class
-    var _parent = Conditioner.ModuleBase;
+    var _parent = conditioner.ModuleBase;
 
     // Clock Class
     var exports = function(element,options) {
@@ -4201,7 +4256,7 @@ define('ui/Clock',['Conditioner'],function(Conditioner){
             'time':true
         };
 
-        // call BehaviourBase constructor
+        // call ModuleBase constructor
         _parent.call(this,element,options);
 
         // backup content
@@ -4211,7 +4266,7 @@ define('ui/Clock',['Conditioner'],function(Conditioner){
         this._tick();
     };
 
-    // Extend from BehaviourBase
+    // Extend from ModuleBase
     var p = exports.prototype = Object.create(_parent.prototype);
 
     // Update time
@@ -4239,10 +4294,10 @@ define('ui/Clock',['Conditioner'],function(Conditioner){
     };
 
     // Unload Clock behaviour
-    p._unload = function() {
+    p.unload = function() {
 
-        // call BehaviourBase unload method
-        _parent.prototype._unload.call(this);
+        // call ModuleBase unload method
+        _parent.prototype.unload.call(this);
 
         // stop ticking
         clearTimeout(this._timer);
@@ -4254,12 +4309,12 @@ define('ui/Clock',['Conditioner'],function(Conditioner){
     return exports;
 
 });
-define('ui/StorageConsentSelect',['Conditioner','security/StorageConsentGuard'],function(Conditioner,IStorageGuard){
+define('ui/StorageConsentSelect',['conditioner','security/StorageConsentGuard'],function(conditioner,IStorageGuard){
 
     
 
     // reference to parent class
-    var _parent = Conditioner.ModuleBase;
+    var _parent = conditioner.ModuleBase;
 
     // StorageConsentSelect Class
     var exports = function(element,options) {
@@ -4275,7 +4330,7 @@ define('ui/StorageConsentSelect',['Conditioner','security/StorageConsentGuard'],
             }
         };
 
-        // Call BehaviourBase constructor
+        // Call ModuleBase constructor
         _parent.call(this,element,options);
 
         // set reference to storage guard
@@ -4302,7 +4357,7 @@ define('ui/StorageConsentSelect',['Conditioner','security/StorageConsentGuard'],
 
     };
 
-    // Extend from BehaviourBase
+    // Extend from ModuleBase
     var p = exports.prototype = Object.create(_parent.prototype);
 
     // Handle events
@@ -4317,10 +4372,10 @@ define('ui/StorageConsentSelect',['Conditioner','security/StorageConsentGuard'],
     };
 
     // Unload StorageConsentSelect behaviour
-    p._unload = function() {
+    p.unload = function() {
 
-        // call BehaviourBase unload method
-        _parent.prototype._unload.call(this);
+        // call ModuleBase unload method
+        _parent.prototype.unload.call(this);
 
         // remove event listener
         this._element.querySelector('select').removeEventListener('change',this);

@@ -47,13 +47,10 @@
 
         <h3>Javascript Kickoff</h3>
 
-        <p>To initiate the <code>Conditioner</code> request an instance and have it <code>loadModules</code> passing the document as the context.</p>
+        <p>To initiate the <code>conditioner</code> set it's options have it <code>loadModules</code> passing the document as the context.</p>
 
-<pre><code data-language="javascript">// get instance of conditioner
-var demo = Conditioner.getInstance();
-
-// set custom module options
-demo.setOptions({
+<pre><code data-language="javascript">// set custom module options
+conditioner.setOptions({
     'modules':{
         'ui/Map':'IMap',
         'ui/Clock':'IClock',
@@ -76,8 +73,8 @@ demo.setOptions({
     }
 });
 
-// apply behavior to document scope
-demo.loadModules(document);
+// Load all modules contained within the document scope
+conditioner.loadModules(document);
 </code></pre>
 
 
@@ -131,14 +128,13 @@ demo.loadModules(document);
 
 
         <h3>Based on multiple conditions</h3>
-        <p>Map will be active as long as there is any network connection, the media query is matched and the element is in view.</p>
-        <pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions="connection:{any} and media:{(min-width:40em)} and element:{seen}"&gt; ... &lt;/div&gt;</code></pre>
+        <p>Map will be active as long as there is any network connection, the media query is matched and the element is in view. If there is no media query support, the map may also be loaded.</p>
+        <pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions="connection:{any} and media:{(min-width:40em)} and element:{seen} or not media:{supported}"&gt; ... &lt;/div&gt;</code></pre>
         <div class="component">
             <div data-module="IMap"
                  data-priority="2"
-                 data-conditions="connection:{any} and media:{(min-width:40em)} and element:{seen}">Map is inactive</div>
+                 data-conditions="(connection:{any} and media:{(min-width:40em)} and element:{seen}) or not media:{supported}">Map is inactive</div>
         </div>
-
 
         <h3>Based on custom conditions</h3>
         <p>The first Clock will be activated the moment all cookies are allowed. The second Clock is only inactive when the user accepts no cookies.</p>
@@ -205,20 +201,17 @@ demo.loadModules(document);
         requirejs.config({
             baseUrl:'js/',
             paths:{
-                Conditioner:'../../dist/conditioner'
+                conditioner:'../../dist/conditioner'
             }
         });
 
         // Load Conditioner and default set of Tests
-        requirejs(['Conditioner'],
+        requirejs(['conditioner'],
 
-            function(Conditioner) {
-
-                // Get instance of conditioner
-                var demo = Conditioner.getInstance();
+            function(conditioner) {
 
                 // Set custom module options
-                demo.setOptions({
+                conditioner.setOptions({
                     'modules':{
                         'ui/Map':'IMap',
                         'ui/Clock':'IClock',
@@ -241,8 +234,8 @@ demo.loadModules(document);
                     }
                 });
 
-                // Apply behavior to document scope
-                demo.loadModules(document);
+                // Load all modules contained within the document scope
+                conditioner.loadModules(document);
 
             }
 
@@ -250,12 +243,14 @@ demo.loadModules(document);
 
         </script>
 
-
     </body>
 </html>
-  });
 
-                // Apply behavior to document scope
+
+
+
+
+               // Apply behavior to document scope
                 demo.loadModules(document);
 
             }

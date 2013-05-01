@@ -1,9 +1,9 @@
-define(['Conditioner'],function(Conditioner){
+define(['conditioner'],function(conditioner){
 
-    "use strict";
+    'use strict';
 
     // reference to parent class
-    var _parent = Conditioner.ModuleBase;
+    var _parent = conditioner.ModuleBase;
 
     // Map Class
     var exports = function(element) {
@@ -13,7 +13,7 @@ define(['Conditioner'],function(Conditioner){
             return;
         }
 
-        // Call BehaviourBase constructor
+        // Call ModuleBase constructor
         _parent.call(this,element);
 
         // event binds
@@ -30,7 +30,7 @@ define(['Conditioner'],function(Conditioner){
         navigator.geolocation.getCurrentPosition(this._onSuccessBind,this._onErrorBind,{timeout:5000});
     };
 
-    // Extend from BehaviourBase
+    // Extend from ModuleBase
     var p = exports.prototype = Object.create(_parent.prototype);
 
     // get position success
@@ -54,10 +54,10 @@ define(['Conditioner'],function(Conditioner){
     };
 
     // Unload Map behaviour
-    p._unload = function() {
+    p.unload = function() {
 
-        // call BehaviourBase unload method
-        _parent.prototype._unload.call(this);
+        // call ModuleBase unload method
+        _parent.prototype.unload.call(this);
 
         // restore content
         this._element.innerHTML = this._inner;

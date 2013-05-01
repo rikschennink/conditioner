@@ -3,12 +3,12 @@
  * Tests if an active network connection is available and monitors this connection
  * @module tests/connection
  */
-define(['Conditioner'],function(Conditioner){
+define(['conditioner'],function(conditioner){
 
     'use strict';
 
-    var Test = Conditioner.TestBase.inherit(),
-    p = Test.prototype;
+    var exports = conditioner.TestBase.inherit(),
+    p = exports.prototype;
 
     p.handleEvent = function(e) {
         this.assert();
@@ -24,6 +24,6 @@ define(['Conditioner'],function(Conditioner){
         return expected === 'any' && navigator.onLine;
     };
 
-    return Test;
+    return exports;
 
 });

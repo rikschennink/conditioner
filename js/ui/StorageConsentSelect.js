@@ -1,9 +1,9 @@
-define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,IStorageGuard){
+define(['conditioner','security/StorageConsentGuard'],function(conditioner,IStorageGuard){
 
     'use strict';
 
     // reference to parent class
-    var _parent = Conditioner.ModuleBase;
+    var _parent = conditioner.ModuleBase;
 
     // StorageConsentSelect Class
     var exports = function(element,options) {
@@ -19,7 +19,7 @@ define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,IStor
             }
         };
 
-        // Call BehaviourBase constructor
+        // Call ModuleBase constructor
         _parent.call(this,element,options);
 
         // set reference to storage guard
@@ -46,7 +46,7 @@ define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,IStor
 
     };
 
-    // Extend from BehaviourBase
+    // Extend from ModuleBase
     var p = exports.prototype = Object.create(_parent.prototype);
 
     // Handle events
@@ -61,10 +61,10 @@ define(['Conditioner','security/StorageConsentGuard'],function(Conditioner,IStor
     };
 
     // Unload StorageConsentSelect behaviour
-    p._unload = function() {
+    p.unload = function() {
 
-        // call BehaviourBase unload method
-        _parent.prototype._unload.call(this);
+        // call ModuleBase unload method
+        _parent.prototype.unload.call(this);
 
         // remove event listener
         this._element.querySelector('select').removeEventListener('change',this);
