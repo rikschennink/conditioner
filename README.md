@@ -6,7 +6,7 @@ ConditionerJS
 Introduction
 --------------------------------
 
-Conditioner is a JavaScript framework based on requirejs, it allows you to conditionally load your javascript modules based on certain environment requirements.
+ConditionerJS is a JavaScript framework based on [requirejs](http://requirejs.org), it allows you to conditionally load your javascript modules based on certain environment requirements.
 
 Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map.
 
