@@ -1,42 +1,24 @@
-// bind method
-if (Function.prototype.bind == null) {
-
-    Function.prototype.bind = (function (slice){
-
-        // (C) WebReflection - Mit Style License
-        function bind(context) {
-
-            var self = this; // "trapped" function reference
-
-            // only if there is more than an argument
-            // we are interested into more complex operations
-            // this will speed up common bind creation
-            // avoiding useless slices over arguments
-            if (1 < arguments.length) {
-                // extra arguments to send by default
-                var $arguments = slice.call(arguments, 1);
-                return function () {
-                    return self.apply(
-                        context,
-                        // thanks @kangax for this suggestion
-                        arguments.length ?
-                            // concat arguments with those received
-                            $arguments.concat(slice.call(arguments)) :
-                            // send just arguments, no concat, no slice
-                            $arguments
-                    );
-                };
-            }
-            // optimized callback
-            return function () {
-                // speed up when function is called without arguments
-                return arguments.length ? self.apply(context, arguments) : self.call(context);
-            };
+// https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function/bind
+if (!Function.prototype.bind) {
+    Function.prototype.bind = function (oThis) {
+        if (typeof this !== "function") {
+            // closest thing possible to the ECMAScript 5 internal IsCallable function
+            throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
         }
 
-        // the named function
-        return bind;
+        var aArgs = Array.prototype.slice.call(arguments, 1),
+            fToBind = this,
+            fNOP = function () {},
+            fBound = function () {
+                return fToBind.apply(this instanceof fNOP && oThis
+                    ? this
+                    : oThis,
+                    aArgs.concat(Array.prototype.slice.call(arguments)));
+            };
 
-    }(Array.prototype.slice));
+        fNOP.prototype = this.prototype;
+        fBound.prototype = new fNOP();
 
+        return fBound;
+    };
 }

@@ -81,7 +81,7 @@ ConditionsManager.prototype = {
 
         for (var i=0;i<configuration.length;i++) {
 
-            if (configuration[i] instanceof Array) {
+            if (Array.isArray(configuration[i])) {
                 this._loadExpressionTests(configuration[i]);
                 continue;
             }

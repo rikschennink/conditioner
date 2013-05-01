@@ -49,7 +49,7 @@ var Utils = (function(){
                 src.forEach(function(e, i) {
 
                     if (typeof e === 'object') {
-                        dst[i] = mergeObjects(target[i], e);
+                        dst[i] = exports.mergeObjects(target[i], e);
                     }
                     else {
                         if (target.indexOf(e) === -1) {

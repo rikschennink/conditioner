@@ -129,7 +129,7 @@ conditioner.loadModules(document);
 
         <h3>Based on multiple conditions</h3>
         <p>Map will be active as long as there is any network connection, the media query is matched and the element is in view. If there is no media query support, the map may also be loaded.</p>
-        <pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions="connection:{any} and media:{(min-width:40em)} and element:{seen} or not media:{supported}"&gt; ... &lt;/div&gt;</code></pre>
+        <pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions="(connection:{any} and media:{(min-width:40em)} and element:{seen}) or not media:{supported}"&gt; ... &lt;/div&gt;</code></pre>
         <div class="component">
             <div data-module="IMap"
                  data-priority="2"
@@ -184,15 +184,20 @@ conditioner.loadModules(document);
         <script src="js/shim/JSON.js"></script>
         <script src="js/shim/ContentLoaded.js"></script>
         <script src="js/shim/EventListener.js"></script>
-        <script src="js/shim/IndexOf.js"></script>
+        <script src="js/shim/Array.isArray.js"></script>
+        <script src="js/shim/Array.indexOf.js"></script>
+        <script src="js/shim/Array.forEach.js"></script>
         <script src="js/shim/Object.create.js"></script>
+        <script src="js/shim/Object.keys.js"></script>
         <script src="js/shim/Bind.js"></script>
         <script src="js/shim/matchMedia/matchMedia.js"></script>
         <script src="js/shim/matchMedia/matchMedia.addListener.js"></script>
 
 
-        <!-- Load minimized library (require + modules) -->
-        <script src="js.min/built.js"></script>
+        <!-- Load minimized library (require + modules)
+        <script src="js.min/built.js"></script>-->
+
+        <script src="js/lib/jrburke/require.js"></script>
 
 
         <script>
