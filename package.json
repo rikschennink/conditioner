@@ -1,7 +1,7 @@
 {
   "name": "conditioner",
   "version": "0.8.5",
-  "description": "ConditionerJS, detangle your javascript and make it shine.",
+  "description": "Conditioner, detangles your javascript and makes it shine.",
   "homepage": "https://github.com/rikschennink/conditioner",
   "main": "index.js",
   "scripts": {

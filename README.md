@@ -1,4 +1,4 @@
-ConditionerJS
+Conditioner
 ================================
 
 **This is a work in progress, see the issues section for work to be done**
@@ -6,13 +6,13 @@ ConditionerJS
 Introduction
 --------------------------------
 
-ConditionerJS is a JavaScript framework based on [requirejs](http://requirejs.org), it allows you to conditionally load your javascript modules based on certain environment requirements.
+Conditioner is a JavaScript framework based on [requirejs](http://requirejs.org), it allows you to conditionally load your javascript modules based on certain environment requirements.
 
 Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map.
 
 It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map.
 
-An example setup using ConditionerJS:
+An example setup using Conditioner:
 
 ```html
 <div data-module="ui/Map" data-conditions="media:{(min-width:30em)}">
@@ -71,7 +71,7 @@ The `data-options` attribute allows you to set specific options for the module, 
 <div data-module="ui/Map" data-options='{"zoom":10}'> ... </div>
 ```
 
-It's also possible to define options at page level. ConditionerJS will automatically merge page level options with node level options before passing them to the module (node level options will take precedence over page level options).
+It's also possible to define options at page level. Conditioner will automatically merge page level options with node level options before passing them to the module (node level options will take precedence over page level options).
 ```javascript
 conditioner.setOptions({
     'modules':{
