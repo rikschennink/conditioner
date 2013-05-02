@@ -56,6 +56,15 @@ The `data-conditions` attributes allows you to control the conditions under whic
 <div data-module="ui/Map" data-conditions="media:{(min-width:30em)} or not media:{supported}"> ... </div>
 ```
 
+Tests within these conditions are formatted like this: `<test_name>:{<expected_value>}` 
+
+Use multiple tests together with the `and` or `or` operators. 
+
+Use brackets to override operator precedence: `foo:{bar} or (foo:{bar} and foo:{bar})`. 
+
+Use the `not` operator to negate a test: `not (foo:{bar} and foo:{bar})`.
+
+
 #### data-options
 The `data-options` attribute allows you to set specific options for the module, these options are then passed to the the module the moment it is initialized.
 ```html
@@ -68,7 +77,7 @@ conditioner.setOptions({
     'modules':{
         'ui/Map':{
             'options':{
-                'zoom':8
+                'zoom':5
             }
         }
     }
@@ -76,7 +85,7 @@ conditioner.setOptions({
 ```
 
 #### data-priority
-The `data-priority` attributes allows you to control the order in which a module is loaded. Positive numbers give a module priority over other modules, a negative number moves it to the back of the initialisation queue.
+The `data-priority` attributes allows you to control the order in which a node is handled. Positive numbers give a node priority over other nodes, a negative number moves it to the back of the initialisation queue.
 ```html
 <div data-module="ui/Map" data-priority="1"> ... </div>
 ```
