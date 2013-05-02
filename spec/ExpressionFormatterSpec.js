@@ -1,7 +1,25 @@
 
 'use strict';
 
-describe('ExpressionFormatter.toExpressionTree',function(){
+describe('ExpressionFormatter.getExpressionsCount',function(){
+
+    it('will return the correct amount of sub expressions',function(){
+
+        // arrange
+        var expression = 'foo:{bar:1} and (foo:{bar:2_1} or foo:{bar:2_2})';
+
+        // assert
+        var result = ExpressionFormatter.getExpressionsCount(expression);
+
+        // act
+        expect(result).toBe(3);
+
+    });
+
+});
+
+
+describe('ExpressionFormatter.fromString',function(){
 
 
     var parse = function(str) {

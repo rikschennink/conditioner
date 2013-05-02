@@ -31,7 +31,8 @@ module.exports = function(grunt) {
                 '<%= path.conditioner %>/ExpressionBase.js',
                 '<%= path.conditioner %>/UnaryExpression.js',
                 '<%= path.conditioner %>/BinaryExpression.js',
-                '<%= path.conditioner %>/ExpressionFormatter.js'
+                '<%= path.conditioner %>/ExpressionFormatter.js',
+                '<%= path.conditioner %>/Node.js'
             ],
             options:{
                 specs:'<%= path.spec %>/*.js',
@@ -166,7 +167,7 @@ module.exports = function(grunt) {
     grunt.registerTask('quick',['concat','copy','uglify','requirejs']);
 
     // task for building the library
-    grunt.registerTask('lib',['concat','copy','uglify','requirejs','jsdoc']);
+    grunt.registerTask('lib',['concat','copy','uglify','requirejs']);
 
     // task for optimizing the demo
     grunt.registerTask('demo',['requirejs']);

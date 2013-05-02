@@ -7,6 +7,10 @@
  */
 var Node = function(element) {
 
+    if (!element) {
+        throw new Error('Node(element): "element" is a required parameter.');
+    }
+
     // set element reference
     this._element = element;
 
