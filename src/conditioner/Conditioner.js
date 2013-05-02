@@ -8,9 +8,6 @@ var Conditioner = function() {
 
     // options for conditioner
     this._options = {
-        'attribute':{
-            'module':'data-module'
-        },
         'modules':{}
     };
 
@@ -89,7 +86,7 @@ Conditioner.prototype = {
         }
 
         // register vars and get elements
-        var elements = context.querySelectorAll('[' + this._options.attribute.module + ']'),
+        var elements = context.querySelectorAll('[data-module]'),
             l = elements.length,
             i = 0,
             nodes = [],

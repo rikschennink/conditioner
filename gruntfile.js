@@ -36,7 +36,10 @@ module.exports = function(grunt) {
             ],
             options:{
                 specs:'<%= path.spec %>/*.js',
-                helpers:'<%= path.spec %>/lib/require.js'
+                vendor:'<%= path.spec %>/lib/require.js',
+                helpers:[
+                    '<%= path.spec %>/shim/Function.bind.js'
+                ]
             }
         },
         concat:{

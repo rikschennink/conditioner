@@ -60,7 +60,13 @@ Node.prototype.init = function() {
     // parse element module attributes
     this._moduleControllers = this._createModuleControllers();
 
+    // initialize
     var i=0,l=this._moduleControllers.length,mc;
+
+    // if no module controllers found
+    if (!l) {
+        throw new Error('Node.init(): "element" has to have a "data-module" attribute containing a reference to a Module.');
+    }
 
     // listen to ready events on module controllers
     for (;i<l;i++) {
@@ -246,9 +252,9 @@ Node.prototype._getSuitableActiveModuleController = function() {
  */
 Node.prototype._createModuleControllers = function() {
 
-    var result = [];
-    var config = this._element.getAttribute('data-module');
-    var advanced = config.charAt(0) === '[';
+    var result = [],
+        config = this._element.getAttribute('data-module') || '',
+        advanced = config.charAt(0) === '[';
 
     if (advanced) {
 
@@ -287,7 +293,7 @@ Node.prototype._createModuleControllers = function() {
 
 
     }
-    else {
+    else if (config.length) {
 
         // add default module controller
         result.push(
