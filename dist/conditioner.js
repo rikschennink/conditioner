@@ -1,4 +1,4 @@
-// conditioner v0.8.5 - ConditionerJS, detangle your javascript and make it shine.
+// conditioner v0.8.5 - Conditioner, detangles your javascript and makes it shine.
 // Copyright (c) 2013 Rik Schennink - https://github.com/rikschennink/conditioner
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
