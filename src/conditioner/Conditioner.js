@@ -119,13 +119,14 @@ Conditioner.prototype = {
         // higher numbers go first,
         // then 0 (or no priority assigned),
         // then negative numbers
+        // - (it's actually the other way around but that's because of the reversed while loop)
         nodes.sort(function(a,b){
-            return b.getPriority() - a.getPriority();
+            return a.getPriority() - b.getPriority();
         });
 
-        // initialize modules depending on assigned priority
-        l = nodes.length;
-        for (i=0; i<l; i++) {
+        // initialize modules depending on assigned priority (in reverse, but priority is reversed as well so all is okay)
+        i = nodes.length;
+        while (--i >= 0) {
             nodes[i].init();
         }
 

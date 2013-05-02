@@ -19,10 +19,10 @@ var Observer = {
         }
 
         // check if already added
-        var test,i=0,l = obj._subscriptions;
+        var test,i=0,l=obj._subscriptions;
         for (; i<l; i++) {
             test = obj._subscriptions[i];
-            if (test.type == type && test.fn == fn) {
+            if (test.type === type && test.fn === fn) {
                 return;
             }
         }
@@ -46,10 +46,10 @@ var Observer = {
         }
 
         // find and remove
-        var test,i;
-        for (i = obj._subscriptions.length-1; i >= 0; i--) {
+        var test,i=obj._subscriptions.length;
+        while (--i >= 0) {
             test = obj._subscriptions[i];
-            if (test.type == type && test.fn == fn) {
+            if (test.type === type && test.fn === fn) {
                 obj._subscriptions.splice(i,1);
                 break;
             }
@@ -72,9 +72,9 @@ var Observer = {
 
         // find and execute callback
         var subscriptions=[],subscription,i=0,l = obj._subscriptions.length;
-        for (;i<l; i++) {
+        for (;i<l;i++) {
             subscription = obj._subscriptions[i];
-            if (subscription.type == type) {
+            if (subscription.type === type) {
                 subscriptions.push(subscription);
             }
         }

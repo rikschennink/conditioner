@@ -63,7 +63,7 @@ Node.prototype.init = function() {
 
         mc = this._moduleControllers[i];
 
-        // if module already ready, jump to onready method and don't bind listener
+        // if module already ready, jump to _onModuleReady method and don't bind listener
         if (mc.isReady()) {
             this._onModuleReady();
             continue;
@@ -83,15 +83,11 @@ Node.prototype.init = function() {
  */
 Node.prototype._onModuleReady = function() {
 
-    var i=0,l=this._moduleControllers.length,mc;
+    var i=this._moduleControllers.length;
 
     // check if all modules ready, if so, call on modules ready
-    for (;i<l;i++) {
-
-        mc = this._moduleControllers[i];
-
-        // if module controller is no tready, stop here, we wait for all module controllers to be ready
-        if (!mc.isReady()) {
+    while (--i >= 0) {
+        if (!this._moduleControllers[i].isReady()) {
             return;
         }
     }
@@ -248,7 +244,7 @@ Node.prototype._createModuleControllers = function() {
 
     var result = [];
     var config = this._element.getAttribute('data-module');
-    var advanced = config.charAt(0) == '[';
+    var advanced = config.charAt(0) === '[';
 
     if (advanced) {
 

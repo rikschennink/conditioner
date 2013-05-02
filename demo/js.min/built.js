@@ -2164,10 +2164,10 @@ var Observer = {
         }
 
         // check if already added
-        var test,i=0,l = obj._subscriptions;
+        var test,i=0,l=obj._subscriptions;
         for (; i<l; i++) {
             test = obj._subscriptions[i];
-            if (test.type == type && test.fn == fn) {
+            if (test.type === type && test.fn === fn) {
                 return;
             }
         }
@@ -2191,10 +2191,10 @@ var Observer = {
         }
 
         // find and remove
-        var test,i;
-        for (i = obj._subscriptions.length-1; i >= 0; i--) {
+        var test,i=obj._subscriptions.length;
+        while (--i >= 0) {
             test = obj._subscriptions[i];
-            if (test.type == type && test.fn == fn) {
+            if (test.type === type && test.fn === fn) {
                 obj._subscriptions.splice(i,1);
                 break;
             }
@@ -2217,9 +2217,9 @@ var Observer = {
 
         // find and execute callback
         var subscriptions=[],subscription,i=0,l = obj._subscriptions.length;
-        for (;i<l; i++) {
+        for (;i<l;i++) {
             subscription = obj._subscriptions[i];
-            if (subscription.type == type) {
+            if (subscription.type === type) {
                 subscriptions.push(subscription);
             }
         }
@@ -2816,10 +2816,18 @@ BinaryExpression.prototype.succeeds = function() {
 
 };
 
+/**
+ * Outputs the expression as a string
+ * @returns {string}
+ */
 BinaryExpression.prototype.toString = function() {
     return '(' + this._a.toString() + ' ' + this._o + ' ' + this._b.toString() + ')';
 };
 
+/**
+ * Returns the configuration of this expression
+ * @returns {Array}
+ */
 BinaryExpression.prototype.getConfig = function() {
 
     return [this._a.getConfig(),this._b.getConfig()];
@@ -3191,7 +3199,7 @@ ModuleController.prototype._onLoad = function() {
         options;
 
     // parse element options
-    if (typeof this._options.options == 'string') {
+    if (typeof this._options.options === 'string') {
         try {
             elementOptions = JSON.parse(this._options.options);
         }
@@ -3261,8 +3269,6 @@ ModuleController.prototype.unload = function() {
  * @public
  */
 ModuleController.prototype.execute = function(method,params) {
-
-    // todo: always return object containing status code and response
 
     // if behavior not loaded
     if (!this._moduleInstance) {
@@ -3351,7 +3357,7 @@ Node.prototype.init = function() {
 
         mc = this._moduleControllers[i];
 
-        // if module already ready, jump to onready method and don't bind listener
+        // if module already ready, jump to _onModuleReady method and don't bind listener
         if (mc.isReady()) {
             this._onModuleReady();
             continue;
@@ -3371,15 +3377,11 @@ Node.prototype.init = function() {
  */
 Node.prototype._onModuleReady = function() {
 
-    var i=0,l=this._moduleControllers.length,mc;
+    var i=this._moduleControllers.length;
 
     // check if all modules ready, if so, call on modules ready
-    for (;i<l;i++) {
-
-        mc = this._moduleControllers[i];
-
-        // if module controller is no tready, stop here, we wait for all module controllers to be ready
-        if (!mc.isReady()) {
+    while (--i >= 0) {
+        if (!this._moduleControllers[i].isReady()) {
             return;
         }
     }
@@ -3536,7 +3538,7 @@ Node.prototype._createModuleControllers = function() {
 
     var result = [];
     var config = this._element.getAttribute('data-module');
-    var advanced = config.charAt(0) == '[';
+    var advanced = config.charAt(0) === '[';
 
     if (advanced) {
 
@@ -3800,13 +3802,14 @@ Conditioner.prototype = {
         // higher numbers go first,
         // then 0 (or no priority assigned),
         // then negative numbers
+        // - (it's actually the other way around but that's because of the reversed while loop)
         nodes.sort(function(a,b){
-            return b.getPriority() - a.getPriority();
+            return a.getPriority() - b.getPriority();
         });
 
-        // initialize modules depending on assigned priority
-        l = nodes.length;
-        for (i=0; i<l; i++) {
+        // initialize modules depending on assigned priority (in reverse, but priority is reversed as well so all is okay)
+        i = nodes.length;
+        while (--i >= 0) {
             nodes[i].init();
         }
 
@@ -3819,7 +3822,7 @@ Conditioner.prototype = {
 
 
     /**
-     * Returns ModuleControllers matching the selector
+     * Returns the first Node matching the selector
      * @param {string} selector - Selector to match the nodes to
      * @return {Node} First matched node
      */
@@ -3829,7 +3832,7 @@ Conditioner.prototype = {
 
 
     /**
-     * Returns all ModuleControllers matching the selector
+     * Returns all nodes matching the selector
      * @param {string} selector - Optional selector to match the nodes to
      * @return {Array} Array containing matched nodes
      */
@@ -4135,7 +4138,7 @@ define('tests/pointer',['conditioner'],function(conditioner){
     p._totalMouseMoves = 0;
 
     p.handleEvent = function(e) {
-        if (e.type == 'mousemove') {
+        if (e.type === 'mousemove') {
             this._totalMouseMoves++;
             if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
                 document.removeEventListener('mousemove',this,false);

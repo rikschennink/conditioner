@@ -13,7 +13,7 @@ define(['conditioner'],function(conditioner){
     p._totalMouseMoves = 0;
 
     p.handleEvent = function(e) {
-        if (e.type == 'mousemove') {
+        if (e.type === 'mousemove') {
             this._totalMouseMoves++;
             if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
                 document.removeEventListener('mousemove',this,false);

@@ -33,10 +33,18 @@ BinaryExpression.prototype.succeeds = function() {
 
 };
 
+/**
+ * Outputs the expression as a string
+ * @returns {string}
+ */
 BinaryExpression.prototype.toString = function() {
     return '(' + this._a.toString() + ' ' + this._o + ' ' + this._b.toString() + ')';
 };
 
+/**
+ * Returns the configuration of this expression
+ * @returns {Array}
+ */
 BinaryExpression.prototype.getConfig = function() {
 
     return [this._a.getConfig(),this._b.getConfig()];
