@@ -127,11 +127,12 @@ module.exports = function(grunt) {
                         'tests/pointer',
                         'tests/window',
 
+                        // 'ui/Map' not included to test conditional loading
+
                         'ui/Clock',
                         'ui/StorageConsentSelect',
                         'security/StorageConsentGuard'
                     ]
-
                 }
             }
         },
