@@ -138,7 +138,7 @@ Conditioner.prototype = {
 
 
     /**
-     * Returns ModuleControllers matching the selector
+     * Returns the first Node matching the selector
      * @param {string} selector - Selector to match the nodes to
      * @return {Node} First matched node
      */
@@ -148,7 +148,7 @@ Conditioner.prototype = {
 
 
     /**
-     * Returns all ModuleControllers matching the selector
+     * Returns all nodes matching the selector
      * @param {string} selector - Optional selector to match the nodes to
      * @return {Array} Array containing matched nodes
      */

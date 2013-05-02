@@ -197,7 +197,7 @@ ModuleController.prototype._onLoad = function() {
         options;
 
     // parse element options
-    if (typeof this._options.options == 'string') {
+    if (typeof this._options.options === 'string') {
         try {
             elementOptions = JSON.parse(this._options.options);
         }
@@ -267,8 +267,6 @@ ModuleController.prototype.unload = function() {
  * @public
  */
 ModuleController.prototype.execute = function(method,params) {
-
-    // todo: always return object containing status code and response
 
     // if behavior not loaded
     if (!this._moduleInstance) {
