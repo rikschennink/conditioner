@@ -5,7 +5,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width">
 
-        <title>ConditionerJS Demo</title>
+        <title>Conditioner Demo</title>
 
         <link href="css/rainbow/github.css" rel="stylesheet">
         <link href="css/styles.css" rel="stylesheet">
@@ -14,20 +14,20 @@
     <body>
 
 
-        <h1>ConditionerJS Demo</h1>
+        <h1>Conditioner Demo</h1>
 
         <h2>Introduction</h2>
-        <p>ConditionerJS is a JavaScript framework based on <a href="http://requirejs.org">RequireJS</a>, it allows you to conditionally load your javascript modules based on certain environment requirements.</p>
+        <p>Conditioner is a JavaScript framework based on <a href="http://requirejs.org">RequireJS</a>, it allows you to conditionally load your javascript modules based on certain environment requirements.</p>
 
         <p>Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map.</p>
 
         <p>It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map.</p>
 
-        <p>An example setup using ConditionerJS:</p>
+        <p>An example setup using Conditioner:</p>
 
         <pre><code data-language="html">&lt;div data-module="ui/Map" data-conditions="media:{(min-width:30em)}"&gt; ... &lt;/div&gt;</code></pre>
 
-        <p>ConditionerJS initialisation:</p>
+        <p>Conditioner initialisation:</p>
 
         <pre><code data-language="javascript">conditioner.loadModules(document);</code></pre>
 
@@ -154,47 +154,47 @@
 
         <script>
 
-            // setup requirejs
-            requirejs.config({
-                baseUrl:'js/',
-                paths:{
-                    conditioner:'../../dist/conditioner'
-                }
-            });
+        // setup requirejs
+        requirejs.config({
+            baseUrl:'js/',
+            paths:{
+                conditioner:'../../dist/conditioner'
+            }
+        });
 
-            // load conditioner
-            requirejs(['conditioner'],function(conditioner) {
+        // load conditioner
+        requirejs(['conditioner'],function(conditioner) {
 
-                    // setup modules
-                    conditioner.setOptions({
-                        'modules':{
-                            'ui/Map':'IMap',
-                            'ui/Clock':'IClock',
-                            'ui/StorageConsentSelect':{
-                                'alias':'IStorageConsentSelect',
-                                'options':{
-                                    'label':{
-                                        'level':{
-                                            'incognito':'Incognito'
-                                        }
+                // setup modules
+                conditioner.setOptions({
+                    'modules':{
+                        'ui/Map':'IMap',
+                        'ui/Clock':'IClock',
+                        'ui/StorageConsentSelect':{
+                            'alias':'IStorageConsentSelect',
+                            'options':{
+                                'label':{
+                                    'level':{
+                                        'incognito':'Incognito'
                                     }
                                 }
-                            },
-                            'security/StorageConsentGuard':{
-                                'options':{
-                                    'levels':['all','incognito','none'],
-                                    'initial':'none'
-                                }
+                            }
+                        },
+                        'security/StorageConsentGuard':{
+                            'options':{
+                                'levels':['all','incognito','none'],
+                                'initial':'none'
                             }
                         }
-                    });
+                    }
+                });
 
-                    // load all modules found within the document scope
-                    conditioner.loadModules(document);
+                // load all modules found within the document scope
+                conditioner.loadModules(document);
 
-                }
+            }
 
-            );
+        );
 
         </script>
 
