@@ -53,14 +53,15 @@ module.exports = function(grunt) {
 
                     '<%= path.conditioner %>/Utils.js',
                     '<%= path.conditioner %>/Observer.js',
+
+                    '<%= path.conditioner %>/ExpressionBase.js',
+                    '<%= path.conditioner %>/UnaryExpression.js',
+                    '<%= path.conditioner %>/BinaryExpression.js',
                     '<%= path.conditioner %>/ExpressionFormatter.js',
 
                     '<%= path.conditioner %>/ModuleBase.js',
                     '<%= path.conditioner %>/TestBase.js',
                     '<%= path.conditioner %>/ModuleRegister.js',
-                    '<%= path.conditioner %>/ExpressionBase.js',
-                    '<%= path.conditioner %>/UnaryExpression.js',
-                    '<%= path.conditioner %>/BinaryExpression.js',
                     '<%= path.conditioner %>/ConditionsManager.js',
                     '<%= path.conditioner %>/ModuleController.js',
                     '<%= path.conditioner %>/Node.js',
@@ -166,8 +167,6 @@ module.exports = function(grunt) {
 
     // test
     grunt.registerTask('test',['jshint','jasmine']);
-
-    grunt.registerTask('quick',['concat','copy','uglify','requirejs']);
 
     // task for building the library
     grunt.registerTask('lib',['concat','copy','uglify','requirejs']);

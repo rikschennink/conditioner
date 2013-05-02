@@ -256,6 +256,136 @@ var Observer = {
 };
 
 
+var ExpressionBase = function() {};
+
+ExpressionBase.prototype = {
+
+    /**
+     * @abstract
+     */
+    succeeds:function() {
+        // override in subclass
+    },
+
+    /**
+     * @abstract
+     */
+    getConfig:function() {
+        // override in subclass
+    }
+
+};
+
+
+
+/**
+ * @class
+ * @constructor
+ * @augments ExpressionBase
+ * @param {BinaryExpression|TestBase|object} expression
+ * @param {boolean} negate
+ */
+var UnaryExpression = function(expression,negate) {
+
+    this._expression = expression instanceof BinaryExpression || expression instanceof UnaryExpression ? expression : null;
+
+    this._config = this._expression ? null : expression;
+
+    this._negate = typeof negate === 'undefined' ? false : negate;
+
+};
+
+UnaryExpression.prototype = Object.create(ExpressionBase);
+
+/**
+ * Sets test reference
+ * @param {TestBase} test
+ */
+UnaryExpression.prototype.setTest = function(test) {
+
+    this._expression = test;
+
+};
+
+UnaryExpression.prototype.getConfig = function() {
+
+    return this._config ? [{'expression':this,'config':this._config}] : this._expression.getConfig();
+
+};
+
+
+/**
+ * Tests if valid expression
+ * @returns {boolean}
+ */
+UnaryExpression.prototype.succeeds = function() {
+
+    if (!this._expression.succeeds) {
+        return false;
+    }
+
+    return this._expression.succeeds() !== this._negate;
+
+};
+
+UnaryExpression.prototype.toString = function() {
+    return (this._negate ? 'not ' : '') + (this._expression ? this._expression.toString() : this._config.path + ':{' + this._config.value + '}');
+};
+
+
+/**
+ * @class
+ * @constructor
+ * @augments ExpressionBase
+ * @param {UnaryExpression} a
+ * @param {string} o
+ * @param {UnaryExpression} b
+ */
+var BinaryExpression = function(a,o,b) {
+
+    this._a = a;
+    this._o = o;
+    this._b = b;
+
+};
+
+BinaryExpression.prototype = Object.create(ExpressionBase);
+
+/**
+ * Tests if valid expression
+ * @returns {boolean}
+ */
+BinaryExpression.prototype.succeeds = function() {
+
+    return this._o==='and' ?
+
+        // is 'and' operator
+        this._a.succeeds() && this._b.succeeds() :
+
+        // is 'or' operator
+        this._a.succeeds() || this._b.succeeds();
+
+};
+
+/**
+ * Outputs the expression as a string
+ * @returns {string}
+ */
+BinaryExpression.prototype.toString = function() {
+    return '(' + this._a.toString() + ' ' + this._o + ' ' + this._b.toString() + ')';
+};
+
+/**
+ * Returns the configuration of this expression
+ * @returns {Array}
+ */
+BinaryExpression.prototype.getConfig = function() {
+
+    return [this._a.getConfig(),this._b.getConfig()];
+
+};
+
+
 /**
  * @namespace ExpressionFormatter
  */
@@ -682,136 +812,6 @@ var ModuleRegister = {
     }
 
 };
-
-var ExpressionBase = function() {};
-
-ExpressionBase.prototype = {
-
-    /**
-     * @abstract
-     */
-    succeeds:function() {
-        // override in subclass
-    },
-
-    /**
-     * @abstract
-     */
-    getConfig:function() {
-        // override in subclass
-    }
-
-};
-
-
-
-/**
- * @class
- * @constructor
- * @augments ExpressionBase
- * @param {BinaryExpression|TestBase|object} expression
- * @param {boolean} negate
- */
-var UnaryExpression = function(expression,negate) {
-
-    this._expression = expression instanceof BinaryExpression || expression instanceof UnaryExpression ? expression : null;
-
-    this._config = this._expression ? null : expression;
-
-    this._negate = typeof negate === 'undefined' ? false : negate;
-
-};
-
-UnaryExpression.prototype = Object.create(ExpressionBase);
-
-/**
- * Sets test reference
- * @param {TestBase} test
- */
-UnaryExpression.prototype.setTest = function(test) {
-
-    this._expression = test;
-
-};
-
-UnaryExpression.prototype.getConfig = function() {
-
-    return this._config ? [{'expression':this,'config':this._config}] : this._expression.getConfig();
-
-};
-
-
-/**
- * Tests if valid expression
- * @returns {boolean}
- */
-UnaryExpression.prototype.succeeds = function() {
-
-    if (!this._expression.succeeds) {
-        return false;
-    }
-
-    return this._expression.succeeds() !== this._negate;
-
-};
-
-UnaryExpression.prototype.toString = function() {
-    return (this._negate ? 'not ' : '') + (this._expression ? this._expression.toString() : this._config.path + ':{' + this._config.value + '}');
-};
-
-
-/**
- * @class
- * @constructor
- * @augments ExpressionBase
- * @param {UnaryExpression} a
- * @param {string} o
- * @param {UnaryExpression} b
- */
-var BinaryExpression = function(a,o,b) {
-
-    this._a = a;
-    this._o = o;
-    this._b = b;
-
-};
-
-BinaryExpression.prototype = Object.create(ExpressionBase);
-
-/**
- * Tests if valid expression
- * @returns {boolean}
- */
-BinaryExpression.prototype.succeeds = function() {
-
-    return this._o==='and' ?
-
-        // is 'and' operator
-        this._a.succeeds() && this._b.succeeds() :
-
-        // is 'or' operator
-        this._a.succeeds() || this._b.succeeds();
-
-};
-
-/**
- * Outputs the expression as a string
- * @returns {string}
- */
-BinaryExpression.prototype.toString = function() {
-    return '(' + this._a.toString() + ' ' + this._o + ' ' + this._b.toString() + ')';
-};
-
-/**
- * Returns the configuration of this expression
- * @returns {Array}
- */
-BinaryExpression.prototype.getConfig = function() {
-
-    return [this._a.getConfig(),this._b.getConfig()];
-
-};
-
 
 /**
  * @exports ConditionsManager
@@ -1332,7 +1332,13 @@ Node.prototype.init = function() {
     // parse element module attributes
     this._moduleControllers = this._createModuleControllers();
 
+    // initialize
     var i=0,l=this._moduleControllers.length,mc;
+
+    // if no module controllers found
+    if (!l) {
+        throw new Error('Node.init(): "element" has to have a "data-module" attribute containing a reference to a Module.');
+    }
 
     // listen to ready events on module controllers
     for (;i<l;i++) {
@@ -1518,9 +1524,9 @@ Node.prototype._getSuitableActiveModuleController = function() {
  */
 Node.prototype._createModuleControllers = function() {
 
-    var result = [];
-    var config = this._element.getAttribute('data-module');
-    var advanced = config.charAt(0) === '[';
+    var result = [],
+        config = this._element.getAttribute('data-module') || '',
+        advanced = config.charAt(0) === '[';
 
     if (advanced) {
 
@@ -1559,7 +1565,7 @@ Node.prototype._createModuleControllers = function() {
 
 
     }
-    else {
+    else if (config.length) {
 
         // add default module controller
         result.push(
@@ -1673,9 +1679,6 @@ var Conditioner = function() {
 
     // options for conditioner
     this._options = {
-        'attribute':{
-            'module':'data-module'
-        },
         'modules':{}
     };
 
@@ -1754,7 +1757,7 @@ Conditioner.prototype = {
         }
 
         // register vars and get elements
-        var elements = context.querySelectorAll('[' + this._options.attribute.module + ']'),
+        var elements = context.querySelectorAll('[data-module]'),
             l = elements.length,
             i = 0,
             nodes = [],
