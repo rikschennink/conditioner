@@ -13,6 +13,7 @@ define(['conditioner'],function(conditioner){
     p._totalMouseMoves = 0;
 
     p.handleEvent = function(e) {
+
         if (e.type === 'mousemove') {
             this._totalMouseMoves++;
             if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
@@ -23,6 +24,7 @@ define(['conditioner'],function(conditioner){
         else {
             this._totalMouseMoves = 0;
         }
+
         this.assert();
     };
 
@@ -38,6 +40,7 @@ define(['conditioner'],function(conditioner){
             document.removeEventListener('mousemove',self,false);
             document.removeEventListener('mousedown',self,false);
         },10000);
+
     };
 
     p._onAssert = function(expected) {

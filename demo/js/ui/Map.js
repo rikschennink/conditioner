@@ -19,7 +19,8 @@ define(['conditioner'],function(conditioner){
         this._inner = this._element.innerHTML;
 
         // test if geolocation support, otherwise map won't function
-        if (!navigator.geolocation) {
+        var support = 'geolocation' in navigator;
+        if (!support) {
             this._element.innerHTML = 'Your browser does not support the Geolocation API';
             return;
         }

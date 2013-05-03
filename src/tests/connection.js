@@ -15,9 +15,11 @@ define(['conditioner'],function(conditioner){
     };
 
     p.arrange = function() {
+
         if (navigator.connection) {
             navigator.connection.addEventListener('change', this, false);
         }
+
     };
 
     p._onAssert = function(expected) {
