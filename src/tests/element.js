@@ -15,14 +15,12 @@ define(['conditioner'],function(conditioner){
     return {
         arrange:function() {
 
-            // arrange
             window.addEventListener('resize',this,false);
             window.addEventListener('scroll',this,false);
 
         },
         assert:function(expected,element) {
 
-            // assert
             var parts = expected.split(':'),key,value;
 
             if (parts) {
