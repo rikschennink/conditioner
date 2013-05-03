@@ -60,6 +60,8 @@ ConditionsManager.prototype = {
         // test expression success state
         var suitable = this._expression.succeeds();
 
+        console.log(suitable);
+
         // fire changed event if environment suitability changed
         if (suitable != this._suitable) {
             this._suitable = suitable;
