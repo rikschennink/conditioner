@@ -3,7 +3,7 @@
  * @class
  * @constructor
  * @augments ExpressionBase
- * @param {BinaryExpression|TestBase|object} expression
+ * @param {BinaryExpression|Tester|object} expression
  * @param {boolean} negate
  */
 var UnaryExpression = function(expression,negate) {
@@ -20,11 +20,11 @@ UnaryExpression.prototype = Object.create(ExpressionBase);
 
 /**
  * Sets test reference
- * @param {TestBase} test
+ * @param {Tester} tester
  */
-UnaryExpression.prototype.setTest = function(test) {
+UnaryExpression.prototype.assignTester = function(tester) {
 
-    this._expression = test;
+    this._expression = tester;
 
 };
 

@@ -1,1 +1,1 @@
-define(["conditioner"],function(n){"use strict";var t=n.TestBase.inherit(),e=t.prototype;return e.handleEvent=function(){this.assert()},e.arrange=function(){navigator.connection&&navigator.connection.addEventListener("change",this,!1)},e._onAssert=function(n){return"any"===n&&navigator.onLine},t});
+define(["conditioner"],function(){"use strict";return{arrange:function(){"connection"in navigator&&navigator.connection.addEventListener("change",this,!1)},assert:function(n){return"any"===n&&navigator.onLine}}});

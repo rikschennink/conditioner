@@ -21,12 +21,6 @@ var Conditioner = function() {
     this.Observer = Observer;
 
     /**
-     * Reference to TestBase Class
-     * @property {TestBase}
-     */
-    this.TestBase = TestBase;
-
-    /**
      * Reference to ModuleBase Class
      * @property {ModuleBase}
      */
@@ -72,6 +66,7 @@ Conditioner.prototype = {
 
         }
     },
+
 
     /**
      * Loads modules within the given context

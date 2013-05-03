@@ -282,7 +282,7 @@ ExpressionBase.prototype = {
  * @class
  * @constructor
  * @augments ExpressionBase
- * @param {BinaryExpression|TestBase|object} expression
+ * @param {BinaryExpression|Tester|object} expression
  * @param {boolean} negate
  */
 var UnaryExpression = function(expression,negate) {
@@ -299,11 +299,11 @@ UnaryExpression.prototype = Object.create(ExpressionBase);
 
 /**
  * Sets test reference
- * @param {TestBase} test
+ * @param {Tester} tester
  */
-UnaryExpression.prototype.setTest = function(test) {
+UnaryExpression.prototype.assignTester = function(tester) {
 
-    this._expression = test;
+    this._expression = tester;
 
 };
 
@@ -604,6 +604,150 @@ var ExpressionFormatter = {
     }
 
 };
+/**
+ * @class
+ * @constructor
+ * @abstract
+ */
+var TestBase = function() {
+
+    this._memory = {};
+
+};
+
+TestBase.prototype = {
+
+    /**
+     *
+     * @param {object} key
+     * @param {object} value
+     * @returns {object}
+     * @protected
+     */
+    remember:function(key,value) {
+
+        // return value
+        if (typeof value === 'undefined') {
+            return this._memory[key];
+        }
+
+        // set value
+        this._memory[key] = value;
+        return value;
+    },
+
+    /**
+     * Delegates events to act method
+     * @param {Event} e
+     * @private
+     */
+    handleEvent:function(e) {
+        this.act(e);
+    },
+
+    /**
+     * Arrange your test in this method
+     * @abstract
+     */
+    arrange:function() {
+
+        // called once
+
+    },
+
+    /**
+     * Handle changes in this method
+     * @abstract
+     */
+    act:function(e) {
+
+        // by default triggers 'change' event
+        Observer.publish(this,'change');
+
+    },
+
+    /**
+     * Called to assert the test
+     * @abstract
+     */
+    assert:function(expected,element) {
+
+        // called on test
+
+    }
+
+};
+
+var TestRegister = {
+
+    _register:[],
+
+    _addTest:function(path,config) {
+
+        // create Test class
+        var Test = function(){TestBase.call(this);};
+            Test.prototype = Object.create(TestBase.prototype);
+
+        // setup methods
+        if (config.assert) {
+            Test.prototype['assert'] = config.assert;
+        }
+        if (config.act) {
+            Test.prototype['act'] = config.act;
+        }
+        if (config.arrange) {
+            Test.prototype['arrange'] = config.arrange;
+        }
+
+        // arrange the test
+        var test = new Test();
+            test.arrange();
+
+        this._register[path] = test;
+
+    },
+
+    getTest:function(path,found) {
+
+        var self = this;
+
+        path = 'tests/' + path;
+
+        require([path],function(config){
+
+            if (!self._register[path]) {
+                self._addTest(path,config);
+            }
+
+            found(self._register[path]);
+
+        });
+
+    }
+
+};
+/**
+ * @param {TestBase} test
+ * @param {string} expected
+ * @param {element} element
+ * @constructor
+ */
+var Tester = function(test,expected,element) {
+
+    this._test = test;
+    this._expected = expected;
+    this._element = element;
+
+};
+
+/**
+ * Returns true if test assertion successful
+ * @returns {boolean}
+ */
+Tester.prototype.succeeds = function() {
+    return this._test.assert(this._expected,this._element);
+};
+
 
 /**
  * @exports ModuleBase
@@ -647,97 +791,6 @@ var ModuleBase = function(element,options) {
 ModuleBase.prototype.unload = function() {
     this._element.removeAttribute('data-initialized');
 };
-
-
-/**
- * @exports TestBase
- * @constructor
- * @param {string} expected - expected conditions to be met
- * @param {element} element - optional element to measure these conditions on
- * @abstract
- */
-var TestBase = function(expected,element) {
-
-    /**
-     * Expected conditions to match
-     * @type {string}
-     * @protected
-     */
-    this._expected = expected;
-
-    /**
-     * Reference to element
-     * @type {element}
-     * @protected
-     */
-    this._element = element;
-
-    /**
-     * Contains current test state
-     * @type {boolean}
-     * @private
-     */
-    this._state = true;
-
-};
-
-TestBase.inherit = function() {
-    var T = function(expected,element) {
-        TestBase.call(this,expected,element);
-    };
-    T.prototype = Object.create(TestBase.prototype);
-    return T;
-};
-
-
-/**
- * Called to setup the test
- * @abstract
- */
-TestBase.prototype.arrange = function() {
-
-    // override in subclass
-
-};
-
-
-/**
- * @fires change
- * @public
- */
-TestBase.prototype.assert = function() {
-
-    // call test
-    var state = this._onAssert(this._expected);
-
-    // check if result changed
-    if (this._state !== state) {
-        this._state = state;
-        Observer.publish(this,'change',state);
-    }
-
-};
-
-
-/**
- * Called when asserting the test
- * @param {string} expected - expected value
- * @return {boolean}
- * @abstract
- */
-TestBase.prototype._onAssert = function(expected) {
-    return false;
-};
-
-
-/**
- * @returns {boolean}
- * @public
- */
-TestBase.prototype.succeeds = function() {
-    return this._state;
-};
-
 
 
 /**
@@ -836,9 +889,6 @@ var ConditionsManager = function(conditions,element) {
     // set element reference
     this._element = element;
 
-    // load tests
-    this._tests = [];
-
     // change event bind
     this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
 
@@ -900,64 +950,48 @@ ConditionsManager.prototype = {
                 continue;
             }
 
-            this._loadTestToExpression(configuration[i].config,configuration[i].expression);
+            this._loadTesterToExpression(configuration[i].config,configuration[i].expression);
         }
     },
 
 
     /**
-     * Loads test configuration to supplied expression
+     * Loads a tester to supplied expression
      * @param {Object} config
      * @param {UnaryExpression} expression
      * @private
      */
-    _loadTestToExpression:function(config,expression) {
+    _loadTesterToExpression:function(config,expression) {
 
         var self = this;
 
-        require(['tests/' + config.path],function(Test){
+        TestRegister.getTest(config.path,function(test) {
 
-            // create test instance
-            var instance = new Test(config.value,self._element);
+            // listen to test changes
+            Observer.subscribe(test,'change',self._onResultsChangedBind);
 
-            // add instance to test set
-            self._tests.push(instance);
-
-            // set test to unary expression
-            expression.setTest(instance);
+            // assign tester to expression
+            expression.assignTester(
+                new Tester(test,config.value,self._element)
+            );
 
             // lower test count
             self._count--;
             if (self._count===0) {
                 self._onReady();
             }
+
         });
 
     },
 
 
-    /**
+     /**
      * Called when all tests are ready
      * @fires ready
      * @private
      */
     _onReady:function() {
-
-        // setup
-        var l = this._tests.length,test,i;
-        for (i=0;i<l;i++) {
-
-            test = this._tests[i];
-
-            // arrange test (tests will assert themselves)
-            test.arrange();
-
-            // assert test to determine initial state
-            test.assert();
-
-            // listen to changes
-            Observer.subscribe(test,'change',this._onResultsChangedBind);
-        }
 
         // test current state
         this.test();
@@ -1692,12 +1726,6 @@ var Conditioner = function() {
     this.Observer = Observer;
 
     /**
-     * Reference to TestBase Class
-     * @property {TestBase}
-     */
-    this.TestBase = TestBase;
-
-    /**
      * Reference to ModuleBase Class
      * @property {ModuleBase}
      */
@@ -1743,6 +1771,7 @@ Conditioner.prototype = {
 
         }
     },
+
 
     /**
      * Loads modules within the given context

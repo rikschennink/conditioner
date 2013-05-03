@@ -22,9 +22,6 @@ var ConditionsManager = function(conditions,element) {
     // set element reference
     this._element = element;
 
-    // load tests
-    this._tests = [];
-
     // change event bind
     this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
 
@@ -86,64 +83,48 @@ ConditionsManager.prototype = {
                 continue;
             }
 
-            this._loadTestToExpression(configuration[i].config,configuration[i].expression);
+            this._loadTesterToExpression(configuration[i].config,configuration[i].expression);
         }
     },
 
 
     /**
-     * Loads test configuration to supplied expression
+     * Loads a tester to supplied expression
      * @param {Object} config
      * @param {UnaryExpression} expression
      * @private
      */
-    _loadTestToExpression:function(config,expression) {
+    _loadTesterToExpression:function(config,expression) {
 
         var self = this;
 
-        require(['tests/' + config.path],function(Test){
+        TestRegister.getTest(config.path,function(test) {
 
-            // create test instance
-            var instance = new Test(config.value,self._element);
+            // listen to test changes
+            Observer.subscribe(test,'change',self._onResultsChangedBind);
 
-            // add instance to test set
-            self._tests.push(instance);
-
-            // set test to unary expression
-            expression.setTest(instance);
+            // assign tester to expression
+            expression.assignTester(
+                new Tester(test,config.value,self._element)
+            );
 
             // lower test count
             self._count--;
             if (self._count===0) {
                 self._onReady();
             }
+
         });
 
     },
 
 
-    /**
+     /**
      * Called when all tests are ready
      * @fires ready
      * @private
      */
     _onReady:function() {
-
-        // setup
-        var l = this._tests.length,test,i;
-        for (i=0;i<l;i++) {
-
-            test = this._tests[i];
-
-            // arrange test (tests will assert themselves)
-            test.arrange();
-
-            // assert test to determine initial state
-            test.assert();
-
-            // listen to changes
-            Observer.subscribe(test,'change',this._onResultsChangedBind);
-        }
 
         // test current state
         this.test();

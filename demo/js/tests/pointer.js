@@ -6,48 +6,56 @@ define(['conditioner'],function(conditioner){
 
     'use strict';
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype,
-        MOUSE_MOVES_REQUIRED = 2;
+    return {
+        arrange:function() {
 
-    p._totalMouseMoves = 0;
+            this.remember('moves',0);
+            this.remember('moves-required',2);
 
-    p.handleEvent = function(e) {
-        if (e.type === 'mousemove') {
-            this._totalMouseMoves++;
-            if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
-                document.removeEventListener('mousemove',this,false);
-                document.removeEventListener('mousedown',this,false);
+            // start listening to mousemoves to deduce the availability of a pointer device
+            document.addEventListener('mousemove',this,false);
+            document.addEventListener('mousedown',this,false);
+
+            // start timer, stop testing after 30 seconds
+            var self = this;
+            setTimeout(function(){
+                document.removeEventListener('mousemove',self,false);
+                document.removeEventListener('mousedown',self,false);
+            },30000);
+
+        },
+        act:function(e) {
+
+            if (e.type === 'mousemove') {
+
+                var moves = this.remember('moves');
+                    moves++;
+                this.remember('moves',moves);
+
+                if (moves >= this.remember('moves-required')) {
+
+                    // stop listening to events
+                    document.removeEventListener('mousemove',this,false);
+                    document.removeEventListener('mousedown',this,false);
+
+                    // mouse now detected
+                    conditioner.Observer.publish(this,'change');
+                }
             }
+            else {
+                this.remember('moves',0);
+            }
+
+        },
+        assert:function(expected) {
+
+            var result = null;
+            if (this.remember('moves') >= this.remember('moves-required')) {
+                result = 'available';
+            }
+
+            return result === expected;
         }
-        else {
-            this._totalMouseMoves = 0;
-        }
-        this.assert();
     };
-
-    p.arrange = function() {
-
-        // start listening to mousemoves to deduct the availability of a pointer device
-        document.addEventListener('mousemove',this,false);
-        document.addEventListener('mousedown',this,false);
-
-        // start timer, stop testing after 10 seconds
-        var self = this;
-        setTimeout(function(){
-            document.removeEventListener('mousemove',self,false);
-            document.removeEventListener('mousedown',self,false);
-        },10000);
-    };
-
-    p._onAssert = function(expected) {
-        var result = '';
-        if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
-            result = 'available';
-        }
-        return result === expected;
-    };
-
-    return exports;
 
 });

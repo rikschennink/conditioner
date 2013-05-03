@@ -7,25 +7,17 @@ define(['conditioner'],function(conditioner){
 
     'use strict';
 
-    var exports = conditioner.TestBase.inherit(),
-    p = exports.prototype;
+    return {
+        arrange:function(){
 
-    p.handleEvent = function(e) {
-        this.assert();
-    };
+            if (!('connection' in navigator)) {return;}
 
-    p.arrange = function() {
+            navigator.connection.addEventListener('change',this,false);
 
-        if (navigator.connection) {
-            navigator.connection.addEventListener('change', this, false);
+        },
+        assert:function(expected) {
+            return expected === 'any' && navigator.onLine;
         }
-
     };
-
-    p._onAssert = function(expected) {
-        return expected === 'any' && navigator.onLine;
-    };
-
-    return exports;
 
 });

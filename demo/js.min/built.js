@@ -2304,7 +2304,7 @@ ExpressionBase.prototype = {
  * @class
  * @constructor
  * @augments ExpressionBase
- * @param {BinaryExpression|TestBase|object} expression
+ * @param {BinaryExpression|Tester|object} expression
  * @param {boolean} negate
  */
 var UnaryExpression = function(expression,negate) {
@@ -2321,11 +2321,11 @@ UnaryExpression.prototype = Object.create(ExpressionBase);
 
 /**
  * Sets test reference
- * @param {TestBase} test
+ * @param {Tester} tester
  */
-UnaryExpression.prototype.setTest = function(test) {
+UnaryExpression.prototype.assignTester = function(tester) {
 
-    this._expression = test;
+    this._expression = tester;
 
 };
 
@@ -2626,6 +2626,150 @@ var ExpressionFormatter = {
     }
 
 };
+/**
+ * @class
+ * @constructor
+ * @abstract
+ */
+var TestBase = function() {
+
+    this._memory = {};
+
+};
+
+TestBase.prototype = {
+
+    /**
+     *
+     * @param {object} key
+     * @param {object} value
+     * @returns {object}
+     * @protected
+     */
+    remember:function(key,value) {
+
+        // return value
+        if (typeof value === 'undefined') {
+            return this._memory[key];
+        }
+
+        // set value
+        this._memory[key] = value;
+        return value;
+    },
+
+    /**
+     * Delegates events to act method
+     * @param {Event} e
+     * @private
+     */
+    handleEvent:function(e) {
+        this.act(e);
+    },
+
+    /**
+     * Arrange your test in this method
+     * @abstract
+     */
+    arrange:function() {
+
+        // called once
+
+    },
+
+    /**
+     * Handle changes in this method
+     * @abstract
+     */
+    act:function(e) {
+
+        // by default triggers 'change' event
+        Observer.publish(this,'change');
+
+    },
+
+    /**
+     * Called to assert the test
+     * @abstract
+     */
+    assert:function(expected,element) {
+
+        // called on test
+
+    }
+
+};
+
+var TestRegister = {
+
+    _register:[],
+
+    _addTest:function(path,config) {
+
+        // create Test class
+        var Test = function(){TestBase.call(this);};
+            Test.prototype = Object.create(TestBase.prototype);
+
+        // setup methods
+        if (config.assert) {
+            Test.prototype['assert'] = config.assert;
+        }
+        if (config.act) {
+            Test.prototype['act'] = config.act;
+        }
+        if (config.arrange) {
+            Test.prototype['arrange'] = config.arrange;
+        }
+
+        // arrange the test
+        var test = new Test();
+            test.arrange();
+
+        this._register[path] = test;
+
+    },
+
+    getTest:function(path,found) {
+
+        var self = this;
+
+        path = 'tests/' + path;
+
+        require([path],function(config){
+
+            if (!self._register[path]) {
+                self._addTest(path,config);
+            }
+
+            found(self._register[path]);
+
+        });
+
+    }
+
+};
+/**
+ * @param {TestBase} test
+ * @param {string} expected
+ * @param {element} element
+ * @constructor
+ */
+var Tester = function(test,expected,element) {
+
+    this._test = test;
+    this._expected = expected;
+    this._element = element;
+
+};
+
+/**
+ * Returns true if test assertion successful
+ * @returns {boolean}
+ */
+Tester.prototype.succeeds = function() {
+    return this._test.assert(this._expected,this._element);
+};
+
 
 /**
  * @exports ModuleBase
@@ -2669,97 +2813,6 @@ var ModuleBase = function(element,options) {
 ModuleBase.prototype.unload = function() {
     this._element.removeAttribute('data-initialized');
 };
-
-
-/**
- * @exports TestBase
- * @constructor
- * @param {string} expected - expected conditions to be met
- * @param {element} element - optional element to measure these conditions on
- * @abstract
- */
-var TestBase = function(expected,element) {
-
-    /**
-     * Expected conditions to match
-     * @type {string}
-     * @protected
-     */
-    this._expected = expected;
-
-    /**
-     * Reference to element
-     * @type {element}
-     * @protected
-     */
-    this._element = element;
-
-    /**
-     * Contains current test state
-     * @type {boolean}
-     * @private
-     */
-    this._state = true;
-
-};
-
-TestBase.inherit = function() {
-    var T = function(expected,element) {
-        TestBase.call(this,expected,element);
-    };
-    T.prototype = Object.create(TestBase.prototype);
-    return T;
-};
-
-
-/**
- * Called to setup the test
- * @abstract
- */
-TestBase.prototype.arrange = function() {
-
-    // override in subclass
-
-};
-
-
-/**
- * @fires change
- * @public
- */
-TestBase.prototype.assert = function() {
-
-    // call test
-    var state = this._onAssert(this._expected);
-
-    // check if result changed
-    if (this._state !== state) {
-        this._state = state;
-        Observer.publish(this,'change',state);
-    }
-
-};
-
-
-/**
- * Called when asserting the test
- * @param {string} expected - expected value
- * @return {boolean}
- * @abstract
- */
-TestBase.prototype._onAssert = function(expected) {
-    return false;
-};
-
-
-/**
- * @returns {boolean}
- * @public
- */
-TestBase.prototype.succeeds = function() {
-    return this._state;
-};
-
 
 
 /**
@@ -2858,9 +2911,6 @@ var ConditionsManager = function(conditions,element) {
     // set element reference
     this._element = element;
 
-    // load tests
-    this._tests = [];
-
     // change event bind
     this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
 
@@ -2922,64 +2972,48 @@ ConditionsManager.prototype = {
                 continue;
             }
 
-            this._loadTestToExpression(configuration[i].config,configuration[i].expression);
+            this._loadTesterToExpression(configuration[i].config,configuration[i].expression);
         }
     },
 
 
     /**
-     * Loads test configuration to supplied expression
+     * Loads a tester to supplied expression
      * @param {Object} config
      * @param {UnaryExpression} expression
      * @private
      */
-    _loadTestToExpression:function(config,expression) {
+    _loadTesterToExpression:function(config,expression) {
 
         var self = this;
 
-        require(['tests/' + config.path],function(Test){
+        TestRegister.getTest(config.path,function(test) {
 
-            // create test instance
-            var instance = new Test(config.value,self._element);
+            // listen to test changes
+            Observer.subscribe(test,'change',self._onResultsChangedBind);
 
-            // add instance to test set
-            self._tests.push(instance);
-
-            // set test to unary expression
-            expression.setTest(instance);
+            // assign tester to expression
+            expression.assignTester(
+                new Tester(test,config.value,self._element)
+            );
 
             // lower test count
             self._count--;
             if (self._count===0) {
                 self._onReady();
             }
+
         });
 
     },
 
 
-    /**
+     /**
      * Called when all tests are ready
      * @fires ready
      * @private
      */
     _onReady:function() {
-
-        // setup
-        var l = this._tests.length,test,i;
-        for (i=0;i<l;i++) {
-
-            test = this._tests[i];
-
-            // arrange test (tests will assert themselves)
-            test.arrange();
-
-            // assert test to determine initial state
-            test.assert();
-
-            // listen to changes
-            Observer.subscribe(test,'change',this._onResultsChangedBind);
-        }
 
         // test current state
         this.test();
@@ -3714,12 +3748,6 @@ var Conditioner = function() {
     this.Observer = Observer;
 
     /**
-     * Reference to TestBase Class
-     * @property {TestBase}
-     */
-    this.TestBase = TestBase;
-
-    /**
      * Reference to ModuleBase Class
      * @property {ModuleBase}
      */
@@ -3765,6 +3793,7 @@ Conditioner.prototype = {
 
         }
     },
+
 
     /**
      * Loads modules within the given context
@@ -3893,24 +3922,18 @@ define('tests/connection',['conditioner'],function(conditioner){
 
     
 
-    var exports = conditioner.TestBase.inherit(),
-    p = exports.prototype;
+    return {
+        arrange:function(){
 
-    p.handleEvent = function(e) {
-        this.assert();
-    };
+            if (!('connection' in navigator)) {return;}
 
-    p.arrange = function() {
-        if (navigator.connection) {
-            navigator.connection.addEventListener('change', this, false);
+            navigator.connection.addEventListener('change',this,false);
+
+        },
+        assert:function(expected) {
+            return expected === 'any' && navigator.onLine;
         }
     };
-
-    p._onAssert = function(expected) {
-        return expected === 'any' && navigator.onLine;
-    };
-
-    return exports;
 
 });
 
@@ -3992,28 +4015,26 @@ define('security/StorageConsentGuard',['conditioner','module'],function(conditio
  */
 define('tests/cookies',['conditioner','security/StorageConsentGuard'],function(conditioner,StorageConsentGuard){
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype;
+    return {
+        arrange:function() {
 
-    p.arrange = function() {
+            var guard = StorageConsentGuard.getInstance(),
+                self = this;
 
-        var guard = StorageConsentGuard.getInstance(),self = this;
-        conditioner.Observer.subscribe(guard,'change',function() {
-            self.assert();
-        });
+            conditioner.Observer.subscribe(guard,'change',function() {
+                self.act();
+            });
 
+        },
+        assert:function(expected) {
+
+            var guard = StorageConsentGuard.getInstance(),
+                level = guard.getActiveLevel();
+            
+            return !!(expected.match(new RegExp(level,'g')));
+
+        }
     };
-
-    p._onAssert = function(expected) {
-
-        var guard = StorageConsentGuard.getInstance(),
-            level = guard.getActiveLevel(),
-            result = expected.match(new RegExp(level,'g'));
-
-        return result ? true : false;
-    };
-
-    return exports;
 
 });
 
@@ -4025,62 +4046,59 @@ define('tests/element',['conditioner'],function(conditioner){
 
     
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype;
-
-    p.handleEvent = function(e) {
-        this.assert();
+    var _isVisible = function(element) {
+        var viewHeight = window.innerHeight,
+        bounds = element.getBoundingClientRect();
+        return (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
     };
 
-    p.arrange = function() {
-        window.addEventListener('resize',this,false);
-        window.addEventListener('scroll',this,false);
-    };
+    return {
+        arrange:function() {
 
-    p._onAssert = function(expected) {
+            // arrange
+            window.addEventListener('resize',this,false);
+            window.addEventListener('scroll',this,false);
 
-        var parts = expected.split(':'),key,value;
-        if (parts) {
-            key = parts[0];
-            value = parseInt(parts[1],10);
-        }
-        else {
-            key = expected;
-        }
+        },
+        assert:function(expected,element) {
 
-        if (key==='min-width') {
-            return this._element.offsetWidth >= value;
-        }
-        else if (key==='max-width') {
-            return this._element.offsetWidth <= value;
-        }
-        else if (key==='seen' || key ==='visible') {
+            // assert
+            var parts = expected.split(':'),key,value;
 
-            // measure if element is visible
-            var viewHeight = window.innerHeight,
-                bounds = this._element.getBoundingClientRect(),
-                visible = (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
+            if (parts) {
+                key = parts[0];
+                value = parseInt(parts[1],10);
+            }
+            else {
+                key = expected;
+            }
 
-            if (key === 'seen') {
+            if (key === 'min-width') {
+                return element.offsetWidth >= value;
+            }
+            else if (key === 'max-width') {
+                return element.offsetWidth <= value;
+            }
+            else if (key === 'visible') {
+                return _isVisible(element);
+            }
+            else if (key === 'seen') {
 
-                // remember if seen
-                if (typeof this._seen === 'undefined' && visible) {
-                    this._seen = true;
+                var hasBeenSeen = this.remember(['seen',element]);
+                if (!hasBeenSeen) {
+                    hasBeenSeen = _isVisible(element);
+                    if (hasBeenSeen) {
+                        this.remember(['seen',element],true);
+                    }
                 }
 
-                // if seen
-                return this._seen === true;
+                return hasBeenSeen;
             }
 
-            if (key === 'visible') {
-                return visible;
-            }
+            return false;
+
         }
-
-        return false;
     };
-
-    return exports;
 
 });
 
@@ -4093,40 +4111,47 @@ define('tests/media',['conditioner'],function(conditioner){
 
     
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype;
+    return {
+        arrange:function() {
 
-    p.arrange = function() {
+            // arrange
+            if (!('matchMedia' in window)) {
+                return;
+            }
 
-        if (!window.matchMedia) {
-            return;
+            this.act();
+
+        },
+        assert:function(expected) {
+
+            // assert
+
+            // test if supported
+            if (expected === 'supported') {
+                return ('matchMedia' in window);
+            }
+
+            // setup mql
+            var mql = this.remember(expected);
+            if (!mql) {
+
+                var self = this;
+                mql = window.matchMedia(expected);
+                mql.addListener(function(){
+                    self.act();
+                });
+                this.remember(expected,mql);
+            }
+
+            // if no media query list to remember, apparently not supported
+            if (typeof mql === 'undefined') {
+                return false;
+            }
+
+            // test media query
+            return mql.matches;
         }
-
-        var self = this;
-        this._mql = window.matchMedia(this._expected);
-        this._mql.addListener(function(){
-            self.assert();
-        });
-
     };
-
-    p._onAssert = function(expected) {
-
-        // see if checking if supported
-        if (expected === 'supported') {
-            return typeof this._mql !== 'undefined';
-        }
-
-        // if no media query list defined, no support
-        if (typeof this._mql === 'undefined') {
-            return false;
-        }
-
-        // test media query
-        return this._mql.matches;
-    };
-
-    return exports;
 
 });
 
@@ -4138,49 +4163,57 @@ define('tests/pointer',['conditioner'],function(conditioner){
 
     
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype,
-        MOUSE_MOVES_REQUIRED = 2;
+    return {
+        arrange:function() {
 
-    p._totalMouseMoves = 0;
+            this.remember('moves',0);
+            this.remember('moves-required',2);
 
-    p.handleEvent = function(e) {
-        if (e.type === 'mousemove') {
-            this._totalMouseMoves++;
-            if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
-                document.removeEventListener('mousemove',this,false);
-                document.removeEventListener('mousedown',this,false);
+            // start listening to mousemoves to deduce the availability of a pointer device
+            document.addEventListener('mousemove',this,false);
+            document.addEventListener('mousedown',this,false);
+
+            // start timer, stop testing after 30 seconds
+            var self = this;
+            setTimeout(function(){
+                document.removeEventListener('mousemove',self,false);
+                document.removeEventListener('mousedown',self,false);
+            },30000);
+
+        },
+        act:function(e) {
+
+            if (e.type === 'mousemove') {
+
+                var moves = this.remember('moves');
+                    moves++;
+                this.remember('moves',moves);
+
+                if (moves >= this.remember('moves-required')) {
+
+                    // stop listening to events
+                    document.removeEventListener('mousemove',this,false);
+                    document.removeEventListener('mousedown',this,false);
+
+                    // mouse now detected
+                    conditioner.Observer.publish(this,'change');
+                }
             }
+            else {
+                this.remember('moves',0);
+            }
+
+        },
+        assert:function(expected) {
+
+            var result = null;
+            if (this.remember('moves') >= this.remember('moves-required')) {
+                result = 'available';
+            }
+
+            return result === expected;
         }
-        else {
-            this._totalMouseMoves = 0;
-        }
-        this.assert();
     };
-
-    p.arrange = function() {
-
-        // start listening to mousemoves to deduct the availability of a pointer device
-        document.addEventListener('mousemove',this,false);
-        document.addEventListener('mousedown',this,false);
-
-        // start timer, stop testing after 10 seconds
-        var self = this;
-        setTimeout(function(){
-            document.removeEventListener('mousemove',self,false);
-            document.removeEventListener('mousedown',self,false);
-        },10000);
-    };
-
-    p._onAssert = function(expected) {
-        var result = '';
-        if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
-            result = 'available';
-        }
-        return result === expected;
-    };
-
-    return exports;
 
 });
 
@@ -4191,6 +4224,80 @@ define('tests/pointer',['conditioner'],function(conditioner){
 define('tests/window',['conditioner'],function(conditioner){
 
     
+
+    return {
+        arrange:function() {
+
+            // arrange
+            window.addEventListener('resize',this,false);
+
+        },
+        assert:function(expected) {
+
+            // assert
+            var innerWidth = window.innerWidth || document.documentElement.clientWidth,
+                parts = expected.split(':'),
+                key = parts[0],
+                value = parseInt(parts[1],10);
+
+            if (key === 'min-width') {
+                return innerWidth >= value;
+            }
+            else if (key === 'max-width') {
+                return innerWidth <= value;
+            }
+
+            return false;
+
+        }
+    };
+
+    /*
+    var Test = {
+
+        handleEvent:function() {
+            conditioner.Observer.publish(this,'change');
+        },
+
+        arrange:function() {
+            window.addEventListener('resize',this,false);
+        },
+
+        assert:function(expected) {
+
+            var innerWidth = window.innerWidth || document.documentElement.clientWidth,
+                parts = expected.split(':'),
+                key = parts[0],
+                value = parseInt(parts[1],10);
+
+            if (key === 'min-width') {
+                return innerWidth >= value;
+            }
+            else if (key === 'max-width') {
+                return innerWidth <= value;
+            }
+
+            return false;
+
+        }
+
+    };
+
+    return {
+
+        load:function() {
+            return Test;
+        },
+
+        hash:function() {
+            return 'window';
+        }
+
+    };
+
+
+
+    /*
 
     var exports = conditioner.TestBase.inherit(),
         p = exports.prototype;
@@ -4224,6 +4331,8 @@ define('tests/window',['conditioner'],function(conditioner){
     };
 
     return exports;
+
+    */
 
 });
 

@@ -1,90 +1,73 @@
-
 /**
- * @exports TestBase
+ * @class
  * @constructor
- * @param {string} expected - expected conditions to be met
- * @param {element} element - optional element to measure these conditions on
  * @abstract
  */
-var TestBase = function(expected,element) {
+var TestBase = function() {
+
+    this._memory = {};
+
+};
+
+TestBase.prototype = {
 
     /**
-     * Expected conditions to match
-     * @type {string}
+     *
+     * @param {object} key
+     * @param {object} value
+     * @returns {object}
      * @protected
      */
-    this._expected = expected;
+    remember:function(key,value) {
+
+        // return value
+        if (typeof value === 'undefined') {
+            return this._memory[key];
+        }
+
+        // set value
+        this._memory[key] = value;
+        return value;
+    },
 
     /**
-     * Reference to element
-     * @type {element}
-     * @protected
-     */
-    this._element = element;
-
-    /**
-     * Contains current test state
-     * @type {boolean}
+     * Delegates events to act method
+     * @param {Event} e
      * @private
      */
-    this._state = true;
+    handleEvent:function(e) {
+        this.act(e);
+    },
 
-};
+    /**
+     * Arrange your test in this method
+     * @abstract
+     */
+    arrange:function() {
 
-TestBase.inherit = function() {
-    var T = function(expected,element) {
-        TestBase.call(this,expected,element);
-    };
-    T.prototype = Object.create(TestBase.prototype);
-    return T;
-};
+        // called once
 
+    },
 
-/**
- * Called to setup the test
- * @abstract
- */
-TestBase.prototype.arrange = function() {
+    /**
+     * Handle changes in this method
+     * @abstract
+     */
+    act:function(e) {
 
-    // override in subclass
+        // by default triggers 'change' event
+        Observer.publish(this,'change');
 
-};
+    },
 
+    /**
+     * Called to assert the test
+     * @abstract
+     */
+    assert:function(expected,element) {
 
-/**
- * @fires change
- * @public
- */
-TestBase.prototype.assert = function() {
+        // called on test
 
-    // call test
-    var state = this._onAssert(this._expected);
-
-    // check if result changed
-    if (this._state !== state) {
-        this._state = state;
-        Observer.publish(this,'change',state);
     }
 
 };
-
-
-/**
- * Called when asserting the test
- * @param {string} expected - expected value
- * @return {boolean}
- * @abstract
- */
-TestBase.prototype._onAssert = function(expected) {
-    return false;
-};
-
-
-/**
- * @returns {boolean}
- * @public
- */
-TestBase.prototype.succeeds = function() {
-    return this._state;
-};
-
