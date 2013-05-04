@@ -6,37 +6,29 @@ define(['conditioner'],function(conditioner){
 
     'use strict';
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype;
+    return {
+        arrange:function() {
 
-    p.handleEvent = function(e) {
-        this.assert();
-    };
+            window.addEventListener('resize',this,false);
 
-    p.arrange = function() {
-        window.addEventListener('resize',this,false);
-    };
+        },
+        assert:function(expected) {
 
-    p._onAssert = function(expected) {
+            var innerWidth = window.innerWidth || document.documentElement.clientWidth,
+                parts = expected.split(':'),
+                key = parts[0],
+                value = parseInt(parts[1],10);
 
-        var innerWidth = window.innerWidth || document.documentElement.clientWidth,
-            parts = expected.split(':'),
-            key = parts[0],
-            value = parseInt(parts[1],10);
-
-        switch(key) {
-            case 'min-width':{
+            if (key === 'min-width') {
                 return innerWidth >= value;
             }
-                break;
-            case 'max-width':{
+            else if (key === 'max-width') {
                 return innerWidth <= value;
             }
+
+            return false;
+
         }
-
-        return false;
     };
-
-    return exports;
 
 });

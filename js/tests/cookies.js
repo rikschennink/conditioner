@@ -4,27 +4,25 @@
  */
 define(['conditioner','security/StorageConsentGuard'],function(conditioner,StorageConsentGuard){
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype;
+    return {
+        arrange:function() {
 
-    p.arrange = function() {
+            var guard = StorageConsentGuard.getInstance(),
+                self = this;
 
-        var guard = StorageConsentGuard.getInstance(),self = this;
-        conditioner.Observer.subscribe(guard,'change',function() {
-            self.assert();
-        });
+            conditioner.Observer.subscribe(guard,'change',function() {
+                self.act();
+            });
 
+        },
+        assert:function(expected) {
+
+            var guard = StorageConsentGuard.getInstance(),
+                level = guard.getActiveLevel();
+
+            return !!(expected.match(new RegExp(level,'g')));
+
+        }
     };
-
-    p._onAssert = function(expected) {
-
-        var guard = StorageConsentGuard.getInstance(),
-            level = guard.getActiveLevel(),
-            result = expected.match(new RegExp(level,'g'));
-
-        return result ? true : false;
-    };
-
-    return exports;
 
 });

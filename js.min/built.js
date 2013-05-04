@@ -2164,10 +2164,10 @@ var Observer = {
         }
 
         // check if already added
-        var test,i=0,l = obj._subscriptions;
+        var test,i=0,l=obj._subscriptions;
         for (; i<l; i++) {
             test = obj._subscriptions[i];
-            if (test.type == type && test.fn == fn) {
+            if (test.type === type && test.fn === fn) {
                 return;
             }
         }
@@ -2191,10 +2191,10 @@ var Observer = {
         }
 
         // find and remove
-        var test,i;
-        for (i = obj._subscriptions.length-1; i >= 0; i--) {
+        var test,i=obj._subscriptions.length;
+        while (--i >= 0) {
             test = obj._subscriptions[i];
-            if (test.type == type && test.fn == fn) {
+            if (test.type === type && test.fn === fn) {
                 obj._subscriptions.splice(i,1);
                 break;
             }
@@ -2217,9 +2217,9 @@ var Observer = {
 
         // find and execute callback
         var subscriptions=[],subscription,i=0,l = obj._subscriptions.length;
-        for (;i<l; i++) {
+        for (;i<l;i++) {
             subscription = obj._subscriptions[i];
-            if (subscription.type == type) {
+            if (subscription.type === type) {
                 subscriptions.push(subscription);
             }
         }
@@ -2274,6 +2274,136 @@ var Observer = {
 
         return false;
     }
+
+};
+
+
+var ExpressionBase = function() {};
+
+ExpressionBase.prototype = {
+
+    /**
+     * @abstract
+     */
+    succeeds:function() {
+        // override in subclass
+    },
+
+    /**
+     * @abstract
+     */
+    getConfig:function() {
+        // override in subclass
+    }
+
+};
+
+
+
+/**
+ * @class
+ * @constructor
+ * @augments ExpressionBase
+ * @param {BinaryExpression|Tester|object} expression
+ * @param {boolean} negate
+ */
+var UnaryExpression = function(expression,negate) {
+
+    this._expression = expression instanceof BinaryExpression || expression instanceof UnaryExpression ? expression : null;
+
+    this._config = this._expression ? null : expression;
+
+    this._negate = typeof negate === 'undefined' ? false : negate;
+
+};
+
+UnaryExpression.prototype = Object.create(ExpressionBase);
+
+/**
+ * Sets test reference
+ * @param {Tester} tester
+ */
+UnaryExpression.prototype.assignTester = function(tester) {
+
+    this._expression = tester;
+
+};
+
+UnaryExpression.prototype.getConfig = function() {
+
+    return this._config ? [{'expression':this,'config':this._config}] : this._expression.getConfig();
+
+};
+
+
+/**
+ * Tests if valid expression
+ * @returns {boolean}
+ */
+UnaryExpression.prototype.succeeds = function() {
+
+    if (!this._expression.succeeds) {
+        return false;
+    }
+
+    return this._expression.succeeds() !== this._negate;
+
+};
+
+UnaryExpression.prototype.toString = function() {
+    return (this._negate ? 'not ' : '') + (this._expression ? this._expression.toString() : this._config.path + ':{' + this._config.value + '}');
+};
+
+
+/**
+ * @class
+ * @constructor
+ * @augments ExpressionBase
+ * @param {UnaryExpression} a
+ * @param {string} o
+ * @param {UnaryExpression} b
+ */
+var BinaryExpression = function(a,o,b) {
+
+    this._a = a;
+    this._o = o;
+    this._b = b;
+
+};
+
+BinaryExpression.prototype = Object.create(ExpressionBase);
+
+/**
+ * Tests if valid expression
+ * @returns {boolean}
+ */
+BinaryExpression.prototype.succeeds = function() {
+
+    return this._o==='and' ?
+
+        // is 'and' operator
+        this._a.succeeds() && this._b.succeeds() :
+
+        // is 'or' operator
+        this._a.succeeds() || this._b.succeeds();
+
+};
+
+/**
+ * Outputs the expression as a string
+ * @returns {string}
+ */
+BinaryExpression.prototype.toString = function() {
+    return '(' + this._a.toString() + ' ' + this._o + ' ' + this._b.toString() + ')';
+};
+
+/**
+ * Returns the configuration of this expression
+ * @returns {Array}
+ */
+BinaryExpression.prototype.getConfig = function() {
+
+    return [this._a.getConfig(),this._b.getConfig()];
 
 };
 
@@ -2496,6 +2626,172 @@ var ExpressionFormatter = {
     }
 
 };
+/**
+ * @class
+ * @constructor
+ * @abstract
+ */
+var TestBase = function() {
+
+    this._memory = {};
+
+};
+
+TestBase.prototype = {
+
+    /**
+     *
+     * @param {object} key
+     * @param {object} value
+     * @returns {object}
+     * @protected
+     */
+    remember:function(key,value) {
+
+        // return value
+        if (typeof value === 'undefined') {
+            return this._memory[key];
+        }
+
+        // set value
+        this._memory[key] = value;
+        return value;
+    },
+
+    /**
+     * Delegates events to act method
+     * @param {Event} e
+     * @private
+     */
+    handleEvent:function(e) {
+        this.act(e);
+    },
+
+    /**
+     * Arrange your test in this method
+     * @abstract
+     */
+    arrange:function() {
+
+        // called once
+
+    },
+
+    /**
+     * Handle changes in this method
+     * @abstract
+     */
+    act:function(e) {
+
+        // by default triggers 'change' event
+        Observer.publish(this,'change');
+
+    },
+
+    /**
+     * Called to assert the test
+     * @abstract
+     */
+    assert:function(expected,element) {
+
+        // called on test
+
+    }
+
+};
+
+var TestRegister = {
+
+    _register:[],
+
+    _addTest:function(path,config) {
+
+        // create Test class
+        var Test = function(){TestBase.call(this);};
+        Test.prototype = Object.create(TestBase.prototype);
+
+        // setup methods
+        if (config.assert) {
+            Test.prototype.assert = config.assert;
+        }
+        if (config.act) {
+            Test.prototype.act = config.act;
+        }
+        if (config.arrange) {
+            Test.prototype.arrange = config.arrange;
+        }
+
+        // arrange the test
+        var test = new Test();
+        test.arrange();
+
+        this._register[path] = test;
+
+        return test;
+    },
+
+    getTest:function(path,found) {
+
+        path = 'tests/' + path;
+
+        require([path],function(config){
+
+            var test = TestRegister._register[path];
+            if (!test) {
+                test = TestRegister._addTest(path,config);
+            }
+
+            found(test);
+
+        });
+
+    }
+
+};
+/**
+ * @param {TestBase} test
+ * @param {string} expected
+ * @param {element} element
+ * @constructor
+ */
+var Tester = function(test,expected,element) {
+
+    this._result = null;
+
+    this._test = test;
+    this._expected = expected;
+    this._element = element;
+
+    // if the test changed we forget the previous results
+    Observer.subscribe(this._test,'change',this._onChange.bind(this));
+
+};
+
+/**
+ * Test environment has changed and needs to be re-asserted
+ * @param {Event} e
+ * @private
+ */
+Tester.prototype._onChange = function(e) {
+    this._result = null;
+};
+
+/**
+ * Returns true if test assertion successful
+ * @returns {boolean}
+ */
+Tester.prototype.succeeds = function() {
+
+    // if result not set, assert
+    if (this._result===null) {
+        this._result = this._test.assert(this._expected,this._element);
+    }
+
+    // return the test result
+    return this._result;
+
+};
+
 
 /**
  * @exports ModuleBase
@@ -2539,97 +2835,6 @@ var ModuleBase = function(element,options) {
 ModuleBase.prototype.unload = function() {
     this._element.removeAttribute('data-initialized');
 };
-
-
-/**
- * @exports TestBase
- * @constructor
- * @param {string} expected - expected conditions to be met
- * @param {element} element - optional element to measure these conditions on
- * @abstract
- */
-var TestBase = function(expected,element) {
-
-    /**
-     * Expected conditions to match
-     * @type {string}
-     * @protected
-     */
-    this._expected = expected;
-
-    /**
-     * Reference to element
-     * @type {element}
-     * @protected
-     */
-    this._element = element;
-
-    /**
-     * Contains current test state
-     * @type {boolean}
-     * @private
-     */
-    this._state = true;
-
-};
-
-TestBase.inherit = function() {
-    var T = function(expected,element) {
-        TestBase.call(this,expected,element);
-    };
-    T.prototype = Object.create(TestBase.prototype);
-    return T;
-};
-
-
-/**
- * Called to setup the test
- * @abstract
- */
-TestBase.prototype.arrange = function() {
-
-    // override in subclass
-
-};
-
-
-/**
- * @fires change
- * @public
- */
-TestBase.prototype.assert = function() {
-
-    // call test
-    var state = this._onAssert(this._expected);
-
-    // check if result changed
-    if (this._state !== state) {
-        this._state = state;
-        Observer.publish(this,'change',state);
-    }
-
-};
-
-
-/**
- * Called when asserting the test
- * @param {string} expected - expected value
- * @return {boolean}
- * @abstract
- */
-TestBase.prototype._onAssert = function(expected) {
-    return false;
-};
-
-
-/**
- * @returns {boolean}
- * @public
- */
-TestBase.prototype.succeeds = function() {
-    return this._state;
-};
-
 
 
 /**
@@ -2705,128 +2910,6 @@ var ModuleRegister = {
 
 };
 
-var ExpressionBase = function() {};
-
-ExpressionBase.prototype = {
-
-    /**
-     * @abstract
-     */
-    succeeds:function() {
-        // override in subclass
-    },
-
-    /**
-     * @abstract
-     */
-    getConfig:function() {
-        // override in subclass
-    }
-
-};
-
-
-
-/**
- * @class
- * @constructor
- * @augments ExpressionBase
- * @param {BinaryExpression|TestBase|object} expression
- * @param {boolean} negate
- */
-var UnaryExpression = function(expression,negate) {
-
-    this._expression = expression instanceof BinaryExpression || expression instanceof UnaryExpression ? expression : null;
-
-    this._config = this._expression ? null : expression;
-
-    this._negate = typeof negate === 'undefined' ? false : negate;
-
-};
-
-UnaryExpression.prototype = Object.create(ExpressionBase);
-
-/**
- * Sets test reference
- * @param {TestBase} test
- */
-UnaryExpression.prototype.setTest = function(test) {
-
-    this._expression = test;
-
-};
-
-UnaryExpression.prototype.getConfig = function() {
-
-    return this._config ? [{'expression':this,'config':this._config}] : this._expression.getConfig();
-
-};
-
-
-/**
- * Tests if valid expression
- * @returns {boolean}
- */
-UnaryExpression.prototype.succeeds = function() {
-
-    if (!this._expression.succeeds) {
-        return false;
-    }
-
-    return this._expression.succeeds() !== this._negate;
-
-};
-
-UnaryExpression.prototype.toString = function() {
-    return (this._negate ? 'not ' : '') + (this._expression ? this._expression.toString() : this._config.path + ':{' + this._config.value + '}');
-};
-
-
-/**
- * @class
- * @constructor
- * @augments ExpressionBase
- * @param {UnaryExpression} a
- * @param {string} o
- * @param {UnaryExpression} b
- */
-var BinaryExpression = function(a,o,b) {
-
-    this._a = a;
-    this._o = o;
-    this._b = b;
-
-};
-
-BinaryExpression.prototype = Object.create(ExpressionBase);
-
-/**
- * Tests if valid expression
- * @returns {boolean}
- */
-BinaryExpression.prototype.succeeds = function() {
-
-    return this._o==='and' ?
-
-        // is 'and' operator
-        this._a.succeeds() && this._b.succeeds() :
-
-        // is 'or' operator
-        this._a.succeeds() || this._b.succeeds();
-
-};
-
-BinaryExpression.prototype.toString = function() {
-    return '(' + this._a.toString() + ' ' + this._o + ' ' + this._b.toString() + ')';
-};
-
-BinaryExpression.prototype.getConfig = function() {
-
-    return [this._a.getConfig(),this._b.getConfig()];
-
-};
-
-
 /**
  * @exports ConditionsManager
  * @class
@@ -2849,9 +2932,6 @@ var ConditionsManager = function(conditions,element) {
 
     // set element reference
     this._element = element;
-
-    // load tests
-    this._tests = [];
 
     // change event bind
     this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
@@ -2914,64 +2994,48 @@ ConditionsManager.prototype = {
                 continue;
             }
 
-            this._loadTestToExpression(configuration[i].config,configuration[i].expression);
+            this._loadTesterToExpression(configuration[i].config,configuration[i].expression);
         }
     },
 
 
     /**
-     * Loads test configuration to supplied expression
+     * Loads a tester to supplied expression
      * @param {Object} config
      * @param {UnaryExpression} expression
      * @private
      */
-    _loadTestToExpression:function(config,expression) {
+    _loadTesterToExpression:function(config,expression) {
 
         var self = this;
 
-        require(['tests/' + config.path],function(Test){
+        TestRegister.getTest(config.path,function(test) {
 
-            // create test instance
-            var instance = new Test(config.value,self._element);
+            // assign tester to expression
+            expression.assignTester(
+                new Tester(test,config.value,self._element)
+            );
 
-            // add instance to test set
-            self._tests.push(instance);
-
-            // set test to unary expression
-            expression.setTest(instance);
+            // listen to test changes
+            Observer.subscribe(test,'change',self._onResultsChangedBind);
 
             // lower test count
             self._count--;
             if (self._count===0) {
                 self._onReady();
             }
+
         });
 
     },
 
 
-    /**
+     /**
      * Called when all tests are ready
      * @fires ready
      * @private
      */
     _onReady:function() {
-
-        // setup
-        var l = this._tests.length,test,i;
-        for (i=0;i<l;i++) {
-
-            test = this._tests[i];
-
-            // arrange test (tests will assert themselves)
-            test.arrange();
-
-            // assert test to determine initial state
-            test.assert();
-
-            // listen to changes
-            Observer.subscribe(test,'change',this._onResultsChangedBind);
-        }
 
         // test current state
         this.test();
@@ -3191,7 +3255,7 @@ ModuleController.prototype._onLoad = function() {
         options;
 
     // parse element options
-    if (typeof this._options.options == 'string') {
+    if (typeof this._options.options === 'string') {
         try {
             elementOptions = JSON.parse(this._options.options);
         }
@@ -3262,8 +3326,6 @@ ModuleController.prototype.unload = function() {
  */
 ModuleController.prototype.execute = function(method,params) {
 
-    // todo: always return object containing status code and response
-
     // if behavior not loaded
     if (!this._moduleInstance) {
         return {
@@ -3294,6 +3356,10 @@ ModuleController.prototype.execute = function(method,params) {
  * @param {element} element
  */
 var Node = function(element) {
+
+    if (!element) {
+        throw new Error('Node(element): "element" is a required parameter.');
+    }
 
     // set element reference
     this._element = element;
@@ -3344,14 +3410,20 @@ Node.prototype.init = function() {
     // parse element module attributes
     this._moduleControllers = this._createModuleControllers();
 
+    // initialize
     var i=0,l=this._moduleControllers.length,mc;
+
+    // if no module controllers found
+    if (!l) {
+        throw new Error('Node.init(): "element" has to have a "data-module" attribute containing a reference to a Module.');
+    }
 
     // listen to ready events on module controllers
     for (;i<l;i++) {
 
         mc = this._moduleControllers[i];
 
-        // if module already ready, jump to onready method and don't bind listener
+        // if module already ready, jump to _onModuleReady method and don't bind listener
         if (mc.isReady()) {
             this._onModuleReady();
             continue;
@@ -3371,15 +3443,11 @@ Node.prototype.init = function() {
  */
 Node.prototype._onModuleReady = function() {
 
-    var i=0,l=this._moduleControllers.length,mc;
+    var i=this._moduleControllers.length;
 
     // check if all modules ready, if so, call on modules ready
-    for (;i<l;i++) {
-
-        mc = this._moduleControllers[i];
-
-        // if module controller is no tready, stop here, we wait for all module controllers to be ready
-        if (!mc.isReady()) {
+    while (--i >= 0) {
+        if (!this._moduleControllers[i].isReady()) {
             return;
         }
     }
@@ -3534,9 +3602,9 @@ Node.prototype._getSuitableActiveModuleController = function() {
  */
 Node.prototype._createModuleControllers = function() {
 
-    var result = [];
-    var config = this._element.getAttribute('data-module');
-    var advanced = config.charAt(0) == '[';
+    var result = [],
+        config = this._element.getAttribute('data-module') || '',
+        advanced = config.charAt(0) === '[';
 
     if (advanced) {
 
@@ -3575,7 +3643,7 @@ Node.prototype._createModuleControllers = function() {
 
 
     }
-    else {
+    else if (config.length) {
 
         // add default module controller
         result.push(
@@ -3689,9 +3757,6 @@ var Conditioner = function() {
 
     // options for conditioner
     this._options = {
-        'attribute':{
-            'module':'data-module'
-        },
         'modules':{}
     };
 
@@ -3703,12 +3768,6 @@ var Conditioner = function() {
      * @property {Observer}
      */
     this.Observer = Observer;
-
-    /**
-     * Reference to TestBase Class
-     * @property {TestBase}
-     */
-    this.TestBase = TestBase;
 
     /**
      * Reference to ModuleBase Class
@@ -3757,6 +3816,7 @@ Conditioner.prototype = {
         }
     },
 
+
     /**
      * Loads modules within the given context
      * @param {element} context - Context to find modules in
@@ -3770,7 +3830,7 @@ Conditioner.prototype = {
         }
 
         // register vars and get elements
-        var elements = context.querySelectorAll('[' + this._options.attribute.module + ']'),
+        var elements = context.querySelectorAll('[data-module]'),
             l = elements.length,
             i = 0,
             nodes = [],
@@ -3800,13 +3860,14 @@ Conditioner.prototype = {
         // higher numbers go first,
         // then 0 (or no priority assigned),
         // then negative numbers
+        // - (it's actually the other way around but that's because of the reversed while loop)
         nodes.sort(function(a,b){
-            return b.getPriority() - a.getPriority();
+            return a.getPriority() - b.getPriority();
         });
 
-        // initialize modules depending on assigned priority
-        l = nodes.length;
-        for (i=0; i<l; i++) {
+        // initialize modules depending on assigned priority (in reverse, but priority is reversed as well so all is okay)
+        i = nodes.length;
+        while (--i >= 0) {
             nodes[i].init();
         }
 
@@ -3819,7 +3880,7 @@ Conditioner.prototype = {
 
 
     /**
-     * Returns ModuleControllers matching the selector
+     * Returns the first Node matching the selector
      * @param {string} selector - Selector to match the nodes to
      * @return {Node} First matched node
      */
@@ -3829,7 +3890,7 @@ Conditioner.prototype = {
 
 
     /**
-     * Returns all ModuleControllers matching the selector
+     * Returns all nodes matching the selector
      * @param {string} selector - Optional selector to match the nodes to
      * @return {Array} Array containing matched nodes
      */
@@ -3883,24 +3944,18 @@ define('tests/connection',['conditioner'],function(conditioner){
 
     
 
-    var exports = conditioner.TestBase.inherit(),
-    p = exports.prototype;
+    return {
+        arrange:function(){
 
-    p.handleEvent = function(e) {
-        this.assert();
-    };
+            if (!('connection' in navigator)) {return;}
 
-    p.arrange = function() {
-        if (navigator.connection) {
-            navigator.connection.addEventListener('change', this, false);
+            navigator.connection.addEventListener('change',this,false);
+
+        },
+        assert:function(expected) {
+            return expected === 'any' && navigator.onLine;
         }
     };
-
-    p._onAssert = function(expected) {
-        return expected === 'any' && navigator.onLine;
-    };
-
-    return exports;
 
 });
 
@@ -3982,28 +4037,26 @@ define('security/StorageConsentGuard',['conditioner','module'],function(conditio
  */
 define('tests/cookies',['conditioner','security/StorageConsentGuard'],function(conditioner,StorageConsentGuard){
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype;
+    return {
+        arrange:function() {
 
-    p.arrange = function() {
+            var guard = StorageConsentGuard.getInstance(),
+                self = this;
 
-        var guard = StorageConsentGuard.getInstance(),self = this;
-        conditioner.Observer.subscribe(guard,'change',function() {
-            self.assert();
-        });
+            conditioner.Observer.subscribe(guard,'change',function() {
+                self.act();
+            });
 
+        },
+        assert:function(expected) {
+
+            var guard = StorageConsentGuard.getInstance(),
+                level = guard.getActiveLevel();
+
+            return !!(expected.match(new RegExp(level,'g')));
+
+        }
     };
-
-    p._onAssert = function(expected) {
-
-        var guard = StorageConsentGuard.getInstance(),
-            level = guard.getActiveLevel(),
-            result = expected.match(new RegExp(level,'g'));
-
-        return result ? true : false;
-    };
-
-    return exports;
 
 });
 
@@ -4015,62 +4068,57 @@ define('tests/element',['conditioner'],function(conditioner){
 
     
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype;
-
-    p.handleEvent = function(e) {
-        this.assert();
+    var _isVisible = function(element) {
+        var viewHeight = window.innerHeight,
+        bounds = element.getBoundingClientRect();
+        return (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
     };
 
-    p.arrange = function() {
-        window.addEventListener('resize',this,false);
-        window.addEventListener('scroll',this,false);
-    };
+    return {
+        arrange:function() {
 
-    p._onAssert = function(expected) {
+            window.addEventListener('resize',this,false);
+            window.addEventListener('scroll',this,false);
 
-        var parts = expected.split(':'),key,value;
-        if (parts) {
-            key = parts[0];
-            value = parseInt(parts[1],10);
-        }
-        else {
-            key = expected;
-        }
+        },
+        assert:function(expected,element) {
 
-        if (key==='min-width') {
-            return this._element.offsetWidth >= value;
-        }
-        else if (key==='max-width') {
-            return this._element.offsetWidth <= value;
-        }
-        else if (key==='seen' || key ==='visible') {
+            var parts = expected.split(':'),key,value;
 
-            // measure if element is visible
-            var viewHeight = window.innerHeight,
-                bounds = this._element.getBoundingClientRect(),
-                visible = (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
+            if (parts) {
+                key = parts[0];
+                value = parseInt(parts[1],10);
+            }
+            else {
+                key = expected;
+            }
 
-            if (key === 'seen') {
+            if (key === 'min-width') {
+                return element.offsetWidth >= value;
+            }
+            else if (key === 'max-width') {
+                return element.offsetWidth <= value;
+            }
+            else if (key === 'visible') {
+                return _isVisible(element);
+            }
+            else if (key === 'seen') {
 
-                // remember if seen
-                if (typeof this._seen === 'undefined' && visible) {
-                    this._seen = true;
+                var hasBeenSeen = this.remember(['seen',element]);
+                if (!hasBeenSeen) {
+                    hasBeenSeen = _isVisible(element);
+                    if (hasBeenSeen) {
+                        this.remember(['seen',element],true);
+                    }
                 }
 
-                // if seen
-                return this._seen === true;
+                return hasBeenSeen;
             }
 
-            if (key === 'visible') {
-                return visible;
-            }
+            return false;
+
         }
-
-        return false;
     };
-
-    return exports;
 
 });
 
@@ -4083,40 +4131,45 @@ define('tests/media',['conditioner'],function(conditioner){
 
     
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype;
+    return {
+        arrange:function() {
 
-    p.arrange = function() {
+            this.remember('support','matchMedia' in window);
 
-        if (!window.matchMedia) {
-            return;
+            this.act();
+        },
+        assert:function(expected) {
+
+            var support = this.remember('support');
+            if (!support) {
+                return false;
+            }
+
+            // test if supported
+            if (expected === 'supported') {
+                return support;
+            }
+
+            // setup mql
+            var mql = this.remember(expected);
+            if (!mql) {
+                var self = this;
+                mql = window.matchMedia(expected);
+                mql.addListener(function(){
+                    self.act();
+                });
+                this.remember(expected,mql);
+            }
+
+            // if no media query list to remember, apparently not supported
+            if (typeof mql === 'undefined') {
+                return false;
+            }
+
+            // test media query
+            return mql.matches;
         }
-
-        var self = this;
-        this._mql = window.matchMedia(this._expected);
-        this._mql.addListener(function(){
-            self.assert();
-        });
-
     };
-
-    p._onAssert = function(expected) {
-
-        // see if checking if supported
-        if (expected === 'supported') {
-            return typeof this._mql !== 'undefined';
-        }
-
-        // if no media query list defined, no support
-        if (typeof this._mql === 'undefined') {
-            return false;
-        }
-
-        // test media query
-        return this._mql.matches;
-    };
-
-    return exports;
 
 });
 
@@ -4128,49 +4181,60 @@ define('tests/pointer',['conditioner'],function(conditioner){
 
     
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype,
-        MOUSE_MOVES_REQUIRED = 2;
+    return {
+        arrange:function() {
 
-    p._totalMouseMoves = 0;
+            this.remember('moves',0);
+            this.remember('moves-required',2);
 
-    p.handleEvent = function(e) {
-        if (e.type == 'mousemove') {
-            this._totalMouseMoves++;
-            if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
-                document.removeEventListener('mousemove',this,false);
-                document.removeEventListener('mousedown',this,false);
+            // start listening to mousemoves to deduce the availability of a pointer device
+            document.addEventListener('mousemove',this,false);
+            document.addEventListener('mousedown',this,false);
+
+            // start timer, stop testing after 30 seconds
+            var self = this;
+            setTimeout(function(){
+                document.removeEventListener('mousemove',self,false);
+                document.removeEventListener('mousedown',self,false);
+            },30000);
+
+        },
+        act:function(e) {
+
+            if (e.type === 'mousemove') {
+
+                var moves = this.remember('moves');
+                    moves++;
+                this.remember('moves',moves);
+
+                if (moves >= this.remember('moves-required')) {
+
+                    // stop listening to events
+                    document.removeEventListener('mousemove',this,false);
+                    document.removeEventListener('mousedown',this,false);
+
+                    // remember
+                    this.remember('pointer',true);
+
+                    // mouse now detected
+                    conditioner.Observer.publish(this,'change');
+                }
             }
+            else {
+                this.remember('moves',0);
+            }
+
+        },
+        assert:function(expected) {
+
+            var result = null;
+            if (this.remember('pointer')) {
+                result = 'available';
+            }
+
+            return result === expected;
         }
-        else {
-            this._totalMouseMoves = 0;
-        }
-        this.assert();
     };
-
-    p.arrange = function() {
-
-        // start listening to mousemoves to deduct the availability of a pointer device
-        document.addEventListener('mousemove',this,false);
-        document.addEventListener('mousedown',this,false);
-
-        // start timer, stop testing after 10 seconds
-        var self = this;
-        setTimeout(function(){
-            document.removeEventListener('mousemove',self,false);
-            document.removeEventListener('mousedown',self,false);
-        },10000);
-    };
-
-    p._onAssert = function(expected) {
-        var result = '';
-        if (this._totalMouseMoves >= MOUSE_MOVES_REQUIRED) {
-            result = 'available';
-        }
-        return result === expected;
-    };
-
-    return exports;
 
 });
 
@@ -4182,38 +4246,30 @@ define('tests/window',['conditioner'],function(conditioner){
 
     
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype;
+    return {
+        arrange:function() {
 
-    p.handleEvent = function(e) {
-        this.assert();
-    };
+            window.addEventListener('resize',this,false);
 
-    p.arrange = function() {
-        window.addEventListener('resize',this,false);
-    };
+        },
+        assert:function(expected) {
 
-    p._onAssert = function(expected) {
+            var innerWidth = window.innerWidth || document.documentElement.clientWidth,
+                parts = expected.split(':'),
+                key = parts[0],
+                value = parseInt(parts[1],10);
 
-        var innerWidth = window.innerWidth || document.documentElement.clientWidth,
-            parts = expected.split(':'),
-            key = parts[0],
-            value = parseInt(parts[1],10);
-
-        switch(key) {
-            case 'min-width':{
+            if (key === 'min-width') {
                 return innerWidth >= value;
             }
-                break;
-            case 'max-width':{
+            else if (key === 'max-width') {
                 return innerWidth <= value;
             }
+
+            return false;
+
         }
-
-        return false;
     };
-
-    return exports;
 
 });
 

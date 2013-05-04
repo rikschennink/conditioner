@@ -19,12 +19,14 @@ define(['conditioner'],function(conditioner){
         this._inner = this._element.innerHTML;
 
         // test if geolocation support, otherwise map won't function
-        if (!navigator.geolocation) {
+        var support = 'geolocation' in navigator;
+        if (!support) {
             this._element.innerHTML = 'Your browser does not support the Geolocation API';
             return;
         }
 
         // loading map
+        this._loading = true;
         this._element.innerHTML = 'Loading map...';
 
         // get position (wait max 5 seconds for it)
@@ -37,7 +39,13 @@ define(['conditioner'],function(conditioner){
     // get position success
     p._onSuccess = function(position) {
 
+        // if no longer loading, stop here
+        if (!this._loading) {
+            return;
+        }
+
         // clear
+        this._loading = false;
         this._element.innerHTML = '';
 
         // append map
@@ -51,6 +59,13 @@ define(['conditioner'],function(conditioner){
 
     // get position fail
     p._onError = function(error) {
+
+        // if no longer loading, stop here
+        if (!this._loading) {
+            return;
+        }
+
+        this._loading = false;
         this._element.innerHTML = error.message;
     };
 
@@ -59,6 +74,9 @@ define(['conditioner'],function(conditioner){
 
         // call ModuleBase unload method
         _parent.prototype.unload.call(this);
+
+        // no longer loading
+        this._loading = false;
 
         // restore content
         this._element.innerHTML = this._inner;

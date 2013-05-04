@@ -6,61 +6,56 @@ define(['conditioner'],function(conditioner){
 
     'use strict';
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype;
-
-    p.handleEvent = function(e) {
-        this.assert();
+    var _isVisible = function(element) {
+        var viewHeight = window.innerHeight,
+        bounds = element.getBoundingClientRect();
+        return (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
     };
 
-    p.arrange = function() {
-        window.addEventListener('resize',this,false);
-        window.addEventListener('scroll',this,false);
-    };
+    return {
+        arrange:function() {
 
-    p._onAssert = function(expected) {
+            window.addEventListener('resize',this,false);
+            window.addEventListener('scroll',this,false);
 
-        var parts = expected.split(':'),key,value;
-        if (parts) {
-            key = parts[0];
-            value = parseInt(parts[1],10);
-        }
-        else {
-            key = expected;
-        }
+        },
+        assert:function(expected,element) {
 
-        if (key==='min-width') {
-            return this._element.offsetWidth >= value;
-        }
-        else if (key==='max-width') {
-            return this._element.offsetWidth <= value;
-        }
-        else if (key==='seen' || key ==='visible') {
+            var parts = expected.split(':'),key,value;
 
-            // measure if element is visible
-            var viewHeight = window.innerHeight,
-                bounds = this._element.getBoundingClientRect(),
-                visible = (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
+            if (parts) {
+                key = parts[0];
+                value = parseInt(parts[1],10);
+            }
+            else {
+                key = expected;
+            }
 
-            if (key === 'seen') {
+            if (key === 'min-width') {
+                return element.offsetWidth >= value;
+            }
+            else if (key === 'max-width') {
+                return element.offsetWidth <= value;
+            }
+            else if (key === 'visible') {
+                return _isVisible(element);
+            }
+            else if (key === 'seen') {
 
-                // remember if seen
-                if (typeof this._seen === 'undefined' && visible) {
-                    this._seen = true;
+                var hasBeenSeen = this.remember(['seen',element]);
+                if (!hasBeenSeen) {
+                    hasBeenSeen = _isVisible(element);
+                    if (hasBeenSeen) {
+                        this.remember(['seen',element],true);
+                    }
                 }
 
-                // if seen
-                return this._seen === true;
+                return hasBeenSeen;
             }
 
-            if (key === 'visible') {
-                return visible;
-            }
+            return false;
+
         }
-
-        return false;
     };
-
-    return exports;
 
 });

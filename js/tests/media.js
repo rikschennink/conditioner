@@ -7,39 +7,44 @@ define(['conditioner'],function(conditioner){
 
     'use strict';
 
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype;
+    return {
+        arrange:function() {
 
-    p.arrange = function() {
+            this.remember('support','matchMedia' in window);
 
-        if (!window.matchMedia) {
-            return;
+            this.act();
+        },
+        assert:function(expected) {
+
+            var support = this.remember('support');
+            if (!support) {
+                return false;
+            }
+
+            // test if supported
+            if (expected === 'supported') {
+                return support;
+            }
+
+            // setup mql
+            var mql = this.remember(expected);
+            if (!mql) {
+                var self = this;
+                mql = window.matchMedia(expected);
+                mql.addListener(function(){
+                    self.act();
+                });
+                this.remember(expected,mql);
+            }
+
+            // if no media query list to remember, apparently not supported
+            if (typeof mql === 'undefined') {
+                return false;
+            }
+
+            // test media query
+            return mql.matches;
         }
-
-        var self = this;
-        this._mql = window.matchMedia(this._expected);
-        this._mql.addListener(function(){
-            self.assert();
-        });
-
     };
-
-    p._onAssert = function(expected) {
-
-        // see if checking if supported
-        if (expected === 'supported') {
-            return typeof this._mql !== 'undefined';
-        }
-
-        // if no media query list defined, no support
-        if (typeof this._mql === 'undefined') {
-            return false;
-        }
-
-        // test media query
-        return this._mql.matches;
-    };
-
-    return exports;
 
 });
