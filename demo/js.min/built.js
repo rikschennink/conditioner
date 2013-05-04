@@ -2712,13 +2712,13 @@ var TestRegister = {
 
         // setup methods
         if (config.assert) {
-            Test.prototype['assert'] = config.assert;
+            Test.prototype.assert = config.assert;
         }
         if (config.act) {
-            Test.prototype['act'] = config.act;
+            Test.prototype.act = config.act;
         }
         if (config.arrange) {
-            Test.prototype['arrange'] = config.arrange;
+            Test.prototype.arrange = config.arrange;
         }
 
         // arrange the test
@@ -2727,21 +2727,21 @@ var TestRegister = {
 
         this._register[path] = test;
 
+        return test;
     },
 
     getTest:function(path,found) {
-
-        var self = this;
 
         path = 'tests/' + path;
 
         require([path],function(config){
 
-            if (!self._register[path]) {
-                self._addTest(path,config);
+            var test = TestRegister._register[path];
+            if (!test) {
+                test = TestRegister._addTest(path,config);
             }
 
-            found(self._register[path]);
+            found(test);
 
         });
 
@@ -2757,11 +2757,12 @@ var TestRegister = {
 var Tester = function(test,expected,element) {
 
     this._result = null;
+
     this._test = test;
     this._expected = expected;
     this._element = element;
 
-    // if the test changes
+    // if the test changed we forget the previous results
     Observer.subscribe(this._test,'change',this._onChange.bind(this));
 
 };
@@ -4133,24 +4134,25 @@ define('tests/media',['conditioner'],function(conditioner){
     return {
         arrange:function() {
 
-            if (!('matchMedia' in window)) {
-                return;
-            }
+            this.remember('support','matchMedia' in window);
 
             this.act();
-
         },
         assert:function(expected) {
 
+            var support = this.remember('support');
+            if (!support) {
+                return false;
+            }
+
             // test if supported
             if (expected === 'supported') {
-                return ('matchMedia' in window);
+                return support;
             }
 
             // setup mql
             var mql = this.remember(expected);
             if (!mql) {
-
                 var self = this;
                 mql = window.matchMedia(expected);
                 mql.addListener(function(){
@@ -4211,6 +4213,9 @@ define('tests/pointer',['conditioner'],function(conditioner){
                     document.removeEventListener('mousemove',this,false);
                     document.removeEventListener('mousedown',this,false);
 
+                    // remember
+                    this.remember('pointer',true);
+
                     // mouse now detected
                     conditioner.Observer.publish(this,'change');
                 }
@@ -4223,7 +4228,7 @@ define('tests/pointer',['conditioner'],function(conditioner){
         assert:function(expected) {
 
             var result = null;
-            if (this.remember('moves') >= this.remember('moves-required')) {
+            if (this.remember('pointer')) {
                 result = 'available';
             }
 

@@ -38,6 +38,9 @@ define(['conditioner'],function(conditioner){
                     document.removeEventListener('mousemove',this,false);
                     document.removeEventListener('mousedown',this,false);
 
+                    // remember
+                    this.remember('pointer',true);
+
                     // mouse now detected
                     conditioner.Observer.publish(this,'change');
                 }
@@ -50,7 +53,7 @@ define(['conditioner'],function(conditioner){
         assert:function(expected) {
 
             var result = null;
-            if (this.remember('moves') >= this.remember('moves-required')) {
+            if (this.remember('pointer')) {
                 result = 'available';
             }
 

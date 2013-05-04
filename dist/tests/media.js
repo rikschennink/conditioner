@@ -10,24 +10,25 @@ define(['conditioner'],function(conditioner){
     return {
         arrange:function() {
 
-            if (!('matchMedia' in window)) {
-                return;
-            }
+            this.remember('support','matchMedia' in window);
 
             this.act();
-
         },
         assert:function(expected) {
 
+            var support = this.remember('support');
+            if (!support) {
+                return false;
+            }
+
             // test if supported
             if (expected === 'supported') {
-                return ('matchMedia' in window);
+                return support;
             }
 
             // setup mql
             var mql = this.remember(expected);
             if (!mql) {
-
                 var self = this;
                 mql = window.matchMedia(expected);
                 mql.addListener(function(){

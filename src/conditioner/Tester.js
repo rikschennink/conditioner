@@ -7,11 +7,12 @@
 var Tester = function(test,expected,element) {
 
     this._result = null;
+
     this._test = test;
     this._expected = expected;
     this._element = element;
 
-    // if the test changes
+    // if the test changed we forget the previous results
     Observer.subscribe(this._test,'change',this._onChange.bind(this));
 
 };

@@ -11,13 +11,13 @@ var TestRegister = {
 
         // setup methods
         if (config.assert) {
-            Test.prototype['assert'] = config.assert;
+            Test.prototype.assert = config.assert;
         }
         if (config.act) {
-            Test.prototype['act'] = config.act;
+            Test.prototype.act = config.act;
         }
         if (config.arrange) {
-            Test.prototype['arrange'] = config.arrange;
+            Test.prototype.arrange = config.arrange;
         }
 
         // arrange the test
@@ -26,21 +26,21 @@ var TestRegister = {
 
         this._register[path] = test;
 
+        return test;
     },
 
     getTest:function(path,found) {
-
-        var self = this;
 
         path = 'tests/' + path;
 
         require([path],function(config){
 
-            if (!self._register[path]) {
-                self._addTest(path,config);
+            var test = TestRegister._register[path];
+            if (!test) {
+                test = TestRegister._addTest(path,config);
             }
 
-            found(self._register[path]);
+            found(test);
 
         });
 
