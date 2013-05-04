@@ -34,6 +34,8 @@ define(['conditioner'],function(conditioner){
 
                 if (moves >= this.remember('moves-required')) {
 
+                    console.log('jaj');
+
                     // stop listening to events
                     document.removeEventListener('mousemove',this,false);
                     document.removeEventListener('mousedown',this,false);
@@ -53,6 +55,8 @@ define(['conditioner'],function(conditioner){
             if (this.remember('moves') >= this.remember('moves-required')) {
                 result = 'available';
             }
+
+            console.log(result,expected,result === expected);
 
             return result === expected;
         }

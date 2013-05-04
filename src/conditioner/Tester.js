@@ -6,10 +6,27 @@
  */
 var Tester = function(test,expected,element) {
 
+    this._result = null;
+
     this._test = test;
     this._expected = expected;
     this._element = element;
 
+    // arrange the tes
+    //this._test.arrange(expected,element);
+
+    // if the test changes
+    Observer.subscribe(this._test,'change',this._onChange.bind(this));
+
+};
+
+/**
+ * Test environment has changed and needs to be re-asserted
+ * @param {Event} e
+ * @private
+ */
+Tester.prototype._onChange = function(e) {
+    this._result = null;
 };
 
 /**
@@ -17,5 +34,13 @@ var Tester = function(test,expected,element) {
  * @returns {boolean}
  */
 Tester.prototype.succeeds = function() {
-    return this._test.assert(this._expected,this._element);
+
+    // if result not set, assert
+    if (this._result===null) {
+        this._result = this._test.assert(this._expected,this._element);
+    }
+
+    // return the test result
+    return this._result;
+
 };

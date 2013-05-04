@@ -60,8 +60,6 @@ ConditionsManager.prototype = {
         // test expression success state
         var suitable = this._expression.succeeds();
 
-        console.log(suitable);
-
         // fire changed event if environment suitability changed
         if (suitable != this._suitable) {
             this._suitable = suitable;
@@ -102,13 +100,13 @@ ConditionsManager.prototype = {
 
         TestRegister.getTest(config.path,function(test) {
 
-            // listen to test changes
-            Observer.subscribe(test,'change',self._onResultsChangedBind);
-
             // assign tester to expression
             expression.assignTester(
                 new Tester(test,config.value,self._element)
             );
+
+            // listen to test changes
+            Observer.subscribe(test,'change',self._onResultsChangedBind);
 
             // lower test count
             self._count--;

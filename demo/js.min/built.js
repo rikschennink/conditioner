@@ -2756,10 +2756,27 @@ var TestRegister = {
  */
 var Tester = function(test,expected,element) {
 
+    this._result = null;
+
     this._test = test;
     this._expected = expected;
     this._element = element;
 
+    // arrange the tes
+    //this._test.arrange(expected,element);
+
+    // if the test changes
+    Observer.subscribe(this._test,'change',this._onChange.bind(this));
+
+};
+
+/**
+ * Test environment has changed and needs to be re-asserted
+ * @param {Event} e
+ * @private
+ */
+Tester.prototype._onChange = function(e) {
+    this._result = null;
 };
 
 /**
@@ -2767,7 +2784,15 @@ var Tester = function(test,expected,element) {
  * @returns {boolean}
  */
 Tester.prototype.succeeds = function() {
-    return this._test.assert(this._expected,this._element);
+
+    // if result not set, assert
+    if (this._result===null) {
+        this._result = this._test.assert(this._expected,this._element);
+    }
+
+    // return the test result
+    return this._result;
+
 };
 
 
@@ -2949,8 +2974,6 @@ ConditionsManager.prototype = {
         // test expression success state
         var suitable = this._expression.succeeds();
 
-        console.log(suitable);
-
         // fire changed event if environment suitability changed
         if (suitable != this._suitable) {
             this._suitable = suitable;
@@ -2991,13 +3014,13 @@ ConditionsManager.prototype = {
 
         TestRegister.getTest(config.path,function(test) {
 
-            // listen to test changes
-            Observer.subscribe(test,'change',self._onResultsChangedBind);
-
             // assign tester to expression
             expression.assignTester(
                 new Tester(test,config.value,self._element)
             );
+
+            // listen to test changes
+            Observer.subscribe(test,'change',self._onResultsChangedBind);
 
             // lower test count
             self._count--;
@@ -4057,14 +4080,12 @@ define('tests/element',['conditioner'],function(conditioner){
     return {
         arrange:function() {
 
-            // arrange
             window.addEventListener('resize',this,false);
             window.addEventListener('scroll',this,false);
 
         },
         assert:function(expected,element) {
 
-            // assert
             var parts = expected.split(':'),key,value;
 
             if (parts) {
@@ -4116,7 +4137,6 @@ define('tests/media',['conditioner'],function(conditioner){
     return {
         arrange:function() {
 
-            // arrange
             if (!('matchMedia' in window)) {
                 return;
             }
@@ -4125,8 +4145,6 @@ define('tests/media',['conditioner'],function(conditioner){
 
         },
         assert:function(expected) {
-
-            // assert
 
             // test if supported
             if (expected === 'supported') {
@@ -4193,6 +4211,8 @@ define('tests/pointer',['conditioner'],function(conditioner){
 
                 if (moves >= this.remember('moves-required')) {
 
+                    console.log('jaj');
+
                     // stop listening to events
                     document.removeEventListener('mousemove',this,false);
                     document.removeEventListener('mousedown',this,false);
@@ -4213,6 +4233,8 @@ define('tests/pointer',['conditioner'],function(conditioner){
                 result = 'available';
             }
 
+            console.log(result,expected,result === expected);
+
             return result === expected;
         }
     };
@@ -4230,41 +4252,9 @@ define('tests/window',['conditioner'],function(conditioner){
     return {
         arrange:function() {
 
-            // arrange
             window.addEventListener('resize',this,false);
 
         },
-        assert:function(expected) {
-
-            // assert
-            var innerWidth = window.innerWidth || document.documentElement.clientWidth,
-                parts = expected.split(':'),
-                key = parts[0],
-                value = parseInt(parts[1],10);
-
-            if (key === 'min-width') {
-                return innerWidth >= value;
-            }
-            else if (key === 'max-width') {
-                return innerWidth <= value;
-            }
-
-            return false;
-
-        }
-    };
-
-    /*
-    var Test = {
-
-        handleEvent:function() {
-            conditioner.Observer.publish(this,'change');
-        },
-
-        arrange:function() {
-            window.addEventListener('resize',this,false);
-        },
-
         assert:function(expected) {
 
             var innerWidth = window.innerWidth || document.documentElement.clientWidth,
@@ -4282,59 +4272,7 @@ define('tests/window',['conditioner'],function(conditioner){
             return false;
 
         }
-
     };
-
-    return {
-
-        load:function() {
-            return Test;
-        },
-
-        hash:function() {
-            return 'window';
-        }
-
-    };
-
-
-
-    /*
-
-    var exports = conditioner.TestBase.inherit(),
-        p = exports.prototype;
-
-    p.handleEvent = function(e) {
-        this.assert();
-    };
-
-    p.arrange = function() {
-        window.addEventListener('resize',this,false);
-    };
-
-    p._onAssert = function(expected) {
-
-        var innerWidth = window.innerWidth || document.documentElement.clientWidth,
-            parts = expected.split(':'),
-            key = parts[0],
-            value = parseInt(parts[1],10);
-
-        switch(key) {
-            case 'min-width':{
-                return innerWidth >= value;
-            }
-                break;
-            case 'max-width':{
-                return innerWidth <= value;
-            }
-        }
-
-        return false;
-    };
-
-    return exports;
-
-    */
 
 });
 

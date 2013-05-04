@@ -10,7 +10,6 @@ define(['conditioner'],function(conditioner){
     return {
         arrange:function() {
 
-            // arrange
             if (!('matchMedia' in window)) {
                 return;
             }
@@ -19,8 +18,6 @@ define(['conditioner'],function(conditioner){
 
         },
         assert:function(expected) {
-
-            // assert
 
             // test if supported
             if (expected === 'supported') {
