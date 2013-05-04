@@ -7,13 +7,9 @@
 var Tester = function(test,expected,element) {
 
     this._result = null;
-
     this._test = test;
     this._expected = expected;
     this._element = element;
-
-    // arrange the tes
-    //this._test.arrange(expected,element);
 
     // if the test changes
     Observer.subscribe(this._test,'change',this._onChange.bind(this));

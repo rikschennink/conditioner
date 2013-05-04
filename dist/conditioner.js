@@ -686,7 +686,7 @@ var TestRegister = {
 
         // create Test class
         var Test = function(){TestBase.call(this);};
-            Test.prototype = Object.create(TestBase.prototype);
+        Test.prototype = Object.create(TestBase.prototype);
 
         // setup methods
         if (config.assert) {
@@ -701,7 +701,7 @@ var TestRegister = {
 
         // arrange the test
         var test = new Test();
-            test.arrange();
+        test.arrange();
 
         this._register[path] = test;
 
@@ -735,13 +735,9 @@ var TestRegister = {
 var Tester = function(test,expected,element) {
 
     this._result = null;
-
     this._test = test;
     this._expected = expected;
     this._element = element;
-
-    // arrange the tes
-    //this._test.arrange(expected,element);
 
     // if the test changes
     Observer.subscribe(this._test,'change',this._onChange.bind(this));

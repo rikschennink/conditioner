@@ -7,7 +7,7 @@ var TestRegister = {
 
         // create Test class
         var Test = function(){TestBase.call(this);};
-            Test.prototype = Object.create(TestBase.prototype);
+        Test.prototype = Object.create(TestBase.prototype);
 
         // setup methods
         if (config.assert) {
@@ -22,7 +22,7 @@ var TestRegister = {
 
         // arrange the test
         var test = new Test();
-            test.arrange();
+        test.arrange();
 
         this._register[path] = test;
 
