@@ -2,7 +2,7 @@
  * Tests if an elements dimensions match certain expectations
  * @module tests/element
  */
-define(['conditioner'],function(conditioner){
+define(function(){
 
     'use strict';
 
@@ -13,44 +13,43 @@ define(['conditioner'],function(conditioner){
     };
 
     return {
-        arrange:function() {
 
-            window.addEventListener('resize',this,false);
-            window.addEventListener('scroll',this,false);
-
+        setup:function(change) {
+            window.addEventListener('resize',change,false);
+            window.addEventListener('scroll',change,false);
         },
+
         assert:function(expected,element) {
 
-            var parts = expected.split(':'),key,value;
-
-            if (parts) {
-                key = parts[0];
-                value = parseInt(parts[1],10);
-            }
-            else {
-                key = expected;
-            }
-
-            if (key === 'min-width') {
-                return element.offsetWidth >= value;
-            }
-            else if (key === 'max-width') {
-                return element.offsetWidth <= value;
-            }
-            else if (key === 'visible') {
+            if (expected === 'visible') {
                 return _isVisible(element);
             }
-            else if (key === 'seen') {
+            else if (expected === 'seen') {
 
-                var hasBeenSeen = this.remember(['seen',element]);
-                if (!hasBeenSeen) {
-                    hasBeenSeen = _isVisible(element);
-                    if (hasBeenSeen) {
-                        this.remember(['seen',element],true);
-                    }
+                if (!this._seen) {
+                    this._seen = _isVisible(element);
                 }
 
-                return hasBeenSeen;
+                return this._seen;
+            }
+            else {
+
+                var parts = expected.split(':'),key,value;
+
+                if (!parts) {
+                    return false;
+                }
+
+                key = parts[0];
+                value = parseInt(parts[1],10);
+
+                if (key === 'min-width') {
+                    return element.offsetWidth >= value;
+                }
+                else if (key === 'max-width') {
+                    return element.offsetWidth <= value;
+                }
+
             }
 
             return false;

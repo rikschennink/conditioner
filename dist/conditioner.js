@@ -609,32 +609,9 @@ var ExpressionFormatter = {
  * @constructor
  * @abstract
  */
-var TestBase = function() {
-
-    this._memory = {};
-
-};
+var TestBase = function() {};
 
 TestBase.prototype = {
-
-    /**
-     *
-     * @param {object} key
-     * @param {object} value
-     * @returns {object}
-     * @protected
-     */
-    remember:function(key,value) {
-
-        // return value
-        if (typeof value === 'undefined') {
-            return this._memory[key];
-        }
-
-        // set value
-        this._memory[key] = value;
-        return value;
-    },
 
     /**
      * Delegates events to act method
@@ -684,28 +661,74 @@ var TestRegister = {
 
     _addTest:function(path,config) {
 
-        // create Test class
+        if (!config.assert) {
+            throw new Error('TestRegister._addTest(path,config): "config.assert" is a required parameter.');
+        }
+
+        // create Test Class
         var Test = function(){TestBase.call(this);};
         Test.prototype = Object.create(TestBase.prototype);
 
-        // setup methods
-        if (config.assert) {
-            Test.prototype.assert = config.assert;
-        }
-        if (config.act) {
-            Test.prototype.act = config.act;
-        }
+        // setup static methods and properties
+        Test.supported = 'support' in config ? config.support() : true;
+        Test.callbacks = [];
+
+        Test._setup = function(test) {
+
+            if (!Test.supported){return;}
+
+            // push reference to test act method
+            Test.callbacks.push(test.act.bind(test));
+
+            // if setup done
+            if (Test.callbacks.length>1) {return;}
+
+            // call test setup method
+            config.setup.call(Test,Test._onChange);
+
+        };
+
+        Test._onChange = function(e) {
+
+            // call change method if defined
+            var changed = 'change' in config ? config.change.call(Test,e,Test._onChange) : true;
+            if (changed) {
+                var i=0,l=Test.callbacks.length;
+                for (;i<l;i++) {
+                    Test.callbacks[i]();
+                }
+            }
+
+        };
+
+        // setup instance methods
+        Test.prototype.supported = function() {
+            return Test.supported;
+        };
+
+        // set custom or default arrange method
         if (config.arrange) {
             Test.prototype.arrange = config.arrange;
         }
+        else {
+            Test.prototype.arrange = function() {
+                Test._setup(this);
+            };
+        }
 
-        // arrange the test
-        var test = new Test();
-        test.arrange();
+        // override act method if necessary
+        if (config.act) {
+            Test.prototype.act = config.act;
+        }
 
-        this._register[path] = test;
+        // set assert method
+        Test.prototype.assert = config.assert;
 
-        return test;
+        // remember this test
+        this._register[path] = Test;
+
+        // return reference
+        return Test;
     },
 
     getTest:function(path,found) {
@@ -714,12 +737,12 @@ var TestRegister = {
 
         require([path],function(config){
 
-            var test = TestRegister._register[path];
-            if (!test) {
-                test = TestRegister._addTest(path,config);
+            var Test = TestRegister._register[path];
+            if (!Test) {
+                Test = TestRegister._addTest(path,config);
             }
 
-            found(test);
+            found(new Test());
 
         });
 
@@ -734,24 +757,14 @@ var TestRegister = {
  */
 var Tester = function(test,expected,element) {
 
-    this._result = null;
-
+    // test and data references
     this._test = test;
     this._expected = expected;
     this._element = element;
 
-    // if the test changed we forget the previous results
-    Observer.subscribe(this._test,'change',this._onChange.bind(this));
+    // arrange test
+    this._test.arrange(this._expected,this._element);
 
-};
-
-/**
- * Test environment has changed and needs to be re-asserted
- * @param {Event} e
- * @private
- */
-Tester.prototype._onChange = function(e) {
-    this._result = null;
 };
 
 /**
@@ -759,15 +772,7 @@ Tester.prototype._onChange = function(e) {
  * @returns {boolean}
  */
 Tester.prototype.succeeds = function() {
-
-    // if result not set, assert
-    if (this._result===null) {
-        this._result = this._test.assert(this._expected,this._element);
-    }
-
-    // return the test result
-    return this._result;
-
+    return this._test.assert(this._expected,this._element);
 };
 
 
@@ -994,7 +999,7 @@ ConditionsManager.prototype = {
                 new Tester(test,config.value,self._element)
             );
 
-            // listen to test changes
+            // listen to test result updates
             Observer.subscribe(test,'change',self._onResultsChangedBind);
 
             // lower test count

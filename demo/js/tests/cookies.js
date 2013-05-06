@@ -4,24 +4,41 @@
  */
 define(['conditioner','security/StorageConsentGuard'],function(conditioner,StorageConsentGuard){
 
+    var _level = '';
+
     return {
-        arrange:function() {
 
-            var guard = StorageConsentGuard.getInstance(),
-                self = this;
+        setup:function(change) {
 
+            // listen to changes on storage guard
+            var guard = StorageConsentGuard.getInstance();
             conditioner.Observer.subscribe(guard,'change',function() {
-                self.act();
+                change();
             });
 
+            // get active level
+            _level = guard.getActiveLevel();
         },
+
+        change:function() {
+
+            // get guard reference
+            var guard = StorageConsentGuard.getInstance();
+
+            // get active level now it has changed
+            var newLevel = guard.getActiveLevel();
+
+            // if changed
+            if (newLevel !== _level) {
+                _level = newLevel;
+                return true;
+            }
+
+            return false;
+        },
+
         assert:function(expected) {
-
-            var guard = StorageConsentGuard.getInstance(),
-                level = guard.getActiveLevel();
-
-            return !!(expected.match(new RegExp(level,'g')));
-
+            return !!(expected.match(new RegExp(_level,'g')));
         }
     };
 

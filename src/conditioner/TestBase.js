@@ -3,32 +3,9 @@
  * @constructor
  * @abstract
  */
-var TestBase = function() {
-
-    this._memory = {};
-
-};
+var TestBase = function() {};
 
 TestBase.prototype = {
-
-    /**
-     *
-     * @param {object} key
-     * @param {object} value
-     * @returns {object}
-     * @protected
-     */
-    remember:function(key,value) {
-
-        // return value
-        if (typeof value === 'undefined') {
-            return this._memory[key];
-        }
-
-        // set value
-        this._memory[key] = value;
-        return value;
-    },
 
     /**
      * Delegates events to act method

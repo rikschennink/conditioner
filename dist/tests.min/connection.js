@@ -1,1 +1,1 @@
-define(["conditioner"],function(){"use strict";return{arrange:function(){"connection"in navigator&&navigator.connection.addEventListener("change",this,!1)},assert:function(n){return"any"===n&&navigator.onLine}}});
+define(function(){"use strict";return{setup:function(n){navigator.connection.addEventListener("change",n,!1)},support:function(){return"connection"in navigator},assert:function(n){return"any"===n&&navigator.onLine}}});

@@ -2631,32 +2631,9 @@ var ExpressionFormatter = {
  * @constructor
  * @abstract
  */
-var TestBase = function() {
-
-    this._memory = {};
-
-};
+var TestBase = function() {};
 
 TestBase.prototype = {
-
-    /**
-     *
-     * @param {object} key
-     * @param {object} value
-     * @returns {object}
-     * @protected
-     */
-    remember:function(key,value) {
-
-        // return value
-        if (typeof value === 'undefined') {
-            return this._memory[key];
-        }
-
-        // set value
-        this._memory[key] = value;
-        return value;
-    },
 
     /**
      * Delegates events to act method
@@ -2706,28 +2683,74 @@ var TestRegister = {
 
     _addTest:function(path,config) {
 
-        // create Test class
+        if (!config.assert) {
+            throw new Error('TestRegister._addTest(path,config): "config.assert" is a required parameter.');
+        }
+
+        // create Test Class
         var Test = function(){TestBase.call(this);};
         Test.prototype = Object.create(TestBase.prototype);
 
-        // setup methods
-        if (config.assert) {
-            Test.prototype.assert = config.assert;
-        }
-        if (config.act) {
-            Test.prototype.act = config.act;
-        }
+        // setup static methods and properties
+        Test.supported = 'support' in config ? config.support() : true;
+        Test.callbacks = [];
+
+        Test._setup = function(test) {
+
+            if (!Test.supported){return;}
+
+            // push reference to test act method
+            Test.callbacks.push(test.act.bind(test));
+
+            // if setup done
+            if (Test.callbacks.length>1) {return;}
+
+            // call test setup method
+            config.setup.call(Test,Test._onChange);
+
+        };
+
+        Test._onChange = function(e) {
+
+            // call change method if defined
+            var changed = 'change' in config ? config.change.call(Test,e,Test._onChange) : true;
+            if (changed) {
+                var i=0,l=Test.callbacks.length;
+                for (;i<l;i++) {
+                    Test.callbacks[i]();
+                }
+            }
+
+        };
+
+        // setup instance methods
+        Test.prototype.supported = function() {
+            return Test.supported;
+        };
+
+        // set custom or default arrange method
         if (config.arrange) {
             Test.prototype.arrange = config.arrange;
         }
+        else {
+            Test.prototype.arrange = function() {
+                Test._setup(this);
+            };
+        }
 
-        // arrange the test
-        var test = new Test();
-        test.arrange();
+        // override act method if necessary
+        if (config.act) {
+            Test.prototype.act = config.act;
+        }
 
-        this._register[path] = test;
+        // set assert method
+        Test.prototype.assert = config.assert;
 
-        return test;
+        // remember this test
+        this._register[path] = Test;
+
+        // return reference
+        return Test;
     },
 
     getTest:function(path,found) {
@@ -2736,12 +2759,12 @@ var TestRegister = {
 
         require([path],function(config){
 
-            var test = TestRegister._register[path];
-            if (!test) {
-                test = TestRegister._addTest(path,config);
+            var Test = TestRegister._register[path];
+            if (!Test) {
+                Test = TestRegister._addTest(path,config);
             }
 
-            found(test);
+            found(new Test());
 
         });
 
@@ -2756,24 +2779,14 @@ var TestRegister = {
  */
 var Tester = function(test,expected,element) {
 
-    this._result = null;
-
+    // test and data references
     this._test = test;
     this._expected = expected;
     this._element = element;
 
-    // if the test changed we forget the previous results
-    Observer.subscribe(this._test,'change',this._onChange.bind(this));
+    // arrange test
+    this._test.arrange(this._expected,this._element);
 
-};
-
-/**
- * Test environment has changed and needs to be re-asserted
- * @param {Event} e
- * @private
- */
-Tester.prototype._onChange = function(e) {
-    this._result = null;
 };
 
 /**
@@ -2781,15 +2794,7 @@ Tester.prototype._onChange = function(e) {
  * @returns {boolean}
  */
 Tester.prototype.succeeds = function() {
-
-    // if result not set, assert
-    if (this._result===null) {
-        this._result = this._test.assert(this._expected,this._element);
-    }
-
-    // return the test result
-    return this._result;
-
+    return this._test.assert(this._expected,this._element);
 };
 
 
@@ -3016,7 +3021,7 @@ ConditionsManager.prototype = {
                 new Tester(test,config.value,self._element)
             );
 
-            // listen to test changes
+            // listen to test result updates
             Observer.subscribe(test,'change',self._onResultsChangedBind);
 
             // lower test count
@@ -3940,18 +3945,20 @@ Conditioner.prototype = {
  * Tests if an active network connection is available and monitors this connection
  * @module tests/connection
  */
-define('tests/connection',['conditioner'],function(conditioner){
+define('tests/connection',[],function(){
 
     
 
     return {
-        arrange:function(){
 
-            if (!('connection' in navigator)) {return;}
-
-            navigator.connection.addEventListener('change',this,false);
-
+        setup:function(change) {
+            navigator.connection.addEventListener('change',change,false);
         },
+
+        support:function() {
+            return 'connection' in navigator;
+        },
+
         assert:function(expected) {
             return expected === 'any' && navigator.onLine;
         }
@@ -4037,24 +4044,41 @@ define('security/StorageConsentGuard',['conditioner','module'],function(conditio
  */
 define('tests/cookies',['conditioner','security/StorageConsentGuard'],function(conditioner,StorageConsentGuard){
 
+    var _level = '';
+
     return {
-        arrange:function() {
 
-            var guard = StorageConsentGuard.getInstance(),
-                self = this;
+        setup:function(change) {
 
+            // listen to changes on storage guard
+            var guard = StorageConsentGuard.getInstance();
             conditioner.Observer.subscribe(guard,'change',function() {
-                self.act();
+                change();
             });
 
+            // get active level
+            _level = guard.getActiveLevel();
         },
+
+        change:function() {
+
+            // get guard reference
+            var guard = StorageConsentGuard.getInstance();
+
+            // get active level now it has changed
+            var newLevel = guard.getActiveLevel();
+
+            // if changed
+            if (newLevel !== _level) {
+                _level = newLevel;
+                return true;
+            }
+
+            return false;
+        },
+
         assert:function(expected) {
-
-            var guard = StorageConsentGuard.getInstance(),
-                level = guard.getActiveLevel();
-
-            return !!(expected.match(new RegExp(level,'g')));
-
+            return !!(expected.match(new RegExp(_level,'g')));
         }
     };
 
@@ -4064,7 +4088,7 @@ define('tests/cookies',['conditioner','security/StorageConsentGuard'],function(c
  * Tests if an elements dimensions match certain expectations
  * @module tests/element
  */
-define('tests/element',['conditioner'],function(conditioner){
+define('tests/element',[],function(){
 
     
 
@@ -4075,44 +4099,43 @@ define('tests/element',['conditioner'],function(conditioner){
     };
 
     return {
-        arrange:function() {
 
-            window.addEventListener('resize',this,false);
-            window.addEventListener('scroll',this,false);
-
+        setup:function(change) {
+            window.addEventListener('resize',change,false);
+            window.addEventListener('scroll',change,false);
         },
+
         assert:function(expected,element) {
 
-            var parts = expected.split(':'),key,value;
-
-            if (parts) {
-                key = parts[0];
-                value = parseInt(parts[1],10);
-            }
-            else {
-                key = expected;
-            }
-
-            if (key === 'min-width') {
-                return element.offsetWidth >= value;
-            }
-            else if (key === 'max-width') {
-                return element.offsetWidth <= value;
-            }
-            else if (key === 'visible') {
+            if (expected === 'visible') {
                 return _isVisible(element);
             }
-            else if (key === 'seen') {
+            else if (expected === 'seen') {
 
-                var hasBeenSeen = this.remember(['seen',element]);
-                if (!hasBeenSeen) {
-                    hasBeenSeen = _isVisible(element);
-                    if (hasBeenSeen) {
-                        this.remember(['seen',element],true);
-                    }
+                if (!this._seen) {
+                    this._seen = _isVisible(element);
                 }
 
-                return hasBeenSeen;
+                return this._seen;
+            }
+            else {
+
+                var parts = expected.split(':'),key,value;
+
+                if (!parts) {
+                    return false;
+                }
+
+                key = parts[0];
+                value = parseInt(parts[1],10);
+
+                if (key === 'min-width') {
+                    return element.offsetWidth >= value;
+                }
+                else if (key === 'max-width') {
+                    return element.offsetWidth <= value;
+                }
+
             }
 
             return false;
@@ -4127,48 +4150,46 @@ define('tests/element',['conditioner'],function(conditioner){
  * Tests if a media query is matched or not and listens to changes
  * @module tests/media
  */
-define('tests/media',['conditioner'],function(conditioner){
+define('tests/media',[],function(){
 
     
 
     return {
-        arrange:function() {
 
-            this.remember('support','matchMedia' in window);
-
-            this.act();
+        support:function() {
+            return 'matchMedia' in window;
         },
+
+        arrange:function(expected) {
+
+            // if not supported don't try to setup
+            if (!this.supported()) {return;}
+
+            // setup mql
+            var self = this;
+            this._mql = window.matchMedia(expected);
+            this._mql.addListener(function(){
+                self.act();
+            });
+
+        },
+
         assert:function(expected) {
 
-            var support = this.remember('support');
-            if (!support) {
+            // no support
+            if (!this.supported()) {
                 return false;
             }
 
             // test if supported
             if (expected === 'supported') {
-                return support;
-            }
-
-            // setup mql
-            var mql = this.remember(expected);
-            if (!mql) {
-                var self = this;
-                mql = window.matchMedia(expected);
-                mql.addListener(function(){
-                    self.act();
-                });
-                this.remember(expected,mql);
-            }
-
-            // if no media query list to remember, apparently not supported
-            if (typeof mql === 'undefined') {
-                return false;
+                return this.supported();
             }
 
             // test media query
-            return mql.matches;
+            return this._mql.matches;
         }
+
     };
 
 });
@@ -4177,62 +4198,56 @@ define('tests/media',['conditioner'],function(conditioner){
  * Tests if the user is using a pointer device
  * @module tests/pointer
  */
-define('tests/pointer',['conditioner'],function(conditioner){
+define('tests/pointer',[],function(){
 
     
 
-    return {
-        arrange:function() {
+    var _moves = 0;
+    var _movesRequired = 2;
 
-            this.remember('moves',0);
-            this.remember('moves-required',2);
+    return {
+
+        setup:function(change){
 
             // start listening to mousemoves to deduce the availability of a pointer device
-            document.addEventListener('mousemove',this,false);
-            document.addEventListener('mousedown',this,false);
+            document.addEventListener('mousemove',change,false);
+            document.addEventListener('mousedown',change,false);
 
             // start timer, stop testing after 30 seconds
             var self = this;
             setTimeout(function(){
-                document.removeEventListener('mousemove',self,false);
-                document.removeEventListener('mousedown',self,false);
+                document.removeEventListener('mousemove',change,false);
+                document.removeEventListener('mousedown',change,false);
             },30000);
 
         },
-        act:function(e) {
+
+        change:function(e,change) {
 
             if (e.type === 'mousemove') {
 
-                var moves = this.remember('moves');
-                    moves++;
-                this.remember('moves',moves);
+                _moves++;
 
-                if (moves >= this.remember('moves-required')) {
+                if (_moves >= _movesRequired) {
 
                     // stop listening to events
-                    document.removeEventListener('mousemove',this,false);
-                    document.removeEventListener('mousedown',this,false);
+                    document.removeEventListener('mousemove',change,false);
+                    document.removeEventListener('mousedown',change,false);
 
-                    // remember
-                    this.remember('pointer',true);
-
-                    // mouse now detected
-                    conditioner.Observer.publish(this,'change');
+                    // change
+                    return true;
                 }
             }
             else {
-                this.remember('moves',0);
+                _moves = 0;
             }
 
+            // no change
+            return false;
         },
+
         assert:function(expected) {
-
-            var result = null;
-            if (this.remember('pointer')) {
-                result = 'available';
-            }
-
-            return result === expected;
+            return expected === 'available' && _moves>=_movesRequired;
         }
     };
 
@@ -4242,28 +4257,36 @@ define('tests/pointer',['conditioner'],function(conditioner){
  * Tests if the window dimensions match certain expectations
  * @module tests/window
  */
-define('tests/window',['conditioner'],function(conditioner){
+define('tests/window',[],function() {
 
     
 
+    var _width = 0;
+
     return {
-        arrange:function() {
 
-            window.addEventListener('resize',this,false);
-
+        setup:function(change) {
+            window.addEventListener('resize',change,false);
         },
+
+        change:function() {
+
+            _width = window.innerWidth || document.documentElement.clientWidth;
+
+            return true;
+        },
+
         assert:function(expected) {
 
-            var innerWidth = window.innerWidth || document.documentElement.clientWidth,
-                parts = expected.split(':'),
+            var parts = expected.split(':'),
                 key = parts[0],
                 value = parseInt(parts[1],10);
 
             if (key === 'min-width') {
-                return innerWidth >= value;
+                return _width >= value;
             }
             else if (key === 'max-width') {
-                return innerWidth <= value;
+                return _width <= value;
             }
 
             return false;

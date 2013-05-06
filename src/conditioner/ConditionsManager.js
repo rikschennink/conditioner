@@ -105,7 +105,7 @@ ConditionsManager.prototype = {
                 new Tester(test,config.value,self._element)
             );
 
-            // listen to test changes
+            // listen to test result updates
             Observer.subscribe(test,'change',self._onResultsChangedBind);
 
             // lower test count
