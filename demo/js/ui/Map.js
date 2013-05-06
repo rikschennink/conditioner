@@ -24,20 +24,20 @@ define(['conditioner'],function(conditioner){
     // get position success
     p._load = function(url) {
 
-        console.log('jaj!');
-
         if (!url) {
             return;
         }
 
         // setup lat lng
-        var coordinates = url.match(/[\d]*[.][\d]+/g),
+        var qs = url.match(/[\d]*\.?[\d]+/g),
+
+        // setup position object
         position = {
             coords:{
-                latitude:parseFloat(coordinates[0]),
-                longitude:parseFloat(coordinates[1])
+                latitude:parseFloat(qs[0]),
+                longitude:parseFloat(qs[1])
             },
-            zoom:11
+            zoom:parseInt(qs[2],10)
         };
 
         // clear
