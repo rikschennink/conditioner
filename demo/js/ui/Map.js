@@ -11,62 +11,38 @@ define(['conditioner'],function(conditioner){
         // Call ModuleBase constructor
         _parent.call(this,element);
 
-        // event binds
-        this._onSuccessBind = this._onSuccess.bind(this);
-        this._onErrorBind = this._onError.bind(this);
-
         // backup content
         this._inner = this._element.innerHTML;
 
-        // test if geolocation support, otherwise map won't function
-        var support = 'geolocation' in navigator;
-        if (!support) {
-            this._element.innerHTML = 'Your browser does not support the Geolocation API';
-            return;
-        }
-
-        // loading map
-        this._loading = true;
-        this._element.innerHTML = 'Loading map...';
-
-        // get position (wait max 5 seconds for it)
-        navigator.geolocation.getCurrentPosition(this._onSuccessBind,this._onErrorBind,{timeout:10000});
+        // load map
+        this._load(this._element.getAttribute('href'));
     };
 
     // Extend from ModuleBase
     var p = exports.prototype = Object.create(_parent.prototype);
 
     // get position success
-    p._onSuccess = function(position) {
+    p._load = function(url) {
 
-        // if no longer loading, stop here
-        if (!this._loading) {
+        console.log('jaj!');
+
+        if (!url) {
             return;
         }
+
+        // setup lat lng
+        var coordinates = url.match(/[\d]*[.][\d]+/g),
+        position = {
+            coords:{
+                latitude:parseFloat(coordinates[0]),
+                longitude:parseFloat(coordinates[1])
+            },
+            zoom:11
+        };
 
         // clear
-        this._loading = false;
-        this._element.innerHTML = '';
+        this._element.innerHTML = '<img src="http://maps.googleapis.com/maps/api/staticmap?center=' + position.coords.latitude + ',' + position.coords.longitude + '&zoom=' + position.zoom + '&size=' + 500 + 'x' + 300 + '&maptype=roadmap&sensor=false" alt="" class="map"/>';
 
-        // append map
-        var image = document.createElement('img');
-        image.src = 'http://maps.googleapis.com/maps/api/staticmap?center=' + position.coords.latitude + ',' + position.coords.longitude + '&zoom=14&size=' + 500 + 'x' + 300 + '&maptype=roadmap&sensor=false';
-        image.alt = '';
-        image.className = 'map';
-        this._element.appendChild(image);
-
-    };
-
-    // get position fail
-    p._onError = function(error) {
-
-        // if no longer loading, stop here
-        if (!this._loading) {
-            return;
-        }
-
-        this._loading = false;
-        this._element.innerHTML = error.message;
     };
 
     // Unload Map behaviour
@@ -74,9 +50,6 @@ define(['conditioner'],function(conditioner){
 
         // call ModuleBase unload method
         _parent.prototype.unload.call(this);
-
-        // no longer loading
-        this._loading = false;
 
         // restore content
         this._element.innerHTML = this._inner;
