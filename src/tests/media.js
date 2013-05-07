@@ -3,48 +3,61 @@
  * Tests if a media query is matched or not and listens to changes
  * @module tests/media
  */
-define(['conditioner'],function(conditioner){
+define(function(){
 
     'use strict';
 
     return {
-        arrange:function() {
 
-            this.remember('support','matchMedia' in window);
-
-            this.act();
+        /**
+         * Does this browser support matchMedia
+         * @returns {boolean}
+         */
+        support:function() {
+            return 'matchMedia' in window;
         },
+
+        /**
+         * Custom arrange method to setup matchMedia listener for each test instance
+         * @param {string} expected
+         */
+        arrange:function(expected) {
+
+            // if testing for support
+            if (expected === 'supported') {
+                return;
+            }
+
+            // if is media query
+            var self = this;
+            this._mql = window.matchMedia(expected);
+            this._mql.addListener(function(){
+                self.onchange();
+            });
+
+        },
+
+        /**
+         * Tests if the assert succeeds
+         * @param expected
+         * @returns {boolean}
+         */
         assert:function(expected) {
 
-            var support = this.remember('support');
-            if (!support) {
+            // no support
+            if (!this.supported()) {
                 return false;
             }
 
             // test if supported
             if (expected === 'supported') {
-                return support;
-            }
-
-            // setup mql
-            var mql = this.remember(expected);
-            if (!mql) {
-                var self = this;
-                mql = window.matchMedia(expected);
-                mql.addListener(function(){
-                    self.act();
-                });
-                this.remember(expected,mql);
-            }
-
-            // if no media query list to remember, apparently not supported
-            if (typeof mql === 'undefined') {
-                return false;
+                return this.supported();
             }
 
             // test media query
-            return mql.matches;
+            return this._mql.matches;
         }
+
     };
 
 });

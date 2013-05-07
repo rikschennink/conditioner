@@ -60,7 +60,7 @@ module.exports = function(grunt) {
                     '<%= path.conditioner %>/ExpressionFormatter.js',
 
                     '<%= path.conditioner %>/TestBase.js',
-                    '<%= path.conditioner %>/TestRegister.js',
+                    '<%= path.conditioner %>/TestFactory.js',
                     '<%= path.conditioner %>/Tester.js',
 
                     '<%= path.conditioner %>/ModuleBase.js',

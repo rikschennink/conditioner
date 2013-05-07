@@ -2,62 +2,67 @@
  * Tests if the user is using a pointer device
  * @module tests/pointer
  */
-define(['conditioner'],function(conditioner){
+define(function(){
 
     'use strict';
 
-    return {
-        arrange:function() {
+    var _moves = 0;
+    var _movesRequired = 2;
 
-            this.remember('moves',0);
-            this.remember('moves-required',2);
+    return {
+
+        /**
+         * Setup events, detach events if no activity for 30 seconds
+         * @param {function} measure
+         */
+        setup:function(measure){
 
             // start listening to mousemoves to deduce the availability of a pointer device
-            document.addEventListener('mousemove',this,false);
-            document.addEventListener('mousedown',this,false);
+            document.addEventListener('mousemove',measure,false);
+            document.addEventListener('mousedown',measure,false);
 
             // start timer, stop testing after 30 seconds
-            var self = this;
             setTimeout(function(){
-                document.removeEventListener('mousemove',self,false);
-                document.removeEventListener('mousedown',self,false);
+                document.removeEventListener('mousemove',measure,false);
+                document.removeEventListener('mousedown',measure,false);
             },30000);
 
         },
-        act:function(e) {
+
+        /**
+         * Custom measure function to count the amount of moves
+         * @param {Event} e
+         * @returns {boolean} - Return true if a change has occurred
+         */
+        measure:function(e) {
 
             if (e.type === 'mousemove') {
 
-                var moves = this.remember('moves');
-                    moves++;
-                this.remember('moves',moves);
+                _moves++;
 
-                if (moves >= this.remember('moves-required')) {
+                if (_moves >= _movesRequired) {
 
                     // stop listening to events
                     document.removeEventListener('mousemove',this,false);
                     document.removeEventListener('mousedown',this,false);
 
-                    // remember
-                    this.remember('pointer',true);
-
-                    // mouse now detected
-                    conditioner.Observer.publish(this,'change');
+                    return true;
                 }
             }
             else {
-                this.remember('moves',0);
+                _moves = 0;
             }
 
+            return false;
         },
+
+        /**
+         * test if matches expectations
+         * @param {string} expected
+         * @returns {boolean}
+         */
         assert:function(expected) {
-
-            var result = null;
-            if (this.remember('pointer')) {
-                result = 'available';
-            }
-
-            return result === expected;
+            return expected === 'available' && _moves>=_movesRequired;
         }
     };
 

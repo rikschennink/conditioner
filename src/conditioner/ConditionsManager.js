@@ -98,14 +98,14 @@ ConditionsManager.prototype = {
 
         var self = this;
 
-        TestRegister.getTest(config.path,function(test) {
+        TestFactory.getTest(config.path,function(test) {
 
             // assign tester to expression
             expression.assignTester(
                 new Tester(test,config.value,self._element)
             );
 
-            // listen to test changes
+            // listen to test result updates
             Observer.subscribe(test,'change',self._onResultsChangedBind);
 
             // lower test count

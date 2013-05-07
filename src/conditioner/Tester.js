@@ -6,24 +6,24 @@
  */
 var Tester = function(test,expected,element) {
 
-    this._result = null;
-
+    // test and data references
     this._test = test;
     this._expected = expected;
     this._element = element;
 
-    // if the test changed we forget the previous results
-    Observer.subscribe(this._test,'change',this._onChange.bind(this));
+    // cache result
+    this._result = false;
+    this._changed = true;
 
-};
+    // listen to changes on test
+    var self = this;
+    Observer.subscribe(this._test,'change',function(){
+        self._changed = true;
+    });
 
-/**
- * Test environment has changed and needs to be re-asserted
- * @param {Event} e
- * @private
- */
-Tester.prototype._onChange = function(e) {
-    this._result = null;
+    // arrange test
+    this._test.arrange(this._expected,this._element);
+
 };
 
 /**
@@ -32,12 +32,10 @@ Tester.prototype._onChange = function(e) {
  */
 Tester.prototype.succeeds = function() {
 
-    // if result not set, assert
-    if (this._result===null) {
+    if (this._changed) {
+        this._changed = false;
         this._result = this._test.assert(this._expected,this._element);
     }
 
-    // return the test result
     return this._result;
-
 };

@@ -11,62 +11,62 @@ define(['conditioner'],function(conditioner){
         // Call ModuleBase constructor
         _parent.call(this,element);
 
-        // event binds
-        this._onSuccessBind = this._onSuccess.bind(this);
-        this._onErrorBind = this._onError.bind(this);
-
         // backup content
         this._inner = this._element.innerHTML;
 
-        // test if geolocation support, otherwise map won't function
-        var support = 'geolocation' in navigator;
-        if (!support) {
-            this._element.innerHTML = 'Your browser does not support the Geolocation API';
-            return;
-        }
+        // remember if loading
+        this._loading = false;
 
-        // loading map
-        this._loading = true;
-        this._element.innerHTML = 'Loading map...';
-
-        // get position (wait max 5 seconds for it)
-        navigator.geolocation.getCurrentPosition(this._onSuccessBind,this._onErrorBind,{timeout:10000});
+        // load map
+        this._load(this._element.getAttribute('href'));
     };
 
     // Extend from ModuleBase
     var p = exports.prototype = Object.create(_parent.prototype);
 
     // get position success
-    p._onSuccess = function(position) {
+    p._load = function(url) {
 
-        // if no longer loading, stop here
-        if (!this._loading) {
+        if (!url) {
             return;
         }
+
+        // now loading map
+        this._loading = true;
+
+        // set to loading
+        this._element.innerHTML = 'Loading map';
+
+        // setup lat lng
+        var qs = url.match(/[\d]*\.?[\d]+/g),
+
+        // setup position object
+        position = {
+            coords:{
+                latitude:parseFloat(qs[0]),
+                longitude:parseFloat(qs[1])
+            },
+            zoom:parseInt(qs[2],10)
+        };
 
         // clear
-        this._loading = false;
-        this._element.innerHTML = '';
+        var self = this;
+        var map = document.createElement('img');
+        map.setAttribute('alt','');
+        map.className = 'map';
+        map.onload = function() {
 
-        // append map
-        var image = document.createElement('img');
-        image.src = 'http://maps.googleapis.com/maps/api/staticmap?center=' + position.coords.latitude + ',' + position.coords.longitude + '&zoom=14&size=' + 500 + 'x' + 300 + '&maptype=roadmap&sensor=false';
-        image.alt = '';
-        image.className = 'map';
-        this._element.appendChild(image);
+            // if not loading don't append
+            if (!self._loading) {
+                return;
+            }
 
-    };
+            // append map image
+            self._element.innerHTML = '';
+            self._element.appendChild(map);
+        };
+        map.src = 'http://maps.googleapis.com/maps/api/staticmap?center=' + position.coords.latitude + ',' + position.coords.longitude + '&zoom=' + position.zoom + '&size=' + 500 + 'x' + 300 + '&maptype=roadmap&sensor=false';
 
-    // get position fail
-    p._onError = function(error) {
-
-        // if no longer loading, stop here
-        if (!this._loading) {
-            return;
-        }
-
-        this._loading = false;
-        this._element.innerHTML = error.message;
     };
 
     // Unload Map behaviour
@@ -75,7 +75,7 @@ define(['conditioner'],function(conditioner){
         // call ModuleBase unload method
         _parent.prototype.unload.call(this);
 
-        // no longer loading
+        // not loading anymore
         this._loading = false;
 
         // restore content
