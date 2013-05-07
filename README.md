@@ -8,30 +8,41 @@ Introduction
 
 Conditioner is a JavaScript framework based on [requirejs](http://requirejs.org), it allows you to conditionally load your javascript modules based on certain environment requirements.
 
-Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map.
+Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map. It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map.
 
-It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map.
-
-An example setup using Conditioner:
+To setup the Google Map above using Conditioner you would write the following HTML. Binding the map module using the `data-module` attribute and setting the required conditions using `data-conditions`.
 
 ```html
-<div data-module="ui/Map" data-conditions="media:{(min-width:30em)}">
+<a href="http://maps.google.com/?ll=51.741,3.822" data-module="ui/Map" data-conditions="media:{(min-width:30em)}">
     ...
-</div>
+</a>
 ```
 
+Now the HTML is setup, we only have to tell the Conditioner to look for modules in a certain section of the DOM and we're done. We can do this using the `loadModules` method.
 ```javascript
-// load all modules within document context
 conditioner.loadModules(document);
 ```
 
 
+Requirements
+--------------------------------
+Conditoiner currently relies on the availability of requirejs. It does not require jQuery or any other JavaScript library.
+
+* RequireJS
+* Support for IE8 and up
+
+
+License
+--------------------------------
+[MIT](http://www.opensource.org/licenses/mit-license.php)
+
+
 Demo
 --------------------------------
-You can see it in action at [the Conditioner demo page](http://rikschennink.github.io/conditioner/)
+You can see the framework in action at [the Conditioner demo page](http://rikschennink.github.io/conditioner/)
 
 
-Overview
+HTML Attributes
 --------------------------------
 
 ### HTML attributes available for module binding
@@ -70,7 +81,7 @@ Tests within these conditions are formatted like this: `<test_name>:{<expected_v
 
 * Use brackets to override operator precedence: `foo:{bar} or (foo:{bar} and foo:{bar})`. 
 
-* Use the `not` operator to negate a test: `not (foo:{bar} and foo:{bar})`.
+* Use the `not` operator to negate a test: `not (foo:{bar} and foo:{bar})` or `not foo:{bar}`.
 
 
 #### data-options
@@ -102,7 +113,7 @@ The `data-priority` attributes allows you to control the order in which a node i
 
 
 
-API
+JavaScript API
 --------------------------------
 
 ### Conditioner

@@ -1,214 +1,367 @@
 <!DOCTYPE html>
 <html>
-    <head>
+<head>
 
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
 
-        <title>Conditioner Demo</title>
+    <title>Conditioner - Detangle your JavaScript and make it shine.</title>
 
-        <link href="css/rainbow/github.css" rel="stylesheet">
-        <link href="css/styles.css" rel="stylesheet">
+    <link href="css/rainbow/github.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
 
-        <script>
+    <script>
 
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-            ga('create', 'UA-33378673-2', 'github.io');
-            ga('send', 'pageview');
+        ga('create', 'UA-33378673-2', 'github.io');
+        ga('send', 'pageview');
 
-        </script>
+    </script>
 
-    </head>
-    <body>
+</head>
+<body>
 
-        <h1>Conditioner Demo</h1>
+<h1 class="logo">conditioner.js</h1>
+<em>Conditionally Loading RequireJS Modules</em>
 
-        <h2>Introduction</h2>
-        <p>Conditioner is a JavaScript framework based on <a href="http://requirejs.org">RequireJS</a>, it allows you to conditionally load your javascript modules based on certain environment requirements.</p>
+<!--
+<div class="git">
+<iframe src="http://ghbtns.com/github-btn.html?user=rikschennink&repo=conditioner&type=watch&count=true"
+        allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>
+</div>
+-->
 
-        <p>Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map.</p>
+<nav>
+    <ul>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#requirements">Requirements</a></li>
+        <li><a href="#documentation">Documentation</a></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><a href="#license">License</a></li>
+    </ul>
+</nav>
 
-        <p>It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map.</p>
-
-        <p>An example setup using Conditioner:</p>
-
-        <pre><code data-language="html">&lt;div data-module="ui/Map" data-conditions="media:{(min-width:30em)}"&gt; ... &lt;/div&gt;</code></pre>
-
-        <p>Conditioner initialisation:</p>
-
-        <pre><code data-language="javascript">conditioner.loadModules(document);</code></pre>
-
-
-        <h2>Examples</h2>
-
-        <h3>Always enabled</h3>
-        <p>Clock will be always be active.</p>
-        <pre><code data-language="html">&lt;div data-module="IClock"&gt; ... &lt;/div&gt;</code></pre>
-        <div class="component">
-            <div data-module="IClock">Clock is inactive</div>
-        </div>
+<h2 id="introduction">Introduction</h2>
 
 
-        <h3>Based on Element dimensions</h3>
-        <p>Clock will be active as long as the element has a minimum width of 350 pixels.</p>
-        <pre><code data-language="html">&lt;div data-module="IClock" data-conditions="element:{min-width:350}"&gt; ... &lt;/div&gt;</code></pre>
-        <div class="component alt">
-            <div data-module="IClock"
-                 data-conditions="element:{min-width:350}">Clock is inactive</div>
-        </div>
+<p>Conditioner.js is a JavaScript Module Loader based on <a href="http://requirejs.org">RequireJS</a>. Conditioner.js allows you to define conditions under which your JavaScript modules are allowed to be loaded and than takes care of loading them at the right moment.</p>
 
+<p>Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map. It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map.</p>
 
-        <h3>Based on multiple window dimensions</h3>
-        <p>Clock will be active as long as window width falls between 450 and 750 pixels. Priority of this component has a value of 1 which causes it to be loaded before all components without and explicit priority.</p>
-        <pre><code data-language="html">&lt;div data-module="IClock" data-conditions="window:{min-width:450} and window:{max-width:750}" data-priority="1"&gt; ... &lt;/div&gt;</code></pre>
-        <div class="component">
-            <div data-module="IClock"
-                 data-priority="1"
-                 data-conditions="window:{min-width:450} and window:{max-width:750}">Clock is inactive</div>
-        </div>
+<p>To setup the Google Map above using Conditioner you would write the following HTML. Binding the map module using the <code>data-module</code> attribute and setting the required conditions using <code>data-conditions</code></p>
 
+<pre><code data-language="html">&lt;a href="http://maps.google.com/?ll=51.741,3.822"
+   data-module="ui/Map"
+   data-conditions="media:{(min-width:30em)}"&gt;
+   ...
+&lt;/a&gt;</code></pre>
 
-        <h3>Based on Media Query</h3>
-        <p>Clock will be active as long as media the media query is matched. Priority of this component has a value of minus 1, which causes it to be loaded after all components without and explicit priority have loaded.</p>
-        <pre><code data-language="html">&lt;div data-module="IClock" data-priority="-1" data-conditions="media:{(min-width:30em) and (max-width:60em)} or not media:{supported}"&gt; ... &lt;/div&gt;</code></pre>
-        <div class="component">
-            <div data-module="IClock"
-                 data-priority="-1"
-                 data-conditions="media:{(min-width:30em) and (max-width:60em)} or not media:{supported}">Clock is inactive</div>
-        </div>
+<p>Now the HTML is setup, we only have to tell the Conditioner to look for modules in a certain section of the DOM and we're done. We can do this using the <code>loadModules</code> method.</p>
 
-        <h3>Based on the availability of a pointer device</h3>
-        <p>Clock will be active as long as we can detect the user has a pointer device.</p>
-        <pre><code data-language="html">&lt;div data-module="IClock" data-conditions="pointer:{available}"&gt; ... &lt;/div&gt;</code></pre>
-        <div class="component">
-            <div data-module="IClock"
-                 data-conditions="pointer:{available}">Clock is inactive</div>
-        </div>
+<pre><code data-language="javascript">conditioner.loadModules(document);</code></pre>
 
+<p>You could say:</p>
 
-        <h3>Based on multiple conditions</h3>
-        <p>Map will be active as long as there is any network connection, the media query is matched and the element is in view. If there is no media query support, the map may also be loaded.</p>
-        <pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions="(connection:{any} and media:{(min-width:40em)} and element:{seen}) or not media:{supported}"&gt; ... &lt;/div&gt;</code></pre>
-        <div class="component">
-            <a href="http://maps.google.com/?ll=51.741380,3.822169&z=11"
-                 data-module="IMap"
-                 data-priority="2"
-                 data-conditions="(connection:{any} and media:{(min-width:40em)} and element:{seen}) or not media:{supported}">Coast of Holland at Google Maps</a>
-        </div>
+<blockquote>Why not put that Media Query check in my Google Map module?</blockquote>
 
+<p>And of course that would work, at first.</p>
 
-        <h3>Based on custom conditions</h3>
-        <p>The first Clock will be activated the moment all cookies are allowed. The second Clock is only inactive when the user accepts no cookies.</p>
-        <pre><code data-language="html">&lt;div data-module="IStorageConsentSelect" data-options='{"label":{"select":"Allow cookies"}}'&gt; ... &lt;/div&gt;</code></pre>
-        <div class="component">
-            <div data-module="IStorageConsentSelect"
-                 data-options='{"label":{"select":"Allow cookies"}}'>
-                Javascript needs to be enabled to control storage settings
-            </div>
-        </div>
-        <pre><code data-language="html">&lt;div data-module="IClock" data-conditions="cookies:{all}"&gt; ... &lt;/div&gt;</code></pre>
-        <div class="component">
-            <div data-module="IClock"
-                 data-conditions="cookies:{all}">Clock is inactive</div>
-        </div>
-        <pre><code data-language="html">&lt;div data-module="IClock" data-conditions="cookies:{all,incognito}"&gt; ... &lt;/div&gt;</code></pre>
-        <div class="component">
-            <div data-module="IClock"
-                 data-conditions="cookies:{all,incognito}">Clock is inactive</div>
-        </div>
+<p>As your project grows you might want to use the module on another page under different circumstances. So you add another Media Query check, and then another, and another.</p>
 
+<p>Your modules should, most of the time, not be concerned with the environment they are in. This is where conditioner.js comes into play. Conditioner.js will handle the environment and will initialize your module when the environment is suitable.</p>
 
-        <h3>Multiple modules on a single element</h3>
-        <p>Clock will be active as long as element has a maximum width of 300 pixels, if the element width gets above 400 pixels another Clock becomes active which also shows the time.</p>
-        <pre><code data-language="html">&lt;div data-module='[{"path":"IClock","conditions":"element:{max-width:300}","options":{"time":false}},{"path":"IClock","conditions":"element:{min-width:400}"}]' data-priority="1"&gt; ... &lt;/div&gt;</code></pre>
-        <div class="component alt">
-            <div data-module='[{"path":"IClock","conditions":"element:{max-width:300}","options":{"time":false}},{"path":"IClock","conditions":"element:{min-width:400}"}]' data-priority="1">Clock is inactive</div>
-        </div>
+<h2 id="requirements">Requirements</h2>
 
-
-        <h3>Using a conditioned and a wildcard module on a single element</h3>
-        <p>Clock will be active as long as element has a maximum width of 300 pixels, if the element gets above 300 pixels the wildcard Clock element is loaded which shows the time.</p>
-        <pre><code data-language="html">&lt;div data-module='[{"path":"IClock","conditions":"element:{max-width:300}","options":{"time":false}},{"path":"IClock"}]'&gt; ... &lt;/div&gt;</code></pre>
-        <div class="component alt">
-            <div data-module='[{"path":"IClock","conditions":"element:{max-width:300}","options":{"time":false}},{"path":"IClock"}]'>Clock is inactive</div>
-        </div>
-
-
-        <!-- For pretty javascript code examples -->
-        <script src="js/lib/ccampbell/rainbow/rainbow.min.js"></script>
-        <script src="js/lib/ccampbell/rainbow/html.js"></script>
-        <script src="js/lib/ccampbell/rainbow/generic.js"></script>
-        <script src="js/lib/ccampbell/rainbow/javascript.js"></script>
-
-
-        <!-- Shims to get this working on some older browsers <= IE9 (please minimize in real life) -->
-        <script src="js/shim/Array.isArray.js"></script>
-        <script src="js/shim/Array.indexOf.js"></script>
-        <script src="js/shim/Array.forEach.js"></script>
-        <script src="js/shim/Object.create.js"></script>
-        <script src="js/shim/Object.keys.js"></script>
-        <script src="js/shim/Function.bind.js"></script>
-        <script src="js/shim/matchMedia/matchMedia.js"></script>
-        <script src="js/shim/matchMedia/matchMedia.addListener.js"></script>
-
-        <!-- old stuff last, matchmedia won't be loaded if browser does not have addEventListener support, so we'll load shim now -->
-        <script src="js/shim/DOMContentLoaded.js"></script>
-        <script src="js/shim/addEventListener.js"></script>
-
-        <!-- Load minimized library (require + modules) -->
-        <script src="js.min/built.js"></script>
+<ul>
+    <li>RequireJS</li>
+    <li>IE8 or a modern browser</li>
+</ul>
 
 
 
-        <script>
 
-        // setup requirejs
-        requirejs.config({
-            baseUrl:'js/',
-            paths:{
-                conditioner:'../../dist/conditioner'
+
+
+<h2 id="documentation">Documentation</h2>
+
+
+<ul>
+    <li><a href="#data-module">Binding modules</a></li>
+    <li><a href="#data-conditions">Setting conditions</a></li>
+    <li><a href="#data-options">Passing options</a></li>
+    <li><a href="#data-priority">Defining priorities</a></li>
+</ul>
+
+
+<p>Linking your modules to the DOM is done through data attributes.</p>
+<p>Note that in the following examples the <code>href</code> attribute has been ommited for clarity.</p>
+
+<h3 id="data-module">Binding modules</h3>
+<p>The string contained in the <code>data-module</code> attribute points to the location of the module.</p>
+
+<pre><code data-language="html">&lt;a data-module="ui/Map"&gt; ... &lt;/a&gt;</code></pre>
+
+<p>You can also use a shortcut name, should the module path change you would only have to change it at one location.</p>
+
+<pre><code data-language="javascript">conditioner.setOptions({
+    'modules':{
+        'ui/Map':'IMap'
+    }
+});
+</code></pre>
+
+<p>The <code>data-module</code> attribute would now look like this:</p>
+
+<pre><code data-language="html">&lt;a data-module="IMap"&gt; ... &lt;/a&gt;</code></pre>
+
+
+<h3 id="data-conditions">Setting conditions</h3>
+<p>The <code>data-conditions</code> attributes allows you to control the conditions under which a module is loaded. For instance, below is an example condition which only loads the module if the supplied media query is matched.
+</p>
+
+<pre><code data-language="html">&lt;a data-module="ui/Map" data-conditions="media:{(min-width:30em)}"&gt; ... &lt;/a&gt;</code></pre>
+
+<p>Tests are formatted like this: <code>&lt;test_name&gt;:{&lt;expected_value&gt;}</code></p>
+
+<p>Conditioner.js allows combine tests to build more complex conditions.</p>
+
+<h4>Writing an Expression</h4>
+
+<p>Combine multiple tests using the <code>and</code> or <code>or</code> operators:</p>
+<pre><code>foo:{bar} or foo:{bar} and foo:{bar}</code></pre>
+
+<p>Group tests using brackets to override operator precedence: </p>
+<pre><code>foo:{bar} or (foo:{bar} and foo:{bar})</code></pre>
+
+<p>Use the <code>not</code> operator to negate a test or test group:
+<pre><code>not (foo:{bar} or foo:{bar}) and not foo:{bar}</code></pre>
+
+
+
+<h3 id="data-options">Passing options</h3>
+
+<p>The <code>data-options</code> attribute allows you to set specific options for the module, these options are then passed to the the module the moment it is initialized.</p>
+
+<pre><code data-language="html">&lt;a data-module="ui/Map" data-options='{"zoom":10}'&gt; ... &lt;/a&gt;</code></pre>
+
+<pre><code data-language="javascript">conditioner.setOptions({
+    'modules':{
+        'ui/Map':{
+            'options':{
+            'zoom':5
             }
-        });
+        }
+    }
+});</code></pre>
 
-        // load conditioner
-        requirejs(['conditioner'],function(conditioner) {
 
-                // setup modules
-                conditioner.setOptions({
-                    'modules':{
-                        'ui/Map':'IMap',
-                        'ui/Clock':'IClock',
-                        'ui/StorageConsentSelect':{
-                            'alias':'IStorageConsentSelect',
-                            'options':{
-                                'label':{
-                                    'level':{
-                                        'incognito':'Incognito'
-                                    }
-                                }
-                            }
-                        },
-                        'security/StorageConsentGuard':{
-                            'options':{
-                                'levels':['all','incognito','none'],
-                                'initial':'none'
+<h3 id="data-priority">Defining priorities</h3>
+
+<p>The <code>data-priority</code> attributes allows you to control the order in which a node is handled. Positive numbers give a node priority over other nodes, a negative number moves it to the back of the initialisation queue.</p>
+
+<pre><code data-language="html">&lt;a data-module="ui/Map" data-priority="1"&gt; ... &lt;/a&gt;</code></pre>
+
+
+
+<h3 id="js-conditioner">The JavaScript API</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+<h2 id="examples">Examples</h2>
+<p>Some examples on how to setup and use the framework.</p>
+<ul>
+    <li><a href="examples/setup/">Default setup</a></li>
+    <li><a href="examples/conditions/">How to use Conditions</a></li>
+    <li><a href="examples/expressions/">How to use Expressions</a></li>
+    <li><a href="examples/custom/">Setting up Custom Conditions</a></li>
+</ul>
+
+
+
+<h3>Always enabled</h3>
+<p>Clock will be always be active.</p>
+<pre><code data-language="html">&lt;div data-module="IClock"&gt; ... &lt;/div&gt;</code></pre>
+<div class="component">
+    <div data-module="IClock">Clock is inactive</div>
+</div>
+
+
+<h3>Based on Element dimensions</h3>
+<p>Clock will be active as long as the element has a minimum width of 350 pixels.</p>
+<pre><code data-language="html">&lt;div data-module="IClock" data-conditions="element:{min-width:350}"&gt; ... &lt;/div&gt;</code></pre>
+<div class="component alt">
+    <div data-module="IClock"
+         data-conditions="element:{min-width:350}">Clock is inactive</div>
+</div>
+
+
+<h3>Based on multiple window dimensions</h3>
+<p>Clock will be active as long as window width falls between 450 and 750 pixels. Priority of this component has a value of 1 which causes it to be loaded before all components without and explicit priority.</p>
+<pre><code data-language="html">&lt;div data-module="IClock" data-conditions="window:{min-width:450} and window:{max-width:750}" data-priority="1"&gt; ... &lt;/div&gt;</code></pre>
+<div class="component">
+    <div data-module="IClock"
+         data-priority="1"
+         data-conditions="window:{min-width:450} and window:{max-width:750}">Clock is inactive</div>
+</div>
+
+
+<h3>Based on Media Query</h3>
+<p>Clock will be active as long as media the media query is matched. Priority of this component has a value of minus 1, which causes it to be loaded after all components without and explicit priority have loaded.</p>
+<pre><code data-language="html">&lt;div data-module="IClock" data-priority="-1" data-conditions="media:{(min-width:30em) and (max-width:60em)} or not media:{supported}"&gt; ... &lt;/div&gt;</code></pre>
+<div class="component">
+    <div data-module="IClock"
+         data-priority="-1"
+         data-conditions="media:{(min-width:30em) and (max-width:60em)} or not media:{supported}">Clock is inactive</div>
+</div>
+
+<h3>Based on the availability of a pointer device</h3>
+<p>Clock will be active as long as we can detect the user has a pointer device.</p>
+<pre><code data-language="html">&lt;div data-module="IClock" data-conditions="pointer:{available}"&gt; ... &lt;/div&gt;</code></pre>
+<div class="component">
+    <div data-module="IClock"
+         data-conditions="pointer:{available}">Clock is inactive</div>
+</div>
+
+
+<h3>Based on multiple conditions</h3>
+<p>Map will be active as long as there is any network connection, the media query is matched and the element is in view. If there is no media query support, the map may also be loaded.</p>
+<pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions="(connection:{any} and media:{(min-width:40em)} and element:{seen}) or not media:{supported}"&gt; ... &lt;/div&gt;</code></pre>
+<div class="component">
+    <a href="http://maps.google.com/?ll=51.741380,3.822169&z=11"
+         data-module="IMap"
+         data-priority="2"
+         data-conditions="(connection:{any} and media:{(min-width:40em)} and element:{seen}) or not media:{supported}">Coast of Holland at Google Maps</a>
+</div>
+
+
+<h3>Based on custom conditions</h3>
+<p>The first Clock will be activated the moment all cookies are allowed. The second Clock is only inactive when the user accepts no cookies.</p>
+<pre><code data-language="html">&lt;div data-module="IStorageConsentSelect" data-options='{"label":{"select":"Allow cookies"}}'&gt; ... &lt;/div&gt;</code></pre>
+<div class="component">
+    <div data-module="IStorageConsentSelect"
+         data-options='{"label":{"select":"Allow cookies"}}'>
+        Javascript needs to be enabled to control storage settings
+    </div>
+</div>
+<pre><code data-language="html">&lt;div data-module="IClock" data-conditions="cookies:{all}"&gt; ... &lt;/div&gt;</code></pre>
+<div class="component">
+    <div data-module="IClock"
+         data-conditions="cookies:{all}">Clock is inactive</div>
+</div>
+<pre><code data-language="html">&lt;div data-module="IClock" data-conditions="cookies:{all,incognito}"&gt; ... &lt;/div&gt;</code></pre>
+<div class="component">
+    <div data-module="IClock"
+         data-conditions="cookies:{all,incognito}">Clock is inactive</div>
+</div>
+
+
+<h3>Multiple modules on a single element</h3>
+<p>Clock will be active as long as element has a maximum width of 300 pixels, if the element width gets above 400 pixels another Clock becomes active which also shows the time.</p>
+<pre><code data-language="html">&lt;div data-module='[{"path":"IClock","conditions":"element:{max-width:300}","options":{"time":false}},{"path":"IClock","conditions":"element:{min-width:400}"}]' data-priority="1"&gt; ... &lt;/div&gt;</code></pre>
+<div class="component alt">
+    <div data-module='[{"path":"IClock","conditions":"element:{max-width:300}","options":{"time":false}},{"path":"IClock","conditions":"element:{min-width:400}"}]' data-priority="1">Clock is inactive</div>
+</div>
+
+
+<h3>Using a conditioned and a wildcard module on a single element</h3>
+<p>Clock will be active as long as element has a maximum width of 300 pixels, if the element gets above 300 pixels the wildcard Clock element is loaded which shows the time.</p>
+<pre><code data-language="html">&lt;div data-module='[{"path":"IClock","conditions":"element:{max-width:300}","options":{"time":false}},{"path":"IClock"}]'&gt; ... &lt;/div&gt;</code></pre>
+<div class="component alt">
+    <div data-module='[{"path":"IClock","conditions":"element:{max-width:300}","options":{"time":false}},{"path":"IClock"}]'>Clock is inactive</div>
+</div>
+
+
+
+<h2 id="license">License</h2>
+<p><a href="http://www.opensource.org/licenses/mit-license.php">MIT license</a></p>
+
+
+
+
+<!-- For pretty javascript code examples -->
+<script src="js/lib/ccampbell/rainbow/rainbow.min.js"></script>
+<script src="js/lib/ccampbell/rainbow/html.js"></script>
+<script src="js/lib/ccampbell/rainbow/generic.js"></script>
+<script src="js/lib/ccampbell/rainbow/javascript.js"></script>
+
+
+<!-- Shims to get this working on some older browsers <= IE9 (please minimize in real life) -->
+<script src="js/shim/Array.isArray.js"></script>
+<script src="js/shim/Array.indexOf.js"></script>
+<script src="js/shim/Array.forEach.js"></script>
+<script src="js/shim/Object.create.js"></script>
+<script src="js/shim/Object.keys.js"></script>
+<script src="js/shim/Function.bind.js"></script>
+<script src="js/shim/matchMedia/matchMedia.js"></script>
+<script src="js/shim/matchMedia/matchMedia.addListener.js"></script>
+
+<!-- old stuff last, matchmedia won't be loaded if browser does not have addEventListener support, so we'll load shim now -->
+<script src="js/shim/DOMContentLoaded.js"></script>
+<script src="js/shim/addEventListener.js"></script>
+
+<!-- Load minimized library (require + modules) -->
+<script src="js.min/built.js"></script>
+
+
+
+<script>
+
+// setup requirejs
+requirejs.config({
+    baseUrl:'js/',
+    paths:{
+        conditioner:'../../dist/conditioner'
+    }
+});
+
+// load conditioner
+requirejs(['conditioner'],function(conditioner) {
+
+        // setup modules
+        conditioner.setOptions({
+            'modules':{
+                'ui/Map':'IMap',
+                'ui/Clock':'IClock',
+                'ui/StorageConsentSelect':{
+                    'alias':'IStorageConsentSelect',
+                    'options':{
+                        'label':{
+                            'level':{
+                                'incognito':'Incognito'
                             }
                         }
                     }
-                });
-
-                // load all modules found within the document scope
-                conditioner.loadModules(document);
-
+                },
+                'security/StorageConsentGuard':{
+                    'options':{
+                        'levels':['all','incognito','none'],
+                        'initial':'none'
+                    }
+                }
             }
+        });
 
-        );
+        // load all modules found within the document scope
+        conditioner.loadModules(document);
 
-        </script>
+    }
 
-    </body>
+);
+
+</script>
+
+</body>
 </html>
