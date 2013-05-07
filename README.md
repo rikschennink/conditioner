@@ -14,7 +14,7 @@ To setup the Google Map above using Conditioner you would write the following HT
 
 ```html
 <a href="http://maps.google.com/?ll=51.741,3.822" data-module="ui/Map" data-conditions="media:{(min-width:30em)}">
-    // ...
+    ...
 </a>
 ```
 
