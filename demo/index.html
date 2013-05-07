@@ -35,7 +35,7 @@
 </div>
 -->
 
-<nav>
+<nav class="index">
     <ul>
         <li><a href="#introduction">Introduction</a></li>
         <li><a href="#requirements">Requirements</a></li>
@@ -66,7 +66,7 @@
 
 <p>You could say:</p>
 
-<blockquote>Why not put that Media Query check in my Google Map module?</blockquote>
+<blockquote>Why not just put that Media Query test in my Google Map module?</blockquote>
 
 <p>And of course that would work, at first.</p>
 
@@ -77,28 +77,32 @@
 <h2 id="requirements">Requirements</h2>
 
 <ul>
-    <li>RequireJS</li>
-    <li>IE8 or a modern browser</li>
+    <li><a href="http://requirejs.org" title="RequireJS - A JavaScript Module Loader"></a>RequireJS</li>
+    <li>IE8 or better yet a modern browser</li>
 </ul>
 
 
 
 
 
-
+<section class="doc-group">
 <h2 id="documentation">Documentation</h2>
 
-
-<ul>
-    <li><a href="#data-module">Binding modules</a></li>
-    <li><a href="#data-conditions">Setting conditions</a></li>
-    <li><a href="#data-options">Passing options</a></li>
-    <li><a href="#data-priority">Defining priorities</a></li>
-</ul>
-
+<nav class="sub">
+    <ul>
+        <li><a href="#data-module">Binding modules</a></li>
+        <li><a href="#data-conditions">Setting conditions</a></li>
+        <li><a href="#data-options">Passing options</a></li>
+        <li><a href="#data-priority">Defining priorities</a></li>
+        <li><a href="#javascript-api">JavaScript API</a></li>
+    </ul>
+</nav>
 
 <p>Linking your modules to the DOM is done through data attributes.</p>
 <p>Note that in the following examples the <code>href</code> attribute has been ommited for clarity.</p>
+
+
+
 
 <h3 id="data-module">Binding modules</h3>
 <p>The string contained in the <code>data-module</code> attribute points to the location of the module.</p>
@@ -119,6 +123,8 @@
 <pre><code data-language="html">&lt;a data-module="IMap"&gt; ... &lt;/a&gt;</code></pre>
 
 
+
+
 <h3 id="data-conditions">Setting conditions</h3>
 <p>The <code>data-conditions</code> attributes allows you to control the conditions under which a module is loaded. For instance, below is an example condition which only loads the module if the supplied media query is matched.
 </p>
@@ -127,11 +133,11 @@
 
 <p>Tests are formatted like this: <code>&lt;test_name&gt;:{&lt;expected_value&gt;}</code></p>
 
-<p>Conditioner.js allows combine tests to build more complex conditions.</p>
+<h4>Writing expressions</h4>
 
-<h4>Writing an Expression</h4>
+<p>Conditioner.js allows combining of tests to build more complex conditions.</p>
 
-<p>Combine multiple tests using the <code>and</code> or <code>or</code> operators:</p>
+<p>Link multiple tests using the <code>and</code> or <code>or</code> operators:</p>
 <pre><code>foo:{bar} or foo:{bar} and foo:{bar}</code></pre>
 
 <p>Group tests using brackets to override operator precedence: </p>
@@ -142,9 +148,13 @@
 
 
 
+
+
 <h3 id="data-options">Passing options</h3>
 
-<p>The <code>data-options</code> attribute allows you to set specific options for the module, these options are then passed to the the module the moment it is initialized.</p>
+<p>The <code>data-options</code> attribute allows you to set specific options for the Module to be loaded on this node.</p>
+
+<p>Conditioner.js will merge page level options with node level options and pass the result to the Module once it's loaded.</p>
 
 <pre><code data-language="html">&lt;a data-module="ui/Map" data-options='{"zoom":10}'&gt; ... &lt;/a&gt;</code></pre>
 
@@ -158,16 +168,296 @@
     }
 });</code></pre>
 
+<p>In the not so exciting example above the resulting option object would be <code>{"zoom":10}</code>, since node level options take precendence over page level options zoom level <code>10</code> overwrites zoom level <code>5</code>.</p>
+
+
+
 
 <h3 id="data-priority">Defining priorities</h3>
 
 <p>The <code>data-priority</code> attributes allows you to control the order in which a node is handled. Positive numbers give a node priority over other nodes, a negative number moves it to the back of the initialisation queue.</p>
 
 <pre><code data-language="html">&lt;a data-module="ui/Map" data-priority="1"&gt; ... &lt;/a&gt;</code></pre>
+</section>
 
 
 
-<h3 id="js-conditioner">The JavaScript API</h3>
+
+<section class="doc-group">
+<h3 id="javascript-api">JavaScript API</h3>
+
+<p>Conditioner.js consists of a group of publicly accessible JavaScript Classes. These Classes allow you to access modules once they've been parsed. The starting point to load modules is always the <code>conditioner</code> object of which there is only one instance.</p>
+
+<nav class="sub code">
+    <ul>
+        <li><a href="#conditioner">conditioner</a></li>
+        <li><a href="#node">Node</a></li>
+        <li><a href="#module-controller">ModuleController</a></li>
+        <li><a href="#module">Module</a></li>
+    </ul>
+</nav>
+
+
+
+
+<section class="doc-group">
+
+<h4 id="conditioner">conditioner</h4>
+<p>Call <code>loadModules(document)</code> on the conditioner object to start loading the modules defined in the HTML document. Once this is done the conditioner will return the array of
+    Nodes it found and will initialize the once that are ready.</p>
+
+<p>Each <a href="#node">Node</a> contains one or more ModuleControllers, for each Node only one <a href="#module-controller">ModuleController</a> can have an active
+    <a href="#module">Module</a>.</p>
+
+<p>The following methods are available on the conditioner object.</p>
+
+<nav class="sub code">
+    <ul>
+        <li><a href="#conditioner-set-options">setOptions(object)</a></li>
+        <li><a href="#conditioner-load-modules">loadModules(context)</a> &rarr; Array</li>
+        <li><a href="#conditioner-get-node">getNode(selector)</a> &rarr; <a href="#node">Node</a>| null</li>
+        <li><a href="#conditioner-get-nodes-all">getNodesAll(selector)</a> &rarr; Array</li>
+    </ul>
+</nav>
+
+<h5 id="conditioner-set-options">setOptions</h5>
+<p>Allows defining of page level Module options and shortcuts to modules.</p>
+<pre><code data-language="javascript">/**
+ * Set conditioner options
+ * @param {object} options
+ * @public
+ */
+conditioner.setOptions({
+    'modules':{
+        'ui/Clock':'IClock',
+        'ui/Map':{
+            'alias':'IMap',
+            'options':{
+                'zoom':10
+            }
+        }
+    }
+});</code></pre>
+
+
+
+<h5 id="conditioner-load-modules">loadModules</h5>
+<p>Finds and loads all Modules defined on child elements of the supplied context. Returns an array of found Nodes.</p>
+<pre><code data-language="javascript">/**
+ * Loads modules found within the given context
+ * @param {element} context - Context to search for modules
+ * @return {Array} - Array of found Nodes
+ */
+conditioner.loadModules(context);</code></pre>
+
+
+
+<h5 id="conditioner-get-node">getNode</h5>
+<p>Returns a single Node matching the supplied selector.</p>
+<pre><code data-language="javascript">/**
+ * Returns the first Node matching the selector
+ * @param {string} selector - Selector to match the nodes to
+ * @return {Node} First matched node
+ */
+conditioner.getNode(selector);</code></pre>
+
+
+
+<h5 id="conditioner-get-nodes-all">getNodesAll</h5>
+<p>Returns an Array of found Nodes matching the supplied selector.</p>
+<pre><code data-language="javascript">/**
+ * Returns all nodes matching the selector
+ * @param {string} selector - Optional selector to match the nodes to
+ * @return {Array} Array containing matched nodes
+ */
+conditioner.getNodesAll(selector);</code></pre>
+
+</section>
+
+
+<section class="doc-group">
+<h4 id="node">Node</h4>
+
+<p>For each element found having a <code>data-module</code> attribute an object of type Node is made. The node object can then be queried for the ModuleControllers it contains.</p>
+
+<nav class="sub code">
+    <ul>
+        <li><a href="#node-get-active-module-controller">getActiveModuleController</a> &rarr; <a href="#module-controller">ModuleController</a>| null</li>
+        <li><a href="#node-get-module-controller-by-path">getModuleControllerByPath</a> &rarr; <a href="#module-controller">ModuleController</a>| null</li>
+        <li><a href="#node-get-module-controller-all-by-path">getModuleControllersByPath</a> &rarr; Array</li>
+        <li><a href="#node-matches-selector">matchesSelector</a> &rarr; boolean</li>
+        <li><a href="#node-execute">execute</a> &rarr; object</li>
+    </ul>
+</nav>
+
+<h5 id="node-get-active-module-controller">getActiveModuleController</h5>
+<p>Returns a reference to the currently active ModuleController.</p>
+<pre><code data-language="javascript">/**
+ * Returns a reference to the currently active module controller
+ * @return {ModuleController}
+ * @public
+ */
+node.getActiveModuleController();</code></pre>
+
+
+<h5 id="node-get-module-controller-by-path">getModuleControllerByPath</h5>
+<p>Finds and returns the first module to match the supplied path.</p>
+<pre><code data-language="javascript">/**
+ * Returns the first module controller matching the given path
+ * @param path {string} path to module
+ * @return {ModuleController}
+ * @public
+ */
+node.getModuleControllerByPath(path);</code></pre>
+
+
+<h5 id="node-get-module-controller-all-by-path">getModuleControllerAllByPath</h5>
+<p>Finds all ModuleControllers matching the supplied path and returns them as an array.</p>
+<pre><code data-language="javascript">/**
+ * Returns an array of ModuleControllers matching the given path
+ * @param path {string} path to module
+ * @return {Array}
+ * @public
+ */
+node.getModuleControllerAllByPath(path);</code></pre>
+
+
+<h5 id="node-matches-selector">matchesSelector</h5>
+<p>Tests if the element contained in the Node object matches the supplied CSS selector.</p>
+<pre><code data-language="javascript">/**
+ * Public method to check if the module matches the given query
+ * @param {string} selector
+ * @return {boolean}
+ * @public
+ */
+node.matchesSelector(selector);</code></pre>
+
+
+<h5 id="node-execute">execute</h5>
+<p>Safely tries to executes a method on the currently active Module. Always returns an object containing a status code and a response data property.</p>
+<pre><code data-language="javascript">/**
+ * Public method for safely executing methods on the loaded module
+ * @param {string} method - method key
+ * @param {Array} params - array containing the method parameters
+ * @return {object} returns object containing status code and possible response data
+ * @public
+ */
+node.execute(method,[params]);</code></pre>
+
+</section>
+
+
+
+
+<section class="doc-group">
+
+<h4 id="module-controller">ModuleController</h4>
+
+<p>The ModuleController loads and unloads the contained Module based on the conditions received. It propagates events from the contained Module so you can safely subscribe to them.</p>
+<nav class="sub code">
+    <ul>
+        <li><a href="#module-controller-matches-path">matchesPath</a> &rarr; boolean</li>
+        <li><a href="#module-controller-is-active">isActive</a> &rarr; boolean</li>
+        <li><a href="#module-controller-load">load</a></li>
+        <li><a href="#module-controller-unload">unload</a> &rarr; boolean</li>
+        <li><a href="#module-controller-execute">execute</a> &rarr; object</li>
+    </ul>
+</nav>
+
+<h5 id="module-controller-matches-path">matchesPath</h5>
+<p>Returns true if the ModuleController is in charge of a module with the given path.</p>
+<pre><code data-language="javascript">/**
+ * Checks if the module matches the path
+ * @param {string} path - path of module to test for
+ * @return {boolean} if matched
+ * @public
+ */
+moduleController.matchesPath(path);</code></pre>
+
+<h5 id="module-controller-is-active">isActive</h5>
+<p>Returns true if the module contained within the ModuleController is currently loaded.</p>
+<pre><code data-language="javascript">/**
+ * Returns true if module is currently active and loaded
+ * @returns {boolean}
+ * @public
+ */
+moduleController.isActive();</code></pre>
+
+<h5 id="module-controller-load">load</h5>
+<p>Loads the Module if it's available (if conditions suitable). Publishes the 'load' event once finished.</p>
+<pre><code data-language="javascript">/**
+ * Load the module contained in this ModuleController
+ * @public
+ * @fires load
+ */
+moduleController.load();</code></pre>
+
+<h5 id="module-controller-unload">unload</h5>
+<p>Unloads the Module if it's not already unloaded. Publishes the 'unload' event once done.</p>
+<pre><code data-language="javascript">/**
+ * Unloads the Module
+ * @fires unload
+ * @return {boolean}
+ * @public
+ */
+moduleController.unload();</code></pre>
+
+<h5 id="module-controller-execute">execute</h5>
+<p>Safely tries to execute a method on the module contained within the ModuleController.</p>
+<pre><code data-language="javascript">/**
+ * Executes a methods on the loaded module
+ * @param {string} method - method key
+ * @param {Array} params - optional array containing the method parameters
+ * @return {object} containing response of executed method and a status code
+ * @public
+ */
+moduleController.execute(method,[params]);</code></pre>
+
+</section>
+
+
+
+<section class="doc-group">
+
+<h4 id="module">ModuleBase</h4>
+
+<nav class="sub code">
+    <ul>
+        <li><a href="#module-constructor">constructor</a> &rarr; <a href="#module">module</a></li>
+        <li><a href="#module-unload">unload</a></li>
+    </ul>
+</nav>
+
+
+
+<h5>Constructor</h5>
+<p>The ModuleBase contructor takes two parameters, an element and an optional options object.</p>
+<p>ModuleBase is an abstract Class, UI Modules used in the framework should inherit from this Class.</p>
+<pre><code data-language="javascript">/**
+ * @class
+ * @constructor
+ * @param {element} element - DOM Element to apply this behavior to
+ * @param {object} options - Custom options to pass to this behavior
+ * @abstract
+ */
+ModuleBase.call(this,element,options);</code></pre>
+
+
+<h5>Unload</h5>
+<p>The <code>ModuleController</code> will call the <code>unload</code> method once the conditions for the Module are no longer valid. Use this method to clean up events attached by the Module and restore the original element state.</p>
+
+<pre><code data-language="javascript">/**
+ * Unloads module by removing data initialized property
+ * Override to clean up your module.
+ * @public
+ */
+module.unload();</code></pre>
+
+</section>
+
+</section>
+
+
 
 
 
@@ -181,15 +471,18 @@
 
 
 <h2 id="examples">Examples</h2>
+
+<!--
 <p>Some examples on how to setup and use the framework.</p>
-<ul>
-    <li><a href="examples/setup/">Default setup</a></li>
-    <li><a href="examples/conditions/">How to use Conditions</a></li>
-    <li><a href="examples/expressions/">How to use Expressions</a></li>
-    <li><a href="examples/custom/">Setting up Custom Conditions</a></li>
-</ul>
-
-
+<nav class="sub">
+    <ul>
+        <li><a href="examples/setup/">Default setup</a></li>
+        <li><a href="examples/conditions/">How to use Conditions</a></li>
+        <li><a href="examples/expressions/">How to use Expressions</a></li>
+        <li><a href="examples/custom/">Setting up Custom Conditions</a></li>
+    </ul>
+</nav>
+-->
 
 <h3>Always enabled</h3>
 <p>Clock will be always be active.</p>
@@ -276,7 +569,7 @@
 </div>
 
 
-<h3>Using a conditioned and a wildcard module on a single element</h3>
+<h3>Binding both a conditioned and a wildcard module</h3>
 <p>Clock will be active as long as element has a maximum width of 300 pixels, if the element gets above 300 pixels the wildcard Clock element is loaded which shows the time.</p>
 <pre><code data-language="html">&lt;div data-module='[{"path":"IClock","conditions":"element:{max-width:300}","options":{"time":false}},{"path":"IClock"}]'&gt; ... &lt;/div&gt;</code></pre>
 <div class="component alt">

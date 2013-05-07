@@ -4,7 +4,7 @@
  * @class
  * @constructor
  * @param {element} element - DOM Element to apply this behavior to
- * @param {object} [options] - Custom options to pass to this behavior
+ * @param {object} [options] - Custom options to pass to this module
  * @abstract
  */
 var ModuleBase = function(element,options) {
@@ -34,7 +34,7 @@ var ModuleBase = function(element,options) {
 
 
 /**
- * Unloads behaviour by removing data initialized property
+ * Unloads module by removing data initialized property
  * Override to clean up your control, remove event listeners, restore original state, etc.
  * @public
  */

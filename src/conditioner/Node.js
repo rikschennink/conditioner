@@ -333,7 +333,7 @@ Node.prototype.getActiveModuleController = function() {
 
 
 /**
- * Returns the first module controller matching the given path
+ * Returns the first ModuleController matching the given path
  * @param path {string} path to module
  * @return {ModuleController}
  * @public
@@ -344,7 +344,7 @@ Node.prototype.getModuleControllerByPath = function(path) {
 
 
 /**
- * Returns the first module controller matching the given path
+ * Returns an array of ModuleControllers matching the given path
  * @param path {string} path to module
  * @return {Array}
  * @public

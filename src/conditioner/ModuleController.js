@@ -153,7 +153,7 @@ ModuleController.prototype._onConditionsChange = function() {
 
 
 /**
- * Load the module set in the referenced in the path property
+ * Load the module contained in this ModuleController
  * @public
  */
 ModuleController.prototype.load = function() {
