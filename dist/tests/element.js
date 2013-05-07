@@ -14,22 +14,27 @@ define(function(){
 
     return {
 
-        setup:function(change) {
-            window.addEventListener('resize',change,false);
-            window.addEventListener('scroll',change,false);
+        /**
+         * Setup events that trigger reassertion of element
+         * @param {function} measure
+         */
+        setup:function(measure) {
+            window.addEventListener('resize',measure,false);
+            window.addEventListener('scroll',measure,false);
         },
 
+        /**
+         * Assert if matches expected value
+         * @param {string} expected
+         * @param {Element} element
+         * @returns {boolean}
+         */
         assert:function(expected,element) {
 
-            if (expected === 'visible') {
-                return _isVisible(element);
-            }
-            else if (expected === 'seen') {
-
+            if (expected === 'seen') {
                 if (!this._seen) {
                     this._seen = _isVisible(element);
                 }
-
                 return this._seen;
             }
             else {

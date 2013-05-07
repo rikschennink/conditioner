@@ -9,24 +9,39 @@ define(function(){
 
     return {
 
+        /**
+         * Does this browser support matchMedia
+         * @returns {boolean}
+         */
         support:function() {
             return 'matchMedia' in window;
         },
 
+        /**
+         * Custom arrange method to setup matchMedia listener for each test instance
+         * @param {string} expected
+         */
         arrange:function(expected) {
 
-            // if not supported don't try to setup
-            if (!this.supported()) {return;}
+            // if testing for support
+            if (expected === 'supported') {
+                return;
+            }
 
-            // setup mql
+            // if is media query
             var self = this;
             this._mql = window.matchMedia(expected);
             this._mql.addListener(function(){
-                self.act();
+                self.onchange();
             });
 
         },
 
+        /**
+         * Tests if the assert succeeds
+         * @param expected
+         * @returns {boolean}
+         */
         assert:function(expected) {
 
             // no support

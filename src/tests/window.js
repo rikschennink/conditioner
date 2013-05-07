@@ -10,17 +10,30 @@ define(function() {
 
     return {
 
-        setup:function(change) {
-            window.addEventListener('resize',change,false);
+        /**
+         * Listen to resize event to measure new window width
+         * @param {function} measure
+         */
+        setup:function(measure) {
+            window.addEventListener('resize',measure,false);
         },
 
-        change:function() {
+        /**
+         * Custom measure function to store window width before calling change
+         * @returns {boolean}
+         */
+        measure:function() {
 
             _width = window.innerWidth || document.documentElement.clientWidth;
 
             return true;
         },
 
+        /**
+         * test if matches expected value
+         * @param {string} expected
+         * @returns {boolean}
+         */
         assert:function(expected) {
 
             var parts = expected.split(':'),

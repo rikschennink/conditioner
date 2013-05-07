@@ -98,7 +98,7 @@ ConditionsManager.prototype = {
 
         var self = this;
 
-        TestRegister.getTest(config.path,function(test) {
+        TestFactory.getTest(config.path,function(test) {
 
             // assign tester to expression
             expression.assignTester(

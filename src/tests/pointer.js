@@ -11,22 +11,30 @@ define(function(){
 
     return {
 
-        setup:function(change){
+        /**
+         * Setup events, detach events if no activity for 30 seconds
+         * @param {function} measure
+         */
+        setup:function(measure){
 
             // start listening to mousemoves to deduce the availability of a pointer device
-            document.addEventListener('mousemove',change,false);
-            document.addEventListener('mousedown',change,false);
+            document.addEventListener('mousemove',measure,false);
+            document.addEventListener('mousedown',measure,false);
 
             // start timer, stop testing after 30 seconds
-            var self = this;
             setTimeout(function(){
-                document.removeEventListener('mousemove',change,false);
-                document.removeEventListener('mousedown',change,false);
+                document.removeEventListener('mousemove',measure,false);
+                document.removeEventListener('mousedown',measure,false);
             },30000);
 
         },
 
-        change:function(e,change) {
+        /**
+         * Custom measure function to count the amount of moves
+         * @param {Event} e
+         * @returns {boolean} - Return true if a change has occurred
+         */
+        measure:function(e) {
 
             if (e.type === 'mousemove') {
 
@@ -35,10 +43,9 @@ define(function(){
                 if (_moves >= _movesRequired) {
 
                     // stop listening to events
-                    document.removeEventListener('mousemove',change,false);
-                    document.removeEventListener('mousedown',change,false);
+                    document.removeEventListener('mousemove',this,false);
+                    document.removeEventListener('mousedown',this,false);
 
-                    // change
                     return true;
                 }
             }
@@ -46,10 +53,14 @@ define(function(){
                 _moves = 0;
             }
 
-            // no change
             return false;
         },
 
+        /**
+         * test if matches expectations
+         * @param {string} expected
+         * @returns {boolean}
+         */
         assert:function(expected) {
             return expected === 'available' && _moves>=_movesRequired;
         }
