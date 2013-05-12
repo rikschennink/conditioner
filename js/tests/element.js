@@ -2,7 +2,7 @@
  * Tests if an elements dimensions match certain expectations
  * @module tests/element
  */
-define(['conditioner'],function(conditioner){
+define(function(){
 
     'use strict';
 
@@ -13,44 +13,48 @@ define(['conditioner'],function(conditioner){
     };
 
     return {
-        arrange:function() {
 
-            window.addEventListener('resize',this,false);
-            window.addEventListener('scroll',this,false);
-
+        /**
+         * Setup events that trigger reassertion of element
+         * @param {function} measure
+         */
+        setup:function(measure) {
+            window.addEventListener('resize',measure,false);
+            window.addEventListener('scroll',measure,false);
         },
+
+        /**
+         * Assert if matches expected value
+         * @param {string} expected
+         * @param {Element} element
+         * @returns {boolean}
+         */
         assert:function(expected,element) {
 
-            var parts = expected.split(':'),key,value;
-
-            if (parts) {
-                key = parts[0];
-                value = parseInt(parts[1],10);
+            if (expected === 'seen') {
+                if (!this._seen) {
+                    this._seen = _isVisible(element);
+                }
+                return this._seen;
             }
             else {
-                key = expected;
-            }
 
-            if (key === 'min-width') {
-                return element.offsetWidth >= value;
-            }
-            else if (key === 'max-width') {
-                return element.offsetWidth <= value;
-            }
-            else if (key === 'visible') {
-                return _isVisible(element);
-            }
-            else if (key === 'seen') {
+                var parts = expected.split(':'),key,value;
 
-                var hasBeenSeen = this.remember(['seen',element]);
-                if (!hasBeenSeen) {
-                    hasBeenSeen = _isVisible(element);
-                    if (hasBeenSeen) {
-                        this.remember(['seen',element],true);
-                    }
+                if (!parts) {
+                    return false;
                 }
 
-                return hasBeenSeen;
+                key = parts[0];
+                value = parseInt(parts[1],10);
+
+                if (key === 'min-width') {
+                    return element.offsetWidth >= value;
+                }
+                else if (key === 'max-width') {
+                    return element.offsetWidth <= value;
+                }
+
             }
 
             return false;
