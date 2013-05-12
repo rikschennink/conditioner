@@ -25,7 +25,7 @@
 </head>
 <body>
 
-<h1 class="logo"><a href="/">conditioner.js</a></h1>
+<h1 class="logo"><a href="/conditioner">ConditionerJS</a></h1>
 
 <div class="git">
     <iframe src="http://ghbtns.com/github-btn.html?user=rikschennink&repo=conditioner&type=watch&count=true"
@@ -38,11 +38,11 @@
 
 <nav class="index">
     <ul>
-        <li><a href="/examples/basic">Basic implementation</a></li>
-        <li><a href="/examples/conditions">Example conditions</a></li>
-        <li><a href="/examples/complex">Complex conditions</a></li>
-        <li><a href="/examples/custom">Custom conditions</a></li>
-        <li><a href="/examples/multiple">Multiple modules</a></li>
+        <li><a href="/conditioner/examples/basic">Basic implementation</a></li>
+        <li><a href="/conditioner/examples/conditions">Example conditions</a></li>
+        <li><a href="/conditioner/examples/complex">Complex conditions</a></li>
+        <li><a href="/conditioner/examples/custom">Custom conditions</a></li>
+        <li><a href="/conditioner/examples/multiple">Multiple modules</a></li>
     </ul>
 </nav>
 
@@ -52,7 +52,7 @@
 
 <h3>Based on Element dimensions</h3>
 <p>The Clock below will be active as long as the element has a minimum width of 275 pixels. Resize the browser window, if the width falls below 275 pixels the Clock will be unloaded.</p>
-<pre><code data-language="html">&lt;div data-module="IClock" data-conditions="element:{min-width:275}"&gt; ... &lt;/div&gt;</code></pre>
+<pre><code data-language="html">&lt;div data-module="ui/Clock" data-conditions="element:{min-width:275}"&gt; ... &lt;/div&gt;</code></pre>
 <div class="component alt">
     <div data-module="ui/Clock"
          data-conditions="element:{min-width:275}">Clock is inactive</div>
@@ -61,7 +61,7 @@
 
 <h3>Based on the availability of a pointer device</h3>
 <p>The Clock below will be active as long as we can detect the user has a pointer device.</p>
-<pre><code data-language="html">&lt;div data-module="IClock" data-conditions="pointer:{available}"&gt; ... &lt;/div&gt;</code></pre>
+<pre><code data-language="html">&lt;div data-module="ui/Clock" data-conditions="pointer:{available}"&gt; ... &lt;/div&gt;</code></pre>
 <div class="component">
     <div data-module="ui/Clock"
          data-conditions="pointer:{available}">Clock is inactive</div>
@@ -102,7 +102,7 @@
     requirejs.config({
         baseUrl:'../../js/',
         paths:{
-            conditioner:'../../dist/conditioner'
+            conditioner:'lib/rikschennink/conditioner.min'
         }
     });
 

@@ -25,12 +25,12 @@
 </head>
 <body>
 
-<h1 class="logo"><a href="/">conditioner.js</a></h1>
+<h1 class="logo"><a href="/conditioner">ConditionerJS</a></h1>
 <em>Take Control of your JavaScript Modules</em>
 
 <div class="git">
     <iframe src="http://ghbtns.com/github-btn.html?user=rikschennink&repo=conditioner&type=watch&count=true"
-            allowtransparency="true" frameborder="0" scrolling="0" width="78" height="20"></iframe>
+        allowtransparency="true" frameborder="0" scrolling="0" width="78" height="20"></iframe>
 </div>
 
 <nav class="index">
@@ -95,81 +95,81 @@
 
 
 <section class="doc-group">
-    <h2 id="documentation">Documentation</h2>
+<h2 id="documentation">Documentation</h2>
 
-    <p>As the framework is still in development note that the documentation is prone to change.</p>
+<p>As the framework is still in development note that the documentation is prone to change.</p>
 
-    <a href="docs/">Documentation</a>
-
-
-
-
-
-    <h2 id="examples">Examples</h2>
-
-    <p>Some example implementations.</p>
-
-    <nav class="sub">
-        <ul>
-            <li><a href="/examples/basic">Basic implementation</a></li>
-            <li><a href="/examples/conditions">Example conditions</a></li>
-            <li><a href="/examples/complex">Complex conditions</a></li>
-            <li><a href="/examples/custom">Custom conditions</a></li>
-            <li><a href="/examples/multiple">Multiple modules</a></li>
-        </ul>
-    </nav>
+<a href="docs/">Documentation</a>
 
 
 
 
 
-    <h2 id="license">License</h2>
-    <p><a href="http://www.opensource.org/licenses/mit-license.php">MIT license</a></p>
+<h2 id="examples">Examples</h2>
+
+<p>Some example implementations.</p>
+
+<nav class="sub">
+    <ul>
+        <li><a href="/conditioner/examples/basic">Basic implementation</a></li>
+        <li><a href="/conditioner/examples/conditions">Example conditions</a></li>
+        <li><a href="/conditioner/examples/complex">Complex conditions</a></li>
+        <li><a href="/conditioner/examples/custom">Custom conditions</a></li>
+        <li><a href="/conditioner/examples/multiple">Multiple modules</a></li>
+    </ul>
+</nav>
+
+
+
+
+
+<h2 id="license">License</h2>
+<p><a href="http://www.opensource.org/licenses/mit-license.php">MIT license</a></p>
 
 
 
 
 
 
-    <!-- For pretty javascript code examples -->
-    <script src="js/lib/ccampbell/rainbow/rainbow-custom.min.js"></script>
+<!-- For pretty javascript code examples -->
+<script src="js/lib/ccampbell/rainbow/rainbow-custom.min.js"></script>
 
-    <!-- Shims to get this working on some older browsers <= IE9 (should of course be minimized in real life) -->
-    <script src="js/shim/Array.isArray.js"></script>
-    <script src="js/shim/Array.indexOf.js"></script>
-    <script src="js/shim/Array.forEach.js"></script>
-    <script src="js/shim/Object.create.js"></script>
-    <script src="js/shim/Object.keys.js"></script>
-    <script src="js/shim/Function.bind.js"></script>
-    <script src="js/shim/matchMedia/matchMedia.js"></script>
-    <script src="js/shim/matchMedia/matchMedia.addListener.js"></script>
+<!-- Shims to get this working on some older browsers <= IE9 (should of course be minimized in real life) -->
+<script src="js/shim/Array.isArray.js"></script>
+<script src="js/shim/Array.indexOf.js"></script>
+<script src="js/shim/Array.forEach.js"></script>
+<script src="js/shim/Object.create.js"></script>
+<script src="js/shim/Object.keys.js"></script>
+<script src="js/shim/Function.bind.js"></script>
+<script src="js/shim/matchMedia/matchMedia.js"></script>
+<script src="js/shim/matchMedia/matchMedia.addListener.js"></script>
 
-    <!-- old stuff last, matchmedia won't be loaded if browser does not have addEventListener support, so we'll load shim now -->
-    <script src="js/shim/DOMContentLoaded.js"></script>
-    <script src="js/shim/addEventListener.js"></script>
+<!-- old stuff last, matchmedia won't be loaded if browser does not have addEventListener support, so we'll load shim now -->
+<script src="js/shim/DOMContentLoaded.js"></script>
+<script src="js/shim/addEventListener.js"></script>
 
-    <!-- Load minimized library (require + modules) -->
-    <script src="js.min/built.js"></script>
+<!-- Load minimized library (require + modules) -->
+<script src="js.min/built.js"></script>
 
 
 
-    <script>
+<script>
 
-        // setup requirejs
-        requirejs.config({
-            baseUrl:'js/',
-            paths:{
-                conditioner:'../../dist/conditioner'
-            }
-        });
+// setup requirejs
+requirejs.config({
+    baseUrl:'js/',
+    paths:{
+        conditioner:'lib/rikschennink/conditioner.min'
+    }
+});
 
-        // load conditioner
-        requirejs(['conditioner'],function(conditioner) {
-                    conditioner.loadModules(document);
-                }
-        );
+// load conditioner
+requirejs(['conditioner'],function(conditioner) {
+        conditioner.loadModules(document);
+    }
+);
 
-    </script>
+</script>
 
 </body>
 </html>

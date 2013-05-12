@@ -25,7 +25,7 @@
 </head>
 <body>
 
-<h1 class="logo"><a href="/">conditioner.js</a></h1>
+<h1 class="logo"><a href="/conditioner">ConditionerJS</a></h1>
 
 <div class="git">
     <iframe src="http://ghbtns.com/github-btn.html?user=rikschennink&repo=conditioner&type=watch&count=true"
@@ -34,15 +34,15 @@
 
 
 
-<h1 class="title">Example conditions</h1>
+<h1 class="title">Custom conditions</h1>
 
 <nav class="index">
     <ul>
-        <li><a href="/examples/basic">Basic implementation</a></li>
-        <li><a href="/examples/conditions">Example conditions</a></li>
-        <li><a href="/examples/complex">Complex conditions</a></li>
-        <li><a href="/examples/custom">Custom conditions</a></li>
-        <li><a href="/examples/multiple">Multiple modules</a></li>
+        <li><a href="/conditioner/examples/basic">Basic implementation</a></li>
+        <li><a href="/conditioner/examples/conditions">Example conditions</a></li>
+        <li><a href="/conditioner/examples/complex">Complex conditions</a></li>
+        <li><a href="/conditioner/examples/custom">Custom conditions</a></li>
+        <li><a href="/conditioner/examples/multiple">Multiple modules</a></li>
     </ul>
 </nav>
 
@@ -55,19 +55,19 @@
 
 <h3>Based on custom conditions</h3>
 <p>The first Clock will be activated the moment all cookies are allowed. The second Clock is only inactive when the user accepts no cookies.</p>
-<pre><code data-language="html">&lt;div data-module="IStorageConsentSelect" data-options='{"label":{"select":"Allow cookies"}}'&gt; ... &lt;/div&gt;</code></pre>
+<pre><code data-language="html">&lt;div data-module="ui/StorageConsentSelect" data-options='{"label":{"select":"Allow cookies"}}'&gt; ... &lt;/div&gt;</code></pre>
 <div class="component">
-    <div data-module="IStorageConsentSelect"
+    <div data-module="ui/StorageConsentSelect"
          data-options='{"label":{"select":"Allow cookies"}}'>
         Javascript needs to be enabled to control storage settings
     </div>
 </div>
-<pre><code data-language="html">&lt;div data-module="IClock" data-conditions="cookies:{all}"&gt; ... &lt;/div&gt;</code></pre>
+<pre><code data-language="html">&lt;div data-module="ui/Clock" data-conditions="cookies:{all}"&gt; ... &lt;/div&gt;</code></pre>
 <div class="component">
     <div data-module="ui/Clock"
          data-conditions="cookies:{all}">Clock is inactive</div>
 </div>
-<pre><code data-language="html">&lt;div data-module="IClock" data-conditions="cookies:{all,incognito}"&gt; ... &lt;/div&gt;</code></pre>
+<pre><code data-language="html">&lt;div data-module="ui/Clock" data-conditions="cookies:{all,incognito}"&gt; ... &lt;/div&gt;</code></pre>
 <div class="component">
     <div data-module="ui/Clock"
          data-conditions="cookies:{all,incognito}">Clock is inactive</div>
@@ -107,7 +107,7 @@
     requirejs.config({
         baseUrl:'../../js/',
         paths:{
-            conditioner:'../../dist/conditioner'
+            conditioner:'lib/rikschennink/conditioner.min'
         }
     });
 
@@ -118,7 +118,6 @@
             conditioner.setOptions({
                 'modules':{
                     'ui/StorageConsentSelect':{
-                        'alias':'IStorageConsentSelect',
                         'options':{
                             'label':{
                                 'level':{
