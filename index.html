@@ -52,9 +52,9 @@
 <p>The following HTML snippet shows how to setup this Google Map using ConditionerJS. There are two things going on, the Map module is bound using the <code>data-module</code> attribute and the required conditions are set via the <code>data-conditions</code> attribute.</p>
 
 <pre><code data-language="html">&lt;a href="http://maps.google.com/?ll=51.741,3.822"
-data-module="ui/Map"
-data-conditions="media:{(min-width:40em)} and element:{seen}"&gt;
-...
+    data-module="ui/Map"
+    data-conditions="media:{(min-width:40em)} and element:{seen}"&gt;
+    ...
 &lt;/a&gt;</code></pre>
 
 <p>Now the HTML is setup, we only have to tell the Conditioner to look for modules in a certain section of the DOM and we're done. We can do this using the <code>loadModules</code> method.</p>
