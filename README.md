@@ -6,7 +6,7 @@ Conditioner
 Introduction
 --------------------------------
 
-ConditionerJS is a JavaScript Module Loader based on RequireJS. ConditionerJS allows you to define conditions under which your JavaScript modules are allowed to be loaded and than takes care of loading them at the right moment.
+ConditionerJS is a JavaScript Module Loader based on RequireJS. ConditionerJS allows you to define conditions under which your JavaScript modules are allowed to be loaded and then takes care of loading them at the right moment.
 
 Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map. It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map. And to save a request and some bits and bytes you might only want to start loading the map once the map container becomes visible to the user.
 
