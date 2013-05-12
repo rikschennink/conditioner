@@ -28,6 +28,7 @@ conditioner.loadModules(document);
 
 You could say:
 > Why not just put that condition in my Google Map module?
+
 And of course that would work, at first.
 
 As your project grows you might want to use the module on another page under different circumstances. So you add another condition, and then another, and another.
