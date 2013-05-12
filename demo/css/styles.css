@@ -30,7 +30,6 @@ html,input,select,textarea,button {
  * Body
  */
 body {
-	position:relative;
 	margin:0 auto;
 	max-width:40em;
 }
@@ -43,24 +42,6 @@ nav {
 	margin-top:2em;
 }
 
-nav.index {
-
-    margin-bottom:-3em;
-    text-align:center;
-
-    /* animate in */
-    right:-12em;
-    -webkit-transition:right .5s;
-}
-
-nav.sub {
-    display:block;
-    margin:0;
-    padding:1em 1em .5em;
-    border-radius:.5em;
-    background:#ffefed;
-}
-
 nav ul,
 nav li {
 	padding:0;
@@ -68,24 +49,40 @@ nav li {
 	list-style:none;
 }
 
+nav>ul ul {
+    margin-top:.5em;
+    margin-bottom:1.5em;
+    font-size:.875em;
+}
+
+nav>ul ul a {
+    text-decoration:none;
+}
+
 nav li {
 	margin-bottom:.5em;
 }
 
-nav.index li {
-    display:inline-block;
-}
-
 nav a {
 	position:relative;
-	padding:.25em .5em;
-	text-decoration:none;
 	color:#d14;
-	border-radius:.25em;
 }
 
-nav a,
-nav a:after {
+nav>a {
+    position:absolute;
+    left:2em;
+    top:0;
+    padding:.5em;
+    line-height:1;
+}
+
+nav>ul>li>a {
+    display:block;
+    margin-top:.5em;
+}
+
+nav>ul>li>a,
+nav>ul>li>a:after {
 	-webkit-transition:.25s;
 }
 
@@ -93,27 +90,46 @@ nav a:hover {
     text-decoration:underline;
 }
 
-nav.index a:focus,
-nav.index a:hover {
-	color:#fff;
-	background:#d14;
-    text-decoration:none;
+nav.index {
+
+    text-align:left;
+
+    /* animate in */
+    right:-12em;
+    -webkit-transition:right .5s;
+}
+
+nav.index li {
+    display:block;
+}
+
+nav.sub {
+    display:block;
+    margin:0;
+    padding:.5em 1em .5em;
+    border-radius:.5em;
+    background:#ffefed;
 }
 
 nav.code {
+    padding:0;
     font-size:.875em;
-    border:1px solid #cfe9ec;
-    background:#eaf8f6;
+    background:#fff;
     font-family:monaco,consolas,monospace;
 }
 
 nav.code {
+    overflow-x:scroll;
     color:#68becb;
 }
 
 nav.code a {
+    display:inline-block;
+    padding:0;
     color:#008e9c;
 }
+
+
 
 
 /**
@@ -125,29 +141,32 @@ h1,h2,h3,h4,h5 {
 }
 
 h1 {
-	font-size:2em;
-	color:#333;
+    padding-top:.5em;
+    margin-bottom:-.25em;
+	font-size:1.75em;
+	color:#222;
 }
 
 h2 {
 	margin-top:0;
-	padding-top:2em;
-	padding-bottom:.25em;
-	font-size:1.75em;
-	color:#333;
+    margin-bottom:.3em;
+	padding-top:.75em;
+	padding-bottom:.125em;
+	font-size:1.5em;
+	color:#444;
 	border-bottom:1px solid #ddd;
 }
 
 h3 {
-	padding:2.5em 0 0 0;
+	padding:1.2em 0 0 0;
 	margin:0 0 .5em;
-	font-size:1.375em;
+	font-size:1.25em;
 	color:#d93f65;
 }
 
 h4 {
 	font-weight:normal;
-	font-size:1.25em;
+	font-size:1.125em;
     padding-top:3em;
 	margin:0 0 .5em;
 	color:#555;
@@ -160,7 +179,6 @@ h4+h5{
 
 h5 {
     font-size:1em;
-    font-family:monaco,monospace;
     color:#008e9c;
     margin:2em 0 -.75em 0;
 }
@@ -171,34 +189,55 @@ h4+p {
 	margin-top:0;
 }
 
+.code {
+    white-space:nowrap;
+    font-family:monaco,monospace;
+}
+
+h3 .code {
+    display:block;
+    color:#999;
+    font-size:.875em;
+}
+
 
 
 /**
  * Logo
  */
-h1 {
-	text-align:center;
-	margin:0;
-	padding-top:.5em;
+h1.logo {
+    padding:0;
+    margin:0 0 .5em 0;
+    font-size:1.25em;
 	white-space:nowrap;
+    line-height:1;
 }
 
-h1+em {
+h1.logo>a {
+    color:#333;
+    text-decoration:none;
+}
+
+h1.title,
+h1.logo+em {
 	display:block;
-	margin:.5em 0;
-	padding:0 .25em;
-	text-align:center;
+    padding:0;
+    margin:0;
 	text-transform:lowercase;
 	font-style:normal;
+    font-family:OpenSans,sans-serif;
 	color:#888;
-	border-radius:.25em;
 	font-size:1em;
+    max-width:70%;
 }
 
-h1:after {
-	content:':{';
-    color:#dd315b;
+h1.logo:after {
+	content:':{}';
+    color:#d14;
 }
+
+
+
 
 
 /**
@@ -206,18 +245,19 @@ h1:after {
  */
 .git {
 	position:absolute;
-	top:-2em;
-	left:0;
-	right:0;
+	top:1.75em;
+	right:2em;
+    min-height:1em;
 	display:block;
 	padding:.25em;
 	background:#efefef;
-	border-radius:0 0 .25em .25em;
+	border-radius:.25em;
 }
 
 .git iframe {
 	display:block;
 }
+
 
 
 
@@ -227,59 +267,75 @@ h1:after {
 
 @media (min-width:38em) {
 
-	h1 {
-		font-size:2.5em;
-	}
-
-	h1+em {
-		font-size:1.25em;
-	}
+    body {
+        position:relative;
+    }
 
     nav.code {
         font-size:1em;
     }
+
+    .git {
+        right:0;
+    }
+
+    h3 .code {
+        display:inline-block;
+    }
+
+    h3 .code:before {
+        content:'(';
+    }
+
+    h3 .code:after {
+        content:')';
+    }
+
+
 
 }
 
 @media (min-width:62em) {
 
 	body {
-		margin-left:12em;
+		margin-left:16em;
 	}
 
-	h1 {
-		font-size:3em;
-		text-align:left;
-	}
+    h1.logo {
+        position:fixed;
+        left:0;
+        top:.875em;
+        width:12em;
+        padding-top:.5em;
+        text-align:right;
+    }
 
-	h1+em {
-		text-align:left;
-		font-size:1.25em;
-	}
+    h1.title,
+    h1.logo+em {
+        margin:-.3875em 0 .5em 0;
+        font-size:1.25em;
+    }
 
-	nav.index a:after {
-		position: absolute;
-		top:50%;
-		height:0;
-		width:0;
-		border:solid transparent;
-		pointer-events:none;
-		content:'';
-		border-width:1px;
-		margin-top:-1px;
-	}
+    .git {
+        top:.125em;
+    }
 
-    nav.index a:hover:after,
-    nav.index a:focus:after {
-        margin-top:-5px;
-        border-width:5px;
+    nav>a {
+        position:absolute;
+        left:0;
+        top:0;
+        border-bottom:1px solid #ddd;
+        border-radius:0;
+        padding-top:0;
+        padding-bottom:1em;
+        margin-bottom:1em;
     }
 
     nav.index {
         position:fixed;
         left:1em;
         top:4em;
-        width:10em;
+        width:14em;
         margin:0;
     }
 
@@ -291,17 +347,23 @@ h1:after {
         display:block;
     }
 
-    nav.index a:after {
-        left:100%;
-    }
-
-	nav.index a:hover:after,
-    nav.index a:focus:after {
-		border-left-color:#d14;
-		left:100%;
+	nav.index>ul>li>a:after {
+		position: absolute;
+		top:50%;
+		height:0;
+		width:0;
+		border:solid transparent;
+		pointer-events:none;
+		content:'';
+        margin-top:-5px;
+        border-width:5px;
 	}
 
 }
+
+
+
+
 
 
 
@@ -312,7 +374,7 @@ p {
 	margin:1em 0;
 }
 
-p>a {
+a {
     color:#d14;
 }
 
@@ -343,7 +405,10 @@ p>code {
 }
 
 
-
+p.note {
+    font-size:.875em;
+    color:#999;
+}
 
 
 
@@ -359,7 +424,6 @@ p>code {
 	background:#f3efe2;
 	border-radius:3px;
 	font-size:.875em;
-	border:1px solid #dcd8cc;
 }
 
 .component.alt {

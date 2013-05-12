@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
 
-    <title>Conditioner - Detangle your JavaScript and make it shine.</title>
+    <title>ConditionerJS - Take Command over your JavaScript Modules</title>
 
     <link href="../../css/rainbow/github.css" rel="stylesheet">
     <link href="../../css/styles.css" rel="stylesheet">
@@ -25,19 +25,35 @@
 </head>
 <body>
 
-<h1>conditioner</h1>
+<h1 class="logo"><a href="/">conditioner.js</a></h1>
 
-<nav>
+<div class="git">
+    <iframe src="http://ghbtns.com/github-btn.html?user=rikschennink&repo=conditioner&type=watch&count=true"
+            allowtransparency="true" frameborder="0" scrolling="0" width="78" height="20"></iframe>
+</div>
+
+
+
+<h1 class="title">Example conditions</h1>
+
+<nav class="index">
     <ul>
-        <li><a href="#introduction">Introduction</a></li>
-        <li><a href="#requirements">Requirements</a></li>
-        <li><a href="#documentation">Documentation</a></li>
-        <li><a href="#examples">Examples</a></li>
+        <li><a href="/examples/basic">Basic implementation</a></li>
+        <li><a href="/examples/conditions">Example conditions</a></li>
+        <li><a href="/examples/complex">Complex conditions</a></li>
+        <li><a href="/examples/custom">Custom conditions</a></li>
+        <li><a href="/examples/multiple">Multiple modules</a></li>
     </ul>
 </nav>
 
-<h2 id="introduction">Custom</h2>
 
+
+
+
+
+
+
+<h3>Based on custom conditions</h3>
 <p>The first Clock will be activated the moment all cookies are allowed. The second Clock is only inactive when the user accepts no cookies.</p>
 <pre><code data-language="html">&lt;div data-module="IStorageConsentSelect" data-options='{"label":{"select":"Allow cookies"}}'&gt; ... &lt;/div&gt;</code></pre>
 <div class="component">
@@ -48,22 +64,23 @@
 </div>
 <pre><code data-language="html">&lt;div data-module="IClock" data-conditions="cookies:{all}"&gt; ... &lt;/div&gt;</code></pre>
 <div class="component">
-    <div data-module="IClock"
+    <div data-module="ui/Clock"
          data-conditions="cookies:{all}">Clock is inactive</div>
 </div>
 <pre><code data-language="html">&lt;div data-module="IClock" data-conditions="cookies:{all,incognito}"&gt; ... &lt;/div&gt;</code></pre>
 <div class="component">
-    <div data-module="IClock"
+    <div data-module="ui/Clock"
          data-conditions="cookies:{all,incognito}">Clock is inactive</div>
 </div>
 
 
-<!-- For pretty javascript code examples -->
-<script src="../../js/lib/ccampbell/rainbow/rainbow.min.js"></script>
-<script src="../../js/lib/ccampbell/rainbow/html.js"></script>
-<script src="../../js/lib/ccampbell/rainbow/generic.js"></script>
-<script src="../../js/lib/ccampbell/rainbow/javascript.js"></script>
 
+
+
+
+
+<!-- For pretty javascript code examples -->
+<script src="../../js/lib/ccampbell/rainbow/rainbow-custom.min.js"></script>
 
 <!-- Shims to get this working on some older browsers <= IE9 (please minimize in real life) -->
 <script src="../../js/shim/Array.isArray.js"></script>
@@ -88,7 +105,10 @@
 
     // setup requirejs
     requirejs.config({
-        baseUrl:'../../js/'
+        baseUrl:'../../js/',
+        paths:{
+            conditioner:'../../dist/conditioner'
+        }
     });
 
     // load conditioner
@@ -97,7 +117,6 @@
             // setup modules
             conditioner.setOptions({
                 'modules':{
-                    'ui/Clock':'IClock',
                     'ui/StorageConsentSelect':{
                         'alias':'IStorageConsentSelect',
                         'options':{
@@ -117,11 +136,9 @@
                 }
             });
 
-            // load all modules found within the document scope
+            // load modules
             conditioner.loadModules(document);
-
         }
-
     );
 
 </script>
