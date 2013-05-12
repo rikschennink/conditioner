@@ -71,7 +71,7 @@ Conditioner.prototype = {
     /**
      * Loads modules within the given context
      * @param {element} context - Context to find modules in
-     * @return {Array} - Array of initialized ModuleControllers
+     * @return {Array} - Array of found Nodes
      */
     loadModules:function(context) {
 

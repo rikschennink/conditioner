@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+
+    <title>ConditionerJS - Take Control of your JavaScript Modules</title>
+
+    <link href="../../css/rainbow/github.css" rel="stylesheet">
+    <link href="../../css/styles.css" rel="stylesheet">
+
+    <script>
+
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-33378673-2', 'github.io');
+        ga('send', 'pageview');
+
+    </script>
+
+</head>
+<body>
+
+<h1 class="logo"><a href="/">conditioner.js</a></h1>
+
+<div class="git">
+    <iframe src="http://ghbtns.com/github-btn.html?user=rikschennink&repo=conditioner&type=watch&count=true"
+            allowtransparency="true" frameborder="0" scrolling="0" width="78" height="20"></iframe>
+</div>
+
+
+
+<h1 class="title">Complex conditions</h1>
+
+<nav class="index">
+    <ul>
+        <li><a href="/examples/basic">Basic implementation</a></li>
+        <li><a href="/examples/conditions">Example conditions</a></li>
+        <li><a href="/examples/complex">Complex conditions</a></li>
+        <li><a href="/examples/custom">Custom conditions</a></li>
+        <li><a href="/examples/multiple">Multiple modules</a></li>
+    </ul>
+</nav>
+
+
+
+
+
+
+
+
+<h3>Based on multiple window dimensions</h3>
+<p>Clock will be active as long as window width falls between 450 and 750 pixels. Priority of this component has a value of 1 which causes it to be loaded before all components without and explicit priority.</p>
+<pre><code data-language="html">&lt;div data-module="IClock" data-conditions="window:{min-width:450} and window:{max-width:750}" data-priority="1"&gt; ... &lt;/div&gt;</code></pre>
+<div class="component">
+    <div data-module="ui/Clock"
+         data-conditions="window:{min-width:450} and window:{max-width:750}">Clock is inactive</div>
+</div>
+
+
+<h3>Based on Media Query</h3>
+<p>Clock will be active as long as media the media query is matched. Priority of this component has a value of minus 1, which causes it to be loaded after all components without and explicit priority have loaded.</p>
+<pre><code data-language="html">&lt;div data-module="IClock" data-priority="-1" data-conditions="media:{(min-width:30em) and (max-width:60em)} or not media:{supported}"&gt; ... &lt;/div&gt;</code></pre>
+<div class="component">
+    <div data-module="ui/Clock"
+         data-conditions="media:{(min-width:30em) and (max-width:60em)} or not media:{supported}">Clock is inactive</div>
+</div>
+
+
+<h3>Based on multiple conditions</h3>
+<p>Map will be active as long as there is any network connection, the media query is matched and the element is in view. If there is no media query support, the map may also be loaded.</p>
+<pre><code data-language="html">&lt;div data-module="IMap" data-priority="2" data-conditions="(connection:{any} and media:{(min-width:40em)} and element:{seen}) or not media:{supported}"&gt; ... &lt;/div&gt;</code></pre>
+<div class="component">
+    <a href="http://maps.google.com/?ll=51.741380,3.822169&z=11"
+       data-module="ui/Map"
+       data-conditions="(connection:{any} and media:{(min-width:40em)} and element:{seen}) or not media:{supported}">Coast of Holland at Google Maps</a>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- For pretty javascript code examples -->
+<script src="../../js/lib/ccampbell/rainbow/rainbow-custom.min.js"></script>
+
+<!-- Shims to get this working on some older browsers <= IE9 (please minimize in real life) -->
+<script src="../../js/shim/Array.isArray.js"></script>
+<script src="../../js/shim/Array.indexOf.js"></script>
+<script src="../../js/shim/Array.forEach.js"></script>
+<script src="../../js/shim/Object.create.js"></script>
+<script src="../../js/shim/Object.keys.js"></script>
+<script src="../../js/shim/Function.bind.js"></script>
+<script src="../../js/shim/matchMedia/matchMedia.js"></script>
+<script src="../../js/shim/matchMedia/matchMedia.addListener.js"></script>
+
+<!-- old stuff last, matchmedia won't be loaded if browser does not have addEventListener support, so we'll load shim now -->
+<script src="../../js/shim/DOMContentLoaded.js"></script>
+<script src="../../js/shim/addEventListener.js"></script>
+
+<!-- Load minimized library (require + modules) -->
+<script src="../../js.min/built.js"></script>
+
+
+
+<script>
+
+    // setup requirejs
+    requirejs.config({
+        baseUrl:'../../js/',
+        paths:{
+            conditioner:'../../dist/conditioner'
+        }
+    });
+
+    // load conditioner
+    requirejs(['conditioner'],function(conditioner) {
+            conditioner.loadModules(document);
+        }
+    );
+
+</script>
+
+</body>
+</html>
