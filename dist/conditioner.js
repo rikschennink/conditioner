@@ -754,9 +754,7 @@ var TestFactory = {
             found(new Test());
 
         });
-
     }
-
 };
 /**
  * @param {TestBase} test
@@ -806,7 +804,7 @@ Tester.prototype.succeeds = function() {
  * @class
  * @constructor
  * @param {element} element - DOM Element to apply this behavior to
- * @param {object} [options] - Custom options to pass to this behavior
+ * @param {object} [options] - Custom options to pass to this module
  * @abstract
  */
 var ModuleBase = function(element,options) {
@@ -836,7 +834,7 @@ var ModuleBase = function(element,options) {
 
 
 /**
- * Unloads behaviour by removing data initialized property
+ * Unloads module by removing data initialized property
  * Override to clean up your control, remove event listeners, restore original state, etc.
  * @public
  */
@@ -1219,7 +1217,7 @@ ModuleController.prototype._onConditionsChange = function() {
 
 
 /**
- * Load the module set in the referenced in the path property
+ * Load the module contained in this ModuleController
  * @public
  */
 ModuleController.prototype.load = function() {
@@ -1691,7 +1689,7 @@ Node.prototype.getActiveModuleController = function() {
 
 
 /**
- * Returns the first module controller matching the given path
+ * Returns the first ModuleController matching the given path
  * @param path {string} path to module
  * @return {ModuleController}
  * @public
@@ -1702,7 +1700,7 @@ Node.prototype.getModuleControllerByPath = function(path) {
 
 
 /**
- * Returns the first module controller matching the given path
+ * Returns an array of ModuleControllers matching the given path
  * @param path {string} path to module
  * @return {Array}
  * @public
@@ -1828,7 +1826,7 @@ Conditioner.prototype = {
     /**
      * Loads modules within the given context
      * @param {element} context - Context to find modules in
-     * @return {Array} - Array of initialized ModuleControllers
+     * @return {Array} - Array of found Nodes
      */
     loadModules:function(context) {
 
