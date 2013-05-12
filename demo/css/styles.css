@@ -241,7 +241,7 @@ h1:after {
 
 }
 
-@media (min-width:72em) {
+@media (min-width:62em) {
 
 	body {
 		margin-left:12em;
@@ -274,8 +274,6 @@ h1:after {
         margin-top:-5px;
         border-width:5px;
     }
-
-
 
     nav.index {
         position:fixed;
@@ -346,18 +344,6 @@ p>code {
 
 
 
-
-.doc-group {
-    position:relative;
-}
-/*
-.api-group ul {
-    position:absolute;
-    top:0;
-    left:100%;
-    margin-left:2em;
-}
-*/
 
 
 

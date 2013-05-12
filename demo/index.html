@@ -52,7 +52,7 @@
 
 <p>Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map. It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map.</p>
 
-<p>To setup the Google Map above using Conditioner you would write the following HTML. Binding the map module using the <code>data-module</code> attribute and setting the required conditions using <code>data-conditions</code></p>
+<p>The following HTML snippet shows how to setup the Google Map using Conditioner.js. There are two things going on, the Map module is bound using the <code>data-module</code> attribute and the required conditions are set via the <code>data-conditions</code> attribute.</p>
 
 <pre><code data-language="html">&lt;a href="http://maps.google.com/?ll=51.741,3.822"
    data-module="ui/Map"
@@ -72,7 +72,10 @@
 
 <p>As your project grows you might want to use the module on another page under different circumstances. So you add another Media Query check, and then another, and another.</p>
 
-<p>Your modules should, most of the time, not be concerned with the environment they are in. This is where conditioner.js comes into play. Conditioner.js will handle the environment and will initialize your module when the environment is suitable.</p>
+<p>Your modules should, most of the time, not be concerned with the environment they are in. This is where Conditioner.js comes into play. Conditioner.js will handle the environment and will initialize your module when the environment is suitable.</p>
+
+<p>Because Conditioner.js takes care of initializing and loading modules. Modules all live separate from each other on their own little island (local scope). This makes expanding and maintaining the your project much easier since Modules are not strongly coupled.</p>
+
 
 <h2 id="requirements">Requirements</h2>
 
@@ -152,7 +155,7 @@
 
 <h3 id="data-options">Passing options</h3>
 
-<p>The <code>data-options</code> attribute allows you to set specific options for the Module to be loaded on this node.</p>
+<p>The <code>data-options</code> attribute allows you to set specific options to be passed to the Module when it's loaded.</p>
 
 <p>Conditioner.js will merge page level options with node level options and pass the result to the Module once it's loaded.</p>
 
@@ -168,7 +171,7 @@
     }
 });</code></pre>
 
-<p>In the not so exciting example above the resulting option object would be <code>{"zoom":10}</code>, since node level options take precendence over page level options zoom level <code>10</code> overwrites zoom level <code>5</code>.</p>
+<p>In the (not so exciting) example above the resulting option object would be <code>{"zoom":10}</code>, since node level options take precendence over page level options zoom level <code>10</code> overwrites zoom level <code>5</code>.</p>
 
 
 
@@ -190,10 +193,10 @@
 
 <nav class="sub code">
     <ul>
-        <li><a href="#conditioner">conditioner</a></li>
-        <li><a href="#node">Node</a></li>
-        <li><a href="#module-controller">ModuleController</a></li>
-        <li><a href="#module">Module</a></li>
+        <li><a href="#conditioner">conditioner</a>: object</li>
+        <li><a href="#node">Node</a>: Class</li>
+        <li><a href="#module-controller">ModuleController</a>: Class</li>
+        <li><a href="#module">Module</a>: Class</li>
     </ul>
 </nav>
 
