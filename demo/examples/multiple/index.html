@@ -34,7 +34,7 @@
 
 
 
-<h1 class="title">Example conditions</h1>
+<h1 class="title">Multiple conditions</h1>
 
 <nav class="index">
     <ul>
@@ -53,7 +53,7 @@
 
 <h3>Binding multiple modules on a single element</h3>
 <p>Clock will be active as long as element has a maximum width of 300 pixels, if the element width gets above 400 pixels another Clock becomes active which also shows the time.</p>
-<pre><code data-language="html">&lt;div data-module='[{"path":"ui/Clock","conditions":"element:{max-width:200}","options":{"time":false}},{"path":"ui/Clock","conditions":"element:{min-width:200}"}]' data-priority="1"&gt; ... &lt;/div&gt;</code></pre>
+<pre><code data-language="html">&lt;div data-module='[{"path":"ui/Clock","conditions":"element:{max-width:200}","options":{"time":false}},{"path":"ui/Clock","conditions":"element:{min-width:200}"}]'&gt; ... &lt;/div&gt;</code></pre>
 <div class="component alt">
     <div data-module='[{"path":"ui/Clock","conditions":"element:{max-width:200}","options":{"time":false}},{"path":"ui/Clock","conditions":"element:{min-width:200}"}]'>Clock is inactive</div>
 </div>
@@ -99,7 +99,7 @@
     requirejs.config({
         baseUrl:'../../js/',
         paths:{
-            conditioner:'../../dist/conditioner'
+            conditioner:'lib/rikschennink/conditioner.min'
         }
     });
 
