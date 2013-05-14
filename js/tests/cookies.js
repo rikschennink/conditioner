@@ -4,6 +4,8 @@
  */
 define(['conditioner','security/StorageConsentGuard'],function(conditioner,StorageConsentGuard){
 
+    'use strict';
+
     var _level = '';
 
     return {

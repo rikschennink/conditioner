@@ -1,4 +1,3 @@
-
 /**
  * Tests if a media query is matched or not and listens to changes
  * @module tests/media

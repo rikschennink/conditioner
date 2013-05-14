@@ -2102,6 +2102,8 @@ define('security/StorageConsentGuard',['conditioner','module'],function(conditio
  */
 define('tests/cookies',['conditioner','security/StorageConsentGuard'],function(conditioner,StorageConsentGuard){
 
+    
+
     var _level = '';
 
     return {
@@ -2260,7 +2262,6 @@ define('tests/element',[],function(){
     };
 
 });
-
 
 /**
  * Tests if a media query is matched or not and listens to changes
