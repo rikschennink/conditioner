@@ -40,6 +40,7 @@
     "grunt-contrib-copy": "~0.4.1",
     "grunt-jsdoc": "~0.3.2",
     "grunt-contrib-compass": "~0.2.0",
-    "grunt-contrib-watch": "~0.4.3"
+    "grunt-contrib-watch": "~0.4.3",
+    "grunt-contrib-sass": "~0.3.0"
   }
 }

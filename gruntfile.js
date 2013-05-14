@@ -50,20 +50,21 @@ module.exports = function(grunt) {
                 '<%=path.js %>/js/tests/*.js'
             ]
         },
-        compass:{
+        sass:{
             dist: {
-                options: {
-                    sassDir: 'sass',
-                    cssDir: 'css'
+                files: {
+                    'css/styles.css':'sass/styles.scss'
                 }
             }
         },
         watch: {
             files: ['sass/**/*'],
-            tasks: ['compass', 'reload']
+            tasks: ['sass', 'reload']
         }
     });
 
+
+    // reload chrome on save
     grunt.registerTask("reload", "reload Chrome on OS X",
         function() {
             require("child_process").exec("osascript " +
@@ -74,13 +75,15 @@ module.exports = function(grunt) {
         }
     );
 
-    grunt.loadNpmTasks('grunt-contrib-compass');
+
+    // tasks
+    grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
 
 
     // build all the things
-    grunt.registerTask('default',['jshint','compass','requirejs']);
+    grunt.registerTask('default',['jshint','sass','requirejs']);
 
 };
