@@ -93,7 +93,7 @@ var TestFactory = {
     },
 
     _findTest:function(path) {
-         return this._tests[path];
+        return this._tests[path];
     },
 
     _storeTest:function(path,Test) {

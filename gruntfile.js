@@ -106,6 +106,9 @@ module.exports = function(grunt) {
             }
         },
         jshint:{
+            options:{
+                jshintrc:'.jshintrc'
+            },
             all:[
                 '<%=path.src %>/conditioner/*.js',
                 '<%=path.src %>/tests/*.js'

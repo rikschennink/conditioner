@@ -30,8 +30,7 @@ var Conditioner = function() {
      * Reference to mergeObject method
      * @property {function} mergeObjects
      */
-     this.mergeObjects = Utils.mergeObjects;
-
+    this.mergeObjects = Utils.mergeObjects;
 };
 
 Conditioner.prototype = {
