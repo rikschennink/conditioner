@@ -105,40 +105,6 @@ module.exports = function(grunt) {
                 dest: 'dist/<%= pkg.name %>.min.js'
             }
         },
-        requirejs: {
-            compile: {
-                options: {
-
-                    preserveLicenseComments:false,
-                    findNestedDependencies:true,
-                    optimize:'none',
-
-                    baseUrl:'<%= path.demo %>/js/',
-                    paths:{
-                        'conditioner':'lib/rikschennink/conditioner.min'
-                    },
-
-                    name:'lib/jrburke/require',
-                    out:'<%= path.demo %>/js.min/built.js',
-                    include:[
-                        'conditioner',
-
-                        'tests/connection',
-                        'tests/cookies',
-                        'tests/element',
-                        'tests/media',
-                        'tests/pointer',
-                        'tests/window',
-
-                        // 'ui/Map' not included to test conditional loading
-
-                        'ui/Clock',
-                        'ui/StorageConsentSelect',
-                        'security/StorageConsentGuard'
-                    ]
-                }
-            }
-        },
         jshint:{
             all:[
                 '<%=path.src %>/conditioner/*.js',
@@ -164,7 +130,7 @@ module.exports = function(grunt) {
 
 
     // build everything
-    grunt.registerTask('default',['jshint','jasmine','concat','copy','uglify','requirejs','jsdoc']);
+    grunt.registerTask('default',['jshint','jasmine','concat','copy','uglify','jsdoc']);
 
     // test
     grunt.registerTask('docs',['concat','copy','jsdoc']);
@@ -173,9 +139,6 @@ module.exports = function(grunt) {
     grunt.registerTask('test',['jshint','jasmine']);
 
     // task for building the library
-    grunt.registerTask('lib',['concat','copy','uglify','requirejs']);
-
-    // task for optimizing the demo
-    grunt.registerTask('demo',['requirejs']);
+    grunt.registerTask('lib',['concat','copy','uglify']);
 
 };
