@@ -26,11 +26,16 @@ h1.logo {
 	font-size:1.25em;
 	white-space:nowrap;
 	line-height:1;
-}
 
-h1.logo>a {
-	color:#333;
-	text-decoration:none;
+    &:after {
+        content:':{}';
+        color:$primary-color;
+    }
+
+    a {
+        color:#333;
+        text-decoration:none;
+    }
 }
 
 h1.title,
@@ -44,11 +49,6 @@ h1.logo+em {
 	color:#888;
 	font-size:1em;
 	max-width:70%;
-}
-
-h1.logo:after {
-	content:':{}';
-	color:$primary-color;
 }
 
 
@@ -65,10 +65,10 @@ h1.logo:after {
 	padding:.25em;
 	background:#efefef;
 	border-radius:.25em;
-}
 
-.git iframe {
-	display:block;
+    iframe {
+        display:block;
+    }
 }
 
 
@@ -90,10 +90,6 @@ p.note {
 	margin:0;
 	padding:0;
 	list-style-type: none;
-}
-
-.files a {
-
 }
 
 

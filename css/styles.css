@@ -59,7 +59,7 @@ h3 {
   padding: 1.2em 0 0 0;
   margin: 0 0 .5em;
   font-size: 1.25em;
-  color: #ef3564;
+  color: #ef3261;
 }
 
 /* line 54, ../sass/global/_base.scss */
@@ -80,7 +80,7 @@ h4 + h5 {
 /* line 67, ../sass/global/_base.scss */
 h5 {
   font-size: 1em;
-  color: #338894;
+  color: #2e7a86;
   margin: 2em 0 -.75em 0;
 }
 
@@ -146,13 +146,13 @@ blockquote:after {
 /**
  * Code
  */
-/* line 7, ../sass/global/_default.scss */
+/* line 7, ../sass/global/_components.scss */
 .code {
   white-space: nowrap;
   font-family: monaco,monospace;
 }
 
-/* line 12, ../sass/global/_default.scss */
+/* line 12, ../sass/global/_components.scss */
 h3 .code {
   display: block;
   color: #999;
@@ -162,7 +162,7 @@ h3 .code {
 /**
  * Logo
  */
-/* line 23, ../sass/global/_default.scss */
+/* line 23, ../sass/global/_components.scss */
 h1.logo {
   padding: 0;
   margin: 0 0 .5em 0;
@@ -170,14 +170,18 @@ h1.logo {
   white-space: nowrap;
   line-height: 1;
 }
-
-/* line 31, ../sass/global/_default.scss */
-h1.logo > a {
+/* line 30, ../sass/global/_components.scss */
+h1.logo:after {
+  content: ':{}';
+  color: #dd1144;
+}
+/* line 35, ../sass/global/_components.scss */
+h1.logo a {
   color: #333;
   text-decoration: none;
 }
 
-/* line 37, ../sass/global/_default.scss */
+/* line 42, ../sass/global/_components.scss */
 h1.title,
 h1.logo + em {
   display: block;
@@ -191,16 +195,10 @@ h1.logo + em {
   max-width: 70%;
 }
 
-/* line 49, ../sass/global/_default.scss */
-h1.logo:after {
-  content: ':{}';
-  color: #dd1144;
-}
-
 /**
  * Git block
  */
-/* line 59, ../sass/global/_default.scss */
+/* line 59, ../sass/global/_components.scss */
 .git {
   position: absolute;
   top: 1.75em;
@@ -211,8 +209,7 @@ h1.logo:after {
   background: #efefef;
   border-radius: .25em;
 }
-
-/* line 70, ../sass/global/_default.scss */
+/* line 69, ../sass/global/_components.scss */
 .git iframe {
   display: block;
 }
@@ -220,7 +217,7 @@ h1.logo:after {
 /**
  * Note
  */
-/* line 79, ../sass/global/_default.scss */
+/* line 79, ../sass/global/_components.scss */
 p.note {
   font-size: .875em;
   color: #999;
@@ -229,7 +226,7 @@ p.note {
 /**
  * Files list
  */
-/* line 89, ../sass/global/_default.scss */
+/* line 89, ../sass/global/_components.scss */
 .files {
   margin: 0;
   padding: 0;
@@ -239,7 +236,7 @@ p.note {
 /**
  * Component
  */
-/* line 105, ../sass/global/_default.scss */
+/* line 101, ../sass/global/_components.scss */
 .component {
   box-sizing: border-box;
   padding: 1em;
@@ -249,12 +246,12 @@ p.note {
   font-size: .875em;
 }
 
-/* line 114, ../sass/global/_default.scss */
+/* line 110, ../sass/global/_components.scss */
 .component.alt {
   width: 50%;
 }
 
-/* line 118, ../sass/global/_default.scss */
+/* line 114, ../sass/global/_components.scss */
 [data-module] {
   color: #aeaaa0;
   -webkit-transition: color .5s;
@@ -263,7 +260,7 @@ p.note {
   transition: color .5s;
 }
 
-/* line 126, ../sass/global/_default.scss */
+/* line 122, ../sass/global/_components.scss */
 [data-initialized] {
   color: #6b6963;
 }
@@ -271,7 +268,7 @@ p.note {
 /**
  * Map
  */
-/* line 133, ../sass/global/_default.scss */
+/* line 129, ../sass/global/_components.scss */
 img.map {
   display: block;
   max-width: 100%;
@@ -339,13 +336,13 @@ nav.index {
 /* line 60, ../sass/global/_nav.scss */
 nav.sub {
   margin: 0;
-  background: #fef2f5;
+  background: #fdeaef;
 }
 
 /* line 65, ../sass/global/_nav.scss */
 nav.code {
   overflow-x: auto;
-  background: #f0f9fa;
+  background: #edf7f9;
   color: #68becb;
   font-family: monaco,consolas,monospace;
 }
@@ -357,7 +354,7 @@ nav.code li {
 nav.code a {
   display: inline-block;
   padding: 0;
-  color: #338894;
+  color: #2e7a86;
 }
 
 /**
