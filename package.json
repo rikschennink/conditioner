@@ -35,12 +35,9 @@
   "readmeFilename": "README.md",
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-contrib-uglify": "~0.2.0",
-    "grunt-contrib-concat": "~0.2.0",
-    "grunt-contrib-copy": "~0.4.1",
-    "grunt-jsdoc": "~0.3.2",
-    "grunt-contrib-compass": "~0.2.0",
     "grunt-contrib-watch": "~0.4.3",
+    "grunt-contrib-requirejs": "~0.4.0",
+    "grunt-contrib-jshint": "~0.4.3",
     "grunt-contrib-sass": "~0.3.0"
   }
 }
