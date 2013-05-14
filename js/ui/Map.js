@@ -50,9 +50,9 @@ define(['conditioner'],function(conditioner){
         };
 
         // clear
-        var self = this;
-        var style = '&style=feature:water|hue:0x00a1ff|saturation:-24&style=feature:road|element:labels|visibility:off&style=feature:administrative|element:labels|visibility:off&style=feature:landscape.natural|element:geometry.fill|saturation:-44|lightness:37|hue:0xf6ff00&style=feature:administrative.province|visibility:off&style=feature:poi|visibility:off&style=feature:transit|visibility:off&style=feature:water|element:labels|visibility:off';
-        var map = document.createElement('img');
+        var self = this,
+        style = '&style=feature:water|hue:0x00a1ff|saturation:-24&style=feature:road|element:labels|visibility:off&style=feature:administrative|element:labels|visibility:off&style=feature:landscape.natural|element:geometry.fill|saturation:-44|lightness:37|hue:0xf6ff00&style=feature:administrative.province|visibility:off&style=feature:poi|visibility:off&style=feature:transit|visibility:off&style=feature:water|element:labels|visibility:off',
+        map = document.createElement('img');
         map.setAttribute('alt','');
         map.className = 'map';
         map.onload = function() {
