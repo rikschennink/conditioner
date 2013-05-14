@@ -1,0 +1,105 @@
+
+/**
+ * Body + Header layouting
+ */
+@media (min-width:38em) {
+
+    body {
+        position:relative;
+    }
+
+    h2 {
+        font-size:1.25em;
+    }
+
+    h3 .code {
+        display:inline-block;
+        &:before {
+            content:'(';
+        }
+        &:after {
+            content:')';
+        }
+    }
+
+    .git {
+        right:0;
+    }
+
+    nav.code {
+        font-size:1em;
+    }
+
+}
+
+@media (min-width:62em) {
+
+    body {
+        margin-left:16em;
+    }
+
+    h1.logo {
+        position:fixed;
+        left:0;
+        top:.875em;
+        width:12em;
+        padding-top:.5em;
+        text-align:right;
+    }
+
+    h1.title,
+    h1.logo+em {
+        margin:-.3875em 0 .5em 0;
+        font-size:1.25em;
+    }
+
+    h2 {
+        font-size:1.5em;
+    }
+
+    .git {
+        top:.125em;
+    }
+
+    nav>a {
+        position:absolute;
+        left:0;
+        top:0;
+        border-bottom:1px solid #ddd;
+        border-radius:0;
+        padding-top:0;
+        padding-bottom:1em;
+        margin-bottom:1em;
+    }
+
+    nav.index {
+        position:fixed;
+        left:1em;
+        top:4em;
+        width:14em;
+        margin:0;
+        text-align:right;
+
+        li {
+            display:block;
+        }
+
+        >ul>li>a:after {
+            position: absolute;
+            top:50%;
+            height:0;
+            width:0;
+            border:solid transparent;
+            pointer-events:none;
+            content:'';
+            margin-top:-5px;
+            border-width:5px;
+        }
+    }
+
+}
+
+
+
+
+

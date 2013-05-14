@@ -1,19 +1,10 @@
+/* color vars */
+$primary-color:#d14;
+$secondary-color:#68becb;
 
-@font-face {
-	font-family: 'OpenSans';
-	src: url('../../fonts/OpenSans-Regular-webfont.eot');
-	src: url('../../fonts/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-	url('../../fonts/OpenSans-Regular-webfont.woff') format('woff'),
-	url('../../fonts/OpenSans-Regular-webfont.ttf') format('truetype'),
-	url('../../fonts/OpenSans-Regular-webfont.svg#OpenSans-Regular') format('svg');
-	font-weight: normal;
-	font-style: normal;
-
-}
-
+/* base styles */
 html {
 	padding:2em;
-	overflow:scroll;
 	background:#fff;
 	line-height:1.5;
 	color:#333;
@@ -28,4 +19,105 @@ body {
 	padding:0;
 	margin:0 auto;
 	max-width:40em;
+}
+
+h1,h2,h3,h4,h5 {
+    font-family:OpenSans,sans-serif;
+    font-weight:normal;
+
+}
+
+h1 {
+    padding-top:.5em;
+    margin-bottom:-.25em;
+    font-size:1.75em;
+    color:#222;
+}
+
+h2 {
+    margin-top:0;
+    margin-bottom:.3em;
+    padding-top:.75em;
+    padding-bottom:.125em;
+    font-size:1.25em;
+    color:#444;
+    border-bottom:1px solid #ddd;
+}
+
+h3 {
+    padding:1.2em 0 0 0;
+    margin:0 0 .5em;
+    font-size:1.25em;
+    color:scale-lightness($primary-color,20%);
+}
+
+h4 {
+    font-weight:normal;
+    font-size:1.125em;
+    padding-top:3em;
+    margin:0 0 .5em;
+    color:#555;
+}
+
+h4+h5 {
+    padding-top:0;
+    margin-top:0;
+}
+
+h5 {
+    font-size:1em;
+    color:scale-lightness($secondary-color,-35%);
+    margin:2em 0 -.75em 0;
+}
+
+h2+p,
+h3+p,
+h4+p {
+    margin-top:0;
+}
+
+a {
+    color:$primary-color;
+}
+
+p {
+    margin:1em 0;
+
+    >core {
+        white-space:nowrap;
+    }
+}
+
+label {
+    margin-right:.5em;
+
+    &:after {
+        content:':';
+    }
+}
+
+code{
+    padding:.375em .5em .25em;
+}
+
+pre {
+    margin:1em 0;
+}
+
+blockquote {
+    border-left:2px solid #ccc;
+    margin:0;
+    padding:.5em 0 .5em 1.5em;
+    font-style:italic;
+    color:#666;
+
+    &:before {
+        margin-right:.125em;
+        content:'\201C';
+    }
+
+    &:after {
+        margin-left:.125em;
+        content:'\201D';
+    }
 }

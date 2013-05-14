@@ -1,7 +1,10 @@
 
 @import 'compass';
 
+@import 'global/fonts';
 @import 'global/base';
 @import 'global/default';
+@import 'global/nav';
+@import 'global/layout';
 
-@import 'rainbow/github';
+@import 'rainbow/colors';

@@ -7,7 +7,6 @@
 
     <title>Docs - Conditioner</title>
 
-    <link href="../css/rainbow/github.css" rel="stylesheet">
     <link href="../css/styles.css" rel="stylesheet">
 
     <script>
@@ -33,69 +32,70 @@
 </div>
 
 
-
 <section>
 
-<h1 id="introduction" class="title">Documentation</h1>
+    <h1 id="introduction" class="title">Documentation</h1>
 
-<nav class="index">
+    <nav class="index">
 
-    <ul>
-        <li><a href="#setup">Setup</a></li>
-        <li>
-            <a href="#config">Configuring Modules</a>
-            <ul>
-                <li><a href="#data-module">Linking a module</a></li>
-                <li><a href="#data-conditions">Setting conditions</a></li>
-                <li><a href="#data-options">Passing options</a></li>
-                <li><a href="#data-priority">Altering priorities</a></li>
-            </ul>
-        </li>
-        <li>
-            <a href="#api">JavaScript API</a>
-            <ul>
-                <li><a href="#conditioner">Conditioner</a></li>
-                <li><a href="#node">Node</a></li>
-                <li><a href="#module-controller">ModuleController</a></li>
-                <li><a href="#module-base">ModuleBase</a></li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+        <ul>
+            <li><a href="#setup">Setup</a></li>
+            <li>
+                <a href="#config">Configuring Modules</a>
+                <ul>
+                    <li><a href="#data-module">Linking a module</a></li>
+                    <li><a href="#data-conditions">Setting conditions</a></li>
+                    <li><a href="#data-options">Passing options</a></li>
+                    <li><a href="#data-priority">Altering priorities</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#api">JavaScript API</a>
+                <ul>
+                    <li><a href="#conditioner">Conditioner</a></li>
+                    <li><a href="#node">Node</a></li>
+                    <li><a href="#module-controller">ModuleController</a></li>
+                    <li><a href="#module-base">ModuleBase</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
 
 
 
-<section><!-- setup section -->
 
-<h2 id="setup">Setup</h2>
 
-<p>The setup of ConditionerJS is a two step process.</p>
+    <section>
 
-<p>As ConditionerJS needs RequireJS to function, download RequireJS at <a href="http://requirejs.org/docs/download.html">http://requirejs.org/</a>, if you haven't played around with RequireJS before, follow the
-<a href="http://requirejs.org/docs/start.html">Getting Started</a> guide for a quick meet and greet.</p>
+        <h2 id="setup">Setup</h2>
 
-<p>Now you've got a feel for RequireJS it is time to setup ConditionerJS.</p>
+        <p>The setup of ConditionerJS is a two step process.</p>
 
-<p>RequireJS needs to know where to find the ConditionerJS framework. You'll need to add a <code>path</code> entry to the RequireJS configuration object pointing to the location of ConditionerJS. In the example below the file 'conditioner.js' is located in the 'lib' folder within the generic 'js' folder.</p>
+        <p>As ConditionerJS needs RequireJS to function, download RequireJS at <a href="http://requirejs.org/docs/download.html">http://requirejs.org/</a>, if you haven't played around with RequireJS before, follow the
+        <a href="http://requirejs.org/docs/start.html">Getting Started</a> guide for a quick meet and greet.</p>
 
-<pre><code data-language="javascript">requirejs.config({
+        <p>Now you've got a feel for RequireJS it is time to setup ConditionerJS.</p>
+
+        <p>RequireJS needs to know where to find the ConditionerJS framework. You'll need to add a <code>path</code> entry to the RequireJS configuration object pointing to the location of ConditionerJS. In the example below the file 'conditioner.js' is located in the 'lib' folder within the generic 'js' folder.</p>
+
+
+
+        <pre><code data-language="javascript">requirejs.config({
     baseUrl:'js/',
     paths:{
         conditioner:'lib/conditioner'
     }
 });</code></pre>
 
-<p>Now that's setup, you can request a conditioner reference and have it start loading modules.</p>
+        <p>Now that's setup, you can request a conditioner reference and have it start loading modules.</p>
 
-<pre><code data-language="javascript">requirejs(['conditioner'],function(conditioner) {
+        <pre><code data-language="javascript">requirejs(['conditioner'],function(conditioner) {
     conditioner.loadModules(document);
 });</code></pre>
 
-<p>Since we've not yet <a href="#config">configured our modules</a> it will not load anything for now.</p>
+        <p>Since we've not yet <a href="#config">configured our modules</a> it will not load anything for now.</p>
 
-</section><!-- end setup section -->
-
-
+    </section>
 
 
 
@@ -106,187 +106,183 @@
 
 
 
-<section><!-- module configuration -->
-
-<h2 id="config">Module Configuration</h2>
-
-<p>Configuring your <a href="http://requirejs.org/docs/api.html#define" target="_blank">RequireJS Modules</a> so ConditionerJS can load them is done through data attributes. The following sections guide you through the configuration of a typical module.</p>
-
-<nav class="sub">
-    <ul>
-        <li><a href="#data-module">Linking a module to the DOM</a></li>
-        <li><a href="#data-conditions">Setting module conditions</a></li>
-        <li><a href="#data-options">Passing options to a module</a></li>
-        <li><a href="#data-priority">Altering load priority</a></li>
-    </ul>
-</nav>
 
 
+    <section>
 
-<section><!-- linking -->
+        <h2 id="config">Module Configuration</h2>
 
-<h3 id="data-module">Linking a module to the DOM <span class="code">data-module</span></h3>
-<p>To have a module loaded at a specific location in the DOM you use the <code>data-module</code> attribute. The content of the <code>data-module</code> attribute points to the location of the module.</p>
+        <p>Configuring your <a href="http://requirejs.org/docs/api.html#define" target="_blank">RequireJS Modules</a> so ConditionerJS can load them is done through data attributes. The following sections guide you through the configuration of a typical module.</p>
 
-<pre><code data-language="html">&lt;a data-module="ui/Map"&gt; ... &lt;/a&gt;</code></pre>
+        <nav class="sub">
+            <ul>
+                <li><a href="#data-module">Linking a module to the DOM</a></li>
+                <li><a href="#data-conditions">Setting module conditions</a></li>
+                <li><a href="#data-options">Passing options to a module</a></li>
+                <li><a href="#data-priority">Altering load priority</a></li>
+            </ul>
+        </nav>
 
-<p>You can also use a shortcut name, should the module path change you would only have to change it at one location.</p>
+        <section>
 
-<pre><code data-language="javascript">conditioner.setOptions({
+            <h3 id="data-module">Linking a module to the DOM <span class="code">data-module</span></h3>
+            <p>To have a module loaded at a specific location in the DOM you use the <code>data-module</code> attribute. The content of the <code>data-module</code> attribute points to the location of the module.</p>
+
+            <pre><code data-language="html">&lt;a data-module="ui/Map"&gt; ... &lt;/a&gt;</code></pre>
+
+            <p>You can also use a shortcut name, should the module path change you would only have to change it at one location.</p>
+
+            <pre><code data-language="javascript">conditioner.setOptions({
     'modules':{
         'ui/Map':'IMap'
     }
 });
 </code></pre>
 
-<p>The <code>data-module</code> attribute would now look like this:</p>
+            <p>The <code>data-module</code> attribute would now look like this:</p>
 
-<pre><code data-language="html">&lt;a data-module="IMap"&gt; ... &lt;/a&gt;</code></pre>
+            <pre><code data-language="html">&lt;a data-module="IMap"&gt; ... &lt;/a&gt;</code></pre>
 
-</section><!-- end linking -->
-
-
-
-<section><!-- conditions -->
-
-<h3 id="data-conditions">Setting module conditions <span class="code">data-conditions</span></h3>
-<p>The <code>data-conditions</code> attribute allows you to control the conditions under which a module is loaded. This is what ConditionerJS is all about.</p>
-
-<p>The example below tells ConditionerJS to only load the module if the media query <code>(min-width:30em)</code> is matched.
-</p>
-
-<pre><code data-language="html">&lt;a data-module="ui/Map" data-conditions="media:{(min-width:30em)}"&gt; ... &lt;/a&gt;</code></pre>
-
-<p>Tests within conditions are formatted like this: <code>&lt;test_name&gt;:{&lt;expected_value&gt;}</code></p>
-
-<p>To make conditions more powerful it is possible to combine multiple tests together forming complex conditions.</p>
-
-
-<h4>Combining Tests</h4>
-
-<p>ConditionerJS allows combining of tests to build more complex conditions.</p>
-
-<p>Link multiple tests using the <code>and</code> or <code>or</code> operators:</p>
-<pre><code>foo:{bar} or foo:{bar} and foo:{bar}</code></pre>
-
-<p>Group tests using brackets to override operator precedence: </p>
-<pre><code>foo:{bar} or (foo:{bar} and foo:{bar})</code></pre>
-
-<p>Use the <code>not</code> operator to negate a test or test group:
-<pre><code>not (foo:{bar} or foo:{bar}) and not foo:{bar}</code></pre>
-
-<h4>Default Tests</h4>
-
-<p>Currently a couple of tests are available to use within these conditions. See the <a href="index.html#examples">example section</a> on how to combine them.</p>
-<ul>
-    <li><span class="code">Element</span> <code>min-width</code>, <code>max-width</code> and <code>seen</code></li>
-    <li><span class="code">Media</span> <code>mediaquery</code> and <code>supported</code></li>
-    <li><span class="code">Window</span> <code>min-width</code> and <code>max-width</code></li>
-    <li><span class="code">Pointer</span> <code>available</code></li>
-</ul>
-
-
-</section><!-- end conditions -->
+        </section>
 
 
 
+        <section>
+
+            <h3 id="data-conditions">Setting module conditions <span class="code">data-conditions</span></h3>
+            <p>The <code>data-conditions</code> attribute allows you to control the conditions under which a module is loaded. This is what ConditionerJS is all about.</p>
+
+            <p>The example below tells ConditionerJS to only load the module if the media query <code>(min-width:30em)</code> is matched.
+            </p>
+
+            <pre><code data-language="html">&lt;a data-module="ui/Map" data-conditions="media:{(min-width:30em)}"&gt; ... &lt;/a&gt;</code></pre>
+
+            <p>Tests within conditions are formatted like this: <code>&lt;test_name&gt;:{&lt;expected_value&gt;}</code></p>
+
+            <p>To make conditions more powerful it is possible to combine multiple tests together forming complex conditions.</p>
+
+
+            <h4>Combining Tests</h4>
+
+            <p>ConditionerJS allows combining of tests to build more complex conditions.</p>
+
+            <p>Link multiple tests using the <code>and</code> or <code>or</code> operators:</p>
+            <pre><code>foo:{bar} or foo:{bar} and foo:{bar}</code></pre>
+
+            <p>Group tests using brackets to override operator precedence: </p>
+            <pre><code>foo:{bar} or (foo:{bar} and foo:{bar})</code></pre>
+
+            <p>Use the <code>not</code> operator to negate a test or test group:
+            <pre><code>not (foo:{bar} or foo:{bar}) and not foo:{bar}</code></pre>
+
+            <h4>Default Tests</h4>
+
+            <p>Currently a couple of tests are available to use within these conditions. See the <a href="index.html#examples">example section</a> on how to combine them.</p>
+
+            <h5>Element</h5>
+            <p><code>min-width</code>, <code>max-width</code> and <code>seen</code></p>
+
+            <h5>Media</h5>
+            <p><code>mediaquery</code> and <code>supported</code></p>
+
+            <h5>Window</h5>
+            <p><code>min-width</code> and <code>max-width</code></p>
+
+            <h5>Pointer</h5>
+            <p><code>available</code></p>
+
+        </section>
 
 
 
+        <section>
 
+            <h3 id="data-options">Passing options to a module <span class="code">data-options</span></h3>
 
+            <p>The <code>data-options</code> attribute allows you to set specific options to be passed to the Module when it's loaded.</p>
 
+            <p>Specifying specific options for a single module at node level:</p>
+            <pre><code data-language="html">&lt;a data-module="ui/Map" data-options='{"zoom":10}'&gt; ... &lt;/a&gt;</code></pre>
 
-<h3 id="data-options">Passing options to a module <span class="code">data-options</span></h3>
-
-<p>The <code>data-options</code> attribute allows you to set specific options to be passed to the Module when it's loaded.</p>
-
-<p>Specifying specific options for a single module at node level:</p>
-<pre><code data-language="html">&lt;a data-module="ui/Map" data-options='{"zoom":10}'&gt; ... &lt;/a&gt;</code></pre>
-
-<p>Specifying generic options for mulitple modules of a certain type:</p>
-<pre><code data-language="javascript">conditioner.setOptions({
+            <p>Specifying generic options for mulitple modules of a certain type:</p>
+            <pre><code data-language="javascript">conditioner.setOptions({
 'modules':{
     'ui/Map':{
-    'options':{
-            'zoom':5
+        'options':{
+                'zoom':5
+            }
         }
     }
-}
 });</code></pre>
 
-<p>ConditionerJS will merge page level options with node level options and pass the results to the loaded Module once it ready to be loaded.</p>
+            <p>ConditionerJS will merge page level options with node level options and pass the results to the loaded Module once it ready to be loaded.</p>
 
-<p>In the (not so exciting) example above the resulting option object would be <code>{"zoom":10}</code>, since node level options take precendence over page level options zoom level <code>10</code> overwrites zoom level <code>5</code>.</p>
-
-
+            <p>In the (not so exciting) example above the resulting option object would be <code>{"zoom":10}</code>, since node level options take precendence over page level options zoom level <code>10</code> overwrites zoom level <code>5</code>.</p>
 
 
-
+        </section>
 
 
 
+        <section>
 
+            <h3 id="data-priority">Altering load priorities <span class="code">data-priority</span></h3>
 
+            <p>The <code>data-priority</code> attributes allows you to control the order in which a node is handled. Positive numbers give a node priority over other nodes, a negative number moves it to the back of the initialisation queue.</p>
 
-<h3 id="data-priority">Altering load priorities <span class="code">data-priority</span></h3>
+            <p>Suppose you have a certain module you want to start loading earlier but is located lower in the DOM tree you can now move it up the list.</p>
 
-<p>The <code>data-priority</code> attributes allows you to control the order in which a node is handled. Positive numbers give a node priority over other nodes, a negative number moves it to the back of the initialisation queue.</p>
+            <pre><code data-language="html">&lt;a data-module="ui/Map" data-priority="2"&gt; ... &lt;/a&gt;</code></pre>
 
-<p>Suppose you have a certain module you want to start loading earlier but is located lower in the DOM tree you can now move it up the list.</p>
+        </section>
 
-<pre><code data-language="html">&lt;a data-module="ui/Map" data-priority="2"&gt; ... &lt;/a&gt;</code></pre>
-
-
-
-
-</section><!-- end module configuration -->
+    </section>
 
 
 
 
 
 
-<section>
-<h2 id="api">JavaScript API</h2>
+    <section>
 
-<p>ConditionerJS consists of a group of publicly accessible JavaScript Classes. These Classes allow you to safely access modules once they've been parsed. The starting point to load modules is always the <code>conditioner</code> object of which there is only one instance.</p>
+        <h2 id="api">JavaScript API</h2>
 
-<nav class="sub code">
-    <ul>
-        <li><a href="#conditioner">conditioner</a> : object</li>
-        <li><a href="#node">Node</a> : Class</li>
-        <li><a href="#module-controller">ModuleController</a> : Class</li>
-        <li><a href="#module-base">ModuleBase</a> : Class</li>
-    </ul>
-</nav>
+        <p>ConditionerJS consists of a group of publicly accessible JavaScript Classes. These Classes allow you to safely access modules once they've been parsed. The starting point to load modules is always the <code>conditioner</code> object of which there is only one instance.</p>
+
+        <nav class="sub code">
+            <ul>
+                <li><a href="#conditioner">conditioner</a> : object</li>
+                <li><a href="#node">Node</a> : Class</li>
+                <li><a href="#module-controller">ModuleController</a> : Class</li>
+                <li><a href="#module-base">ModuleBase</a> : Class</li>
+            </ul>
+        </nav>
 
 
+        <section>
 
+            <h3 class="code" id="conditioner">conditioner</h3>
+            <p>Call <code>loadModules(document)</code> on the conditioner object to start loading the modules defined in the HTML document. Once this is done the conditioner will return the array of
+                Nodes it found and will initialize them once they are ready.</p>
 
-<section>
+            <p>Each <a href="#node">Node</a> contains one or more ModuleControllers, for each Node only one <a href="#module-controller">ModuleController</a> can have an active
+                <a href="#module-base">Module</a>.</p>
 
-    <h3 class="code" id="conditioner">conditioner</h3>
-    <p>Call <code>loadModules(document)</code> on the conditioner object to start loading the modules defined in the HTML document. Once this is done the conditioner will return the array of
-        Nodes it found and will initialize them once they are ready.</p>
+            <p>The following methods are available on the conditioner object.</p>
 
-    <p>Each <a href="#node">Node</a> contains one or more ModuleControllers, for each Node only one <a href="#module-controller">ModuleController</a> can have an active
-        <a href="#module-base">Module</a>.</p>
+            <nav class="sub code">
+                <ul>
+                    <li><a href="#conditioner-set-options">setOptions(object)</a></li>
+                    <li><a href="#conditioner-load-modules">loadModules(context)</a> &rarr; Array</li>
+                    <li><a href="#conditioner-get-node">getNode(selector)</a> &rarr; <a href="#node">Node</a> | null</li>
+                    <li><a href="#conditioner-get-nodes-all">getNodesAll(selector)</a> &rarr; Array</li>
+                </ul>
+            </nav>
 
-    <p>The following methods are available on the conditioner object.</p>
+            <h4 class="code" id="conditioner-set-options">setOptions</h4>
+            <p>Allows defining of page level Module options and shortcuts to modules.</p>
 
-    <nav class="sub code">
-        <ul>
-            <li><a href="#conditioner-set-options">setOptions(object)</a></li>
-            <li><a href="#conditioner-load-modules">loadModules(context)</a> &rarr; Array</li>
-            <li><a href="#conditioner-get-node">getNode(selector)</a> &rarr; <a href="#node">Node</a> | null</li>
-            <li><a href="#conditioner-get-nodes-all">getNodesAll(selector)</a> &rarr; Array</li>
-        </ul>
-    </nav>
-
-    <h4 class="code" id="conditioner-set-options">setOptions</h4>
-    <p>Allows defining of page level Module options and shortcuts to modules.</p>
-<pre><code data-language="javascript">/**
+            <pre><code data-language="javascript">/**
 * Set conditioner options
 * @param {object} options
 * @public
@@ -294,10 +290,10 @@
 conditioner.setOptions({
     'modules':{
         'ui/Clock':'IClock',
-            'ui/Map':{
-                'alias':'IMap',
-                'options':{
-                    'zoom':10
+        'ui/Map':{
+            'alias':'IMap',
+            'options':{
+                'zoom':10
             }
         }
     }
@@ -305,9 +301,9 @@ conditioner.setOptions({
 
 
 
-<h4 class="code" id="conditioner-load-modules">loadModules</h4>
-<p>Finds and loads all Modules defined on child elements of the supplied context. Returns an array of found Nodes.</p>
-<pre><code data-language="javascript">/**
+            <h4 class="code" id="conditioner-load-modules">loadModules</h4>
+            <p>Finds and loads all Modules defined on child elements of the supplied context. Returns an array of found Nodes.</p>
+            <pre><code data-language="javascript">/**
 * Loads modules found within the given context
 * @param {element} context - Context to search for modules
 * @return {Array} - Array of found Nodes
@@ -316,9 +312,9 @@ conditioner.loadModules(context);</code></pre>
 
 
 
-<h4 class="code" id="conditioner-get-node">getNode</h4>
-<p>Returns a single Node matching the supplied selector.</p>
-<pre><code data-language="javascript">/**
+            <h4 class="code" id="conditioner-get-node">getNode</h4>
+            <p>Returns a single Node matching the supplied selector.</p>
+            <pre><code data-language="javascript">/**
 * Returns the first Node matching the selector
 * @param {string} selector - Selector to match the nodes to
 * @return {Node} First matched node

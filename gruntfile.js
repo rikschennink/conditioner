@@ -49,16 +49,38 @@ module.exports = function(grunt) {
                 '<%=path.js %>/ui/*.js',
                 '<%=path.js %>/js/tests/*.js'
             ]
+        },
+        compass:{
+            dist: {
+                options: {
+                    sassDir: 'sass',
+                    cssDir: 'css'
+                }
+            }
+        },
+        watch: {
+            files: ['sass/**/*'],
+            tasks: ['compass', 'reload']
         }
-
     });
 
+    grunt.registerTask("reload", "reload Chrome on OS X",
+        function() {
+            require("child_process").exec("osascript " +
+                "-e 'tell application \"Google Chrome\" " +
+                "to tell the active tab of its first window' " +
+                "-e 'reload' " +
+                "-e 'end tell'");
+        }
+    );
 
+    grunt.loadNpmTasks('grunt-contrib-compass');
+    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
 
 
     // build all the things
-    grunt.registerTask('default',['jshint','requirejs']);
+    grunt.registerTask('default',['jshint','compass','requirejs']);
 
 };

@@ -8,5 +8,6 @@
 .CVS
 .idea
 node_modules
+.sass-cache
 Thumbs.db
 _SpecRunner.html
