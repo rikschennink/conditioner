@@ -1,4 +1,5 @@
 
+
 # Folders to ignore
 .DS_Store
 .cache
@@ -8,3 +9,4 @@
 .idea
 node_modules
 Thumbs.db
+_SpecRunner.html

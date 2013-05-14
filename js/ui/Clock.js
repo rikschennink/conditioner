@@ -2,6 +2,8 @@ define(['conditioner'],function(conditioner){
 
     'use strict';
 
+    var _pad = function(n){return n<10 ? '0'+n : n;};
+
     // reference to parent class
     var _parent = conditioner.ModuleBase;
 
@@ -30,10 +32,9 @@ define(['conditioner'],function(conditioner){
     p._tick = function() {
 
         var self = this,
-            pad = function(n){return n<10 ? '0'+n : n},
             now = new Date(),
-            date = pad(now.getDate()) + '/' + (now.getMonth()+1) + '/'+ now.getFullYear(),
-            time = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+            date = _pad(now.getDate()) + '/' + (now.getMonth()+1) + '/'+ now.getFullYear(),
+            time = _pad(now.getHours()) + ':' + _pad(now.getMinutes()) + ':' + _pad(now.getSeconds());
 
         // write inner html
         this._element.innerHTML = date + (this._options.time ? ' - ' + time : '');

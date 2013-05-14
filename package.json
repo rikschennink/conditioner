@@ -1,0 +1,43 @@
+{
+  "name": "conditioner-pages",
+  "version": "1.0.0",
+  "description": "ConditionerJS - Take control of your JavaScript modules.",
+  "homepage": "http://rikschennink.github.io/conditioner",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rikschennink/conditioner.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rikschennink/conditioner/issues"
+  },
+  "keywords": [
+    "javascript",
+    "media queries",
+    "media query",
+    "requirejs",
+    "conditions",
+    "shampoo"
+  ],
+  "author": {
+    "name": "Rik Schennink",
+    "url": "http://rikschennink.nl"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-contrib-concat": "~0.2.0",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-jsdoc": "~0.3.2"
+  }
+}
