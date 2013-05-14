@@ -72,7 +72,7 @@ var TestFactory = {
 
                 // arrange this test using the supplied arrange method
                 config.arrange.call(this,expected,element);
-            }
+            };
         }
         else {
             Test.prototype.arrange = function() {
