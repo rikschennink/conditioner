@@ -59,12 +59,12 @@ nav.index {
 
 nav.sub {
     margin:0;
-    background:lighten($primary-color,49);
+    background:lighten($primary-color,50);
 }
 
 nav.code {
     overflow-x:auto;
-    background:lighten($secondary-color,35);
+    background:lighten($secondary-color,42);
     color:$secondary-color;
     font-family:monaco,consolas,monospace;
 
@@ -75,6 +75,6 @@ nav.code {
     a {
         display:inline-block;
         padding:0;
-        color:darken($secondary-color,25);
+        color:darken($secondary-color,15);
     }
 }

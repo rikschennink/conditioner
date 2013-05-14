@@ -1,6 +1,6 @@
 /* color vars */
 $primary-color:#d14;
-$secondary-color:#68becb;
+$secondary-color:#57a2ae;
 
 /* base styles */
 html {
@@ -16,6 +16,7 @@ html,input,select,textarea,button {
 }
 
 body {
+
 	padding:0;
 	margin:0 auto;
 	max-width:40em;
@@ -66,7 +67,7 @@ h4+h5 {
 
 h5 {
     font-size:1em;
-    color:darken($secondary-color,25);
+    color:darken($secondary-color,15);
     margin:2em 0 -.75em 0;
 }
 
