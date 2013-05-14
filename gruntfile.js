@@ -45,6 +45,9 @@ module.exports = function(grunt) {
             }
         },
         jshint:{
+            options:{
+                jshintrc:'.jshintrc'
+            },
             all:[
                 '<%=path.js %>/ui/*.js',
                 '<%=path.js %>/js/tests/*.js'
