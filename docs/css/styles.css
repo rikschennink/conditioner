@@ -119,7 +119,7 @@ nav.code {
 }
 
 nav.code {
-    overflow-x:scroll;
+    overflow-x:auto;
     color:#68becb;
 }
 
