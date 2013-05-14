@@ -1,8 +1,8 @@
 {
   "name": "conditioner",
   "version": "0.8.5",
-  "description": "Conditioner, detangles your javascript and makes it shine.",
-  "homepage": "https://github.com/rikschennink/conditioner",
+  "description": "ConditionerJS - Take control of your JavaScript modules.",
+  "homepage": "http://rikschennink.github.io/conditioner",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
