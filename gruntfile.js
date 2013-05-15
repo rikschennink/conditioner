@@ -15,6 +15,7 @@ module.exports = function(grunt) {
                     '// Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> - <%= pkg.homepage %>\n' +
                     '// License: <%= _.map(pkg.licenses, function(x) {return x.type + " (" + x.url + ")";}).join(", ") %>\n'
         },
+        /*
         jsdoc:{
             dist:{
                 src:[
@@ -26,6 +27,7 @@ module.exports = function(grunt) {
                 }
             }
         },
+        */
         jasmine:{
             src:[
                 '<%= path.conditioner %>/ExpressionBase.js',
@@ -122,7 +124,6 @@ module.exports = function(grunt) {
     });
 
 
-    grunt.loadNpmTasks('grunt-jsdoc');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-concat');
@@ -133,10 +134,10 @@ module.exports = function(grunt) {
 
 
     // build everything
-    grunt.registerTask('default',['jshint','jasmine','concat','copy','uglify','jsdoc']);
+    grunt.registerTask('default',['jshint','jasmine','concat','copy','uglify']);
 
     // test
-    grunt.registerTask('docs',['concat','copy','jsdoc']);
+    grunt.registerTask('docs',['concat','copy']);
 
     // test
     grunt.registerTask('test',['jshint','jasmine']);
