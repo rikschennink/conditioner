@@ -138,6 +138,6 @@ module.exports = function(grunt) {
     grunt.registerTask('lib',['concat','copy','uglify']);
 
     // build everything
-    grunt.registerTask('default',['test','lib']);
+    grunt.registerTask('default',['lib','test']);
 
 };
