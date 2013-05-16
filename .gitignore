@@ -11,3 +11,4 @@ Thumbs.db
 _SpecRunner.html
 npm-debug.log
 .sass-cache
+.grunt

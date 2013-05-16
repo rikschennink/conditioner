@@ -37,242 +37,245 @@ var ModuleController = function(path,options) {
     this._ready = !this.isConditioned() || this._conditionsManager.getSuitability();
     this._available = false;
 
-
 };
 
-/**
- * Returns true if the module is available for initialisation, this is true when conditions have been met
- * @return {boolean}
- * @public
- */
-ModuleController.prototype.isAvailable = function() {
-    this._available = this._conditionsManager.getSuitability();
-    return this._available;
-};
+ModuleController.prototype = {
 
-/**
- * Returns true if module is currently active and loaded
- * @returns {boolean}
- * @public
- */
-ModuleController.prototype.isActive = function() {
-    return this._moduleInstance !== null;
-};
+    /**
+     * Returns true if the module is available for initialisation, this is true when conditions have been met
+     * @return {boolean}
+     * @public
+     */
+    isAvailable:function() {
+        this._available = this._conditionsManager.getSuitability();
+        return this._available;
+    },
 
-/**
- * Returns true if the module is dependent on certain conditions
- * @return {boolean}
- * @public
- */
-ModuleController.prototype.isConditioned = function() {
-    return typeof this._options.conditions !== 'undefined';
-};
+    /**
+     * Returns true if module is currently active and loaded
+     * @returns {boolean}
+     * @public
+     */
+    isActive:function() {
+        return this._moduleInstance !== null;
+    },
 
-/**
- * Returns true if the module is ready, this is true when conditions have been read for the first time
- * @return {boolean}
- * @public
- */
-ModuleController.prototype.isReady = function() {
-    return this._ready;
-};
+    /**
+     * Returns true if the module is dependent on certain conditions
+     * @return {boolean}
+     * @public
+     */
+    isConditioned:function() {
+        return typeof this._options.conditions !== 'undefined';
+    },
 
-/**
- * Checks if the module matches the path
- * @param {string} path - path of module to test for
- * @return {boolean} if matched
- * @public
- */
-ModuleController.prototype.matchesPath = function(path) {
-    return this._path === path;
-};
+    /**
+     * Returns true if the module is ready, this is true when conditions have been read for the first time
+     * @return {boolean}
+     * @public
+     */
+    isReady:function() {
+        return this._ready;
+    },
 
-/**
- * @private
- * @fires ready
- */
-ModuleController.prototype._onReady = function(suitable) {
+    /**
+     * Checks if the module matches the path
+     * @param {string} path - path of module to test for
+     * @return {boolean} if matched
+     * @public
+     */
+    matchesPath:function(path) {
+        return this._path === path;
+    },
 
-    // module is now ready (this does not mean it's available)
-    this._ready = true;
+    /**
+     * @private
+     * @fires ready
+     */
+    _onReady:function(suitable) {
 
-    // listen to changes in conditions
-    observer.subscribe(this._conditionsManager,'change',this._onConditionsChange.bind(this));
+        // module is now ready (this does not mean it's available)
+        this._ready = true;
 
-    // let others know we are ready
-    observer.publish(this,'ready');
+        // listen to changes in conditions
+        observer.subscribe(this._conditionsManager,'change',this._onConditionsChange.bind(this));
 
-    // are we available
-    if (suitable) {
-        this._onAvailable();
-    }
+        // let others know we are ready
+        observer.publish(this,'ready');
 
-};
-
-/**
- * @private
- * @fires available
- */
-ModuleController.prototype._onAvailable = function() {
-
-    // module is now available
-    this._available = true;
-
-    // let other know we are available
-    observer.publish(this,'available',this);
-
-};
-
-/**
- * Called when the conditions change
- * @private
- */
-ModuleController.prototype._onConditionsChange = function() {
-
-    var suitable = this._conditionsManager.getSuitability();
-
-    if (this._moduleInstance && !suitable) {
-        this.unload();
-    }
-
-    if (!this._moduleInstance && suitable) {
-        this._onAvailable();
-    }
-
-};
-
-/**
- * Load the module contained in this ModuleController
- * @public
- */
-ModuleController.prototype.load = function() {
-
-    // if module available no need to require it
-    if (this._Module) {
-        this._onLoad();
-        return;
-    }
-
-    // load module, and remember reference
-    var self = this;
-    require([this._path],function(Module){
-
-        // set reference to Module
-        self._Module = Module;
-
-        // module is now ready to be loaded
-        self._onLoad();
-
-    });
-
-};
-
-/**
- * Method called when module loaded
- * @fires load
- * @private
- */
-ModuleController.prototype._onLoad = function() {
-
-    // if no longer available
-    if (!this.isAvailable()) {
-        return;
-    }
-
-    // get module specification
-    var specification = ModuleRegister.getModuleByPath(this._path),
-        moduleOptions = specification ? specification.config : {},
-        elementOptions = {},
-        options;
-
-    // parse element options
-    if (typeof this._options.options === 'string') {
-        try {
-            elementOptions = JSON.parse(this._options.options);
+        // are we available
+        if (suitable) {
+            this._onAvailable();
         }
-        catch(e) {
-            throw new Error('ModuleController.loadModule(): "options" is not a valid JSON string.');
+
+    },
+
+    /**
+     * @private
+     * @fires available
+     */
+    _onAvailable:function() {
+
+        // module is now available
+        this._available = true;
+
+        // let other know we are available
+        observer.publish(this,'available',this);
+
+    },
+
+    /**
+     * Called when the conditions change
+     * @private
+     */
+    _onConditionsChange:function() {
+
+        var suitable = this._conditionsManager.getSuitability();
+
+        if (this._moduleInstance && !suitable) {
+            this.unload();
         }
-    }
-    else {
-        elementOptions = this._options.options;
-    }
 
-    // merge module default options with element options if found
-    options = moduleOptions ? Utils.mergeObjects(moduleOptions,elementOptions) : elementOptions;
+        if (!this._moduleInstance && suitable) {
+            this._onAvailable();
+        }
 
-    // create instance
-    this._moduleInstance = new this._Module(this._options.target,options);
+    },
 
-    // propagate events from actual module to module controller
-    // this way it is possible to listen to events on the controller which is always there
-    observer.setupPropagationTarget(this._moduleInstance,this);
+    /**
+     * Load the module contained in this ModuleController
+     * @public
+     */
+    load:function() {
 
-    // publish load event
-    observer.publish(this,'load',this);
+        // if module available no need to require it
+        if (this._Module) {
+            this._onLoad();
+            return;
+        }
 
-};
+        // load module, and remember reference
+        var self = this;
+        require([this._path],function(Module){
 
-/**
- * Unloads the module
- * @fires unload
- * @return {boolean}
- * @public
- */
-ModuleController.prototype.unload = function() {
+            // set reference to Module
+            self._Module = Module;
 
-    // module is now no longer ready to be loaded
-    this._available = false;
+            // module is now ready to be loaded
+            self._onLoad();
 
-    // if no module, module has already been unloaded or was never loaded
-    if (!this._moduleInstance) {
-        return false;
-    }
+        });
 
-    // clean propagation target
-    observer.removePropagationTarget(this._moduleInstance,this);
+    },
 
-    // unload behavior if possible
-    if (this._moduleInstance.unload) {
-        this._moduleInstance.unload();
-    }
+    /**
+     * Method called when module loaded
+     * @fires load
+     * @private
+     */
+    _onLoad:function() {
 
-    // reset property
-    this._moduleInstance = null;
+        // if no longer available
+        if (!this.isAvailable()) {
+            return;
+        }
 
-    // publish unload event
-    observer.publish(this,'unload',this);
+        // get module specification
+        var specification = ModuleRegister.getModuleByPath(this._path),
+            moduleOptions = specification ? specification.config : {},
+            elementOptions = {},
+            options;
 
-    return true;
-};
+        // parse element options
+        if (typeof this._options.options === 'string') {
+            try {
+                elementOptions = JSON.parse(this._options.options);
+            }
+            catch(e) {
+                throw new Error('ModuleController.loadModule(): "options" is not a valid JSON string.');
+            }
+        }
+        else {
+            elementOptions = this._options.options;
+        }
 
-/**
- * Executes a methods on the loaded module
- * @param {string} method - method key
- * @param {Array} params - optional array containing the method parameters
- * @return {object} containing response of executed method and a status code
- * @public
- */
-ModuleController.prototype.execute = function(method,params) {
+        // merge module default options with element options if found
+        options = moduleOptions ? Utils.mergeObjects(moduleOptions,elementOptions) : elementOptions;
 
-    // if behavior not loaded
-    if (!this._moduleInstance) {
+        // create instance
+        this._moduleInstance = new this._Module(this._options.target,options);
+
+        // propagate events from actual module to module controller
+        // this way it is possible to listen to events on the controller which is always there
+        observer.setupPropagationTarget(this._moduleInstance,this);
+
+        // publish load event
+        observer.publish(this,'load',this);
+
+    },
+
+    /**
+     * Unloads the module
+     * @fires unload
+     * @return {boolean}
+     * @public
+     */
+    unload:function() {
+
+        // module is now no longer ready to be loaded
+        this._available = false;
+
+        // if no module, module has already been unloaded or was never loaded
+        if (!this._moduleInstance) {
+            return false;
+        }
+
+        // clean propagation target
+        observer.removePropagationTarget(this._moduleInstance,this);
+
+        // unload behavior if possible
+        if (this._moduleInstance.unload) {
+            this._moduleInstance.unload();
+        }
+
+        // reset property
+        this._moduleInstance = null;
+
+        // publish unload event
+        observer.publish(this,'unload',this);
+
+        return true;
+    },
+
+    /**
+     * Executes a methods on the loaded module
+     * @param {string} method - method key
+     * @param {Array} params - optional array containing the method parameters
+     * @return {object} containing response of executed method and a status code
+     * @public
+     */
+    execute:function(method,params) {
+
+        // if behavior not loaded
+        if (!this._moduleInstance) {
+            return {
+                'status':404,
+                'response':null
+            };
+        }
+
+        // get function reference
+        var F = this._moduleInstance[method];
+        if (!F) {
+            throw new Error('ModuleController.execute(method,params): function specified in "method" not found on module.');
+        }
+
+        // once loaded call method and pass parameters
         return {
-            'status':404,
-            'response':null
+            'status':200,
+            'response':F.apply(this._moduleInstance,params)
         };
-    }
 
-    // get function reference
-    var F = this._moduleInstance[method];
-    if (!F) {
-        throw new Error('ModuleController.execute(method,params): function specified in "method" not found on module.');
     }
-
-    // once loaded call method and pass parameters
-    return {
-        'status':200,
-        'response':F.apply(this._moduleInstance,params)
-    };
 
 };
