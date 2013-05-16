@@ -1,4 +1,6 @@
-
+/**
+ * @constructor
+ */
 var ExpressionBase = function() {};
 
 ExpressionBase.prototype = {
@@ -18,4 +20,3 @@ ExpressionBase.prototype = {
     }
 
 };
-

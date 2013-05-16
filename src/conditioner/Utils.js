@@ -3,7 +3,6 @@
  */
 var Utils = (function(){
 
-
     // define method used for matchesSelector
     var _method = null;
     var el = document.body;

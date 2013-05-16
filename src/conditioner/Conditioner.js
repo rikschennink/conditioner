@@ -1,4 +1,3 @@
-
 /**
  * @exports Conditioner
  * @class
@@ -15,10 +14,10 @@ var Conditioner = function() {
     this._nodes = [];
 
     /**
-     * Reference to Observer class
-     * @property {Observer}
+     * Reference to observer object
+     * @property {observer}
      */
-    this.Observer = Observer;
+    this.observer = observer;
 
     /**
      * Reference to ModuleBase Class

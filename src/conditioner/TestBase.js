@@ -13,7 +13,7 @@ TestBase.prototype = {
      * @param {element} element
      * @abstract
      */
-    arrange:function(expected,element) {
+    arrange:function(expected,element) { /* jshint -W098 */
         // called each time for each instance
         // override if each instance needs it's own arrangement
     },
@@ -22,8 +22,7 @@ TestBase.prototype = {
      * Called to assert the test
      * @abstract
      */
-    assert:function(expected,element) {
+    assert:function(expected,element) { /* jshint -W098 */
         // called on test
     }
-
 };

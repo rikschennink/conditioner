@@ -1,4 +1,3 @@
-
 /**
  * @exports ModuleBase
  * @class
@@ -31,7 +30,6 @@ var ModuleBase = function(element,options) {
     this._options = options ? Utils.mergeObjects(this._options,options) : this._options;
 
 };
-
 
 /**
  * Unloads module by removing data initialized property

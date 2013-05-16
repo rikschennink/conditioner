@@ -1,4 +1,3 @@
-
 /**
  * @exports ModuleController
  * @class
@@ -32,7 +31,7 @@ var ModuleController = function(path,options) {
     );
 
     // listen to ready event on condition manager
-    Observer.subscribe(this._conditionsManager,'ready',this._onReady.bind(this));
+    observer.subscribe(this._conditionsManager,'ready',this._onReady.bind(this));
 
     // by default module is not ready and not available unless it's not conditioned or conditions are already suitable
     this._ready = !this.isConditioned() || this._conditionsManager.getSuitability();
@@ -104,10 +103,10 @@ ModuleController.prototype._onReady = function(suitable) {
     this._ready = true;
 
     // listen to changes in conditions
-    Observer.subscribe(this._conditionsManager,'change',this._onConditionsChange.bind(this));
+    observer.subscribe(this._conditionsManager,'change',this._onConditionsChange.bind(this));
 
     // let others know we are ready
-    Observer.publish(this,'ready');
+    observer.publish(this,'ready');
 
     // are we available
     if (suitable) {
@@ -126,7 +125,7 @@ ModuleController.prototype._onAvailable = function() {
     this._available = true;
 
     // let other know we are available
-    Observer.publish(this,'available',this);
+    observer.publish(this,'available',this);
 
 };
 
@@ -217,10 +216,10 @@ ModuleController.prototype._onLoad = function() {
 
     // propagate events from actual module to module controller
     // this way it is possible to listen to events on the controller which is always there
-    Observer.setupPropagationTarget(this._moduleInstance,this);
+    observer.setupPropagationTarget(this._moduleInstance,this);
 
     // publish load event
-    Observer.publish(this,'load',this);
+    observer.publish(this,'load',this);
 
 };
 
@@ -242,7 +241,7 @@ ModuleController.prototype.unload = function() {
     }
 
     // clean propagation target
-    Observer.removePropagationTarget(this._moduleInstance,this);
+    observer.removePropagationTarget(this._moduleInstance,this);
 
     // unload behavior if possible
     if (this._moduleInstance.unload) {
@@ -253,7 +252,7 @@ ModuleController.prototype.unload = function() {
     this._moduleInstance = null;
 
     // publish unload event
-    Observer.publish(this,'unload',this);
+    observer.publish(this,'unload',this);
 
     return true;
 };

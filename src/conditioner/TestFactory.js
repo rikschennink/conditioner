@@ -1,4 +1,3 @@
-
 var TestFactory = {
 
     _tests:[],
@@ -60,7 +59,7 @@ var TestFactory = {
 
         // set change publisher
         Test.prototype.onchange = function() {
-            Observer.publish(this,'change');
+            observer.publish(this,'change');
         };
 
         // set custom or default arrange method

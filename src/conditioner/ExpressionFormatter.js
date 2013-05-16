@@ -1,4 +1,3 @@
-
 /**
  * @namespace ExpressionFormatter
  */
@@ -12,7 +11,7 @@ var ExpressionFormatter = {
      * @public
      */
     getExpressionsCount:function(expression) {
-        return expression.match(/(\:\{)/g).length;
+        return expression.match(/(:\{)/g).length;
     },
 
     /**

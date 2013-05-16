@@ -1,4 +1,3 @@
-
 /**
  * @exports Node
  * @class
@@ -80,7 +79,7 @@ Node.prototype.init = function() {
         }
 
         // otherwise, listen to ready event
-        Observer.subscribe(mc,'ready',this._onModuleReady.bind(this));
+        observer.subscribe(mc,'ready',this._onModuleReady.bind(this));
 
     }
 
@@ -123,7 +122,7 @@ Node.prototype._onModulesReady = function() {
     // listen to available events on controllers
     var i=0,l=this._moduleControllers.length;
     for (;i<l;i++) {
-        Observer.subscribe(this._moduleControllers[i],'available',this._onModuleAvailable.bind(this));
+        observer.subscribe(this._moduleControllers[i],'available',this._onModuleAvailable.bind(this));
     }
 
 };
@@ -175,7 +174,7 @@ Node.prototype._setActiveModuleController = function(moduleController) {
 
     // set new active module controller
     this._activeModuleController = moduleController;
-    Observer.subscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
+    observer.subscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
     this._activeModuleController.load();
 
 };
@@ -192,7 +191,7 @@ Node.prototype._cleanActiveModuleController = function() {
     }
 
     // stop listening to unload
-    Observer.unsubscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
+    observer.unsubscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
 
     // unload controller
     this._activeModuleController.unload();
@@ -374,7 +373,6 @@ Node.prototype._filterModuleControllers = function(path,single) {
     }
     return single ? null : result;
 };
-
 
 /**
  * Public method for safely executing methods on the loaded module

@@ -1,4 +1,3 @@
-
 /**
  * @exports ConditionsManager
  * @class
@@ -63,7 +62,7 @@ ConditionsManager.prototype = {
         // fire changed event if environment suitability changed
         if (suitable != this._suitable) {
             this._suitable = suitable;
-            Observer.publish(this,'change');
+            observer.publish(this,'change');
         }
 
     },
@@ -106,7 +105,7 @@ ConditionsManager.prototype = {
             );
 
             // listen to test result updates
-            Observer.subscribe(test,'change',self._onResultsChangedBind);
+            observer.subscribe(test,'change',self._onResultsChangedBind);
 
             // lower test count
             self._count--;
@@ -130,7 +129,7 @@ ConditionsManager.prototype = {
         this.test();
 
         // we are now ready to start testing
-        Observer.publish(this,'ready',this._suitable);
+        observer.publish(this,'ready',this._suitable);
 
     },
 

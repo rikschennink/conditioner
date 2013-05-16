@@ -5,7 +5,6 @@ module.exports = function(grunt) {
         path:{
             src:'src',
             spec:'spec',
-            demo:'demo',
             conditioner:'<%= path.src %>/conditioner',
             wrapper:'<%= path.src %>/wrapper',
             tests:'<%= path.src %>/tests'
@@ -15,19 +14,6 @@ module.exports = function(grunt) {
                     '// Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> - <%= pkg.homepage %>\n' +
                     '// License: <%= _.map(pkg.licenses, function(x) {return x.type + " (" + x.url + ")";}).join(", ") %>\n'
         },
-        /*
-        jsdoc:{
-            dist:{
-                src:[
-                    '<%= concat.dist.dest %>',
-                    '<%= path.src %>/tests/*.js'
-                ],
-                options: {
-                    destination: 'docs'
-                }
-            }
-        },
-        */
         jasmine:{
             src:[
                 '<%= path.conditioner %>/ExpressionBase.js',
@@ -45,12 +31,29 @@ module.exports = function(grunt) {
             }
         },
         concat:{
-            options: {
-                banner:'<%= meta.banner %>'
-            },
             dist:{
+                options: {
+                    banner:'<%= meta.banner %>',
+
+                    process:function(src,path){
+
+                        if (path.indexOf('wrapper/') === -1) {
+
+                            src = '    ' + src;
+
+                            // add tabs
+                            src = src.replace(/(\n)+/g,function(match) {
+                                return match + '    ';
+                            });
+
+                        }
+                        return src;
+
+                        //return '// Source: ' + path + '\n' + src;
+                    }
+
+                },
                 src:[
-                    '<%= meta.banner %>',
                     '<%= path.wrapper %>/intro.js',
 
                     '<%= path.conditioner %>/Utils.js',
@@ -74,7 +77,7 @@ module.exports = function(grunt) {
 
                     '<%= path.wrapper %>/outro.js'
                 ],
-                dest:'dist/<%= pkg.name %>.js'
+                dest:'dist/<%= pkg.name %>-<%= pkg.version %>.js'
             }
         },
         copy: {
@@ -83,12 +86,6 @@ module.exports = function(grunt) {
                 cwd: '<%= path.tests %>',
                 src:'*',
                 dest:'dist/tests/'
-            },
-            demo: {
-                expand:true,
-                cwd: '<%= path.tests %>',
-                src:'*',
-                dest:'<%= path.demo %>/js/tests/'
             }
         },
         uglify: {
@@ -104,7 +101,7 @@ module.exports = function(grunt) {
                     report:'gzip'
                 },
                 src: '<%= concat.dist.dest %>',
-                dest: 'dist/<%= pkg.name %>.min.js'
+                dest: 'dist/<%= pkg.name %>-<%= pkg.version %>.min.js'
             }
         },
         jshint:{
@@ -112,7 +109,7 @@ module.exports = function(grunt) {
                 jshintrc:'.jshintrc'
             },
             all:[
-                '<%=path.src %>/conditioner/*.js',
+                '<%=concat.dist.dest %>',
                 '<%=path.src %>/tests/*.js'
             ]
         },
@@ -133,16 +130,14 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
 
 
-    // build everything
-    grunt.registerTask('default',['jshint','jasmine','concat','copy','uglify']);
-
-    // test
-    grunt.registerTask('docs',['concat','copy']);
 
     // test
     grunt.registerTask('test',['jshint','jasmine']);
 
     // task for building the library
     grunt.registerTask('lib',['concat','copy','uglify']);
+
+    // build everything
+    grunt.registerTask('default',['test','lib']);
 
 };
