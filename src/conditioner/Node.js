@@ -30,7 +30,6 @@ var Node = function(element) {
 
 };
 
-
 /**
  * Static method testing if the current element has been processed already
  * @param {element} element
@@ -40,50 +39,48 @@ Node.hasProcessed = function(element) {
     return element.getAttribute('data-processed') === 'true';
 };
 
-/**
- * Returns the set priority for this node
- * @public
- */
-Node.prototype.getPriority = function() {
-    return this._priority;
-};
+Node.prototype = {
 
-/**
- * Initializes the node
- * @public
- */
-Node.prototype.init = function() {
+    /**
+     * Initializes the node
+     * @public
+     */
+    init:function() {
 
-    // parse element module attributes
-    this._moduleControllers = this._createModuleControllers();
+        // parse element module attributes
+        this._moduleControllers = this._createModuleControllers();
 
-    // initialize
-    var i=0,l=this._moduleControllers.length,mc;
+        // initialize
+        var i=0,l=this._moduleControllers.length,mc;
 
-    // if no module controllers found
-    if (!l) {
-        throw new Error('Node.init(): "element" has to have a "data-module" attribute containing a reference to a Module.');
-    }
-
-    // listen to ready events on module controllers
-    for (;i<l;i++) {
-
-        mc = this._moduleControllers[i];
-
-        // if module already ready, jump to _onModuleReady method and don't bind listener
-        if (mc.isReady()) {
-            this._onModuleReady();
-            continue;
+        // if no module controllers found
+        if (!l) {
+            throw new Error('Node.init(): "element" has to have a "data-module" attribute containing a reference to a Module.');
         }
 
-        // otherwise, listen to ready event
-        observer.subscribe(mc,'ready',this._onModuleReady.bind(this));
+        // listen to ready events on module controllers
+        for (;i<l;i++) {
 
-    }
+            mc = this._moduleControllers[i];
 
-};
+            // if module already ready, jump to _onModuleReady method and don't bind listener
+            if (mc.isReady()) {
+                this._onModuleReady();
+                continue;
+            }
 
-Node.prototype = {
+            // otherwise, listen to ready event
+            observer.subscribe(mc,'ready',this._onModuleReady.bind(this));
+        }
+    },
+
+    /**
+     * Returns the set priority for this node
+     * @public
+     */
+    getPriority:function() {
+        return this._priority;
+    },
 
     /**
      * Called when a module has indicated it is ready

@@ -32,7 +32,7 @@ describe('Node',function(){
 
         // arrange
         var element = document.createElement('div');
-            element.setAttribute('data-priority',5);
+            element.setAttribute('data-priority','5');
 
         // act
         var node = new Node(element);
@@ -56,7 +56,5 @@ describe('Node',function(){
         );
 
     });
-
-
 
 });
