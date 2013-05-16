@@ -33,7 +33,6 @@ UnaryExpression.prototype.getConfig = function() {
 
 };
 
-
 /**
  * Tests if valid expression
  * @returns {boolean}

@@ -35,9 +35,6 @@ var ConditionsManager = function(conditions,element) {
 
 };
 
-
-
-// prototype shortcut
 ConditionsManager.prototype = {
 
     /**
@@ -67,7 +64,6 @@ ConditionsManager.prototype = {
 
     },
 
-
     /**
      * Loads test configurations contained in expressions
      * @param {Array} configuration
@@ -85,7 +81,6 @@ ConditionsManager.prototype = {
             this._loadTesterToExpression(configuration[i].config,configuration[i].expression);
         }
     },
-
 
     /**
      * Loads a tester to supplied expression
@@ -117,7 +112,6 @@ ConditionsManager.prototype = {
 
     },
 
-
      /**
      * Called when all tests are ready
      * @fires ready
@@ -132,7 +126,6 @@ ConditionsManager.prototype = {
         observer.publish(this,'ready',this._suitable);
 
     },
-
 
     /**
      * Called when a condition has changed

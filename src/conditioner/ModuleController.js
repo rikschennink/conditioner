@@ -40,7 +40,6 @@ var ModuleController = function(path,options) {
 
 };
 
-
 /**
  * Returns true if the module is available for initialisation, this is true when conditions have been met
  * @return {boolean}
@@ -51,7 +50,6 @@ ModuleController.prototype.isAvailable = function() {
     return this._available;
 };
 
-
 /**
  * Returns true if module is currently active and loaded
  * @returns {boolean}
@@ -60,7 +58,6 @@ ModuleController.prototype.isAvailable = function() {
 ModuleController.prototype.isActive = function() {
     return this._moduleInstance !== null;
 };
-
 
 /**
  * Returns true if the module is dependent on certain conditions
@@ -71,7 +68,6 @@ ModuleController.prototype.isConditioned = function() {
     return typeof this._options.conditions !== 'undefined';
 };
 
-
 /**
  * Returns true if the module is ready, this is true when conditions have been read for the first time
  * @return {boolean}
@@ -80,7 +76,6 @@ ModuleController.prototype.isConditioned = function() {
 ModuleController.prototype.isReady = function() {
     return this._ready;
 };
-
 
 /**
  * Checks if the module matches the path
@@ -91,7 +86,6 @@ ModuleController.prototype.isReady = function() {
 ModuleController.prototype.matchesPath = function(path) {
     return this._path === path;
 };
-
 
 /**
  * @private
@@ -129,7 +123,6 @@ ModuleController.prototype._onAvailable = function() {
 
 };
 
-
 /**
  * Called when the conditions change
  * @private
@@ -147,9 +140,6 @@ ModuleController.prototype._onConditionsChange = function() {
     }
 
 };
-
-
-
 
 /**
  * Load the module contained in this ModuleController
@@ -223,7 +213,6 @@ ModuleController.prototype._onLoad = function() {
 
 };
 
-
 /**
  * Unloads the module
  * @fires unload
@@ -256,7 +245,6 @@ ModuleController.prototype.unload = function() {
 
     return true;
 };
-
 
 /**
  * Executes a methods on the loaded module

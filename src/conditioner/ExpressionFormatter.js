@@ -202,9 +202,6 @@ var ExpressionFormatter = {
                 }
                 while(i === l-1 && parent);
 
-
-
-
             }
             // end of ')' character or last index
 

@@ -22,7 +22,6 @@ var Utils = (function(){
         _method = 'oMatchesSelector';
     }
 
-
     var exports = {
 
         /**
@@ -86,7 +85,6 @@ var Utils = (function(){
 
             return dst;
         },
-
 
         /**
          * matches an element to a selector

@@ -65,7 +65,6 @@ Conditioner.prototype = {
         }
     },
 
-
     /**
      * Loads modules within the given context
      * @param {element} context - Context to find modules in
@@ -127,7 +126,6 @@ Conditioner.prototype = {
         return nodes;
     },
 
-
     /**
      * Returns the first Node matching the selector
      * @param {string} selector - Selector to match the nodes to
@@ -137,7 +135,6 @@ Conditioner.prototype = {
         return this._filterNodes(selector,true);
     },
 
-
     /**
      * Returns all nodes matching the selector
      * @param {string} selector - Optional selector to match the nodes to
@@ -146,7 +143,6 @@ Conditioner.prototype = {
     getNodesAll:function(selector) {
         return this._filterNodes(selector,false);
     },
-
 
     /**
      * Returns a single or multiple module controllers matching the given selector

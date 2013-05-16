@@ -1,7 +1,6 @@
 // conditioner v0.8.5 - ConditionerJS - Take control of your JavaScript modules.
 // Copyright (c) 2013 Rik Schennink - http://rikschennink.github.io/conditioner
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
-
 define(['require'],function(require) {
 
     'use strict';
@@ -32,7 +31,6 @@ define(['require'],function(require) {
         else if (el.oMatchesSelector) {
             _method = 'oMatchesSelector';
         }
-
 
         var exports = {
 
@@ -97,7 +95,6 @@ define(['require'],function(require) {
 
                 return dst;
             },
-
 
             /**
              * matches an element to a selector
@@ -307,7 +304,6 @@ define(['require'],function(require) {
         return this._config ? [{'expression':this,'config':this._config}] : this._expression.getConfig();
 
     };
-
 
     /**
      * Tests if valid expression
@@ -580,9 +576,6 @@ define(['require'],function(require) {
 
                     }
                     while(i === l-1 && parent);
-
-
-
 
                 }
                 // end of ')' character or last index
@@ -936,9 +929,6 @@ define(['require'],function(require) {
 
     };
 
-
-
-    // prototype shortcut
     ConditionsManager.prototype = {
 
         /**
@@ -968,7 +958,6 @@ define(['require'],function(require) {
 
         },
 
-
         /**
          * Loads test configurations contained in expressions
          * @param {Array} configuration
@@ -986,7 +975,6 @@ define(['require'],function(require) {
                 this._loadTesterToExpression(configuration[i].config,configuration[i].expression);
             }
         },
-
 
         /**
          * Loads a tester to supplied expression
@@ -1018,7 +1006,6 @@ define(['require'],function(require) {
 
         },
 
-
          /**
          * Called when all tests are ready
          * @fires ready
@@ -1033,7 +1020,6 @@ define(['require'],function(require) {
             observer.publish(this,'ready',this._suitable);
 
         },
-
 
         /**
          * Called when a condition has changed
@@ -1086,7 +1072,6 @@ define(['require'],function(require) {
 
     };
 
-
     /**
      * Returns true if the module is available for initialisation, this is true when conditions have been met
      * @return {boolean}
@@ -1097,7 +1082,6 @@ define(['require'],function(require) {
         return this._available;
     };
 
-
     /**
      * Returns true if module is currently active and loaded
      * @returns {boolean}
@@ -1106,7 +1090,6 @@ define(['require'],function(require) {
     ModuleController.prototype.isActive = function() {
         return this._moduleInstance !== null;
     };
-
 
     /**
      * Returns true if the module is dependent on certain conditions
@@ -1117,7 +1100,6 @@ define(['require'],function(require) {
         return typeof this._options.conditions !== 'undefined';
     };
 
-
     /**
      * Returns true if the module is ready, this is true when conditions have been read for the first time
      * @return {boolean}
@@ -1126,7 +1108,6 @@ define(['require'],function(require) {
     ModuleController.prototype.isReady = function() {
         return this._ready;
     };
-
 
     /**
      * Checks if the module matches the path
@@ -1137,7 +1118,6 @@ define(['require'],function(require) {
     ModuleController.prototype.matchesPath = function(path) {
         return this._path === path;
     };
-
 
     /**
      * @private
@@ -1175,7 +1155,6 @@ define(['require'],function(require) {
 
     };
 
-
     /**
      * Called when the conditions change
      * @private
@@ -1193,9 +1172,6 @@ define(['require'],function(require) {
         }
 
     };
-
-
-
 
     /**
      * Load the module contained in this ModuleController
@@ -1269,7 +1245,6 @@ define(['require'],function(require) {
 
     };
 
-
     /**
      * Unloads the module
      * @fires unload
@@ -1302,7 +1277,6 @@ define(['require'],function(require) {
 
         return true;
     };
-
 
     /**
      * Executes a methods on the loaded module
@@ -1376,7 +1350,6 @@ define(['require'],function(require) {
         return element.getAttribute('data-processed') === 'true';
     };
 
-
     /**
      * Returns the set priority for this node
      * @public
@@ -1384,7 +1357,6 @@ define(['require'],function(require) {
     Node.prototype.getPriority = function() {
         return this._priority;
     };
-
 
     /**
      * Initializes the node
@@ -1421,7 +1393,6 @@ define(['require'],function(require) {
 
     };
 
-
     /**
      * Called when a module has indicated it is ready
      * @private
@@ -1442,7 +1413,6 @@ define(['require'],function(require) {
 
     };
 
-
     /**
      * Called when all modules are ready
      * @private
@@ -1462,7 +1432,6 @@ define(['require'],function(require) {
         }
 
     };
-
 
     /**
      * Called when a module controller has indicated it is ready to be loaded
@@ -1579,7 +1548,6 @@ define(['require'],function(require) {
         return null;
     };
 
-
     /**
      * Returns an array of module controllers found specified on the element
      * @returns {Array}
@@ -1645,7 +1613,6 @@ define(['require'],function(require) {
 
     };
 
-
     /**
      * Public method to check if the module matches the given query
      * @param {string} selector
@@ -1656,7 +1623,6 @@ define(['require'],function(require) {
         return Utils.matchesSelector(this._element,selector);
     };
 
-
     /**
      * Returns a reference to the currently active module controller
      * @return {ModuleController}
@@ -1665,7 +1631,6 @@ define(['require'],function(require) {
     Node.prototype.getActiveModuleController = function() {
         return this._activeModuleController;
     };
-
 
     /**
      * Returns the first ModuleController matching the given path
@@ -1677,7 +1642,6 @@ define(['require'],function(require) {
         return this._filterModuleControllers(path,true);
     };
 
-
     /**
      * Returns an array of ModuleControllers matching the given path
      * @param path {string} path to module
@@ -1687,7 +1651,6 @@ define(['require'],function(require) {
     Node.prototype.getModuleControllerAllByPath = function(path) {
         return this._filterModuleControllers(path,false);
     };
-
 
     /**
      * Returns a single or multiple module controllers depending on input
@@ -1797,7 +1760,6 @@ define(['require'],function(require) {
             }
         },
 
-
         /**
          * Loads modules within the given context
          * @param {element} context - Context to find modules in
@@ -1859,7 +1821,6 @@ define(['require'],function(require) {
             return nodes;
         },
 
-
         /**
          * Returns the first Node matching the selector
          * @param {string} selector - Selector to match the nodes to
@@ -1869,7 +1830,6 @@ define(['require'],function(require) {
             return this._filterNodes(selector,true);
         },
 
-
         /**
          * Returns all nodes matching the selector
          * @param {string} selector - Optional selector to match the nodes to
@@ -1878,7 +1838,6 @@ define(['require'],function(require) {
         getNodesAll:function(selector) {
             return this._filterNodes(selector,false);
         },
-
 
         /**
          * Returns a single or multiple module controllers matching the given selector

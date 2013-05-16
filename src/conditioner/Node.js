@@ -40,7 +40,6 @@ Node.hasProcessed = function(element) {
     return element.getAttribute('data-processed') === 'true';
 };
 
-
 /**
  * Returns the set priority for this node
  * @public
@@ -48,7 +47,6 @@ Node.hasProcessed = function(element) {
 Node.prototype.getPriority = function() {
     return this._priority;
 };
-
 
 /**
  * Initializes the node
@@ -85,7 +83,6 @@ Node.prototype.init = function() {
 
 };
 
-
 /**
  * Called when a module has indicated it is ready
  * @private
@@ -106,7 +103,6 @@ Node.prototype._onModuleReady = function() {
 
 };
 
-
 /**
  * Called when all modules are ready
  * @private
@@ -126,7 +122,6 @@ Node.prototype._onModulesReady = function() {
     }
 
 };
-
 
 /**
  * Called when a module controller has indicated it is ready to be loaded
@@ -243,7 +238,6 @@ Node.prototype._getSuitableActiveModuleController = function() {
     return null;
 };
 
-
 /**
  * Returns an array of module controllers found specified on the element
  * @returns {Array}
@@ -309,7 +303,6 @@ Node.prototype._createModuleControllers = function() {
 
 };
 
-
 /**
  * Public method to check if the module matches the given query
  * @param {string} selector
@@ -320,7 +313,6 @@ Node.prototype.matchesSelector = function(selector) {
     return Utils.matchesSelector(this._element,selector);
 };
 
-
 /**
  * Returns a reference to the currently active module controller
  * @return {ModuleController}
@@ -329,7 +321,6 @@ Node.prototype.matchesSelector = function(selector) {
 Node.prototype.getActiveModuleController = function() {
     return this._activeModuleController;
 };
-
 
 /**
  * Returns the first ModuleController matching the given path
@@ -341,7 +332,6 @@ Node.prototype.getModuleControllerByPath = function(path) {
     return this._filterModuleControllers(path,true);
 };
 
-
 /**
  * Returns an array of ModuleControllers matching the given path
  * @param path {string} path to module
@@ -351,7 +341,6 @@ Node.prototype.getModuleControllerByPath = function(path) {
 Node.prototype.getModuleControllerAllByPath = function(path) {
     return this._filterModuleControllers(path,false);
 };
-
 
 /**
  * Returns a single or multiple module controllers depending on input
