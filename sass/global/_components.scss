@@ -71,6 +71,12 @@ h1.logo+em {
     }
 }
 
+.js .git {
+    display:none;
+    &[data-initialized] {display:block;}
+}
+
+
 
 
 /**

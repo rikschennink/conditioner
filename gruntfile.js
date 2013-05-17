@@ -36,7 +36,9 @@ module.exports = function(grunt) {
                         // ui modules
                         'ui/Clock',
                         'ui/StorageConsentSelect',
-                        'security/StorageConsentGuard'
+                        'ui/StarGazers',
+                        'security/StorageConsentGuard',
+
                         // 'ui/Map'
                         // not included to test conditional loading
 

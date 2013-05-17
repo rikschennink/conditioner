@@ -9,6 +9,8 @@
 
     <link href="css/styles.css" rel="stylesheet">
 
+    <script>document.documentElement.className = 'js';</script>
+
     <script>
 
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -30,9 +32,8 @@
 <h1 class="logo"><a href="/conditioner">ConditionerJS</a></h1>
 <em>Take Control of your JavaScript Modules</em>
 
-<div class="git">
-    <iframe src="http://ghbtns.com/github-btn.html?user=rikschennink&repo=conditioner&type=watch&count=true"
-        allowtransparency="true" frameborder="0" scrolling="0" width="78" height="20"></iframe>
+<div class="git" data-module="ui/StarGazers" data-priority="-1">
+    <a href="http://github.com/rikschennink/conditioner">ConditionerJS on GitHub</a>
 </div>
 
 <nav class="index">
@@ -199,6 +200,18 @@ requirejs.config({
 
 // load conditioner
 requirejs(['conditioner'],function(conditioner) {
+
+        conditioner.setOptions({
+            'modules':{
+                'ui/StarGazers':{
+                    'options':{
+                        'user':'rikschennink',
+                        'repo':'conditioner'
+                    }
+                }
+            }
+        });
+
         conditioner.loadModules(document);
     }
 );
