@@ -7,7 +7,7 @@
 var Node = function(element) {
 
     if (!element) {
-        throw new Error('Node(element): "element" is a required parameter.');
+        throw new Error('Node: "element" is a required parameter.');
     }
 
     // set element reference
@@ -55,7 +55,7 @@ Node.prototype = {
 
         // if no module controllers found
         if (!l) {
-            throw new Error('Node.init(): "element" has to have a "data-module" attribute containing a reference to a Module.');
+            throw new Error('Node: "element" has to have a "data-module" attribute containing a reference to a Module.');
         }
 
         // listen to ready events on module controllers
@@ -80,6 +80,78 @@ Node.prototype = {
      */
     getPriority:function() {
         return this._priority;
+    },
+
+    /**
+     * Public method to check if the module matches the given query
+     * @param {string} selector
+     * @return {boolean}
+     * @public
+     */
+    matchesSelector:function(selector) {
+        return Utils.matchesSelector(this._element,selector);
+    },
+
+    /**
+     * Returns a reference to the currently active module controller
+     * @return {ModuleController}
+     * @public
+     */
+    getActiveModuleController:function() {
+        return this._activeModuleController;
+    },
+
+    /**
+     * Returns the first ModuleController matching the given path
+     * @param path {string} path to module
+     * @return {ModuleController}
+     * @public
+     */
+    getModuleController:function(path) {
+        return this.getModuleControllerAll(path)[0];
+    },
+
+    /**
+     * Returns an array of ModuleControllers matching the given path
+     * @param path {string} path to module
+     * @return {Array}
+     * @public
+     */
+    getModuleControllerAll:function(path) {
+
+        if (typeof path === 'undefined') {
+            return this._moduleControllers.concat();
+        }
+
+        var i=0,l=this._moduleControllers.length,result=[],mc;
+        for (;i<l;i++) {
+            mc = this._moduleControllers[i];
+            if (mc.matchesPath(path)) {
+                result.push(mc);
+            }
+        }
+        return result;
+    },
+
+    /**
+     * Public method for safely executing methods on the loaded module
+     * @param {string} method - method key
+     * @param {Array} params - array containing the method parameters
+     * @return {object} returns object containing status code and possible response data
+     * @public
+     */
+    execute:function(method,params) {
+
+        // if active module controller defined
+        if (this._activeModuleController) {
+            return this._activeModuleController.execute(method,params);
+        }
+
+        // no active module
+        return {
+            'status':404,
+            'response':null
+        };
     },
 
     /**
@@ -258,6 +330,7 @@ Node.prototype = {
             }
             catch(e) {
                 // failed parsing spec
+                throw new Error('Node: "data-module" attribute containing a malformed JSON string.');
             }
 
             // no specification found or specification parsing failed
@@ -300,86 +373,6 @@ Node.prototype = {
 
         return result;
 
-    },
-
-    /**
-     * Public method to check if the module matches the given query
-     * @param {string} selector
-     * @return {boolean}
-     * @public
-     */
-    matchesSelector:function(selector) {
-        return Utils.matchesSelector(this._element,selector);
-    },
-
-    /**
-     * Returns a reference to the currently active module controller
-     * @return {ModuleController}
-     * @public
-     */
-    getActiveModuleController:function() {
-        return this._activeModuleController;
-    },
-
-    /**
-     * Returns the first ModuleController matching the given path
-     * @param path {string} path to module
-     * @return {ModuleController}
-     * @public
-     */
-    getModuleControllerByPath:function(path) {
-        return this._filterModuleControllers(path,true);
-    },
-
-    /**
-     * Returns an array of ModuleControllers matching the given path
-     * @param path {string} path to module
-     * @return {Array}
-     * @public
-     */
-    getModuleControllerAllByPath:function(path) {
-        return this._filterModuleControllers(path,false);
-    },
-
-    /**
-     * Returns a single or multiple module controllers depending on input
-     * @param path {string}
-     * @param single {boolean}
-     * @returns {Array|ModuleController}
-     * @private
-     */
-    _filterModuleControllers:function(path,single) {
-        var i=0,l=this._moduleControllers.length,result=[],mc;
-        for (;i<l;i++) {
-            mc = this._moduleControllers[i];
-            if (mc.matchesPath(path)) {
-                if (single) {
-                    return mc;
-                }
-                result.push(mc);
-            }
-        }
-        return single ? null : result;
-    },
-
-    /**
-     * Public method for safely executing methods on the loaded module
-     * @param {string} method - method key
-     * @param {Array} params - array containing the method parameters
-     * @return {object} returns object containing status code and possible response data
-     * @public
-     */
-    execute:function(method,params) {
-
-        // if active module controller defined
-        if (this._activeModuleController) {
-            return this._activeModuleController.execute(method,params);
-        }
-
-        // no active module
-        return {
-            'status':404,
-            'response':null
-        };
     }
+
 };

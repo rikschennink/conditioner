@@ -14,9 +14,8 @@ define(['require'],function(require) {
     var Utils = (function(){
 
         // define method used for matchesSelector
-        var _method = null;
-        var el = document.body;
-        if (el.matches) {
+        var _method = null,el = document ? document.body : null;
+        if (!el || el.matches) {
             _method = 'matches';
         }
         else if (el.webkitMatchesSelector) {
@@ -926,7 +925,6 @@ define(['require'],function(require) {
 
         // load tests to expression tree
         this._loadExpressionTests(this._expression.getConfig());
-
     };
 
     ConditionsManager.prototype = {
@@ -955,7 +953,6 @@ define(['require'],function(require) {
                 this._suitable = suitable;
                 observer.publish(this,'change');
             }
-
         },
 
         /**
@@ -1003,7 +1000,6 @@ define(['require'],function(require) {
                 }
 
             });
-
         },
 
          /**
@@ -1018,7 +1014,6 @@ define(['require'],function(require) {
 
             // we are now ready to start testing
             observer.publish(this,'ready',this._suitable);
-
         },
 
         /**
@@ -1039,7 +1034,7 @@ define(['require'],function(require) {
      */
     var ModuleController = function(path,options) {
 
-        // if no element, throw error
+        // if no path supplied, throw error
         if (!path) {
             throw new Error('ModuleController(path,options): "path" is a required parameter.');
         }
@@ -1079,7 +1074,11 @@ define(['require'],function(require) {
          * @public
          */
         isAvailable:function() {
+
+            // remember
             this._available = this._conditionsManager.getSuitability();
+
+            // return
             return this._available;
         },
 
@@ -1320,7 +1319,7 @@ define(['require'],function(require) {
     var Node = function(element) {
 
         if (!element) {
-            throw new Error('Node(element): "element" is a required parameter.');
+            throw new Error('Node: "element" is a required parameter.');
         }
 
         // set element reference
@@ -1368,7 +1367,7 @@ define(['require'],function(require) {
 
             // if no module controllers found
             if (!l) {
-                throw new Error('Node.init(): "element" has to have a "data-module" attribute containing a reference to a Module.');
+                throw new Error('Node: "element" has to have a "data-module" attribute containing a reference to a Module.');
             }
 
             // listen to ready events on module controllers
@@ -1393,6 +1392,78 @@ define(['require'],function(require) {
          */
         getPriority:function() {
             return this._priority;
+        },
+
+        /**
+         * Public method to check if the module matches the given query
+         * @param {string} selector
+         * @return {boolean}
+         * @public
+         */
+        matchesSelector:function(selector) {
+            return Utils.matchesSelector(this._element,selector);
+        },
+
+        /**
+         * Returns a reference to the currently active module controller
+         * @return {ModuleController}
+         * @public
+         */
+        getActiveModuleController:function() {
+            return this._activeModuleController;
+        },
+
+        /**
+         * Returns the first ModuleController matching the given path
+         * @param path {string} path to module
+         * @return {ModuleController}
+         * @public
+         */
+        getModuleController:function(path) {
+            return this.getModuleControllerAll(path)[0];
+        },
+
+        /**
+         * Returns an array of ModuleControllers matching the given path
+         * @param path {string} path to module
+         * @return {Array}
+         * @public
+         */
+        getModuleControllerAll:function(path) {
+
+            if (typeof path === 'undefined') {
+                return this._moduleControllers.concat();
+            }
+
+            var i=0,l=this._moduleControllers.length,result=[],mc;
+            for (;i<l;i++) {
+                mc = this._moduleControllers[i];
+                if (mc.matchesPath(path)) {
+                    result.push(mc);
+                }
+            }
+            return result;
+        },
+
+        /**
+         * Public method for safely executing methods on the loaded module
+         * @param {string} method - method key
+         * @param {Array} params - array containing the method parameters
+         * @return {object} returns object containing status code and possible response data
+         * @public
+         */
+        execute:function(method,params) {
+
+            // if active module controller defined
+            if (this._activeModuleController) {
+                return this._activeModuleController.execute(method,params);
+            }
+
+            // no active module
+            return {
+                'status':404,
+                'response':null
+            };
         },
 
         /**
@@ -1571,6 +1642,7 @@ define(['require'],function(require) {
                 }
                 catch(e) {
                     // failed parsing spec
+                    throw new Error('Node: "data-module" attribute containing a malformed JSON string.');
                 }
 
                 // no specification found or specification parsing failed
@@ -1613,88 +1685,8 @@ define(['require'],function(require) {
 
             return result;
 
-        },
-
-        /**
-         * Public method to check if the module matches the given query
-         * @param {string} selector
-         * @return {boolean}
-         * @public
-         */
-        matchesSelector:function(selector) {
-            return Utils.matchesSelector(this._element,selector);
-        },
-
-        /**
-         * Returns a reference to the currently active module controller
-         * @return {ModuleController}
-         * @public
-         */
-        getActiveModuleController:function() {
-            return this._activeModuleController;
-        },
-
-        /**
-         * Returns the first ModuleController matching the given path
-         * @param path {string} path to module
-         * @return {ModuleController}
-         * @public
-         */
-        getModuleControllerByPath:function(path) {
-            return this._filterModuleControllers(path,true);
-        },
-
-        /**
-         * Returns an array of ModuleControllers matching the given path
-         * @param path {string} path to module
-         * @return {Array}
-         * @public
-         */
-        getModuleControllerAllByPath:function(path) {
-            return this._filterModuleControllers(path,false);
-        },
-
-        /**
-         * Returns a single or multiple module controllers depending on input
-         * @param path {string}
-         * @param single {boolean}
-         * @returns {Array|ModuleController}
-         * @private
-         */
-        _filterModuleControllers:function(path,single) {
-            var i=0,l=this._moduleControllers.length,result=[],mc;
-            for (;i<l;i++) {
-                mc = this._moduleControllers[i];
-                if (mc.matchesPath(path)) {
-                    if (single) {
-                        return mc;
-                    }
-                    result.push(mc);
-                }
-            }
-            return single ? null : result;
-        },
-
-        /**
-         * Public method for safely executing methods on the loaded module
-         * @param {string} method - method key
-         * @param {Array} params - array containing the method parameters
-         * @return {object} returns object containing status code and possible response data
-         * @public
-         */
-        execute:function(method,params) {
-
-            // if active module controller defined
-            if (this._activeModuleController) {
-                return this._activeModuleController.execute(method,params);
-            }
-
-            // no active module
-            return {
-                'status':404,
-                'response':null
-            };
         }
+
     };
     /**
      * @exports Conditioner
@@ -1830,7 +1822,7 @@ define(['require'],function(require) {
          * @return {Node} First matched node
          */
         getNode:function(selector) {
-            return this._filterNodes(selector,true);
+            return this.getNodesAll(selector)[0];
         },
 
         /**
@@ -1839,21 +1831,10 @@ define(['require'],function(require) {
          * @return {Array} Array containing matched nodes
          */
         getNodesAll:function(selector) {
-            return this._filterNodes(selector,false);
-        },
 
-        /**
-         * Returns a single or multiple module controllers matching the given selector
-         * @param selector {string}
-         * @param single {boolean}
-         * @returns {Array|Node}
-         * @private
-         */
-        _filterNodes:function(selector,single) {
-
-            // if no query supplied
+            // if no query supplied return all nodes
             if (typeof selector === 'undefined') {
-                return single ? null : [];
+                return this._nodes.concat();
             }
 
             // find matches
@@ -1861,15 +1842,11 @@ define(['require'],function(require) {
             for (;i<l;i++) {
                 node = this._nodes[i];
                 if (node.matchesSelector(selector)) {
-                    if (single) {
-                        return node;
-                    }
                     results.push(node);
                 }
             }
 
-            return single ? null : results;
-
+            return results;
         }
 
     };

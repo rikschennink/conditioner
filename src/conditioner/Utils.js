@@ -4,9 +4,8 @@
 var Utils = (function(){
 
     // define method used for matchesSelector
-    var _method = null;
-    var el = document.body;
-    if (el.matches) {
+    var _method = null,el = document ? document.body : null;
+    if (!el || el.matches) {
         _method = 'matches';
     }
     else if (el.webkitMatchesSelector) {

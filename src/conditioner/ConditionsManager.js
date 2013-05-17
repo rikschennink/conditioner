@@ -32,7 +32,6 @@ var ConditionsManager = function(conditions,element) {
 
     // load tests to expression tree
     this._loadExpressionTests(this._expression.getConfig());
-
 };
 
 ConditionsManager.prototype = {
@@ -61,7 +60,6 @@ ConditionsManager.prototype = {
             this._suitable = suitable;
             observer.publish(this,'change');
         }
-
     },
 
     /**
@@ -109,7 +107,6 @@ ConditionsManager.prototype = {
             }
 
         });
-
     },
 
      /**
@@ -124,7 +121,6 @@ ConditionsManager.prototype = {
 
         // we are now ready to start testing
         observer.publish(this,'ready',this._suitable);
-
     },
 
     /**

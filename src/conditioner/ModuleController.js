@@ -7,7 +7,7 @@
  */
 var ModuleController = function(path,options) {
 
-    // if no element, throw error
+    // if no path supplied, throw error
     if (!path) {
         throw new Error('ModuleController(path,options): "path" is a required parameter.');
     }
@@ -47,7 +47,11 @@ ModuleController.prototype = {
      * @public
      */
     isAvailable:function() {
+
+        // remember
         this._available = this._conditionsManager.getSuitability();
+
+        // return
         return this._available;
     },
 

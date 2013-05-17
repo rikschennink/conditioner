@@ -132,7 +132,7 @@ Conditioner.prototype = {
      * @return {Node} First matched node
      */
     getNode:function(selector) {
-        return this._filterNodes(selector,true);
+        return this.getNodesAll(selector)[0];
     },
 
     /**
@@ -141,21 +141,10 @@ Conditioner.prototype = {
      * @return {Array} Array containing matched nodes
      */
     getNodesAll:function(selector) {
-        return this._filterNodes(selector,false);
-    },
 
-    /**
-     * Returns a single or multiple module controllers matching the given selector
-     * @param selector {string}
-     * @param single {boolean}
-     * @returns {Array|Node}
-     * @private
-     */
-    _filterNodes:function(selector,single) {
-
-        // if no query supplied
+        // if no query supplied return all nodes
         if (typeof selector === 'undefined') {
-            return single ? null : [];
+            return this._nodes.concat();
         }
 
         // find matches
@@ -163,15 +152,11 @@ Conditioner.prototype = {
         for (;i<l;i++) {
             node = this._nodes[i];
             if (node.matchesSelector(selector)) {
-                if (single) {
-                    return node;
-                }
                 results.push(node);
             }
         }
 
-        return single ? null : results;
-
+        return results;
     }
 
 };

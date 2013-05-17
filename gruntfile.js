@@ -16,16 +16,22 @@ module.exports = function(grunt) {
         },
         jasmine:{
             src:[
+                '<%= path.conditioner %>/Utils.js',
+                '<%= path.conditioner %>/Observer.js',
                 '<%= path.conditioner %>/ExpressionBase.js',
                 '<%= path.conditioner %>/UnaryExpression.js',
                 '<%= path.conditioner %>/BinaryExpression.js',
                 '<%= path.conditioner %>/ExpressionFormatter.js',
+                '<%= path.conditioner %>/ConditionsManager.js',
+                '<%= path.conditioner %>/ModuleRegister.js',
+                '<%= path.conditioner %>/ModuleController.js',
                 '<%= path.conditioner %>/Node.js'
             ],
             options:{
                 specs:'<%= path.spec %>/*.js',
                 vendor:'<%= path.spec %>/lib/require.js',
                 helpers:[
+                    '<%= path.spec %>/lib/main.js',
                     '<%= path.spec %>/shim/Function.bind.js'
                 ]
             }
