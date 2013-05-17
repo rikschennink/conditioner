@@ -1329,7 +1329,8 @@ define(['require'],function(require) {
         this._element.setAttribute('data-processed','true');
 
         // set priority
-        this._priority = this._element.getAttribute('data-priority');
+        var prio = this._element.getAttribute('data-priority');
+        this._priority = !prio ? 0 : parseInt(prio,10);
 
         // contains references to all module controllers
         this._moduleControllers = [];

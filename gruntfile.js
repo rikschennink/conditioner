@@ -25,7 +25,9 @@ module.exports = function(grunt) {
                 '<%= path.conditioner %>/ConditionsManager.js',
                 '<%= path.conditioner %>/ModuleRegister.js',
                 '<%= path.conditioner %>/ModuleController.js',
-                '<%= path.conditioner %>/Node.js'
+                '<%= path.conditioner %>/Node.js',
+                '<%= path.conditioner %>/ModuleBase.js',
+                '<%= path.conditioner %>/Conditioner.js'
             ],
             options:{
                 specs:'<%= path.spec %>/*.js',

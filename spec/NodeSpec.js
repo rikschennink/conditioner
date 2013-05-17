@@ -28,7 +28,7 @@ describe('Node',function(){
 
     });
 
-    it('will return the node priority in string format',function(){
+    it('will return the node priority in number format',function(){
 
         // arrange
         var element = document.createElement('div');
@@ -38,7 +38,7 @@ describe('Node',function(){
         var node = new Node(element);
 
         // assert
-        expect(node.getPriority()).toEqual('5');
+        expect(node.getPriority()).toEqual(5);
 
     });
 
