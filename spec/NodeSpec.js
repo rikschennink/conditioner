@@ -105,5 +105,5 @@ describe('Node',function(){
         );
 
     });
-    
+
 });
