@@ -55,7 +55,7 @@ define(['conditioner','module'],function(conditioner,module){
 
         this._level = level;
 
-        conditioner.Observer.publish(this,'change',this._level);
+        conditioner.observer.publish(this,'change',this._level);
     };
 
 

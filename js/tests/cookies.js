@@ -18,7 +18,7 @@ define(['conditioner','security/StorageConsentGuard'],function(conditioner,Stora
 
             // listen to changes on storage guard
             var guard = StorageConsentGuard.getInstance();
-            conditioner.Observer.subscribe(guard,'change',function() {
+            conditioner.observer.subscribe(guard,'change',function() {
                 measure();
             });
 
