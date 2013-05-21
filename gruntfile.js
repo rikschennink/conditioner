@@ -56,8 +56,6 @@ module.exports = function(grunt) {
 
                         }
                         return src;
-
-                        //return '// Source: ' + path + '\n' + src;
                     }
 
                 },
