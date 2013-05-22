@@ -1,1 +1,4 @@
 raw: https://raw.github.com/rikschennink/conditioner/master
+pygments: true
+safe: true
+lsi: false
