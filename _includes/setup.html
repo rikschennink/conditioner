@@ -1,0 +1,31 @@
+
+<script>
+
+    // setup requirejs
+    requirejs.config({
+        baseUrl:'../js/',
+        paths:{
+            conditioner:'lib/rikschennink/conditioner-0.8.5.min'
+        }
+    });
+
+    // load conditioner
+    requirejs(['conditioner'],function(conditioner) {
+
+            conditioner.setOptions({
+                'modules':{
+                    'ui/StarGazers':{
+                        'options':{
+                            'user':'rikschennink',
+                            'repo':'conditioner'
+                        }
+                    }
+                }
+            });
+
+            conditioner.loadModules(document);
+
+        }
+    );
+
+</script>
