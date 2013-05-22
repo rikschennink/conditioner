@@ -3,7 +3,7 @@
 
     // setup requirejs
     requirejs.config({
-        baseUrl:'../js/',
+        baseUrl:'{{ site.url }}/js/',
         paths:{
             conditioner:'lib/rikschennink/conditioner-0.8.5.min'
         }
@@ -18,6 +18,21 @@
                         'options':{
                             'user':'rikschennink',
                             'repo':'conditioner'
+                        }
+                    },
+                    'ui/StorageConsentSelect':{
+                        'options':{
+                            'label':{
+                                'level':{
+                                    'incognito':'Incognito'
+                                }
+                            }
+                        }
+                    },
+                    'security/StorageConsentGuard':{
+                        'options':{
+                            'levels':['all','incognito','none'],
+                            'initial':'none'
                         }
                     }
                 }

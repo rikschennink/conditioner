@@ -84,8 +84,10 @@ a {
 p {
     margin:1em 0;
 
-    >core {
+    >code {
+        background:#f8f8f8;
         white-space:nowrap;
+        padding:.25em .5em .375em;
     }
 }
 
@@ -95,14 +97,6 @@ label {
     &:after {
         content:':';
     }
-}
-
-code{
-    padding:.375em .5em .25em;
-}
-
-pre {
-    margin:1em 0;
 }
 
 blockquote {

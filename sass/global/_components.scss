@@ -16,6 +16,23 @@ h3 .code {
 }
 
 
+/**
+ * Highlight Code Block
+ */
+.highlight {
+    margin:1em 0;
+
+    pre {
+        background:#f8f8f8;
+    }
+    
+    code {
+        display:block;
+        padding:.375em .5em;
+    }
+}
+
+
 
 /**
  * Logo

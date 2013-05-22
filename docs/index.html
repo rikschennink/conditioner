@@ -1,37 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-
-    <title>Docs - Conditioner</title>
-
-    <link href="../css/styles.css" rel="stylesheet">
-
-    <script>document.documentElement.className = 'js';</script>
-
-    <script>
-
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-        ga('create', 'UA-33378673-2', 'github.io');
-        ga('send', 'pageview');
-
-    </script>
-
-</head>
-<body>
-
-<h1 class="logo"><a href="/conditioner">ConditionerJS</a></h1>
-
-
-<div class="git" data-module="ui/StarGazers" data-priority="-1">
-    <a href="http://github.com/rikschennink/conditioner">ConditionerJS on GitHub</a>
-</div>
+---
+layout: default
+title: Documentation - ConditionerJS
+---
 
 <section>
 
@@ -64,8 +34,6 @@
 
 
 
-
-
     <section>
 
         <h2 id="setup">Setup</h2>
@@ -79,20 +47,19 @@
 
         <p>RequireJS needs to know where to find the ConditionerJS framework. You'll need to add a <code>path</code> entry to the RequireJS configuration object pointing to the location of ConditionerJS. In the example below the file 'conditioner.js' is located in the 'lib' folder within the generic 'js' folder.</p>
 
-
-
-        <pre><code data-language="javascript">requirejs.config({
+{% highlight javascript %}
+requirejs.config({
     baseUrl:'js/',
     paths:{
         conditioner:'lib/conditioner'
     }
-});</code></pre>
+});{% endhighlight %}
 
         <p>Now that's setup, you can request a conditioner reference and have it start loading modules.</p>
 
-        <pre><code data-language="javascript">requirejs(['conditioner'],function(conditioner) {
+{% highlight javascript %}requirejs(['conditioner'],function(conditioner) {
     conditioner.loadModules(document);
-});</code></pre>
+});{% endhighlight %}
 
         <p>Since we've not yet <a href="#config">configured our modules</a> it will not load anything for now.</p>
 
@@ -129,20 +96,19 @@
             <h3 id="data-module">Linking a module to the DOM <span class="code">data-module</span></h3>
             <p>To have a module loaded at a specific location in the DOM you use the <code>data-module</code> attribute. The content of the <code>data-module</code> attribute points to the location of the module.</p>
 
-            <pre><code data-language="html">&lt;a data-module="ui/Map"&gt; ... &lt;/a&gt;</code></pre>
+{% highlight html %}<a data-module="ui/Map"> ... </a>{% endhighlight %}
 
             <p>You can also use a shortcut name, should the module path change you would only have to change it at one location.</p>
 
-            <pre><code data-language="javascript">conditioner.setOptions({
+{% highlight javascript %}conditioner.setOptions({
     'modules':{
         'ui/Map':'IMap'
     }
-});
-</code></pre>
+});{% endhighlight %}
 
             <p>The <code>data-module</code> attribute would now look like this:</p>
 
-            <pre><code data-language="html">&lt;a data-module="IMap"&gt; ... &lt;/a&gt;</code></pre>
+{% highlight html %}<a data-module="IMap"> ... </a>{% endhighlight %}
 
         </section>
 
@@ -156,7 +122,7 @@
             <p>The example below tells ConditionerJS to only load the module if the media query <code>(min-width:30em)</code> is matched.
             </p>
 
-            <pre><code data-language="html">&lt;a data-module="ui/Map" data-conditions="media:{(min-width:30em)}"&gt; ... &lt;/a&gt;</code></pre>
+            {% highlight html %}<a data-module="ui/Map" data-conditions="media:{(min-width:30em)}"> ... </a>{% endhighlight %}
 
             <p>Tests within conditions are formatted like this: <code>&lt;test_name&gt;:{&lt;expected_value&gt;}</code></p>
 
@@ -168,13 +134,13 @@
             <p>ConditionerJS allows combining of tests to build more complex conditions.</p>
 
             <p>Link multiple tests using the <code>and</code> or <code>or</code> operators:</p>
-            <pre><code>foo:{bar} or foo:{bar} and foo:{bar}</code></pre>
+            {% highlight javascript %}foo:{bar} or foo:{bar} and foo:{bar}{% endhighlight %}
 
             <p>Group tests using brackets to override operator precedence: </p>
-            <pre><code>foo:{bar} or (foo:{bar} and foo:{bar})</code></pre>
+            {% highlight javascript %}foo:{bar} or (foo:{bar} and foo:{bar}){% endhighlight %}
 
             <p>Use the <code>not</code> operator to negate a test or test group:
-            <pre><code>not (foo:{bar} or foo:{bar}) and not foo:{bar}</code></pre>
+            {% highlight javascript %}not (foo:{bar} or foo:{bar}) and not foo:{bar}{% endhighlight %}
 
             <h4>Default Tests</h4>
 
@@ -203,10 +169,10 @@
             <p>The <code>data-options</code> attribute allows you to set specific options to be passed to the Module when it's loaded.</p>
 
             <p>Specifying specific options for a single module at node level:</p>
-            <pre><code data-language="html">&lt;a data-module="ui/Map" data-options='{"zoom":10}'&gt; ... &lt;/a&gt;</code></pre>
+            {% highlight html %}<a data-module="ui/Map" data-options='{"zoom":10}'> ... </a>{% endhighlight %}
 
             <p>Specifying generic options for mulitple modules of a certain type:</p>
-            <pre><code data-language="javascript">conditioner.setOptions({
+            {% highlight javascript %}conditioner.setOptions({
 'modules':{
     'ui/Map':{
         'options':{
@@ -214,7 +180,7 @@
             }
         }
     }
-});</code></pre>
+});{% endhighlight %}
 
             <p>ConditionerJS will merge page level options with node level options and pass the results to the loaded Module once it ready to be loaded.</p>
 
@@ -233,7 +199,7 @@
 
             <p>Suppose you have a certain module you want to start loading earlier but is located lower in the DOM tree you can now move it up the list.</p>
 
-            <pre><code data-language="html">&lt;a data-module="ui/Map" data-priority="2"&gt; ... &lt;/a&gt;</code></pre>
+            {% highlight html %}<a data-module="ui/Map" data-priority="2"> ... </a>{% endhighlight %}
 
         </section>
 
@@ -283,7 +249,7 @@
             <h4 class="code" id="conditioner-set-options">setOptions</h4>
             <p>Allows defining of page level Module options and shortcuts to modules.</p>
 
-            <pre><code data-language="javascript">/**
+            {% highlight javascript %}/**
 * Set conditioner options
 * @param {object} options
 * @public
@@ -298,40 +264,40 @@ conditioner.setOptions({
             }
         }
     }
-});</code></pre>
+});{% endhighlight %}
 
 
 
             <h4 class="code" id="conditioner-load-modules">loadModules</h4>
             <p>Finds and loads all Modules defined on child elements of the supplied context. Returns an array of found Nodes.</p>
-            <pre><code data-language="javascript">/**
+            {% highlight javascript %}/**
 * Loads modules found within the given context
 * @param {element} context - Context to search for modules
 * @return {Array} - Array of found Nodes
 */
-conditioner.loadModules(context);</code></pre>
+conditioner.loadModules(context);{% endhighlight %}
 
 
 
             <h4 class="code" id="conditioner-get-node">getNode</h4>
             <p>Returns a single Node matching the supplied selector.</p>
-            <pre><code data-language="javascript">/**
+            {% highlight javascript %}/**
 * Returns the first Node matching the selector
 * @param {string} selector - Selector to match the nodes to
 * @return {Node} First matched node
 */
-conditioner.getNode(selector);</code></pre>
+conditioner.getNode(selector);{% endhighlight %}
 
 
 
 <h4 class="code" id="conditioner-get-nodes-all">getNodesAll</h4>
 <p>Returns an Array of found Nodes matching the supplied selector.</p>
-<pre><code data-language="javascript">/**
+{% highlight javascript %}/**
 * Returns all nodes matching the selector
 * @param {string} selector - Optional selector to match the nodes to
 * @return {Array} Array containing matched nodes
 */
-conditioner.getNodesAll(selector);</code></pre>
+conditioner.getNodesAll(selector);{% endhighlight %}
 
 
 </section>
@@ -355,57 +321,57 @@ conditioner.getNodesAll(selector);</code></pre>
 
 <h4 class="code" id="node-get-active-module-controller">getActiveModuleController</h4>
 <p>Returns a reference to the currently active ModuleController.</p>
-<pre><code data-language="javascript">/**
+{% highlight javascript %}/**
 * Returns a reference to the currently active module controller
 * @return {ModuleController}
 * @public
 */
-node.getActiveModuleController();</code></pre>
+node.getActiveModuleController();{% endhighlight %}
 
 
 <h4 class="code" id="node-get-module-controller-by-path">getModuleControllerByPath</h4>
 <p>Finds and returns the first module to match the supplied path.</p>
-<pre><code data-language="javascript">/**
+{% highlight javascript %}/**
 * Returns the first module controller matching the given path
 * @param path {string} path to module
 * @return {ModuleController}
 * @public
 */
-node.getModuleControllerByPath(path);</code></pre>
+node.getModuleControllerByPath(path);{% endhighlight %}
 
 
 <h4 class="code" id="node-get-module-controller-all-by-path">getModuleControllerAllByPath</h4>
 <p>Finds all ModuleControllers matching the supplied path and returns them as an array.</p>
-<pre><code data-language="javascript">/**
+{% highlight javascript %}/**
 * Returns an array of ModuleControllers matching the given path
 * @param path {string} path to module
 * @return {Array}
 * @public
 */
-node.getModuleControllerAllByPath(path);</code></pre>
+node.getModuleControllerAllByPath(path);{% endhighlight %}
 
 
 <h4 class="code" id="node-matches-selector">matchesSelector</h4>
 <p>Tests if the element contained in the Node object matches the supplied CSS selector.</p>
-<pre><code data-language="javascript">/**
+{% highlight javascript %}/**
 * Public method to check if the module matches the given query
 * @param {string} selector
 * @return {boolean}
 * @public
 */
-node.matchesSelector(selector);</code></pre>
+node.matchesSelector(selector);{% endhighlight %}
 
 
 <h4 class="code" id="node-execute">execute</h4>
 <p>Safely tries to executes a method on the currently active Module. Always returns an object containing a status code and a response data property.</p>
-<pre><code data-language="javascript">/**
+{% highlight javascript %}/**
 * Public method for safely executing methods on the loaded module
 * @param {string} method - method key
 * @param {Array} params - array containing the method parameters
 * @return {object} returns object containing status code and possible response data
 * @public
 */
-node.execute(method,[params]);</code></pre>
+node.execute(method,[params]);{% endhighlight %}
 
 </section>
 
@@ -429,52 +395,52 @@ node.execute(method,[params]);</code></pre>
 
 <h4 class="code" id="module-controller-matches-path">matchesPath</h4>
 <p>Returns true if the ModuleController is in charge of a module with the given path.</p>
-<pre><code data-language="javascript">/**
+{% highlight javascript %}/**
 * Checks if the module matches the path
 * @param {string} path - path of module to test for
 * @return {boolean} if matched
 * @public
 */
-moduleController.matchesPath(path);</code></pre>
+moduleController.matchesPath(path);{% endhighlight %}
 
 <h4 class="code" id="module-controller-is-active">isActive</h4>
 <p>Returns true if the module contained within the ModuleController is currently loaded.</p>
-<pre><code data-language="javascript">/**
+{% highlight javascript %}/**
 * Returns true if module is currently active and loaded
 * @returns {boolean}
 * @public
 */
-moduleController.isActive();</code></pre>
+moduleController.isActive();{% endhighlight %}
 
 <h4 class="code" id="module-controller-load">load</h4>
 <p>Loads the Module if it's available (if conditions suitable). Publishes the 'load' event once finished.</p>
-<pre><code data-language="javascript">/**
+{% highlight javascript %}/**
 * Load the module contained in this ModuleController
 * @public
 * @fires load
 */
-moduleController.load();</code></pre>
+moduleController.load();{% endhighlight %}
 
 <h4 class="code" id="module-controller-unload">unload</h4>
 <p>Unloads the Module if it's not already unloaded. Publishes the 'unload' event once done.</p>
-<pre><code data-language="javascript">/**
+{% highlight javascript %}/**
 * Unloads the Module
 * @fires unload
 * @return {boolean}
 * @public
 */
-moduleController.unload();</code></pre>
+moduleController.unload();{% endhighlight %}
 
 <h4 class="code" id="module-controller-execute">execute</h4>
 <p>Safely tries to execute a method on the module contained within the ModuleController.</p>
-<pre><code data-language="javascript">/**
+{% highlight javascript %}/**
 * Executes a methods on the loaded module
 * @param {string} method - method key
 * @param {Array} params - optional array containing the method parameters
 * @return {object} containing response of executed method and a status code
 * @public
 */
-moduleController.execute(method,[params]);</code></pre>
+moduleController.execute(method,[params]);{% endhighlight %}
 
 </section>
 
@@ -496,25 +462,25 @@ moduleController.execute(method,[params]);</code></pre>
 <h4 class="code">Constructor</h4>
 <p>The ModuleBase contructor takes two parameters, an element and an optional options object.</p>
 <p>ModuleBase is an abstract Class, UI Modules used in the framework should inherit from this Class.</p>
-<pre><code data-language="javascript">/**
+{% highlight javascript %}/**
 * @class
 * @constructor
 * @param {element} element - DOM Element to apply this behavior to
 * @param {object} options - Custom options to pass to this behavior
 * @abstract
 */
-ModuleBase.call(this,element,options);</code></pre>
+ModuleBase.call(this,element,options);{% endhighlight %}
 
 
 <h4 class="code">Unload</h4>
 <p>The <code>ModuleController</code> will call the <code>unload</code> method once the conditions for the Module are no longer valid. Use this method to clean up events attached by the Module and restore the original element state.</p>
 
-<pre><code data-language="javascript">/**
+{% highlight javascript %}/**
 * Unloads module by removing data initialized property
 * Override to clean up your module.
 * @public
 */
-module.unload();</code></pre>
+module.unload();{% endhighlight %}
 
 </section>
 
@@ -522,62 +488,3 @@ module.unload();</code></pre>
 
 </section>
 
-
-
-
-
-
-    <!-- For pretty javascript code examples -->
-    <script src="../js/lib/ccampbell/rainbow/rainbow-custom.min.js"></script>
-
-    <!-- Shims to get this working on some older browsers <= IE9 (should of course be minimized in real life) -->
-    <script src="../js/shim/Array.isArray.js"></script>
-    <script src="../js/shim/Array.indexOf.js"></script>
-    <script src="../js/shim/Array.forEach.js"></script>
-    <script src="../js/shim/Object.create.js"></script>
-    <script src="../js/shim/Object.keys.js"></script>
-    <script src="../js/shim/Function.bind.js"></script>
-    <script src="../js/shim/matchMedia/matchMedia.js"></script>
-    <script src="../js/shim/matchMedia/matchMedia.addListener.js"></script>
-
-    <!-- old stuff last, matchmedia won't be loaded if browser does not have addEventListener support, so we'll load shim now -->
-    <script src="../js/shim/DOMContentLoaded.js"></script>
-    <script src="../js/shim/addEventListener.js"></script>
-
-    <!-- Load minimized library (require + modules) -->
-    <script src="../js.min/built.js"></script>
-
-
-
-    <script>
-
-        // setup requirejs
-        requirejs.config({
-            baseUrl:'../js/',
-            paths:{
-                conditioner:'lib/rikschennink/conditioner-0.8.5.min'
-            }
-        });
-
-        // load conditioner
-        requirejs(['conditioner'],function(conditioner) {
-
-                conditioner.setOptions({
-                    'modules':{
-                        'ui/StarGazers':{
-                            'options':{
-                                'user':'rikschennink',
-                                'repo':'conditioner'
-                            }
-                        }
-                    }
-                });
-
-                conditioner.loadModules(document);
-            }
-        );
-
-    </script>
-
-</body>
-</html>
