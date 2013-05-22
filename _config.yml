@@ -1,5 +1,3 @@
-raw: https://raw.github.com/rikschennink/conditioner/master
 pygments: true
 safe: true
-lsi: false
-url: http://rikschennink.github.io/conditioner
+rawurl: https://raw.github.com/rikschennink/conditioner/master
