@@ -38,6 +38,7 @@
     "grunt-contrib-watch": "~0.4.3",
     "grunt-contrib-requirejs": "~0.4.0",
     "grunt-contrib-jshint": "~0.4.3",
-    "grunt-contrib-sass": "~0.3.0"
+    "grunt-contrib-sass": "~0.3.0",
+    "grunt-jekyll": "~0.3.6"
   }
 }

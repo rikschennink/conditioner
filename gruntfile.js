@@ -65,9 +65,30 @@ module.exports = function(grunt) {
                 }
             }
         },
+        jekyll:{
+            server:{
+                src:'./',
+                dest:'_site',
+                server:true,
+                port:4000,
+                watch:true,
+                safe:true,
+                config:'./_config-local.yml'
+            },
+            build:{
+                src:'./',
+                dest:'_site'
+            }
+        },
         watch: {
-            files: ['sass/**/*'],
-            tasks: ['sass', 'reload']
+            css:{
+                files: ['sass/**/*'],
+                tasks: ['sass','reload']
+            },
+            html:{
+                files:['_includes/*','_layouts/*','index.html'],
+                tasks:['jekyll:build','reload']
+            }
         }
     });
 
@@ -89,6 +110,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
+    grunt.loadNpmTasks('grunt-jekyll');
 
 
     // build all the things
