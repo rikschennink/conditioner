@@ -3,7 +3,7 @@
  * @class
  * @constructor
  * @param {string} path - reference to module
- * @param {object} options - options for this behavior controller
+ * @param {object} options - options for this ModuleController
  */
 var ModuleController = function(path,options) {
 
@@ -12,10 +12,10 @@ var ModuleController = function(path,options) {
         throw new Error('ModuleController(path,options): "path" is a required parameter.');
     }
 
-    // options for class behavior controller should load
+    // path to module
     this._path = path;
 
-    // options for behavior controller
+    // options for module controller
     this._options = options || {};
 
     // module reference
@@ -237,7 +237,7 @@ ModuleController.prototype = {
         // clean propagation target
         observer.removePropagationTarget(this._moduleInstance,this);
 
-        // unload behavior if possible
+        // unload module if possible
         if (this._moduleInstance.unload) {
             this._moduleInstance.unload();
         }
@@ -260,7 +260,7 @@ ModuleController.prototype = {
      */
     execute:function(method,params) {
 
-        // if behavior not loaded
+        // if module not loaded
         if (!this._moduleInstance) {
             return {
                 'status':404,
