@@ -3,17 +3,21 @@
  * @class
  * @constructor
  * @param {string} path - reference to module
+ * @param {element} element - reference to element
  * @param {object} options - options for this ModuleController
  */
-var ModuleController = function(path,options) {
+var ModuleController = function(path,element,options) {
 
     // if no path supplied, throw error
-    if (!path) {
-        throw new Error('ModuleController(path,options): "path" is a required parameter.');
+    if (!path || !element) {
+        throw new Error('ModuleController(path,element,options): "path" and "element" are required parameters.');
     }
 
     // path to module
     this._path = path;
+
+    // reference to element
+    this._element = element;
 
     // options for module controller
     this._options = options || {};
@@ -22,16 +26,16 @@ var ModuleController = function(path,options) {
     this._Module = null;
 
     // module instance reference
-    this._moduleInstance = null;
+    this._module = null;
 
     // check if conditions specified
     this._conditionsManager = new ConditionsManager(
         this._options.conditions,
-        this._options.target
+        this._element
     );
 
     // listen to ready event on condition manager
-    observer.subscribe(this._conditionsManager,'ready',this._onReady.bind(this));
+    Observer.subscribe(this._conditionsManager,'ready',this._onReady.bind(this));
 
     // by default module is not ready and not available unless it's not conditioned or conditions are already suitable
     this._ready = !this.isConditioned() || this._conditionsManager.getSuitability();
@@ -61,7 +65,7 @@ ModuleController.prototype = {
      * @public
      */
     isActive:function() {
-        return this._moduleInstance !== null;
+        return this._module !== null;
     },
 
     /**
@@ -102,10 +106,10 @@ ModuleController.prototype = {
         this._ready = true;
 
         // listen to changes in conditions
-        observer.subscribe(this._conditionsManager,'change',this._onConditionsChange.bind(this));
+        Observer.subscribe(this._conditionsManager,'change',this._onConditionsChange.bind(this));
 
         // let others know we are ready
-        observer.publish(this,'ready');
+        Observer.publish(this,'ready');
 
         // are we available
         if (suitable) {
@@ -124,7 +128,7 @@ ModuleController.prototype = {
         this._available = true;
 
         // let other know we are available
-        observer.publish(this,'available',this);
+        Observer.publish(this,'available',this);
 
     },
 
@@ -136,11 +140,11 @@ ModuleController.prototype = {
 
         var suitable = this._conditionsManager.getSuitability();
 
-        if (this._moduleInstance && !suitable) {
+        if (this._module && !suitable) {
             this.unload();
         }
 
-        if (!this._moduleInstance && suitable) {
+        if (!this._module && suitable) {
             this._onAvailable();
         }
 
@@ -179,14 +183,14 @@ ModuleController.prototype = {
      */
     _onLoad:function() {
 
-        // if no longer available
+        // if no longer available for loading stop here
         if (!this.isAvailable()) {
             return;
         }
 
         // get module specification
         var specification = ModuleRegister.getModuleByPath(this._path),
-            moduleOptions = specification ? specification.config : {},
+            globalOptions = specification ? specification.config : {},
             elementOptions = {},
             options;
 
@@ -196,25 +200,45 @@ ModuleController.prototype = {
                 elementOptions = JSON.parse(this._options.options);
             }
             catch(e) {
-                throw new Error('ModuleController.loadModule(): "options" is not a valid JSON string.');
+                throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
             }
         }
         else {
             elementOptions = this._options.options;
         }
 
-        // merge module default options with element options if found
-        options = moduleOptions ? Utils.mergeObjects(moduleOptions,elementOptions) : elementOptions;
+        // merge module global options with element options if found
+        options = globalOptions ? Utils.mergeObjects(globalOptions,elementOptions) : elementOptions;
 
-        // create instance
-        this._moduleInstance = new this._Module(this._options.target,options);
+        // merge module default options with result of previous merge
+        options = this._Module.options ? Utils.mergeObjects(this._Module.options,options) : options;
+
+        // set reference
+        if (typeof this._Module === 'function') {
+
+            // is of function type so try to create instance
+            this._module = new this._Module(this._element,options);
+        }
+        else {
+
+            // is of other type so expect load method to be defined
+            this._module = this._Module.load ? this._Module.load(this._element,options) : null;
+        }
+
+        // if no module defined throw error
+        if (!this._module) {
+            throw new Error('ModuleController.load(): could not initialize module, missing constructor or "load" method.');
+        }
+
+        // set initialized attribute to initialized module
+        this._element.setAttribute('data-initialized',this._path);
 
         // propagate events from actual module to module controller
         // this way it is possible to listen to events on the controller which is always there
-        observer.setupPropagationTarget(this._moduleInstance,this);
+        Observer.setupPropagationTarget(this._module,this);
 
         // publish load event
-        observer.publish(this,'load',this);
+        Observer.publish(this,'load',this);
 
     },
 
@@ -230,23 +254,26 @@ ModuleController.prototype = {
         this._available = false;
 
         // if no module, module has already been unloaded or was never loaded
-        if (!this._moduleInstance) {
+        if (!this._module) {
             return false;
         }
 
         // clean propagation target
-        observer.removePropagationTarget(this._moduleInstance,this);
+        Observer.removePropagationTarget(this._module,this);
 
         // unload module if possible
-        if (this._moduleInstance.unload) {
-            this._moduleInstance.unload();
+        if (this._module.unload) {
+            this._module.unload();
         }
 
+        // remove initialized attribute
+        this._element.removeAttribute('data-initialized');
+
         // reset property
-        this._moduleInstance = null;
+        this._module = null;
 
         // publish unload event
-        observer.publish(this,'unload',this);
+        Observer.publish(this,'unload',this);
 
         return true;
     },
@@ -261,7 +288,7 @@ ModuleController.prototype = {
     execute:function(method,params) {
 
         // if module not loaded
-        if (!this._moduleInstance) {
+        if (!this._module) {
             return {
                 'status':404,
                 'response':null
@@ -269,7 +296,7 @@ ModuleController.prototype = {
         }
 
         // get function reference
-        var F = this._moduleInstance[method];
+        var F = this._module[method];
         if (!F) {
             throw new Error('ModuleController.execute(method,params): function specified in "method" not found on module.');
         }
@@ -277,7 +304,7 @@ ModuleController.prototype = {
         // once loaded call method and pass parameters
         return {
             'status':200,
-            'response':F.apply(this._moduleInstance,params)
+            'response':F.apply(this._module,params)
         };
 
     }

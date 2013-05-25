@@ -17,7 +17,7 @@ var Tester = function(test,expected,element) {
 
     // listen to changes on test
     var self = this;
-    observer.subscribe(this._test,'change',function(){
+    Observer.subscribe(this._test,'change',function(){
         self._changed = true;
     });
 

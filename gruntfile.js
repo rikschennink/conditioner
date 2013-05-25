@@ -42,7 +42,6 @@ module.exports = function(grunt) {
             dist:{
                 options: {
                     banner:'<%= meta.banner %>',
-
                     process:function(src,path){
 
                         if (path.indexOf('wrapper/') === -1) {
@@ -74,7 +73,6 @@ module.exports = function(grunt) {
                     '<%= path.conditioner %>/TestFactory.js',
                     '<%= path.conditioner %>/Tester.js',
 
-                    '<%= path.conditioner %>/ModuleBase.js',
                     '<%= path.conditioner %>/ModuleRegister.js',
                     '<%= path.conditioner %>/ConditionsManager.js',
                     '<%= path.conditioner %>/ModuleController.js',

@@ -59,7 +59,7 @@ var TestFactory = {
 
         // set change publisher
         Test.prototype.onchange = function() {
-            observer.publish(this,'change');
+            Observer.publish(this,'change');
         };
 
         // set custom or default arrange method

@@ -71,7 +71,7 @@ Node.prototype = {
             }
 
             // otherwise, listen to ready event
-            observer.subscribe(mc,'ready',this._onModuleReady.bind(this));
+            Observer.subscribe(mc,'ready',this._onModuleReady.bind(this));
         }
     },
 
@@ -190,7 +190,7 @@ Node.prototype = {
         // listen to available events on controllers
         var i=0,l=this._moduleControllers.length;
         for (;i<l;i++) {
-            observer.subscribe(this._moduleControllers[i],'available',this._onModuleAvailable.bind(this));
+            Observer.subscribe(this._moduleControllers[i],'available',this._onModuleAvailable.bind(this));
         }
 
     },
@@ -241,7 +241,7 @@ Node.prototype = {
 
         // set new active module controller
         this._activeModuleController = moduleController;
-        observer.subscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
+        Observer.subscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
         this._activeModuleController.load();
 
     },
@@ -258,7 +258,7 @@ Node.prototype = {
         }
 
         // stop listening to unload
-        observer.unsubscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
+        Observer.unsubscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
 
         // unload controller
         this._activeModuleController.unload();
@@ -348,10 +348,9 @@ Node.prototype = {
                 spec = specs[i];
 
                 result.push(
-                    new ModuleController(spec.path,{
+                    new ModuleController(spec.path,this._element,{
                         'conditions':spec.conditions,
-                        'options':spec.options,
-                        'target':this._element
+                        'options':spec.options
                     })
                 );
 
@@ -363,10 +362,9 @@ Node.prototype = {
 
             // add default module controller
             result.push(
-                new ModuleController(config,{
+                new ModuleController(config,this._element,{
                     'conditions':this._element.getAttribute('data-conditions'),
-                    'options':this._element.getAttribute('data-options'),
-                    'target':this._element
+                    'options':this._element.getAttribute('data-options')
                 })
             );
 

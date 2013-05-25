@@ -58,7 +58,7 @@ ConditionsManager.prototype = {
         // fire changed event if environment suitability changed
         if (suitable != this._suitable) {
             this._suitable = suitable;
-            observer.publish(this,'change');
+            Observer.publish(this,'change');
         }
     },
 
@@ -69,7 +69,9 @@ ConditionsManager.prototype = {
      */
     _loadExpressionTests:function(configuration) {
 
-        for (var i=0;i<configuration.length;i++) {
+        var i=0,l=configuration.length;
+
+        for (;i<l;i++) {
 
             if (Array.isArray(configuration[i])) {
                 this._loadExpressionTests(configuration[i]);
@@ -98,7 +100,7 @@ ConditionsManager.prototype = {
             );
 
             // listen to test result updates
-            observer.subscribe(test,'change',self._onResultsChangedBind);
+            Observer.subscribe(test,'change',self._onResultsChangedBind);
 
             // lower test count
             self._count--;
@@ -120,7 +122,7 @@ ConditionsManager.prototype = {
         this.test();
 
         // we are now ready to start testing
-        observer.publish(this,'ready',this._suitable);
+        Observer.publish(this,'ready',this._suitable);
     },
 
     /**

@@ -14,16 +14,10 @@ var Conditioner = function() {
     this._nodes = [];
 
     /**
-     * Reference to observer object
-     * @property {observer}
+     * Reference to Observer object
+     * @property {Observer}
      */
-    this.observer = observer;
-
-    /**
-     * Reference to ModuleBase Class
-     * @property {ModuleBase}
-     */
-    this.ModuleBase = ModuleBase;
+    this.Observer = Observer;
 
     /**
      * Reference to mergeObject method

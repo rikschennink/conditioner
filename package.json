@@ -1,6 +1,6 @@
 {
   "name": "conditioner",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "description": "ConditionerJS - Take control of your JavaScript modules.",
   "homepage": "http://rikschennink.github.io/conditioner",
   "main": "index.js",

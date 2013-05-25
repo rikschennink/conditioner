@@ -1,7 +1,7 @@
 /**
- * @namespace observer
+ * @namespace Observer
  */
-var observer = {
+var Observer = {
 
     /**
      * Subscribe to an event
@@ -128,5 +128,4 @@ var observer = {
 
         return false;
     }
-
 };
