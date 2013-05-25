@@ -29,13 +29,15 @@ tagline: <em>Take Control of your JavaScript Modules</em>
     data-conditions="media:{(min-width:40em)} and element:{seen}"> ... </a>
 {% endhighlight %}
 
-<p>Now the HTML is setup, we only have to tell the Conditioner to look for modules in a certain section of the DOM and we're done. We can do this using the <code>loadModules</code> method.</p>
+<p>Now the HTML is setup, we only have to tell the Conditioner to look for modules in a certain section of the DOM and we're done.</p>
+
+<p>We can accomplish this by using the <code>loadModules</code> method.</p>
 
 {% highlight html %}
 conditioner.loadModules(document);
 {% endhighlight %}
 
-<p>You could say:</p>
+<p>Now the following question might be on your mind:</p>
 
 <blockquote>Why shouldn't I just put those conditions in my Google Map module?</blockquote>
 
@@ -45,7 +47,7 @@ conditioner.loadModules(document);
 
 <p>Your modules should, most of the time, not be concerned with the environment they are in. This is where ConditionerJS comes in. ConditionerJS will handle the environment and will initialize your module when the environment is suitable.</p>
 
-<p>Because ConditionerJS takes care of initializing and loading modules. Modules all live separate from each other on their own little island (local scope). This makes expanding and maintaining a project much easier since Modules are not strongly coupled.</p>
+<p>Because ConditionerJS takes care of initializing and loading modules, your modules all live separate from each other on their own little island in the DOM.</p>
 
 <p>The map module we were talking about is located right below this paragraph, it should be loading right now (if your window is at least 40ems wide). Go on and resize that browser window, ConditionerJS will load and unload the map on the fly.</p>
 
