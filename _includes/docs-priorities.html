@@ -1,0 +1,12 @@
+
+<section>
+
+    <h3 id="data-priority">Altering load priorities <span class="code">data-priority</span></h3>
+
+    <p>The <code>data-priority</code> attributes allows you to control the order in which a node is handled. Positive numbers give a node priority over other nodes, a negative number moves it to the back of the initialisation queue.</p>
+
+    <p>Suppose you have a certain module you want to start loading earlier but is located lower in the DOM tree you can now move it up the list.</p>
+
+    {% highlight html %}<a data-module="ui/Map" data-priority="2"> ... </a>{% endhighlight %}
+
+</section>

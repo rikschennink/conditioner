@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 
                     baseUrl:'js/',
                     paths:{
-                        'conditioner':'lib/rikschennink/conditioner-0.8.5.min'
+                        'conditioner':'lib/rikschennink/conditioner-0.8.6.min'
                     },
 
                     name:'lib/jrburke/require',
@@ -39,8 +39,7 @@ module.exports = function(grunt) {
                         'ui/StarGazers',
                         'security/StorageConsentGuard'
 
-                        // 'ui/Map'
-                        // not included to test conditional loading
+                        // 'ui/Map' not included to test conditional loading
 
                     ]
                 }
@@ -52,7 +51,7 @@ module.exports = function(grunt) {
             },
             all:[
                 '<%=path.js %>/ui/*.js',
-                '<%=path.js %>/js/tests/*.js'
+                '<%=path.js %>/tests/*.js'
             ]
         },
         sass:{

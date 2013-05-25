@@ -26,55 +26,12 @@ title: Documentation - ConditionerJS
                     <li><a href="#conditioner">Conditioner</a></li>
                     <li><a href="#node">Node</a></li>
                     <li><a href="#module-controller">ModuleController</a></li>
-                    <li><a href="#module-base">ModuleBase</a></li>
                 </ul>
             </li>
         </ul>
     </nav>
 
-
-
-    <section>
-
-        <h2 id="setup">Setup</h2>
-
-        <p>The setup of ConditionerJS is a two step process.</p>
-
-        <p>As ConditionerJS needs RequireJS to function, download RequireJS at <a href="http://requirejs.org/docs/download.html">http://requirejs.org/</a>, if you haven't played around with RequireJS before, follow the
-        <a href="http://requirejs.org/docs/start.html">Getting Started</a> guide for a quick meet and greet.</p>
-
-        <p>Now you've got a feel for RequireJS it is time to setup ConditionerJS.</p>
-
-        <p>RequireJS needs to know where to find the ConditionerJS framework. You'll need to add a <code>path</code> entry to the RequireJS configuration object pointing to the location of ConditionerJS. In the example below the file 'conditioner.js' is located in the 'lib' folder within the generic 'js' folder.</p>
-
-{% highlight javascript %}
-requirejs.config({
-    baseUrl:'js/',
-    paths:{
-        conditioner:'lib/conditioner'
-    }
-});{% endhighlight %}
-
-        <p>Now that's setup, you can request a conditioner reference and have it start loading modules.</p>
-
-{% highlight javascript %}requirejs(['conditioner'],function(conditioner) {
-    conditioner.loadModules(document);
-});{% endhighlight %}
-
-        <p>Since we've not yet <a href="#config">configured our modules</a> it will not load anything for now.</p>
-
-    </section>
-
-
-
-
-
-
-
-
-
-
-
+    {% include docs-setup.html %}
 
     <section>
 
@@ -91,117 +48,13 @@ requirejs.config({
             </ul>
         </nav>
 
-        <section>
+        {% include docs-module.html %}
 
-            <h3 id="data-module">Linking a module to the DOM <span class="code">data-module</span></h3>
-            <p>To have a module loaded at a specific location in the DOM you use the <code>data-module</code> attribute. The content of the <code>data-module</code> attribute points to the location of the module.</p>
+        {% include docs-conditions.html %}
 
-{% highlight html %}<a data-module="ui/Map"> ... </a>{% endhighlight %}
+        {% include docs-options.html %}
 
-            <p>You can also use a shortcut name, should the module path change you would only have to change it at one location.</p>
-
-{% highlight javascript %}conditioner.setOptions({
-    'modules':{
-        'ui/Map':'IMap'
-    }
-});{% endhighlight %}
-
-            <p>The <code>data-module</code> attribute would now look like this:</p>
-
-{% highlight html %}<a data-module="IMap"> ... </a>{% endhighlight %}
-
-        </section>
-
-
-
-        <section>
-
-            <h3 id="data-conditions">Setting module conditions <span class="code">data-conditions</span></h3>
-            <p>The <code>data-conditions</code> attribute allows you to control the conditions under which a module is loaded. This is what ConditionerJS is all about.</p>
-
-            <p>The example below tells ConditionerJS to only load the module if the media query <code>(min-width:30em)</code> is matched.
-            </p>
-
-            {% highlight html %}<a data-module="ui/Map" data-conditions="media:{(min-width:30em)}"> ... </a>{% endhighlight %}
-
-            <p>Tests within conditions are formatted like this: <code>&lt;test_name&gt;:{&lt;expected_value&gt;}</code></p>
-
-            <p>To make conditions more powerful it is possible to combine multiple tests together forming complex conditions.</p>
-
-
-            <h4>Combining Tests</h4>
-
-            <p>ConditionerJS allows combining of tests to build more complex conditions.</p>
-
-            <p>Link multiple tests using the <code>and</code> or <code>or</code> operators:</p>
-            {% highlight javascript %}foo:{bar} or foo:{bar} and foo:{bar}{% endhighlight %}
-
-            <p>Group tests using brackets to override operator precedence: </p>
-            {% highlight javascript %}foo:{bar} or (foo:{bar} and foo:{bar}){% endhighlight %}
-
-            <p>Use the <code>not</code> operator to negate a test or test group:
-            {% highlight javascript %}not (foo:{bar} or foo:{bar}) and not foo:{bar}{% endhighlight %}
-
-            <h4>Default Tests</h4>
-
-            <p>Currently a couple of tests are available to use within these conditions. See the <a href="index.html#examples">example section</a> on how to combine them.</p>
-
-            <h5>Element</h5>
-            <p><code>min-width</code>, <code>max-width</code> and <code>seen</code></p>
-
-            <h5>Media</h5>
-            <p><code>mediaquery</code> and <code>supported</code></p>
-
-            <h5>Window</h5>
-            <p><code>min-width</code> and <code>max-width</code></p>
-
-            <h5>Pointer</h5>
-            <p><code>available</code></p>
-
-        </section>
-
-
-
-        <section>
-
-            <h3 id="data-options">Passing options to a module <span class="code">data-options</span></h3>
-
-            <p>The <code>data-options</code> attribute allows you to set specific options to be passed to the Module when it's loaded.</p>
-
-            <p>Specifying specific options for a single module at node level:</p>
-            {% highlight html %}<a data-module="ui/Map" data-options='{"zoom":10}'> ... </a>{% endhighlight %}
-
-            <p>Specifying generic options for mulitple modules of a certain type:</p>
-            {% highlight javascript %}conditioner.setOptions({
-'modules':{
-    'ui/Map':{
-        'options':{
-                'zoom':5
-            }
-        }
-    }
-});{% endhighlight %}
-
-            <p>ConditionerJS will merge page level options with node level options and pass the results to the loaded Module once it ready to be loaded.</p>
-
-            <p>In the (not so exciting) example above the resulting option object would be <code>{"zoom":10}</code>, since node level options take precendence over page level options zoom level <code>10</code> overwrites zoom level <code>5</code>.</p>
-
-
-        </section>
-
-
-
-        <section>
-
-            <h3 id="data-priority">Altering load priorities <span class="code">data-priority</span></h3>
-
-            <p>The <code>data-priority</code> attributes allows you to control the order in which a node is handled. Positive numbers give a node priority over other nodes, a negative number moves it to the back of the initialisation queue.</p>
-
-            <p>Suppose you have a certain module you want to start loading earlier but is located lower in the DOM tree you can now move it up the list.</p>
-
-            {% highlight html %}<a data-module="ui/Map" data-priority="2"> ... </a>{% endhighlight %}
-
-        </section>
+        {% include docs-priorities.html %}
 
     </section>
 
@@ -221,7 +74,6 @@ requirejs.config({
                 <li><a href="#conditioner">conditioner</a> : object</li>
                 <li><a href="#node">Node</a> : Class</li>
                 <li><a href="#module-controller">ModuleController</a> : Class</li>
-                <li><a href="#module-base">ModuleBase</a> : Class</li>
             </ul>
         </nav>
 
@@ -246,10 +98,35 @@ requirejs.config({
                 </ul>
             </nav>
 
+            <p>The following properties are available on the conditioner object.</p>
+
+            <nav class="sub code">
+                <ul>
+                    <li><a href="#conditioner-utils">Utils</a></li>
+                    <li><a href="#conditioner-observer">Observer</a></li>
+                </ul>
+            </nav>
+
+            <p>Utils contains a method called <code>mergeObjects</code> which allows you to merge two objects resulting in a third merged object. The Observer is a simple pub / sub implementation.</p>
+
+            <p>It contains the following methods:</p>
+
+            <dl>
+                <dt><code>publish(obj,type,data)</code></dt>
+                <dd>Use this method to publish events.</dd>
+
+                <dt><code>subscribe(obj,type,callback)</code></dt>
+                <dd>Use this method to subscribe / listen for published events</dd>
+
+                <dt><code>unsubscribe(obj,type,callback)</code></dt>
+                <dd>Use this method to stop listening.</dd>
+
+            </dl>
+
             <h4 class="code" id="conditioner-set-options">setOptions</h4>
             <p>Allows defining of page level Module options and shortcuts to modules.</p>
 
-            {% highlight javascript %}/**
+{% highlight javascript %}/**
 * Set conditioner options
 * @param {object} options
 * @public
@@ -270,7 +147,8 @@ conditioner.setOptions({
 
             <h4 class="code" id="conditioner-load-modules">loadModules</h4>
             <p>Finds and loads all Modules defined on child elements of the supplied context. Returns an array of found Nodes.</p>
-            {% highlight javascript %}/**
+
+{% highlight javascript %}/**
 * Loads modules found within the given context
 * @param {element} context - Context to search for modules
 * @return {Array} - Array of found Nodes
@@ -281,7 +159,7 @@ conditioner.loadModules(context);{% endhighlight %}
 
             <h4 class="code" id="conditioner-get-node">getNode</h4>
             <p>Returns a single Node matching the supplied selector.</p>
-            {% highlight javascript %}/**
+{% highlight javascript %}/**
 * Returns the first Node matching the selector
 * @param {string} selector - Selector to match the nodes to
 * @return {Node} First matched node
@@ -290,8 +168,8 @@ conditioner.getNode(selector);{% endhighlight %}
 
 
 
-<h4 class="code" id="conditioner-get-nodes-all">getNodesAll</h4>
-<p>Returns an Array of found Nodes matching the supplied selector.</p>
+            <h4 class="code" id="conditioner-get-nodes-all">getNodesAll</h4>
+            <p>Returns an Array of found Nodes matching the supplied selector.</p>
 {% highlight javascript %}/**
 * Returns all nodes matching the selector
 * @param {string} selector - Optional selector to match the nodes to
@@ -300,27 +178,27 @@ conditioner.getNode(selector);{% endhighlight %}
 conditioner.getNodesAll(selector);{% endhighlight %}
 
 
-</section>
+        </section>
 
 
-<section>
+        <section>
 
-<h3 class="code" id="node">Node</h3>
+            <h3 class="code" id="node">Node</h3>
 
-<p>For each element found having a <code>data-module</code> attribute an object of type Node is made. The node object can then be queried for the ModuleControllers it contains.</p>
+            <p>For each element found having a <code>data-module</code> attribute an object of type Node is made. The node object can then be queried for the ModuleControllers it contains.</p>
 
-<nav class="sub code">
-    <ul>
-        <li><a href="#node-get-active-module-controller">getActiveModuleController</a> &rarr; <a href="#module-controller">ModuleController</a> | null</li>
-        <li><a href="#node-get-module-controller-by-path">getModuleControllerByPath</a> &rarr; <a href="#module-controller">ModuleController</a> | null</li>
-        <li><a href="#node-get-module-controller-all-by-path">getModuleControllersByPath</a> &rarr; Array</li>
-        <li><a href="#node-matches-selector">matchesSelector</a> &rarr; boolean</li>
-        <li><a href="#node-execute">execute</a> &rarr; object</li>
-    </ul>
-</nav>
+            <nav class="sub code">
+                <ul>
+                    <li><a href="#node-get-active-module-controller">getActiveModuleController</a> &rarr; <a href="#module-controller">ModuleController</a> | null</li>
+                    <li><a href="#node-get-module-controller-by-path">getModuleControllerByPath</a> &rarr; <a href="#module-controller">ModuleController</a> | null</li>
+                    <li><a href="#node-get-module-controller-all-by-path">getModuleControllersByPath</a> &rarr; Array</li>
+                    <li><a href="#node-matches-selector">matchesSelector</a> &rarr; boolean</li>
+                    <li><a href="#node-execute">execute</a> &rarr; object</li>
+                </ul>
+            </nav>
 
-<h4 class="code" id="node-get-active-module-controller">getActiveModuleController</h4>
-<p>Returns a reference to the currently active ModuleController.</p>
+            <h4 class="code" id="node-get-active-module-controller">getActiveModuleController</h4>
+            <p>Returns a reference to the currently active ModuleController.</p>
 {% highlight javascript %}/**
 * Returns a reference to the currently active module controller
 * @return {ModuleController}
@@ -329,8 +207,8 @@ conditioner.getNodesAll(selector);{% endhighlight %}
 node.getActiveModuleController();{% endhighlight %}
 
 
-<h4 class="code" id="node-get-module-controller-by-path">getModuleControllerByPath</h4>
-<p>Finds and returns the first module to match the supplied path.</p>
+            <h4 class="code" id="node-get-module-controller-by-path">getModuleControllerByPath</h4>
+            <p>Finds and returns the first module to match the supplied path.</p>
 {% highlight javascript %}/**
 * Returns the first module controller matching the given path
 * @param path {string} path to module
@@ -340,8 +218,8 @@ node.getActiveModuleController();{% endhighlight %}
 node.getModuleControllerByPath(path);{% endhighlight %}
 
 
-<h4 class="code" id="node-get-module-controller-all-by-path">getModuleControllerAllByPath</h4>
-<p>Finds all ModuleControllers matching the supplied path and returns them as an array.</p>
+            <h4 class="code" id="node-get-module-controller-all-by-path">getModuleControllerAllByPath</h4>
+            <p>Finds all ModuleControllers matching the supplied path and returns them as an array.</p>
 {% highlight javascript %}/**
 * Returns an array of ModuleControllers matching the given path
 * @param path {string} path to module
@@ -351,8 +229,8 @@ node.getModuleControllerByPath(path);{% endhighlight %}
 node.getModuleControllerAllByPath(path);{% endhighlight %}
 
 
-<h4 class="code" id="node-matches-selector">matchesSelector</h4>
-<p>Tests if the element contained in the Node object matches the supplied CSS selector.</p>
+            <h4 class="code" id="node-matches-selector">matchesSelector</h4>
+            <p>Tests if the element contained in the Node object matches the supplied CSS selector.</p>
 {% highlight javascript %}/**
 * Public method to check if the module matches the given query
 * @param {string} selector
@@ -362,8 +240,8 @@ node.getModuleControllerAllByPath(path);{% endhighlight %}
 node.matchesSelector(selector);{% endhighlight %}
 
 
-<h4 class="code" id="node-execute">execute</h4>
-<p>Safely tries to executes a method on the currently active Module. Always returns an object containing a status code and a response data property.</p>
+            <h4 class="code" id="node-execute">execute</h4>
+            <p>Safely tries to executes a method on the currently active Module. Always returns an object containing a status code and a response data property.</p>
 {% highlight javascript %}/**
 * Public method for safely executing methods on the loaded module
 * @param {string} method - method key
@@ -373,28 +251,28 @@ node.matchesSelector(selector);{% endhighlight %}
 */
 node.execute(method,[params]);{% endhighlight %}
 
-</section>
+        </section>
 
 
 
 
-<section>
+        <section>
 
-    <h3 class="code" id="module-controller">ModuleController</h3>
+            <h3 class="code" id="module-controller">ModuleController</h3>
 
-    <p>The ModuleController loads and unloads the contained Module based on the conditions received. It propagates events from the contained Module so you can safely subscribe to them.</p>
-    <nav class="sub code">
-        <ul>
-            <li><a href="#module-controller-matches-path">matchesPath</a> &rarr; boolean</li>
-            <li><a href="#module-controller-is-active">isActive</a> &rarr; boolean</li>
-            <li><a href="#module-controller-load">load</a></li>
-            <li><a href="#module-controller-unload">unload</a> &rarr; boolean</li>
-            <li><a href="#module-controller-execute">execute</a> &rarr; object</li>
-        </ul>
-    </nav>
+            <p>The ModuleController loads and unloads the contained Module based on the conditions received. It propagates events from the contained Module so you can safely subscribe to them.</p>
+            <nav class="sub code">
+                <ul>
+                    <li><a href="#module-controller-matches-path">matchesPath</a> &rarr; boolean</li>
+                    <li><a href="#module-controller-is-active">isActive</a> &rarr; boolean</li>
+                    <li><a href="#module-controller-load">load</a></li>
+                    <li><a href="#module-controller-unload">unload</a> &rarr; boolean</li>
+                    <li><a href="#module-controller-execute">execute</a> &rarr; object</li>
+                </ul>
+            </nav>
 
-<h4 class="code" id="module-controller-matches-path">matchesPath</h4>
-<p>Returns true if the ModuleController is in charge of a module with the given path.</p>
+        <h4 class="code" id="module-controller-matches-path">matchesPath</h4>
+        <p>Returns true if the ModuleController is in charge of a module with the given path.</p>
 {% highlight javascript %}/**
 * Checks if the module matches the path
 * @param {string} path - path of module to test for
@@ -403,8 +281,8 @@ node.execute(method,[params]);{% endhighlight %}
 */
 moduleController.matchesPath(path);{% endhighlight %}
 
-<h4 class="code" id="module-controller-is-active">isActive</h4>
-<p>Returns true if the module contained within the ModuleController is currently loaded.</p>
+        <h4 class="code" id="module-controller-is-active">isActive</h4>
+        <p>Returns true if the module contained within the ModuleController is currently loaded.</p>
 {% highlight javascript %}/**
 * Returns true if module is currently active and loaded
 * @returns {boolean}
@@ -412,8 +290,8 @@ moduleController.matchesPath(path);{% endhighlight %}
 */
 moduleController.isActive();{% endhighlight %}
 
-<h4 class="code" id="module-controller-load">load</h4>
-<p>Loads the Module if it's available (if conditions suitable). Publishes the 'load' event once finished.</p>
+        <h4 class="code" id="module-controller-load">load</h4>
+        <p>Loads the Module if it's available (if conditions suitable). Publishes the 'load' event once finished.</p>
 {% highlight javascript %}/**
 * Load the module contained in this ModuleController
 * @public
@@ -421,8 +299,8 @@ moduleController.isActive();{% endhighlight %}
 */
 moduleController.load();{% endhighlight %}
 
-<h4 class="code" id="module-controller-unload">unload</h4>
-<p>Unloads the Module if it's not already unloaded. Publishes the 'unload' event once done.</p>
+        <h4 class="code" id="module-controller-unload">unload</h4>
+        <p>Unloads the Module if it's not already unloaded. Publishes the 'unload' event once done.</p>
 {% highlight javascript %}/**
 * Unloads the Module
 * @fires unload
@@ -431,8 +309,8 @@ moduleController.load();{% endhighlight %}
 */
 moduleController.unload();{% endhighlight %}
 
-<h4 class="code" id="module-controller-execute">execute</h4>
-<p>Safely tries to execute a method on the module contained within the ModuleController.</p>
+        <h4 class="code" id="module-controller-execute">execute</h4>
+        <p>Safely tries to execute a method on the module contained within the ModuleController.</p>
 {% highlight javascript %}/**
 * Executes a methods on the loaded module
 * @param {string} method - method key
@@ -442,49 +320,6 @@ moduleController.unload();{% endhighlight %}
 */
 moduleController.execute(method,[params]);{% endhighlight %}
 
-</section>
-
-
-
-<section>
-
-<h3 id="module-base">ModuleBase</h3>
-
-<nav class="sub code">
-    <ul>
-        <li><a href="#module-constructor">constructor</a> &rarr; object</li>
-        <li><a href="#module-unload">unload</a></li>
-    </ul>
-</nav>
-
-
-
-<h4 class="code">Constructor</h4>
-<p>The ModuleBase contructor takes two parameters, an element and an optional options object.</p>
-<p>ModuleBase is an abstract Class, UI Modules used in the framework should inherit from this Class.</p>
-{% highlight javascript %}/**
-* @class
-* @constructor
-* @param {element} element - DOM Element to apply this behavior to
-* @param {object} options - Custom options to pass to this behavior
-* @abstract
-*/
-ModuleBase.call(this,element,options);{% endhighlight %}
-
-
-<h4 class="code">Unload</h4>
-<p>The <code>ModuleController</code> will call the <code>unload</code> method once the conditions for the Module are no longer valid. Use this method to clean up events attached by the Module and restore the original element state.</p>
-
-{% highlight javascript %}/**
-* Unloads module by removing data initialized property
-* Override to clean up your module.
-* @public
-*/
-module.unload();{% endhighlight %}
+    </section>
 
 </section>
-
-
-
-</section>
-

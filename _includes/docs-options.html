@@ -1,0 +1,26 @@
+<section>
+
+    <h3 id="data-options">Passing options to a module <span class="code">data-options</span></h3>
+
+    <p>The <code>data-options</code> attribute allows you to set specific options to be passed to the Module when it's loaded.</p>
+
+    <p>Specifying specific options for a single module at node level:</p>
+    {% highlight html %}<a data-module="ui/Map" data-options='{"zoom":10}'> ... </a>{% endhighlight %}
+
+    <p>Specifying generic options for mulitple modules of a certain type:</p>
+{% highlight javascript %}conditioner.setOptions({
+    'modules':{
+        'ui/Map':{
+            'options':{
+                'zoom':5
+            }
+        }
+    }
+});{% endhighlight %}
+
+    <p>ConditionerJS will merge page level options with node level options and pass the results to the loaded Module once it ready to be loaded.</p>
+
+    <p>In the (not so exciting) example above the resulting option object would be <code>{"zoom":10}</code>, since node level options take precendence over page level options zoom level <code>10</code> overwrites zoom level <code>5</code>.</p>
+
+
+</section>

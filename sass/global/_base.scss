@@ -48,7 +48,7 @@ h3 {
     padding:1.2em 0 0 0;
     margin:0 0 .5em;
     font-size:1.25em;
-    color:lighten($primary-color,10);
+    color:lighten($primary-color,10%);
 }
 
 h4 {
@@ -66,7 +66,7 @@ h4+h5 {
 
 h5 {
     font-size:1em;
-    color:darken($secondary-color,15);
+    color:darken($secondary-color,15%);
     margin:2em 0 -.75em 0;
 }
 
@@ -84,7 +84,7 @@ p {
     margin:1em 0;
 
     >code {
-        background:#f8f8f8;
+        background:#f6f6f6;
         white-space:nowrap;
         padding:.25em .5em .375em;
     }
@@ -114,4 +114,19 @@ blockquote {
         margin-left:.125em;
         content:'\201D';
     }
+}
+
+dd {
+    margin:0 0 .5em 0;
+    padding:0;
+}
+
+dt {
+    margin-bottom:.25em;
+}
+
+dt>code {
+    background:#f6f6f6;
+    white-space:nowrap;
+    padding:.25em .5em .375em;
 }

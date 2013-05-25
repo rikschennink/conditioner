@@ -8,12 +8,6 @@ define(['conditioner','module'],function(conditioner,module){
         // current level
         this._level = null;
 
-        // default options
-        this._options = {
-            'initial':'all',
-            'levels':['all','none']
-        };
-
         // set options
         this.setOptions(module.config());
 
@@ -26,11 +20,14 @@ define(['conditioner','module'],function(conditioner,module){
     p.setOptions = function(options) {
 
         if (!options) {
-            return;
+            options = {};
         }
 
         // sets initial options
-        this._options = conditioner.mergeObjects(this._options,options);
+        this._options = conditioner.mergeObjects({
+            'initial':'all',
+            'levels':['all','none']
+        },options);
 
         this._setDefaultLevel();
     };
@@ -55,7 +52,7 @@ define(['conditioner','module'],function(conditioner,module){
 
         this._level = level;
 
-        conditioner.observer.publish(this,'change',this._level);
+        conditioner.Observer.publish(this,'change',this._level);
     };
 
 

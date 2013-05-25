@@ -1,38 +1,33 @@
-define(['conditioner'],function(conditioner){
+define(function(){
 
     'use strict';
 
-    // reference to parent class
-    var _parent = conditioner.ModuleBase;
-
-    // Class
+    // StarGazers Class
     var exports = function(element,options) {
 
-        // set default options
-        this._options = {
-            'user':'mdo',
-            'repo':'github-buttons',
-            'width':80,
-            'height':20,
-            'count':true,
-            'type':'watch'
-        };
-
-        // call ModuleBase constructor
-        _parent.call(this,element,options);
+        // set element and options reference
+        this._element = element;
+        this._options = options;
 
         // backup content
         this._inner = this._element.innerHTML;
 
-        // load iframe
+        // load stargazer
         this._load();
     };
 
-    // Extend from ModuleBase
-    var p = exports.prototype = Object.create(_parent.prototype);
+    // default options
+    exports.options = {
+        'user':'mdo',
+        'repo':'github-buttons',
+        'width':80,
+        'height':20,
+        'count':true,
+        'type':'watch'
+    };
 
     // load component
-    p._load = function() {
+    exports.prototype._load = function() {
         this._element.innerHTML = '<iframe src="http://ghbtns.com/github-btn.html?user=' + this._options.user + '&repo=' + this._options.repo + '&type=' + this._options.type + '&count=' + this._options.count + '"' +
             'allowtransparency="true" ' +
             'frameborder="0" ' +
@@ -41,14 +36,12 @@ define(['conditioner'],function(conditioner){
             'height="' + this._options.height + '"></iframe>';
     };
 
-    // Unload StarGazer
-    p.unload = function() {
-
-        // call ModuleBase unload method
-        _parent.prototype.unload.call(this);
+    // unload stargazers
+    exports.prototype.unload = function() {
 
         // restore content
         this._element.innerHTML = this._inner;
+
     };
 
     return exports;

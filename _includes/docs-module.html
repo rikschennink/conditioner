@@ -1,0 +1,61 @@
+<section>
+
+    <h3 id="data-module">Linking a module to the DOM <span class="code">data-module</span></h3>
+    <p>To have a module loaded at a specific location in the DOM you use the <code>data-module</code> attribute. The content of the <code>data-module</code> attribute points to the location of the module.</p>
+
+    {% highlight html %}<a data-module="ui/Map"> ... </a>{% endhighlight %}
+
+    <p>You can also use a shortcut name, should the module path change you would only have to change it at one location.</p>
+
+{% highlight javascript %}conditioner.setOptions({
+    'modules':{
+        'ui/Map':'IMap'
+    }
+});{% endhighlight %}
+
+    <p>The <code>data-module</code> attribute would now look like this:</p>
+
+    {% highlight html %}<a data-module="IMap"> ... </a>{% endhighlight %}
+
+
+    <p>An example outline of a very basic module:</p>
+
+{% highlight javascript %}
+// basic AMD module pattern
+define(function(){
+
+    // constructor
+    // conditioner always passes a reference to the node
+    // if available an options object is passed
+    var exports = function(element,options) {
+
+        // remember for later use
+        this._element = element;
+        this._options = options;
+
+        // other logic
+        // ...
+    };
+
+    // define (optional) default class options here
+    exports.options = {
+        'foo':'bar'
+    };
+
+    // define (optional) unload method,
+    // if the module is never unloaded this method is not required
+    exports.prototype.unload = function() {
+
+        // clean up event listeners
+
+        // clear any timers
+
+        // restore element state
+    };
+
+    // expose
+    return exports;
+
+});{% endhighlight %}
+
+</section>

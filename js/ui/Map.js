@@ -1,15 +1,12 @@
-define(['conditioner'],function(conditioner){
+define(function(){
 
     'use strict';
-
-    // reference to parent class
-    var _parent = conditioner.ModuleBase;
 
     // Map Class
     var exports = function(element) {
 
-        // Call ModuleBase constructor
-        _parent.call(this,element);
+        // set element reference
+        this._element = element;
 
         // backup content
         this._inner = this._element.innerHTML;
@@ -21,15 +18,11 @@ define(['conditioner'],function(conditioner){
         this._load(this._element.getAttribute('href'));
     };
 
-    // Extend from ModuleBase
-    var p = exports.prototype = Object.create(_parent.prototype);
-
     // get position success
-    p._load = function(url) {
+    exports.prototype._load = function(url) {
 
-        if (!url) {
-            return;
-        }
+        // url is a required param but will fail silently if not supplied
+        if (!url) {return;}
 
         // now loading map
         this._loading = true;
@@ -70,11 +63,8 @@ define(['conditioner'],function(conditioner){
 
     };
 
-    // Unload Map behaviour
-    p.unload = function() {
-
-        // call ModuleBase unload method
-        _parent.prototype.unload.call(this);
+    // Unload Map module
+    exports.prototype.unload = function() {
 
         // not loading anymore
         this._loading = false;

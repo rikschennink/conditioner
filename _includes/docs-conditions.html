@@ -1,0 +1,45 @@
+<section>
+
+    <h3 id="data-conditions">Setting module conditions <span class="code">data-conditions</span></h3>
+
+    <p>The <code>data-conditions</code> attribute allows you to control the conditions under which a module is loaded. This is what ConditionerJS is all about.</p>
+
+    <p>The example below tells ConditionerJS to only load the module if the media query <code>(min-width:30em)</code> is matched.</p>
+
+    {% highlight html %}<a data-module="ui/Map" data-conditions="media:{(min-width:30em)}"> ... </a>{% endhighlight %}
+
+    <p>Tests within conditions are formatted like this: <code>&lt;test_name&gt;:{&lt;expected_value&gt;}</code></p>
+
+    <p>To make conditions more powerful it is possible to combine multiple tests together forming complex conditions.</p>
+
+
+    <h4>Combining Tests</h4>
+
+    <p>ConditionerJS allows combining of tests to build more complex conditions.</p>
+
+    <p>Link multiple tests using the <code>and</code> or <code>or</code> operators:</p>
+    {% highlight javascript %}foo:{bar} or foo:{bar} and foo:{bar}{% endhighlight %}
+
+    <p>Group tests using brackets to override operator precedence: </p>
+    {% highlight javascript %}foo:{bar} or (foo:{bar} and foo:{bar}){% endhighlight %}
+
+    <p>Use the <code>not</code> operator to negate a test or test group:
+    {% highlight javascript %}not (foo:{bar} or foo:{bar}) and not foo:{bar}{% endhighlight %}
+
+    <h4>Default Tests</h4>
+
+    <p>Currently a couple of tests are available to use within these conditions. See the <a href="index.html#examples">example section</a> on how to combine them.</p>
+
+    <h5>Element</h5>
+    <p><code>min-width</code>, <code>max-width</code> and <code>seen</code></p>
+
+    <h5>Media</h5>
+    <p><code>mediaquery</code> and <code>supported</code></p>
+
+    <h5>Window</h5>
+    <p><code>min-width</code> and <code>max-width</code></p>
+
+    <h5>Pointer</h5>
+    <p><code>available</code></p>
+
+</section>

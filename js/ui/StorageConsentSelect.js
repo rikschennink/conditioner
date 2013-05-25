@@ -1,26 +1,13 @@
-define(['conditioner','security/StorageConsentGuard'],function(conditioner,IStorageGuard){
+define(['security/StorageConsentGuard'],function(IStorageGuard){
 
     'use strict';
-
-    // reference to parent class
-    var _parent = conditioner.ModuleBase;
 
     // StorageConsentSelect Class
     var exports = function(element,options) {
 
         // default options for this class
-        this._options = {
-            'label':{
-                'select':'Cookies',
-                'level':{
-                    'all':'All',
-                    'none':'None'
-                }
-            }
-        };
-
-        // Call ModuleBase constructor
-        _parent.call(this,element,options);
+        this._element = element;
+        this._options = options;
 
         // set reference to storage guard
         this._storageGuard = IStorageGuard.getInstance();
@@ -46,11 +33,19 @@ define(['conditioner','security/StorageConsentGuard'],function(conditioner,IStor
 
     };
 
-    // Extend from ModuleBase
-    var p = exports.prototype = Object.create(_parent.prototype);
+    // default module options
+    exports.options = {
+        'label':{
+            'select':'Cookies',
+            'level':{
+                'all':'All',
+                'none':'None'
+            }
+        }
+    };
 
     // Handle events
-    p.handleEvent = function(e) {
+    exports.prototype.handleEvent = function(e) {
         if (e.type === 'change') {
             var select = this._element.querySelector('select'),
                 value = select.options[select.selectedIndex].value;
@@ -60,11 +55,8 @@ define(['conditioner','security/StorageConsentGuard'],function(conditioner,IStor
         }
     };
 
-    // Unload StorageConsentSelect behaviour
-    p.unload = function() {
-
-        // call ModuleBase unload method
-        _parent.prototype.unload.call(this);
+    // Unload StorageConsentSelect module
+    exports.prototype.unload = function() {
 
         // remove event listener
         this._element.querySelector('select').removeEventListener('change',this);

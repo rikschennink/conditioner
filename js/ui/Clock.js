@@ -1,22 +1,15 @@
-define(['conditioner'],function(conditioner){
+define(function(){
 
     'use strict';
 
     var _pad = function(n){return n<10 ? '0'+n : n;};
 
-    // reference to parent class
-    var _parent = conditioner.ModuleBase;
-
     // Clock Class
     var exports = function(element,options) {
 
         // set default options
-        this._options = {
-            'time':true
-        };
-
-        // call ModuleBase constructor
-        _parent.call(this,element,options);
+        this._element = element;
+        this._options = options;
 
         // backup content
         this._inner = this._element.innerHTML;
@@ -25,11 +18,13 @@ define(['conditioner'],function(conditioner){
         this._tick();
     };
 
-    // Extend from ModuleBase
-    var p = exports.prototype = Object.create(_parent.prototype);
+    // default options
+    exports.options = {
+        'time':true
+    };
 
-    // Update time
-    p._tick = function() {
+    // update time
+    exports.prototype._tick = function() {
 
         var self = this,
             now = new Date(),
@@ -51,17 +46,15 @@ define(['conditioner'],function(conditioner){
 
     };
 
-    // Unload Clock behaviour
-    p.unload = function() {
-
-        // call ModuleBase unload method
-        _parent.prototype.unload.call(this);
+    // unload clock
+    exports.prototype.unload = function() {
 
         // stop ticking
         clearTimeout(this._timer);
 
         // restore content
         this._element.innerHTML = this._inner;
+
     };
 
     return exports;

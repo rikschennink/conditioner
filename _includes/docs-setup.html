@@ -1,0 +1,30 @@
+<section>
+
+    <h2 id="setup">Setup</h2>
+
+    <p>The setup of ConditionerJS is a two step process.</p>
+
+    <p>As ConditionerJS needs RequireJS to function, download RequireJS at <a href="http://requirejs.org/docs/download.html">http://requirejs.org/</a>, if you haven't played around with RequireJS before, follow the
+        <a href="http://requirejs.org/docs/start.html">Getting Started</a> guide for a quick meet and greet.</p>
+
+    <p>Now you've got a feel for RequireJS it is time to setup ConditionerJS.</p>
+
+    <p>RequireJS needs to know where to find the ConditionerJS framework. You'll need to add a <code>path</code> entry to the RequireJS configuration object pointing to the location of ConditionerJS. In the example below the file 'conditioner.js' is located in the 'lib' folder within the generic 'js' folder.</p>
+
+{% highlight javascript %}
+requirejs.config({
+    baseUrl:'js/',
+    paths:{
+        conditioner:'lib/conditioner'
+    }
+});{% endhighlight %}
+
+    <p>Now that's setup, you can request a conditioner reference and have it start loading modules.</p>
+
+{% highlight javascript %}requirejs(['conditioner'],function(conditioner) {
+    conditioner.loadModules(document);
+});{% endhighlight %}
+
+    <p>Since we've not yet <a href="#config">configured our modules</a> it will not load anything for now.</p>
+
+</section>
