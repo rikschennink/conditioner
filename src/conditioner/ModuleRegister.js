@@ -40,7 +40,7 @@ var ModuleRegister = {
             // set alias entry
             this._modules[key].alias = alias;
 
-            // update requirejs
+            // update requirejs config
             map = {};
             map[alias] = path;
             requirejs.config({

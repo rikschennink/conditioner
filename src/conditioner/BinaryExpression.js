@@ -3,13 +3,13 @@
  * @constructor
  * @augments ExpressionBase
  * @param {UnaryExpression} a
- * @param {string} o
+ * @param {string} operator
  * @param {UnaryExpression} b
  */
-var BinaryExpression = function(a,o,b) {
+var BinaryExpression = function(a,operator,b) {
 
     this._a = a;
-    this._o = o;
+    this._operator = operator;
     this._b = b;
 
 };
@@ -22,7 +22,7 @@ BinaryExpression.prototype = Object.create(ExpressionBase);
  */
 BinaryExpression.prototype.succeeds = function() {
 
-    return this._o==='and' ?
+    return this._operator === 'and' ?
 
         // is 'and' operator
         this._a.succeeds() && this._b.succeeds() :
@@ -37,7 +37,7 @@ BinaryExpression.prototype.succeeds = function() {
  * @returns {string}
  */
 BinaryExpression.prototype.toString = function() {
-    return '(' + this._a.toString() + ' ' + this._o + ' ' + this._b.toString() + ')';
+    return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
 };
 
 /**
