@@ -76,7 +76,8 @@ module.exports = function(grunt) {
             },
             build:{
                 src:'./',
-                dest:'_site'
+                dest:'_site',
+                config:'./_config-local.yml'
             }
         },
         watch: {

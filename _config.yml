@@ -2,3 +2,4 @@ pygments: true
 safe: true
 rawurl: "https://raw.github.com/rikschennink/conditioner/master"
 url: "http://rikschennink.github.io/conditioner"
+version: "0.8.7"
