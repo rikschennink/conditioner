@@ -1,4 +1,4 @@
-// conditioner v0.8.6 - ConditionerJS - Take control of your JavaScript modules.
+// conditioner v0.8.7 - ConditionerJS - Take control of your JavaScript modules.
 // Copyright (c) 2013 Rik Schennink - http://rikschennink.github.io/conditioner
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 define(['require'],function(require) {
@@ -36,9 +36,9 @@ define(['require'],function(require) {
             /**
              * Based on https://github.com/nrf110/deepmerge/blob/master/index.js
              * @memberof Utils
-             * @param target {object}
-             * @param src {object}
-             * @returns {object}
+             * @param target {Object}
+             * @param src {Object}
+             * @returns {Object}
              * @static
              */
             mergeObjects:function(target, src) {
@@ -98,8 +98,8 @@ define(['require'],function(require) {
             /**
              * matches an element to a selector
              * @memberof Utils
-             * @param {element} element
-             * @param {string} selector
+             * @param {Element} element
+             * @param {String} selector
              * @return {Boolean}
              * @static
              */
@@ -123,8 +123,8 @@ define(['require'],function(require) {
         /**
          * Subscribe to an event
          * @memberof observer
-         * @param {object} obj - Object to subscribe to
-         * @param {string} type - Event type to listen for
+         * @param {Object} obj - Object to subscribe to
+         * @param {String} type - Event type to listen for
          * @param {Function} fn - Function to call when event fires
          * @static
          */
@@ -150,8 +150,8 @@ define(['require'],function(require) {
         /**
          * Unsubscribe from further notifications
          * @memberof observer
-         * @param {object} obj - Object to unsubscribe from
-         * @param {string} type - Event type to match
+         * @param {Object} obj - Object to unsubscribe from
+         * @param {String} type - Event type to match
          * @param {Function} fn - Function to match
          * @static
          */
@@ -175,9 +175,9 @@ define(['require'],function(require) {
         /**
          * Publish an event
          * @memberof observer
-         * @param {object} obj - Object to fire the event on
-         * @param {string} type - Event type to fire
-         * @param {object} data - optional data carrier
+         * @param {Object} obj - Object to fire the event on
+         * @param {String} type - Event type to fire
+         * @param {Object} data - optional data carrier
          * @static
          */
         publish:function(obj,type,data) {
@@ -211,8 +211,8 @@ define(['require'],function(require) {
         /**
          * Setup propagation target for events so they can bubble up the object tree
          * @memberof observer
-         * @param {object} obj - Object to set as origin
-         * @param {object} target - Object to set as target
+         * @param {Object} obj - Object to set as origin
+         * @param {Object} target - Object to set as target
          * @return {Boolean} if setup was successful
          * @static
          */
@@ -227,8 +227,8 @@ define(['require'],function(require) {
         /**
          * Remove propagation target
          * @memberof observer
-         * @param {object} obj - Object set as origin
-         * @param {object} target - Object set as target
+         * @param {Object} obj - Object set as origin
+         * @param {Object} target - Object set as target
          * @return {Boolean} if removed successful
          * @static
          */
@@ -273,7 +273,7 @@ define(['require'],function(require) {
      * @constructor
      * @augments ExpressionBase
      * @param {BinaryExpression|Tester|object} expression
-     * @param {boolean} negate
+     * @param {Boolean} negate
      */
     var UnaryExpression = function(expression,negate) {
 
@@ -305,7 +305,7 @@ define(['require'],function(require) {
 
     /**
      * Tests if valid expression
-     * @returns {boolean}
+     * @returns {Boolean}
      */
     UnaryExpression.prototype.succeeds = function() {
 
@@ -325,13 +325,13 @@ define(['require'],function(require) {
      * @constructor
      * @augments ExpressionBase
      * @param {UnaryExpression} a
-     * @param {string} o
+     * @param {String} operator
      * @param {UnaryExpression} b
      */
-    var BinaryExpression = function(a,o,b) {
+    var BinaryExpression = function(a,operator,b) {
 
         this._a = a;
-        this._o = o;
+        this._operator = operator;
         this._b = b;
 
     };
@@ -340,11 +340,11 @@ define(['require'],function(require) {
 
     /**
      * Tests if valid expression
-     * @returns {boolean}
+     * @returns {Boolean}
      */
     BinaryExpression.prototype.succeeds = function() {
 
-        return this._o==='and' ?
+        return this._operator === 'and' ?
 
             // is 'and' operator
             this._a.succeeds() && this._b.succeeds() :
@@ -356,10 +356,10 @@ define(['require'],function(require) {
 
     /**
      * Outputs the expression as a string
-     * @returns {string}
+     * @returns {String}
      */
     BinaryExpression.prototype.toString = function() {
-        return '(' + this._a.toString() + ' ' + this._o + ' ' + this._b.toString() + ')';
+        return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
     };
 
     /**
@@ -379,7 +379,7 @@ define(['require'],function(require) {
         /**
          * Returns the amount of sub expressions contained in the supplied expression
          * @memberof ExpressionFormatter
-         * @param expression {string}
+         * @param expression {String}
          * @returns {Number}
          * @public
          */
@@ -390,7 +390,7 @@ define(['require'],function(require) {
         /**
          * Parses an expression in string format and returns the same expression formatted as an expression tree
          * @memberof ExpressionFormatter
-         * @param expression {string}
+         * @param expression {String}
          * @returns {Array}
          * @public
          */
@@ -586,37 +586,9 @@ define(['require'],function(require) {
         }
 
     };
-    /**
-     * @class
-     * @constructor
-     * @abstract
-     */
-    var TestBase = function() {};
-
-    TestBase.prototype = {
-
-        /**
-         * Arrange your test in this method
-         * @param {string} expected
-         * @param {element} element
-         * @abstract
-         */
-        arrange:function(expected,element) { /* jshint -W098 */
-            // called each time for each instance
-            // override if each instance needs it's own arrangement
-        },
-
-        /**
-         * Called to assert the test
-         * @abstract
-         */
-        assert:function(expected,element) { /* jshint -W098 */
-            // called on test
-        }
-    };
     var TestFactory = {
 
-        _tests:[],
+        _tests:{},
 
         _createTest:function(path,config) {
 
@@ -625,8 +597,7 @@ define(['require'],function(require) {
             }
 
             // create Test Class
-            var Test = function(){TestBase.call(this);};
-            Test.prototype = Object.create(TestBase.prototype);
+            var Test = function(){};
 
             // setup static methods and properties
             Test.supported = 'support' in config ? config.support() : true;
@@ -738,8 +709,8 @@ define(['require'],function(require) {
     };
     /**
      * @param {TestBase} test
-     * @param {string} expected
-     * @param {element} element
+     * @param {String} expected
+     * @param {Element} element
      * @constructor
      */
     var Tester = function(test,expected,element) {
@@ -766,7 +737,7 @@ define(['require'],function(require) {
 
     /**
      * Returns true if test assertion successful
-     * @returns {boolean}
+     * @returns {Boolean}
      */
     Tester.prototype.succeeds = function() {
 
@@ -786,9 +757,9 @@ define(['require'],function(require) {
 
         /**
          * Register a module
-         * @param {string} path - path to module
-         * @param {object} config - configuration to setupe for module
-         * @param {string} alias - alias name for module
+         * @param {String} path - path to module
+         * @param {Object} config - configuration to setup for module
+         * @param {String} alias - alias name for module
          * @static
          */
         registerModule:function(path,config,alias) {
@@ -819,7 +790,7 @@ define(['require'],function(require) {
                 // set alias entry
                 this._modules[key].alias = alias;
 
-                // update requirejs
+                // update requirejs config
                 map = {};
                 map[alias] = path;
                 requirejs.config({
@@ -828,13 +799,12 @@ define(['require'],function(require) {
                     }
                 });
             }
-
         },
 
         /**
          * Get a registered module by path
-         * @param {string} path - path to module
-         * @return {object} - module specification object
+         * @param {String} path - path to module
+         * @return {Object} - module specification object
          * @static
          */
         getModuleByPath:function(path) {
@@ -853,8 +823,8 @@ define(['require'],function(require) {
      * @exports ConditionsManager
      * @class
      * @constructor
-     * @param {string} conditions - conditions to be met
-     * @param {element} [element] - optional element to measure these conditions on
+     * @param {String} conditions - conditions to be met
+     * @param {Element} [element] - optional element to measure these conditions on
      */
     var ConditionsManager = function(conditions,element) {
 
@@ -989,9 +959,9 @@ define(['require'],function(require) {
      * @exports ModuleController
      * @class
      * @constructor
-     * @param {string} path - reference to module
-     * @param {element} element - reference to element
-     * @param {object} options - options for this ModuleController
+     * @param {String} path - reference to module
+     * @param {Element} element - reference to element
+     * @param {Object} options - options for this ModuleController
      */
     var ModuleController = function(path,element,options) {
 
@@ -1034,7 +1004,7 @@ define(['require'],function(require) {
 
         /**
          * Returns true if the module is available for initialisation, this is true when conditions have been met
-         * @return {boolean}
+         * @return {Boolean}
          * @public
          */
         isAvailable:function() {
@@ -1048,7 +1018,7 @@ define(['require'],function(require) {
 
         /**
          * Returns true if module is currently active and loaded
-         * @returns {boolean}
+         * @returns {Boolean}
          * @public
          */
         isActive:function() {
@@ -1057,7 +1027,7 @@ define(['require'],function(require) {
 
         /**
          * Returns true if the module is dependent on certain conditions
-         * @return {boolean}
+         * @return {Boolean}
          * @public
          */
         isConditioned:function() {
@@ -1066,7 +1036,7 @@ define(['require'],function(require) {
 
         /**
          * Returns true if the module is ready, this is true when conditions have been read for the first time
-         * @return {boolean}
+         * @return {Boolean}
          * @public
          */
         isReady:function() {
@@ -1075,8 +1045,8 @@ define(['require'],function(require) {
 
         /**
          * Checks if the module matches the path
-         * @param {string} path - path of module to test for
-         * @return {boolean} if matched
+         * @param {String} path - path of module to test for
+         * @return {Boolean} if matched
          * @public
          */
         matchesPath:function(path) {
@@ -1232,7 +1202,7 @@ define(['require'],function(require) {
         /**
          * Unloads the module
          * @fires unload
-         * @return {boolean}
+         * @return {Boolean}
          * @public
          */
         unload:function() {
@@ -1267,9 +1237,9 @@ define(['require'],function(require) {
 
         /**
          * Executes a methods on the loaded module
-         * @param {string} method - method key
+         * @param {String} method - method key
          * @param {Array} params - optional array containing the method parameters
-         * @return {object} containing response of executed method and a status code
+         * @return {Object} containing response of executed method and a status code
          * @public
          */
         execute:function(method,params) {
@@ -1301,7 +1271,7 @@ define(['require'],function(require) {
      * @exports Node
      * @class
      * @constructor
-     * @param {element} element
+     * @param {Element} element
      */
     var Node = function(element) {
 
@@ -1332,7 +1302,7 @@ define(['require'],function(require) {
 
     /**
      * Static method testing if the current element has been processed already
-     * @param {element} element
+     * @param {Element} element
      * @static
      */
     Node.hasProcessed = function(element) {
@@ -1384,8 +1354,8 @@ define(['require'],function(require) {
 
         /**
          * Public method to check if the module matches the given query
-         * @param {string} selector
-         * @return {boolean}
+         * @param {String} selector
+         * @return {Boolean}
          * @public
          */
         matchesSelector:function(selector) {
@@ -1403,7 +1373,7 @@ define(['require'],function(require) {
 
         /**
          * Returns the first ModuleController matching the given path
-         * @param path {string} path to module
+         * @param path {String} path to module
          * @return {ModuleController}
          * @public
          */
@@ -1413,7 +1383,7 @@ define(['require'],function(require) {
 
         /**
          * Returns an array of ModuleControllers matching the given path
-         * @param path {string} path to module
+         * @param path {String} path to module
          * @return {Array}
          * @public
          */
@@ -1435,9 +1405,9 @@ define(['require'],function(require) {
 
         /**
          * Public method for safely executing methods on the loaded module
-         * @param {string} method - method key
+         * @param {String} method - method key
          * @param {Array} params - array containing the method parameters
-         * @return {object} returns object containing status code and possible response data
+         * @return {Object} returns object containing status code and possible response data
          * @public
          */
         execute:function(method,params) {
@@ -1697,7 +1667,7 @@ define(['require'],function(require) {
 
         /**
          * Reference to mergeObject method
-         * @property {function} mergeObjects
+         * @property {Function} mergeObjects
          */
         this.mergeObjects = Utils.mergeObjects;
     };
@@ -1706,7 +1676,7 @@ define(['require'],function(require) {
 
         /**
          * Set custom options
-         * @param {object} options - options to override
+         * @param {Object} options - options to override
          * @public
          */
         setOptions:function(options) {
@@ -1737,7 +1707,7 @@ define(['require'],function(require) {
 
         /**
          * Loads modules within the given context
-         * @param {element} context - Context to find modules in
+         * @param {Element} context - Context to find modules in
          * @return {Array} - Array of found Nodes
          */
         loadModules:function(context) {
@@ -1798,7 +1768,7 @@ define(['require'],function(require) {
 
         /**
          * Returns the first Node matching the selector
-         * @param {string} selector - Selector to match the nodes to
+         * @param {String} selector - Selector to match the nodes to
          * @return {Node} First matched node
          */
         getNode:function(selector) {
@@ -1807,7 +1777,7 @@ define(['require'],function(require) {
 
         /**
          * Returns all nodes matching the selector
-         * @param {string} selector - Optional selector to match the nodes to
+         * @param {String} selector - Optional selector to match the nodes to
          * @return {Array} Array containing matched nodes
          */
         getNodesAll:function(selector) {
