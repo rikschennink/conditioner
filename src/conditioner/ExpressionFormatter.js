@@ -6,7 +6,7 @@ var ExpressionFormatter = {
     /**
      * Returns the amount of sub expressions contained in the supplied expression
      * @memberof ExpressionFormatter
-     * @param expression {string}
+     * @param expression {String}
      * @returns {Number}
      * @public
      */
@@ -17,7 +17,7 @@ var ExpressionFormatter = {
     /**
      * Parses an expression in string format and returns the same expression formatted as an expression tree
      * @memberof ExpressionFormatter
-     * @param expression {string}
+     * @param expression {String}
      * @returns {Array}
      * @public
      */

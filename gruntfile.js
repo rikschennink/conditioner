@@ -44,11 +44,13 @@ module.exports = function(grunt) {
                     banner:'<%= meta.banner %>',
                     process:function(src,path){
 
+                        // the following code could probably be improved
                         if (path.indexOf('wrapper/') === -1) {
 
+                            // add tab on first line
                             src = '    ' + src;
 
-                            // add tabs
+                            // add tabs on other lines
                             src = src.replace(/(\n)+/g,function(match) {
                                 return match + '    ';
                             });
@@ -69,7 +71,6 @@ module.exports = function(grunt) {
                     '<%= path.conditioner %>/BinaryExpression.js',
                     '<%= path.conditioner %>/ExpressionFormatter.js',
 
-                    '<%= path.conditioner %>/TestBase.js',
                     '<%= path.conditioner %>/TestFactory.js',
                     '<%= path.conditioner %>/Tester.js',
 
@@ -124,7 +125,7 @@ module.exports = function(grunt) {
 
     });
 
-
+    // load tasks
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-concat');
@@ -133,15 +134,13 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-
-
     // test
     grunt.registerTask('test',['jshint','jasmine']);
 
-    // task for building the library
+    // build
     grunt.registerTask('lib',['concat','copy','uglify']);
 
-    // build everything
+    // build than test
     grunt.registerTask('default',['lib','test']);
 
 };

@@ -11,7 +11,7 @@ define(function(){
 
         /**
          * Does this browser support matchMedia
-         * @returns {boolean}
+         * @returns {Boolean}
          */
         support:function() {
             return 'matchMedia' in window;
@@ -19,7 +19,7 @@ define(function(){
 
         /**
          * Custom arrange method to setup matchMedia listener for each test instance
-         * @param {string} expected
+         * @param {String} expected
          */
         arrange:function(expected) {
 
@@ -40,7 +40,7 @@ define(function(){
         /**
          * Tests if the assert succeeds
          * @param expected
-         * @returns {boolean}
+         * @returns {Boolean}
          */
         assert:function(expected) {
 

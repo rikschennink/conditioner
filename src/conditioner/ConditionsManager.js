@@ -2,8 +2,8 @@
  * @exports ConditionsManager
  * @class
  * @constructor
- * @param {string} conditions - conditions to be met
- * @param {element} [element] - optional element to measure these conditions on
+ * @param {String} conditions - conditions to be met
+ * @param {Element} [element] - optional element to measure these conditions on
  */
 var ConditionsManager = function(conditions,element) {
 

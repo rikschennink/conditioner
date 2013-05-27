@@ -3,7 +3,7 @@
  * @constructor
  * @augments ExpressionBase
  * @param {UnaryExpression} a
- * @param {string} operator
+ * @param {String} operator
  * @param {UnaryExpression} b
  */
 var BinaryExpression = function(a,operator,b) {
@@ -18,7 +18,7 @@ BinaryExpression.prototype = Object.create(ExpressionBase);
 
 /**
  * Tests if valid expression
- * @returns {boolean}
+ * @returns {Boolean}
  */
 BinaryExpression.prototype.succeeds = function() {
 
@@ -34,7 +34,7 @@ BinaryExpression.prototype.succeeds = function() {
 
 /**
  * Outputs the expression as a string
- * @returns {string}
+ * @returns {String}
  */
 BinaryExpression.prototype.toString = function() {
     return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';

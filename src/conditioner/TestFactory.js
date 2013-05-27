@@ -1,6 +1,6 @@
 var TestFactory = {
 
-    _tests:[],
+    _tests:{},
 
     _createTest:function(path,config) {
 
@@ -9,8 +9,7 @@ var TestFactory = {
         }
 
         // create Test Class
-        var Test = function(){TestBase.call(this);};
-        Test.prototype = Object.create(TestBase.prototype);
+        var Test = function(){};
 
         // setup static methods and properties
         Test.supported = 'support' in config ? config.support() : true;

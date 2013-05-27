@@ -2,9 +2,9 @@
  * @exports ModuleController
  * @class
  * @constructor
- * @param {string} path - reference to module
- * @param {element} element - reference to element
- * @param {object} options - options for this ModuleController
+ * @param {String} path - reference to module
+ * @param {Element} element - reference to element
+ * @param {Object} options - options for this ModuleController
  */
 var ModuleController = function(path,element,options) {
 
@@ -47,7 +47,7 @@ ModuleController.prototype = {
 
     /**
      * Returns true if the module is available for initialisation, this is true when conditions have been met
-     * @return {boolean}
+     * @return {Boolean}
      * @public
      */
     isAvailable:function() {
@@ -61,7 +61,7 @@ ModuleController.prototype = {
 
     /**
      * Returns true if module is currently active and loaded
-     * @returns {boolean}
+     * @returns {Boolean}
      * @public
      */
     isActive:function() {
@@ -70,7 +70,7 @@ ModuleController.prototype = {
 
     /**
      * Returns true if the module is dependent on certain conditions
-     * @return {boolean}
+     * @return {Boolean}
      * @public
      */
     isConditioned:function() {
@@ -79,7 +79,7 @@ ModuleController.prototype = {
 
     /**
      * Returns true if the module is ready, this is true when conditions have been read for the first time
-     * @return {boolean}
+     * @return {Boolean}
      * @public
      */
     isReady:function() {
@@ -88,8 +88,8 @@ ModuleController.prototype = {
 
     /**
      * Checks if the module matches the path
-     * @param {string} path - path of module to test for
-     * @return {boolean} if matched
+     * @param {String} path - path of module to test for
+     * @return {Boolean} if matched
      * @public
      */
     matchesPath:function(path) {
@@ -245,7 +245,7 @@ ModuleController.prototype = {
     /**
      * Unloads the module
      * @fires unload
-     * @return {boolean}
+     * @return {Boolean}
      * @public
      */
     unload:function() {
@@ -280,9 +280,9 @@ ModuleController.prototype = {
 
     /**
      * Executes a methods on the loaded module
-     * @param {string} method - method key
+     * @param {String} method - method key
      * @param {Array} params - optional array containing the method parameters
-     * @return {object} containing response of executed method and a status code
+     * @return {Object} containing response of executed method and a status code
      * @public
      */
     execute:function(method,params) {

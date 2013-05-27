@@ -1,7 +1,7 @@
 /**
  * @param {TestBase} test
- * @param {string} expected
- * @param {element} element
+ * @param {String} expected
+ * @param {Element} element
  * @constructor
  */
 var Tester = function(test,expected,element) {
@@ -28,7 +28,7 @@ var Tester = function(test,expected,element) {
 
 /**
  * Returns true if test assertion successful
- * @returns {boolean}
+ * @returns {Boolean}
  */
 Tester.prototype.succeeds = function() {
 

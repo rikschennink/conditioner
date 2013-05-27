@@ -1,6 +1,6 @@
 {
   "name": "conditioner",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "ConditionerJS - Take control of your JavaScript modules.",
   "homepage": "http://rikschennink.github.io/conditioner",
   "main": "index.js",
@@ -33,6 +33,7 @@
     }
   ],
   "readmeFilename": "README.md",
+  "dependencies":{},
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-uglify": "~0.2.0",

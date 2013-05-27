@@ -26,9 +26,9 @@ var Utils = (function(){
         /**
          * Based on https://github.com/nrf110/deepmerge/blob/master/index.js
          * @memberof Utils
-         * @param target {object}
-         * @param src {object}
-         * @returns {object}
+         * @param target {Object}
+         * @param src {Object}
+         * @returns {Object}
          * @static
          */
         mergeObjects:function(target, src) {
@@ -88,8 +88,8 @@ var Utils = (function(){
         /**
          * matches an element to a selector
          * @memberof Utils
-         * @param {element} element
-         * @param {string} selector
+         * @param {Element} element
+         * @param {String} selector
          * @return {Boolean}
          * @static
          */

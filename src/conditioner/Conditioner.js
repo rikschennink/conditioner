@@ -21,7 +21,7 @@ var Conditioner = function() {
 
     /**
      * Reference to mergeObject method
-     * @property {function} mergeObjects
+     * @property {Function} mergeObjects
      */
     this.mergeObjects = Utils.mergeObjects;
 };
@@ -30,7 +30,7 @@ Conditioner.prototype = {
 
     /**
      * Set custom options
-     * @param {object} options - options to override
+     * @param {Object} options - options to override
      * @public
      */
     setOptions:function(options) {
@@ -61,7 +61,7 @@ Conditioner.prototype = {
 
     /**
      * Loads modules within the given context
-     * @param {element} context - Context to find modules in
+     * @param {Element} context - Context to find modules in
      * @return {Array} - Array of found Nodes
      */
     loadModules:function(context) {
@@ -122,7 +122,7 @@ Conditioner.prototype = {
 
     /**
      * Returns the first Node matching the selector
-     * @param {string} selector - Selector to match the nodes to
+     * @param {String} selector - Selector to match the nodes to
      * @return {Node} First matched node
      */
     getNode:function(selector) {
@@ -131,7 +131,7 @@ Conditioner.prototype = {
 
     /**
      * Returns all nodes matching the selector
-     * @param {string} selector - Optional selector to match the nodes to
+     * @param {String} selector - Optional selector to match the nodes to
      * @return {Array} Array containing matched nodes
      */
     getNodesAll:function(selector) {

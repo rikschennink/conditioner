@@ -11,7 +11,7 @@ define(function(){
 
         /**
          * Does this browser support the onLine property
-         * @returns {boolean}
+         * @returns {Boolean}
          */
         support:function() {
             return 'onLine' in navigator;
@@ -19,7 +19,7 @@ define(function(){
 
         /**
          * setup events to listen for connection changes
-         * @param {function} measure
+         * @param {Function} measure
          */
         setup:function(measure) {
             window.addEventListener('online',measure,false);
@@ -28,8 +28,8 @@ define(function(){
 
         /**
          * Assert if the connection is the same as the expected value of the connection
-         * @param {string} expected
-         * @returns {boolean}
+         * @param {String} expected
+         * @returns {Boolean}
          */
         assert:function(expected) {
             return expected === 'any' && navigator.onLine;

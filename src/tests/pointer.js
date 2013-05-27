@@ -13,7 +13,7 @@ define(function(){
 
         /**
          * Setup events, detach events if no activity for 30 seconds
-         * @param {function} measure
+         * @param {Function} measure
          */
         setup:function(measure){
 
@@ -32,7 +32,7 @@ define(function(){
         /**
          * Custom measure function to count the amount of moves
          * @param {Event} e
-         * @returns {boolean} - Return true if a change has occurred
+         * @returns {Boolean} - Return true if a change has occurred
          */
         measure:function(e) {
 
@@ -58,8 +58,8 @@ define(function(){
 
         /**
          * test if matches expectations
-         * @param {string} expected
-         * @returns {boolean}
+         * @param {String} expected
+         * @returns {Boolean}
          */
         assert:function(expected) {
             return expected === 'available' && _moves>=_movesRequired;

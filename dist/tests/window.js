@@ -12,7 +12,7 @@ define(function() {
 
         /**
          * Listen to resize event to measure new window width
-         * @param {function} measure
+         * @param {Function} measure
          */
         setup:function(measure) {
             window.addEventListener('resize',measure,false);
@@ -20,7 +20,7 @@ define(function() {
 
         /**
          * Custom measure function to store window width before calling change
-         * @returns {boolean}
+         * @returns {Boolean}
          */
         measure:function() {
 
@@ -31,8 +31,8 @@ define(function() {
 
         /**
          * test if matches expected value
-         * @param {string} expected
-         * @returns {boolean}
+         * @param {String} expected
+         * @returns {Boolean}
          */
         assert:function(expected) {
 

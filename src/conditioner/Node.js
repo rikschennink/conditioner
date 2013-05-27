@@ -2,7 +2,7 @@
  * @exports Node
  * @class
  * @constructor
- * @param {element} element
+ * @param {Element} element
  */
 var Node = function(element) {
 
@@ -33,7 +33,7 @@ var Node = function(element) {
 
 /**
  * Static method testing if the current element has been processed already
- * @param {element} element
+ * @param {Element} element
  * @static
  */
 Node.hasProcessed = function(element) {
@@ -85,8 +85,8 @@ Node.prototype = {
 
     /**
      * Public method to check if the module matches the given query
-     * @param {string} selector
-     * @return {boolean}
+     * @param {String} selector
+     * @return {Boolean}
      * @public
      */
     matchesSelector:function(selector) {
@@ -104,7 +104,7 @@ Node.prototype = {
 
     /**
      * Returns the first ModuleController matching the given path
-     * @param path {string} path to module
+     * @param path {String} path to module
      * @return {ModuleController}
      * @public
      */
@@ -114,7 +114,7 @@ Node.prototype = {
 
     /**
      * Returns an array of ModuleControllers matching the given path
-     * @param path {string} path to module
+     * @param path {String} path to module
      * @return {Array}
      * @public
      */
@@ -136,9 +136,9 @@ Node.prototype = {
 
     /**
      * Public method for safely executing methods on the loaded module
-     * @param {string} method - method key
+     * @param {String} method - method key
      * @param {Array} params - array containing the method parameters
-     * @return {object} returns object containing status code and possible response data
+     * @return {Object} returns object containing status code and possible response data
      * @public
      */
     execute:function(method,params) {

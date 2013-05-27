@@ -3,7 +3,7 @@
  * @constructor
  * @augments ExpressionBase
  * @param {BinaryExpression|Tester|object} expression
- * @param {boolean} negate
+ * @param {Boolean} negate
  */
 var UnaryExpression = function(expression,negate) {
 
@@ -35,7 +35,7 @@ UnaryExpression.prototype.getConfig = function() {
 
 /**
  * Tests if valid expression
- * @returns {boolean}
+ * @returns {Boolean}
  */
 UnaryExpression.prototype.succeeds = function() {
 

@@ -6,8 +6,8 @@ var Observer = {
     /**
      * Subscribe to an event
      * @memberof observer
-     * @param {object} obj - Object to subscribe to
-     * @param {string} type - Event type to listen for
+     * @param {Object} obj - Object to subscribe to
+     * @param {String} type - Event type to listen for
      * @param {Function} fn - Function to call when event fires
      * @static
      */
@@ -33,8 +33,8 @@ var Observer = {
     /**
      * Unsubscribe from further notifications
      * @memberof observer
-     * @param {object} obj - Object to unsubscribe from
-     * @param {string} type - Event type to match
+     * @param {Object} obj - Object to unsubscribe from
+     * @param {String} type - Event type to match
      * @param {Function} fn - Function to match
      * @static
      */
@@ -58,9 +58,9 @@ var Observer = {
     /**
      * Publish an event
      * @memberof observer
-     * @param {object} obj - Object to fire the event on
-     * @param {string} type - Event type to fire
-     * @param {object} data - optional data carrier
+     * @param {Object} obj - Object to fire the event on
+     * @param {String} type - Event type to fire
+     * @param {Object} data - optional data carrier
      * @static
      */
     publish:function(obj,type,data) {
@@ -94,8 +94,8 @@ var Observer = {
     /**
      * Setup propagation target for events so they can bubble up the object tree
      * @memberof observer
-     * @param {object} obj - Object to set as origin
-     * @param {object} target - Object to set as target
+     * @param {Object} obj - Object to set as origin
+     * @param {Object} target - Object to set as target
      * @return {Boolean} if setup was successful
      * @static
      */
@@ -110,8 +110,8 @@ var Observer = {
     /**
      * Remove propagation target
      * @memberof observer
-     * @param {object} obj - Object set as origin
-     * @param {object} target - Object set as target
+     * @param {Object} obj - Object set as origin
+     * @param {Object} target - Object set as target
      * @return {Boolean} if removed successful
      * @static
      */

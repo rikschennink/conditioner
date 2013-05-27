@@ -16,7 +16,7 @@ define(function(){
 
         /**
          * Setup events that trigger reassertion of element
-         * @param {function} measure
+         * @param {Function} measure
          */
         setup:function(measure) {
             window.addEventListener('resize',measure,false);
@@ -25,9 +25,9 @@ define(function(){
 
         /**
          * Assert if matches expected value
-         * @param {string} expected
+         * @param {String} expected
          * @param {Element} element
-         * @returns {boolean}
+         * @returns {Boolean}
          */
         assert:function(expected,element) {
 

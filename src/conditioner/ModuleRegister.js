@@ -7,9 +7,9 @@ var ModuleRegister = {
 
     /**
      * Register a module
-     * @param {string} path - path to module
-     * @param {object} config - configuration to setupe for module
-     * @param {string} alias - alias name for module
+     * @param {String} path - path to module
+     * @param {Object} config - configuration to setup for module
+     * @param {String} alias - alias name for module
      * @static
      */
     registerModule:function(path,config,alias) {
@@ -49,13 +49,12 @@ var ModuleRegister = {
                 }
             });
         }
-
     },
 
     /**
      * Get a registered module by path
-     * @param {string} path - path to module
-     * @return {object} - module specification object
+     * @param {String} path - path to module
+     * @return {Object} - module specification object
      * @static
      */
     getModuleByPath:function(path) {
