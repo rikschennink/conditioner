@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 
                     baseUrl:'js/',
                     paths:{
-                        'conditioner':'lib/rikschennink/conditioner-0.8.6.min'
+                        'conditioner':'lib/rikschennink/conditioner-0.8.7.min'
                     },
 
                     name:'lib/jrburke/require',

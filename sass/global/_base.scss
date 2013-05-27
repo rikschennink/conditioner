@@ -130,3 +130,11 @@ dt>code {
     white-space:nowrap;
     padding:.25em .5em .375em;
 }
+
+.print {
+    position:absolute;
+    left:-9999em;
+    top:-9999em;
+    width:1px;
+    height:1px;
+}
