@@ -17,45 +17,6 @@
 
     {% highlight html %}<a data-module="IMap"> ... </a>{% endhighlight %}
 
-
-    <p>An example outline of a very basic module:</p>
-
-{% highlight javascript %}
-// basic AMD module pattern
-define(function(){
-
-    // constructor
-    // conditioner always passes a reference to the node
-    // if available an options object is passed
-    var exports = function(element,options) {
-
-        // remember for later use
-        this._element = element;
-        this._options = options;
-
-        // other logic
-        // ...
-    };
-
-    // define (optional) default class options here
-    exports.options = {
-        'foo':'bar'
-    };
-
-    // define (optional) unload method,
-    // if the module is never unloaded this method is not required
-    exports.prototype.unload = function() {
-
-        // clean up event listeners
-
-        // clear any timers
-
-        // restore element state
-    };
-
-    // expose
-    return exports;
-
-});{% endhighlight %}
+    <p>When the module is activated a reference to the node is passed as the first argument to the <code>constructor</code> or, in case of an object, the <code>load</code> method.</p>
 
 </section>

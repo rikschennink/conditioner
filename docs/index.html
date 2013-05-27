@@ -11,8 +11,9 @@ title: Documentation - ConditionerJS
 
         <ul>
             <li><a href="#setup">Setup</a></li>
+            <li><a href="#module-outline">Module outline</a></li>
             <li>
-                <a href="#config">Configuring Modules</a>
+                <a href="#config">Configuring modules</a>
                 <ul>
                     <li><a href="#data-module">Linking a module</a></li>
                     <li><a href="#data-conditions">Setting conditions</a></li>
@@ -35,7 +36,72 @@ title: Documentation - ConditionerJS
 
     <section>
 
-        <h2 id="config">Module Configuration</h2>
+        <h2 id="module-outline">Module outline</h2>
+
+        <p>ConditionerJS does not force you to write your modules in a certain way. Only if you wan't to unload your modules or pass custom options does it expect certain properties an methods to be there.</p>
+
+        <p>The following two basic module examples both contain an <code>unload</code> method and an <code>options</code> property. If your module will never be unloaded you can omit the unload method, the same goes for the options property.</p>
+
+        <p>An outline of a very basic module returning a class:</p>
+
+{% highlight javascript %}
+define(function(){
+
+    // specify constructor
+    var exports = function(element,options) {
+        // setup
+    };
+
+    // define (optional) default class options here
+    exports.options = {
+        'foo':'bar'
+    };
+
+    // define (optional) unload method
+    exports.prototype.unload = function() {
+        // restore
+    };
+
+    // expose
+    return exports;
+});{% endhighlight %}
+
+        <p>Outline of a module returning an object:</p>
+
+{% highlight javascript %}
+define(function(){
+
+    // specify object literal
+    var exports = {
+
+        // define (optional) default object options here
+        options:{
+            'foo':'bar'
+        },
+
+        // called when module is loaded
+        load:function(element,options) {
+            // setup
+        },
+
+        // define (optional) unload method
+        unload:function() {
+            // restore
+        }
+    };
+
+    // expose
+    return exports;
+});{% endhighlight %}
+
+        <p>Now you know how to define modules, let's see how you can link them to the DOM and bring ConditionerJS to load them.</p>
+
+    </section>
+
+
+    <section>
+
+        <h2 id="config">Configuring modules</h2>
 
         <p>Configuring your <a href="http://requirejs.org/docs/api.html#define" target="_blank">RequireJS Modules</a> so ConditionerJS can load them is done through data attributes. The following sections guide you through the configuration of a typical module.</p>
 
