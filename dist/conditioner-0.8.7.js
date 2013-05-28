@@ -1681,6 +1681,10 @@ define(['require'],function(require) {
          */
         setOptions:function(options) {
 
+            if (!options) {
+                throw new Error('Conditioner.setOptions(options): "options" is a required parameter.');
+            }
+
             // update options
             this._options = Utils.mergeObjects(this._options,options);
 

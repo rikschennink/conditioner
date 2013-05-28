@@ -3,6 +3,21 @@
 
 describe('Conditioner',function(){
 
+    it('will throw error when passing no value to setOptions()',function(){
+
+        // arrange, oops forgot to set options
+        // var options = {}
+
+        // act
+        var conditioner = new Conditioner();
+
+        // assert
+        expect(function(){conditioner.setOptions();}).toThrow(
+            new Error('Conditioner.setOptions(options): "options" is a required parameter.')
+        );
+
+    });
+
     it('will return exactly two nodes when asked to parse a certain part of the DOM',function(){
 
         // arrange
@@ -57,7 +72,30 @@ describe('Conditioner',function(){
 
     });
 
+    it('will return the correct node when calling "getNode()"',function(){
 
+
+        // arrange
+        var a = document.createElement('div');
+        a.id = 'a';
+        a.setAttribute('data-module','mock/jasmine');
+
+        var b = document.createElement('div');
+        b.id = 'b';
+        b.setAttribute('data-module','mock/jasmine');
+
+        var group = document.createElement('div');
+        group.appendChild(a);
+        group.appendChild(b);
+
+        // act
+        var conditioner = new Conditioner();
+        conditioner.loadModules(group);
+
+        // assert
+        //expect(conditioner.getNode('#b')).toBeDefined();
+
+    });
 
 
 });
