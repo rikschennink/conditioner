@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Documentation - ConditionerJS
+title: Documentation • Conditioner.js
 ---
 
 <section>
@@ -38,7 +38,7 @@ title: Documentation - ConditionerJS
 
         <h2 id="module-outline">Module outline</h2>
 
-        <p>ConditionerJS does not force you to write your modules in a certain way. Only if you wan't to unload your modules or pass custom options does it expect certain properties an methods to be there.</p>
+        <p>Conditioner does not force you to write your modules in a certain way. Only if you wan't to unload your modules or pass custom options does it expect certain properties an methods to be there.</p>
 
         <p>The following two basic module examples both contain an <code>unload</code> method and an <code>options</code> property. If your module will never be unloaded you can omit the unload method, the same goes for the options property.</p>
 
@@ -98,7 +98,7 @@ define(function(){
     return exports;
 });{% endhighlight %}
 
-        <p>Now you know how to define modules, let's see how you can link them to the DOM and bring ConditionerJS to load them.</p>
+        <p>Now you know how to define modules, let's see how you can link them to the DOM and bring Conditioner to load them.</p>
 
     </section>
 
@@ -107,7 +107,7 @@ define(function(){
 
         <h2 id="config">Configuring modules</h2>
 
-        <p>Configuring your <a href="http://requirejs.org/docs/api.html#define" target="_blank">RequireJS Modules</a> so ConditionerJS can load them is done through data attributes. The following sections guide you through the configuration of a typical module.</p>
+        <p>Configuring your <a href="http://requirejs.org/docs/api.html#define" target="_blank">RequireJS Modules</a> so Conditioner can load them is done through data attributes. The following sections guide you through the configuration of a typical module.</p>
 
         <nav class="sub">
             <ul>
@@ -137,7 +137,7 @@ define(function(){
 
         <h2 id="api">JavaScript API</h2>
 
-        <p>ConditionerJS consists of a group of publicly accessible JavaScript Classes. These Classes allow you to safely access modules once they've been parsed. The starting point to load modules is always the <code>conditioner</code> object of which there is only one instance.</p>
+        <p>Conditioner consists of a group of publicly accessible JavaScript Classes. These Classes allow you to safely access modules once they've been parsed. The starting point to load modules is always the <code>conditioner</code> object of which there is only one instance.</p>
 
         <nav class="sub code">
             <ul>

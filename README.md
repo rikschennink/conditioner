@@ -1,2 +1,2 @@
-# ConditionerJS Docs
+# Conditioner.js Docs
 http://rikschennink.github.io/conditioner/
