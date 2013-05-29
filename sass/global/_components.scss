@@ -1,17 +1,34 @@
 
 
 /**
- * Code
+ * introduction
  */
 .introduction {
-    margin:2em 25% 2em 0;
-    color:#333;
-    font-size:1.375em;
+    margin:1em 0;
+	color:#999;
+    font-size:1.75em;
     font-family:OpenSans,sans-serif;
+
+	strong {
+		font-weight:normal;
+	}
+
+	span {
+		display:none;
+	}
 }
 
-.introduction strong {
-    font-weight:normal;
+
+/**
+ * block
+ */
+.introduction-block {
+	font-size:1.25em;
+	color:#555;
+}
+
+.introduction-block h3 {
+	text-transform:capitalize;
 }
 
 
@@ -26,7 +43,15 @@
 h3 .code {
 	display:block;
 	color:#999;
-	font-size:.875em;
+	font-size:.75em;
+}
+
+h3.code {
+	font-size:1.25em;
+}
+
+h4.code {
+	font-size:1.125em;
 }
 
 
@@ -55,14 +80,10 @@ h3 .code {
 h1.logo {
 	padding:0;
 	margin:0 0 .5em 0;
-	font-size:1.25em;
+	font-size:1.75em;
 	white-space:nowrap;
 	line-height:1;
-
-    &:after {
-        content:':{}';
-        color:$primary-color;
-    }
+	text-transform:lowercase;
 
     a {
         color:#333;
@@ -80,9 +101,8 @@ h1.logo+em {
 	font-family:OpenSans,sans-serif;
 	color:#888;
 	font-size:1em;
-	max-width:80%;
+	max-width:70%;
 }
-
 
 
 /**
@@ -90,7 +110,7 @@ h1.logo+em {
  */
 .git {
 	position:absolute;
-	top:1.75em;
+	top:2.125em;
 	right:2em;
 	min-height:1em;
 	display:block;

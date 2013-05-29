@@ -1,12 +1,13 @@
 
+
 /**
  * Body + Header layouting
  */
 @media (min-width:38em) {
 
-    body {
-        position:relative;
-    }
+	body {
+		position:relative;
+	}
 
     h2 {
         font-size:1.25em;
@@ -22,13 +23,28 @@
         }
     }
 
-    .git {
-        right:0;
-    }
+	.git {
+		right:0;
+		top:.125em;
+	}
 
     nav.code {
         font-size:1em;
     }
+
+	.introduction-block {
+
+		display:inline-block;
+		box-sizing:border-box;
+		width:50%;
+		padding:0 2em 0 0;
+		vertical-align:top;
+		border-top: 2px solid #f3f3f3;
+
+		+.introduction-block {
+			padding:0 0 0 2em;
+		}
+	}
 
 }
 
@@ -44,6 +60,7 @@
         top:.875em;
         width:12em;
         padding-top:.5em;
+		font-size:1.25em;
         text-align:right;
     }
 
@@ -53,15 +70,37 @@
         font-size:1.25em;
     }
 
+	h1.logo.landing {
+		position:absolute;
+		left:-9999em;
+		top:-9999em;
+		height:1px;
+		width:1px;
+		text-indent:-9999em;
+	}
+
     h2 {
         font-size:1.5em;
     }
 
     .git {
-        top:.125em;
+        top:2em;
     }
 
-    nav>a {
+	.introduction {
+
+		margin-top:0;
+		margin-right:25%;
+
+		span {
+			display:block;
+			font-size:1.75em;
+			color:#333;
+			text-transform:lowercase;
+		}
+	}
+
+	nav>a {
         position:absolute;
         left:0;
         top:0;
@@ -96,6 +135,10 @@
             border-width:5px;
         }
     }
+
+	h1.logo.landing~nav.index {
+		top:3em;
+	}
 
 }
 

@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Carefree AMD Module Loading under all Circumstances - ConditionerJS
-tagline: <em>Carefree AMD Module Loading under all Circumstances</em>
+type: landing
+title: Conditioner.js • Frizz free, environment-aware, javascript modules.
 ---
 
 <nav class="index">
@@ -17,11 +17,20 @@ tagline: <em>Carefree AMD Module Loading under all Circumstances</em>
 
 <h2 id="introduction" class="print">Introduction</h2>
 
-<p class="introduction"><strong>ConditionerJS contains AMD extracts for carefree day long module loading, it prevents frizz and makes your modules shine when they need to, not tested on animals.</strong></p>
+<p class="introduction"><strong><span>Conditioner.js </span>A javascript library for loading and unloading behavior based on environment conditions.</strong></p>
 
+<div class="introduction-block">
+    <h3>Environment aware</h3>
+    <p>Conditioner automatically loads and unloads modules based on the state of their surroundings.</p><p>You define the required state, conditioner takes it from there.</p>
+</div><div class="introduction-block">
+<h3>Frizz free</h3>
+<p>Modules are loaded separate from each other preventing them  from getting into fights.</p><p>Conditioner exposes an API that allows for structured peace negotiations between modules.</p>
+</div>
+
+<h3>Example</h3>
 <p>Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map. It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map. And to save a request and some bits and bytes you might only want to start loading the map once the map container becomes visible to the user.</p>
 
-<p>The following HTML snippet shows how to setup this Google Map using ConditionerJS. There are two things going on, the Map module is bound using the <code>data-module</code> attribute and the required conditions are set via the <code>data-conditions</code> attribute.</p>
+<p>The following HTML snippet shows how to setup this Google Map using Conditioner. There are two things going on, the Map module is bound using the <code>data-module</code> attribute and the required conditions are set via the <code>data-conditions</code> attribute.</p>
 
 {% highlight html %}
 <a href="http://maps.google.com/?ll=51.741,3.822"
@@ -37,19 +46,7 @@ tagline: <em>Carefree AMD Module Loading under all Circumstances</em>
 conditioner.loadModules(document);
 {% endhighlight %}
 
-<p>Now the following question might be on your mind:</p>
-
-<blockquote>Why shouldn't I just put those conditions in my Google Map module?</blockquote>
-
-<p>And of course that would work, at first.</p>
-
-<p>As your project grows you might want to use the module on another page under different circumstances. So you add another condition, and then another, and another.</p>
-
-<p>Your modules should, most of the time, not be concerned with the environment they are in. This is where ConditionerJS comes in. ConditionerJS will handle the environment and will initialize your module when the environment is suitable.</p>
-
-<p>Because ConditionerJS takes care of initializing and loading modules, your modules all live separate from each other on their own little island in the DOM.</p>
-
-<p>The map module we were talking about is located right below this paragraph, it should be loading right now (if your window is at least 40ems wide). Go on and resize that browser window, ConditionerJS will load and unload the map on the fly.</p>
+<p>The map module specified above is located right below this paragraph, it should be loading right now (if your window is at least 40ems wide). Go on and resize that browser window, Conditioner will load and unload the map on the fly.</p>
 
 <div class="component">
     <a href="http://maps.google.com/?ll=51.741380,3.822169&z=13"
@@ -63,23 +60,23 @@ conditioner.loadModules(document);
 
 
 <h2 id="requirements">Requirements</h2>
-<p>Since ConditionerJS is based on RequireJS you'll need RequireJS to make it fly. RequireJS is awesome at what it does, to not leverage that awesomeness and write a module loader of our own would just be silly. <a href="http://requirejs.org" title="RequireJS - A JavaScript Module Loader" target="_blank">Get RequireJS</a></p>
+<p>Conditioner is based on RequireJS so you'll need RequireJS to make it fly. RequireJS is awesome at what it does, to not leverage that awesomeness and write a module loader of our own would just be silly. <a href="http://requirejs.org" title="RequireJS - A JavaScript Module Loader" target="_blank">Get RequireJS</a></p>
 
-<p>ConditionerJS works on IE8 and up, although there's no media query support on IE8 you can still build conditions containing media queries by using the <code>or not media:{supported}</code> condition.</p>
+<p>Conditioner requires a modern browser to function. If you require IE8 support and want to use media queries as conditions you can use the <code>or not media:{supported}</code> condition to still load a module on IE8.</p>
 
 
 
 
 <h2 id="download">Download</h2>
-<p>As the framework is still under development I would advice not to use it in any serious project for now.</p>
+<p>As the library is still being worked on I would advice not to use it in any big project for now.</p>
 
-<p>The latest version of the framework can be downloaded below:</p>
+<p>The latest version of the library can be downloaded below:</p>
 <ul class="files">
     <li><a href="{{ site.rawurl }}/dist/conditioner-{{ site.version }}.js">Development</a> (readable)</li>
     <li><a href="{{ site.rawurl }}/dist/conditioner-{{ site.version }}.min.js">Production</a> ~ 2.5Kb gzipped (unreadable)</li>
 </ul>
 
-<p>The framework does not include the default tests as these might differ for each project. At the moment the following tests are available for download.</p>
+<p>The library does not include the default tests as these might differ for each project. At the moment the following tests are available for download.</p>
 
 <ul class="files">
     <li><a href="{{ site.rawurl }}/dist/tests.min/media.js">Media</a></li>
@@ -95,7 +92,7 @@ conditioner.loadModules(document);
 
 <h2 id="documentation">Documentation</h2>
 
-<p>The docs contain an example on how to quickly setup ConditionerJS.</p>
+<p>The docs contain an example on how to quickly setup Conditioner.</p>
 
 <a href="docs/">Documentation</a>
 

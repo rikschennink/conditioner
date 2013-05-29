@@ -1,7 +1,7 @@
 {
   "name": "conditioner-pages",
   "version": "1.0.0",
-  "description": "ConditionerJS - Take control of your JavaScript modules.",
+  "description": "ConditionerJS • Frizz free, environment-aware, javascript modules.",
   "homepage": "http://rikschennink.github.io/conditioner",
   "main": "index.js",
   "scripts": {
