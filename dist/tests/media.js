@@ -5,59 +5,59 @@
  */
 define(function(){
 
-    'use strict';
+	'use strict';
 
-    return {
+	return {
 
-        /**
-         * Does this browser support matchMedia
-         * @returns {Boolean}
-         */
-        support:function() {
-            return 'matchMedia' in window;
-        },
+		/**
+		 * Does this browser support matchMedia
+		 * @returns {Boolean}
+		 */
+		support:function() {
+			return 'matchMedia' in window;
+		},
 
-        /**
-         * Custom arrange method to setup matchMedia listener for each test instance
-         * @param {String} expected
-         */
-        arrange:function(expected) {
+		/**
+		 * Custom arrange method to setup matchMedia listener for each test instance
+		 * @param {String} expected
+		 */
+		arrange:function(expected) {
 
-            // if testing for support
-            if (expected === 'supported') {
-                return;
-            }
+			// if testing for support
+			if (expected === 'supported') {
+				return;
+			}
 
-            // if is media query
-            var self = this;
-            this._mql = window.matchMedia(expected);
-            this._mql.addListener(function(){
-                self.onchange();
-            });
+			// if is media query
+			var self = this;
+			this._mql = window.matchMedia(expected);
+			this._mql.addListener(function(){
+				self.onchange();
+			});
 
-        },
+		},
 
-        /**
-         * Tests if the assert succeeds
-         * @param expected
-         * @returns {Boolean}
-         */
-        assert:function(expected) {
+		/**
+		 * Tests if the assert succeeds
+		 * @param expected
+		 * @returns {Boolean}
+		 */
+		assert:function(expected) {
 
-            // no support
-            if (!this.supported()) {
-                return false;
-            }
+			// no support
+			if (!this.supported()) {
+				return false;
+			}
 
-            // test if supported
-            if (expected === 'supported') {
-                return this.supported();
-            }
+			// test if supported
+			if (expected === 'supported') {
+				return this.supported();
+			}
 
-            // test media query
-            return this._mql.matches;
-        }
+			// test media query
+			return this._mql.matches;
+		}
 
-    };
+	};
 
 });

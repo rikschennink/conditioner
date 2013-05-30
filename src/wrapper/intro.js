@@ -1,7 +1,7 @@
 define(['require'],function(require) {
 
-    'use strict';
+	'use strict';
 
-    /**
-     * @module conditioner
-     */
+	/**
+	 * @module conditioner
+	 */

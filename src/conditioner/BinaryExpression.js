@@ -8,9 +8,9 @@
  */
 var BinaryExpression = function(a,operator,b) {
 
-    this._a = a;
-    this._operator = operator;
-    this._b = b;
+	this._a = a;
+	this._operator = operator;
+	this._b = b;
 
 };
 
@@ -22,13 +22,13 @@ BinaryExpression.prototype = Object.create(ExpressionBase);
  */
 BinaryExpression.prototype.succeeds = function() {
 
-    return this._operator === 'and' ?
+	return this._operator === 'and' ?
 
-        // is 'and' operator
-        this._a.succeeds() && this._b.succeeds() :
+		// is 'and' operator
+		this._a.succeeds() && this._b.succeeds() :
 
-        // is 'or' operator
-        this._a.succeeds() || this._b.succeeds();
+		// is 'or' operator
+		this._a.succeeds() || this._b.succeeds();
 
 };
 
@@ -37,7 +37,7 @@ BinaryExpression.prototype.succeeds = function() {
  * @returns {String}
  */
 BinaryExpression.prototype.toString = function() {
-    return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
+	return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
 };
 
 /**
@@ -46,6 +46,6 @@ BinaryExpression.prototype.toString = function() {
  */
 BinaryExpression.prototype.getConfig = function() {
 
-    return [this._a.getConfig(),this._b.getConfig()];
+	return [this._a.getConfig(),this._b.getConfig()];
 
 };

@@ -4,66 +4,66 @@
  */
 define(function(){
 
-    'use strict';
+	'use strict';
 
-    var _moves = 0;
-    var _movesRequired = 2;
+	var _moves = 0;
+	var _movesRequired = 2;
 
-    return {
+	return {
 
-        /**
-         * Setup events, detach events if no activity for 30 seconds
-         * @param {Function} measure
-         */
-        setup:function(measure){
+		/**
+		 * Setup events, detach events if no activity for 30 seconds
+		 * @param {Function} measure
+		 */
+		setup:function(measure){
 
-            // start listening to mousemoves to deduce the availability of a pointer device
-            document.addEventListener('mousemove',measure,false);
-            document.addEventListener('mousedown',measure,false);
+			// start listening to mousemoves to deduce the availability of a pointer device
+			document.addEventListener('mousemove',measure,false);
+			document.addEventListener('mousedown',measure,false);
 
-            // start timer, stop testing after 30 seconds
-            setTimeout(function(){
-                document.removeEventListener('mousemove',measure,false);
-                document.removeEventListener('mousedown',measure,false);
-            },30000);
+			// start timer, stop testing after 30 seconds
+			setTimeout(function(){
+				document.removeEventListener('mousemove',measure,false);
+				document.removeEventListener('mousedown',measure,false);
+			},30000);
 
-        },
+		},
 
-        /**
-         * Custom measure function to count the amount of moves
-         * @param {Event} e
-         * @returns {Boolean} - Return true if a change has occurred
-         */
-        measure:function(e) {
+		/**
+		 * Custom measure function to count the amount of moves
+		 * @param {Event} e
+		 * @returns {Boolean} - Return true if a change has occurred
+		 */
+		measure:function(e) {
 
-            if (e.type === 'mousemove') {
+			if (e.type === 'mousemove') {
 
-                _moves++;
+				_moves++;
 
-                if (_moves >= _movesRequired) {
+				if (_moves >= _movesRequired) {
 
-                    // stop listening to events
-                    document.removeEventListener('mousemove',this,false);
-                    document.removeEventListener('mousedown',this,false);
+					// stop listening to events
+					document.removeEventListener('mousemove',this,false);
+					document.removeEventListener('mousedown',this,false);
 
-                    return true;
-                }
-            }
-            else {
-                _moves = 0;
-            }
+					return true;
+				}
+			}
+			else {
+				_moves = 0;
+			}
 
-            return false;
-        },
+			return false;
+		},
 
-        /**
-         * test if matches expectations
-         * @param {String} expected
-         * @returns {Boolean}
-         */
-        assert:function(expected) {
-            return expected === 'available' && _moves>=_movesRequired;
-        }
-    };
+		/**
+		 * test if matches expectations
+		 * @param {String} expected
+		 * @returns {Boolean}
+		 */
+		assert:function(expected) {
+			return expected === 'available' && _moves>=_movesRequired;
+		}
+	};
 
 });

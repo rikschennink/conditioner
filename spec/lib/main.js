@@ -1,3 +1,3 @@
 require.config({
-    baseUrl: 'spec/'
+	baseUrl:'spec/'
 });
