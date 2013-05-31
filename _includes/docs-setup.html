@@ -11,19 +11,11 @@
 
     <p>RequireJS needs to know where to find the Conditioner framework. You'll need to add a <code>path</code> entry to the RequireJS configuration object pointing to the location of Conditioner. In the example below the file 'conditioner.js' is located in the 'lib' folder within the generic 'js' folder.</p>
 
-{% highlight javascript %}
-requirejs.config({
-    baseUrl:'js/',
-    paths:{
-        conditioner:'lib/conditioner'
-    }
-});{% endhighlight %}
+	{% highlight javascript %}{% include code/requirejs-config.js %}{% endhighlight %}
 
     <p>Now that's setup, you can request a conditioner reference and have it start loading modules.</p>
 
-{% highlight javascript %}requirejs(['conditioner'],function(conditioner) {
-    conditioner.loadModules(document);
-});{% endhighlight %}
+	{% highlight javascript %}{% include code/conditioner-init.js %}{% endhighlight %}
 
     <p>Since we've not yet <a href="#config">configured our modules</a> it will not load anything for now.</p>
 

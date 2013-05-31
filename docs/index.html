@@ -8,29 +8,9 @@ title: Documentation • Conditioner.js
     <h1 id="introduction" class="title">Documentation</h1>
 
     <nav class="index">
-
-        <ul>
-            <li><a href="#setup">Setup</a></li>
-            <li><a href="#module-outline">Module outline</a></li>
-            <li>
-                <a href="#config">Configuring modules</a>
-                <ul>
-                    <li><a href="#data-module">Linking a module</a></li>
-                    <li><a href="#data-conditions">Setting conditions</a></li>
-                    <li><a href="#data-options">Passing options</a></li>
-                    <li><a href="#data-priority">Altering priorities</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#api">JavaScript API</a>
-                <ul>
-                    <li><a href="#conditioner">Conditioner</a></li>
-                    <li><a href="#node">Node</a></li>
-                    <li><a href="#module-controller">ModuleController</a></li>
-                </ul>
-            </li>
-        </ul>
+    {% include nav-docs.html %}
     </nav>
+
 
     {% include docs-setup.html %}
 
@@ -44,59 +24,11 @@ title: Documentation • Conditioner.js
 
         <p>An outline of a very basic module returning a class:</p>
 
-{% highlight javascript %}
-define(function(){
-
-    // specify constructor
-    var exports = function(element,options) {
-        // setup
-    };
-
-    // define (optional) default class options here
-    exports.options = {
-        'foo':'bar'
-    };
-
-    // define (optional) unload method
-    exports.prototype.unload = function() {
-        // restore
-    };
-
-    // expose
-    return exports;
-});{% endhighlight %}
+		{% highlight javascript %}{% include code/module-class.js %}{% endhighlight %}
 
         <p>Outline of a module returning an object:</p>
 
-{% highlight javascript %}
-define(function(){
-
-    // specify object literal
-    var exports = {
-
-        // define (optional) default object options here
-        options:{
-            'foo':'bar'
-        },
-
-        // called when module is loaded
-        load:function(element,options) {
-
-            // setup
-
-            // conditioner requires a returned object reference
-            return this;
-        },
-
-        // define (optional) unload method
-        unload:function() {
-            // restore
-        }
-    };
-
-    // expose
-    return exports;
-});{% endhighlight %}
+		{% highlight javascript %}{% include code/module-object.js %}{% endhighlight %}
 
         <p>Now you know how to define modules, let's see how you can link them to the DOM and bring Conditioner to load them.</p>
 
@@ -127,11 +59,6 @@ define(function(){
         {% include docs-priorities.html %}
 
     </section>
-
-
-
-
-
 
     <section>
 
@@ -260,8 +187,8 @@ conditioner.getNodesAll(selector);{% endhighlight %}
             <nav class="sub code">
                 <ul>
                     <li><a href="#node-get-active-module-controller">getActiveModuleController</a> &rarr; <a href="#module-controller">ModuleController</a> | null</li>
-                    <li><a href="#node-get-module-controller-by-path">getModuleControllerByPath</a> &rarr; <a href="#module-controller">ModuleController</a> | null</li>
-                    <li><a href="#node-get-module-controller-all-by-path">getModuleControllersByPath</a> &rarr; Array</li>
+                    <li><a href="#node-get-module-controller">getModuleController</a> &rarr; <a href="#module-controller">ModuleController</a> | null</li>
+                    <li><a href="#node-get-module-controller-all">getModuleControllerAll</a> &rarr; Array</li>
                     <li><a href="#node-matches-selector">matchesSelector</a> &rarr; boolean</li>
                     <li><a href="#node-execute">execute</a> &rarr; object</li>
                 </ul>
@@ -277,7 +204,7 @@ conditioner.getNodesAll(selector);{% endhighlight %}
 node.getActiveModuleController();{% endhighlight %}
 
 
-            <h4 class="code" id="node-get-module-controller-by-path">getModuleControllerByPath</h4>
+            <h4 class="code" id="node-get-module-controller">getModuleController</h4>
             <p>Finds and returns the first module to match the supplied path.</p>
 {% highlight javascript %}/**
 * Returns the first module controller matching the given path
@@ -285,10 +212,10 @@ node.getActiveModuleController();{% endhighlight %}
 * @return {ModuleController}
 * @public
 */
-node.getModuleControllerByPath(path);{% endhighlight %}
+node.getModuleController(path);{% endhighlight %}
 
 
-            <h4 class="code" id="node-get-module-controller-all-by-path">getModuleControllerAllByPath</h4>
+            <h4 class="code" id="node-get-module-controller-all">getModuleControllerAll</h4>
             <p>Finds all ModuleControllers matching the supplied path and returns them as an array.</p>
 {% highlight javascript %}/**
 * Returns an array of ModuleControllers matching the given path
@@ -296,7 +223,7 @@ node.getModuleControllerByPath(path);{% endhighlight %}
 * @return {Array}
 * @public
 */
-node.getModuleControllerAllByPath(path);{% endhighlight %}
+node.getModuleControllerAll(path);{% endhighlight %}
 
 
             <h4 class="code" id="node-matches-selector">matchesSelector</h4>
@@ -391,5 +318,7 @@ moduleController.unload();{% endhighlight %}
 moduleController.execute(method,[params]);{% endhighlight %}
 
     </section>
+
+    {% include docs-tests.html %}
 
 </section>

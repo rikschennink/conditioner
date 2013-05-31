@@ -8,15 +8,7 @@
     {% highlight html %}<a data-module="ui/Map" data-options='{"zoom":10}'> ... </a>{% endhighlight %}
 
     <p>Specifying generic options for mulitple modules of a certain type:</p>
-{% highlight javascript %}conditioner.setOptions({
-    'modules':{
-        'ui/Map':{
-            'options':{
-                'zoom':5
-            }
-        }
-    }
-});{% endhighlight %}
+	{% highlight javascript %}{% include code/conditioner-options-map.js %}{% endhighlight %}
 
     <p>Conditioner will merge page level options with node level options and pass the resulting options to the activated module.</p>
 
