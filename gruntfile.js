@@ -82,7 +82,7 @@ module.exports = function(grunt) {
         },
         watch: {
             css:{
-                files: ['sass/**/*'],
+                files: ['./sass/**/*'],
                 tasks: ['sass','reload']
             },
             html:{

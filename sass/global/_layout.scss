@@ -36,6 +36,7 @@
 
 		display:inline-block;
 		box-sizing:border-box;
+		-moz-box-sizing:border-box;
 		width:50%;
 		padding:0 2em 0 0;
 		vertical-align:top;
@@ -58,11 +59,16 @@
         position:fixed;
         left:0;
         top:.875em;
-        width:12em;
+        width:11.25em;
         padding-top:.5em;
 		font-size:1.25em;
         text-align:right;
+		z-index:2;
     }
+
+	h1.logo a {
+		color:#8596A2;
+	}
 
     h1.title,
     h1.logo+em {
@@ -113,15 +119,25 @@
 
     nav.index {
         position:fixed;
-        left:1em;
-        top:4em;
-        width:14em;
+		background:#40494E;
+        left:0;
+        top:0;
+		bottom:0;
+		padding:5em 0 0 0;
+        width:16em;
         margin:0;
         text-align:right;
+		z-index:1;
 
         li {
             display:block;
         }
+
+		>ul {
+			border-top:1px dotted #516574;
+			padding-top:1.5em;
+			padding-right:2em;
+		}
 
         >ul>li>a:after {
             position: absolute;
@@ -134,10 +150,30 @@
             margin-top:-5px;
             border-width:5px;
         }
+
+		a {
+			color:#a2b3c0;
+			text-decoration:none;
+
+			&:hover,
+			&:focus {
+				text-decoration:underline;
+			}
+		}
+
+		ul ul a {
+			color:#8596A2;
+		}
+
     }
 
 	h1.logo.landing~nav.index {
-		top:3em;
+		padding-top:3em;
+
+		>ul {
+			border-top:none;
+			padding-top:0;
+		}
 	}
 
 }
