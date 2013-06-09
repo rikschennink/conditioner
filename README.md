@@ -46,7 +46,10 @@ The documentation and a bunch of demos is located at [rikschennink.github.io/con
 Conditioner relies on the availability of [RequireJS](http://requirejs.org).
 
 * RequireJS
-* Modern browser and IE8 without media queries
+* Modern browser, IE8 supported but without the media queries.
+
+## Feedback, Comments, Critique
+[Contact me on Twitter](http://twitter.com/rikschennink)
 
 ## License
 [MIT](http://www.opensource.org/licenses/mit-license.php)
