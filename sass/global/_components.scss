@@ -79,7 +79,7 @@ h4.code {
  */
 h1.logo {
 	padding:0;
-	margin:0 0 .5em 0;
+	margin:1em 0 .5em 0;
 	font-size:1.75em;
 	white-space:nowrap;
 	line-height:1;
@@ -110,13 +110,13 @@ h1.logo+em {
  */
 .git {
 	position:absolute;
-	top:2.125em;
-	right:2em;
+	top:0;
+	left:0;
+	right:0;
 	min-height:1em;
 	display:block;
-	padding:.25em;
+	padding:.5em 2em;
 	background:#efefef;
-	border-radius:.25em;
 
     iframe {
         display:block;
