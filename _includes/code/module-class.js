@@ -10,7 +10,7 @@ define(function(){
     };
 
     /**
-     * Optional, default module options
+     * Default module options (optional)
      */
     exports.options = {
         'foo':'bar'

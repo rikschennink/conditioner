@@ -6,7 +6,7 @@ define(function(){
     var exports = {
 
         /**
-         * Optional, default options object
+         * Default options object (optional)
          */
         options:{
             'foo':'bar'
@@ -20,9 +20,6 @@ define(function(){
          */
         load:function(element,options) {
             // setup
-
-            // conditioner requires a returned object reference
-            return this;
         },
 
         /**
