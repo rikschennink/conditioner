@@ -223,6 +223,11 @@ ModuleController.prototype = {
 
 			// is of other type so expect load method to be defined
 			this._module = this._Module.load ? this._Module.load(this._element,options) : null;
+
+			// if module not defined we are probably dealing with a static class
+			if (typeof this._module === 'undefined') {
+				this._module = this._Module;
+			}
 		}
 
 		// if no module defined throw error

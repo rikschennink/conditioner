@@ -145,7 +145,7 @@ Conditioner.prototype = {
 			return this._nodes.concat();
 		}
 
-		// find matches
+		// find matches (done by querying the node for a match)
 		var i=0,l = this._nodes.length,results=[],node;
 		for (;i<l;i++) {
 			node = this._nodes[i];

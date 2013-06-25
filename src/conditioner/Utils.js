@@ -4,7 +4,7 @@
 var Utils = (function(){
 
 	// define method used for matchesSelector
-	var _method = null,el = document ? document.body : null;
+	var _matchesSelector = null,_method = null,el = document ? document.body : null;
 	if (!el || el.matches) {
 		_method = 'matches';
 	}
@@ -19,6 +19,32 @@ var Utils = (function(){
 	}
 	else if (el.oMatchesSelector) {
 		_method = 'oMatchesSelector';
+	}
+
+	if (_method) {
+		// use native matchesSelector method
+		_matchesSelector = function(element,selector) {
+			element[_method](selector);
+		};
+	}
+	else {
+		// check if an elem matches a CSS selector
+		// https://gist.github.com/louisremi/2851541
+		_matchesSelector = function(element,selector) {
+
+			// We'll use querySelectorAll to find all element matching the selector,
+			// then check if the given element is included in that list.
+			// Executing the query on the parentNode reduces the resulting nodeList,
+			// document doesn't have a parentNode, though.
+			var nodeList = (element.parentNode || document).querySelectorAll(selector) || [],
+				i = nodeList.length;
+
+			// loop on the nodeList
+			while (i--) {
+				if (nodeList[i] == element) {return true;}
+			}
+			return false;
+		};
 	}
 
 	var exports = {
@@ -94,10 +120,10 @@ var Utils = (function(){
 		 * @static
 		 */
 		matchesSelector:function(element,selector) {
-			if (!element || !_method) {
+			if (!element) {
 				return false;
 			}
-			return element[_method](selector);
+			return _matchesSelector(element,selector);
 		}
 
 	};

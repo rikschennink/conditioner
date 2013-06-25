@@ -241,7 +241,14 @@ Node.prototype = {
 
 		// set new active module controller
 		this._activeModuleController = moduleController;
+
+		// listen to unload event so we can load another module if necessary
 		Observer.subscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
+
+		// propagate events from the module controller to the node so people can subscribe to events on the node
+		Observer.inform(this._activeModuleController,this);
+
+		// finally load the module controller
 		this._activeModuleController.load();
 
 	},
@@ -259,6 +266,9 @@ Node.prototype = {
 
 		// stop listening to unload
 		Observer.unsubscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
+
+		// conceal events from active module controller
+		Observer.conceal(this._activeModuleController,this);
 
 		// unload controller
 		this._activeModuleController.unload();
