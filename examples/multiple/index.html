@@ -13,11 +13,11 @@ title: Multiple Conditions • Conditioner.js
 <p>Clock will be active as long as element has a maximum width of 150 pixels, if the element width gets above 250 pixels another Clock becomes active which also shows the time.</p>
 
 {% highlight html %}
-<div data-module='[{"path":"ui/Clock","conditions":"element:{max-width:150}","options":{"time":false}},{"path":"ui/Clock","conditions":"element:{min-width:250}"}]'> ... </div>
+<div data-module='[{"path":"ui/Clock","conditions":"media:{(max-width:500px)}","options":{"time":false}},{"path":"ui/Clock","conditions":"media:{(min-width:700px)}"}]'> ... </div>
 {% endhighlight %}
 
 <div class="component alt">
-    <div data-module='[{"path":"ui/Clock","conditions":"element:{max-width:150}","options":{"time":false}},{"path":"ui/Clock","conditions":"element:{min-width:250}"}]'>Clock is inactive</div>
+    <div data-module='[{"path":"ui/Clock","conditions":"media:{(max-width:500px)}","options":{"time":false}},{"path":"ui/Clock","conditions":"media:{(min-width:700px)}"}]'>Clock is inactive</div>
 </div>
 
 <h3>Binding both a conditioned and a wildcard module</h3>
