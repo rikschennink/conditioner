@@ -10,18 +10,18 @@ title: Multiple Conditions • Conditioner.js
 </nav>
 
 <h3>Binding multiple modules on a single element</h3>
-<p>Clock will be active as long as element has a maximum width of 300 pixels, if the element width gets above 400 pixels another Clock becomes active which also shows the time.</p>
+<p>Clock will be active as long as element has a maximum width of 150 pixels, if the element width gets above 250 pixels another Clock becomes active which also shows the time.</p>
 
 {% highlight html %}
-<div data-module='[{"path":"ui/Clock","conditions":"element:{max-width:200}","options":{"time":false}},{"path":"ui/Clock","conditions":"element:{min-width:200}"}]'> ... </div>
+<div data-module='[{"path":"ui/Clock","conditions":"element:{max-width:150}","options":{"time":false}},{"path":"ui/Clock","conditions":"element:{min-width:250}"}]'> ... </div>
 {% endhighlight %}
 
 <div class="component alt">
-    <div data-module='[{"path":"ui/Clock","conditions":"element:{max-width:200}","options":{"time":false}},{"path":"ui/Clock","conditions":"element:{min-width:200}"}]'>Clock is inactive</div>
+    <div data-module='[{"path":"ui/Clock","conditions":"element:{max-width:150}","options":{"time":false}},{"path":"ui/Clock","conditions":"element:{min-width:250}"}]'>Clock is inactive</div>
 </div>
 
 <h3>Binding both a conditioned and a wildcard module</h3>
-<p>Clock will be active as long as element has a maximum width of 300 pixels, if the element gets above 300 pixels the wildcard Clock element is loaded which shows the time.</p>
+<p>Clock will be active as long as element has a maximum width of 200 pixels, if the element gets above 200 pixels the wildcard Clock element is loaded which shows the time.</p>
 
 {% highlight html %}
 <div data-module='[{"path":"ui/Clock","conditions":"element:{max-width:200}","options":{"time":false}},{"path":"ui/Clock"}]'> ... </div>
