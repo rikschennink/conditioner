@@ -65,7 +65,7 @@ Conditioner.prototype = {
 
 	/**
 	 * Loads modules within the given context
-	 * @param {Element} context - Context to find modules in
+	 * @param {Document|Element} context - Context to find modules in
 	 * @return {Array} - Array of found Nodes
 	 */
 	loadModules:function(context) {
@@ -127,18 +127,29 @@ Conditioner.prototype = {
 	/**
 	 * Returns the first Node matching the selector
 	 * @param {String} selector - Selector to match the nodes to
-	 * @return {Node} First matched node
+	 * @return {Node} First matched node or null
 	 */
-	getNode:function(selector) {
-		return this.getNodesAll(selector)[0];
+	getNodeByQuerySelector:function(selector) {
+		return this._getNodesByQuerySelector(selector,true);
 	},
 
 	/**
 	 * Returns all nodes matching the selector
 	 * @param {String} selector - Optional selector to match the nodes to
-	 * @return {Array} Array containing matched nodes
+	 * @return {Array} Array containing matched nodes or empty Array
 	 */
-	getNodesAll:function(selector) {
+	getNodesByQuerySelector:function(selector) {
+		return this._getNodesByQuerySelector(selector);
+	},
+
+	/**
+	 * Returns one or multiple nodes matching the selector
+	 * @param {String} selector - Optional selector to match the nodes to
+	 * @param {Boolean} [singleResult] - Optional boolean to only ask one result
+	 * @returns {Array|Node|null}
+	 * @private
+	 */
+	_getNodesByQuerySelector:function(selector,singleResult) {
 
 		// if no query supplied return all nodes
 		if (typeof selector === 'undefined') {
@@ -151,10 +162,13 @@ Conditioner.prototype = {
 			node = this._nodes[i];
 			if (node.matchesSelector(selector)) {
 				results.push(node);
+				if (singleResult) {
+					return node;
+				}
 			}
 		}
 
-		return results;
+		return singleResult ? null : results;
 	}
 
 };
