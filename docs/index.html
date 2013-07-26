@@ -90,8 +90,8 @@ title: Documentation • Conditioner.js
                 <ul>
                     <li><a href="#conditioner-set-options">setOptions(object)</a></li>
                     <li><a href="#conditioner-load-modules">loadModules(context)</a> &rarr; Array</li>
-                    <li><a href="#conditioner-get-node">getNode(selector)</a> &rarr; <a href="#node">Node</a> | null</li>
-                    <li><a href="#conditioner-get-nodes-all">getNodesAll(selector)</a> &rarr; Array</li>
+                    <li><a href="#conditioner-get-node">getNodeByQuerySelector(selector)</a> &rarr; <a href="#node">Node</a> | null</li>
+                    <li><a href="#conditioner-get-nodes">getNodesByQuerySelector(selector)</a> &rarr; Array</li>
                 </ul>
             </nav>
 
@@ -154,25 +154,25 @@ conditioner.loadModules(context);{% endhighlight %}
 
 
 
-            <h4 class="code" id="conditioner-get-node">getNode</h4>
+            <h4 class="code" id="conditioner-get-node">getNodeByQuerySelector</h4>
             <p>Returns a single Node matching the supplied selector.</p>
 {% highlight javascript %}/**
 * Returns the first Node matching the selector
 * @param {string} selector - Selector to match the nodes to
 * @return {Node} First matched node
 */
-conditioner.getNode(selector);{% endhighlight %}
+conditioner.getNodeByQuerySelector(selector);{% endhighlight %}
 
 
 
-            <h4 class="code" id="conditioner-get-nodes-all">getNodesAll</h4>
+            <h4 class="code" id="conditioner-get-nodes">getNodesByQuerySelector</h4>
             <p>Returns an Array of found Nodes matching the supplied selector.</p>
 {% highlight javascript %}/**
 * Returns all nodes matching the selector
 * @param {string} selector - Optional selector to match the nodes to
 * @return {Array} Array containing matched nodes
 */
-conditioner.getNodesAll(selector);{% endhighlight %}
+conditioner.getNodesByQuerySelector(selector);{% endhighlight %}
 
 
         </section>
