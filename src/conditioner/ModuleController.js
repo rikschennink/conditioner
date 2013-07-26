@@ -306,6 +306,10 @@ ModuleController.prototype = {
 			throw new Error('ModuleController.execute(method,params): function specified in "method" not found on module.');
 		}
 
+		// if no params supplied set to empty array,
+		// ie8 falls on it's knees when it gets an undefined parameter object in the apply method
+		params = params || [];
+
 		// once loaded call method and pass parameters
 		return {
 			'status':200,
