@@ -1,8 +1,8 @@
 {
   "name": "conditioner",
-  "version": "0.8.8",
-  "description": "ConditionerJS - Take control of your JavaScript modules.",
-  "homepage": "http://rikschennink.github.io/conditioner",
+  "version": "0.8.9",
+  "description": "ConditionerJS - Frizz free, environment-aware, javascript modules.",
+  "homepage": "http://conditionerjs.com",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
