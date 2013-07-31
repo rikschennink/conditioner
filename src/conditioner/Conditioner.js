@@ -126,33 +126,36 @@ Conditioner.prototype = {
 
 	/**
 	 * Returns the first Node matching the selector
-	 * @param {String} selector - Selector to match the nodes to
-	 * @return {Node} First matched node or null
+	 * @param {String} [selector] - Selector to match the nodes to
+	 * @return {Node|null} First matched node or null
 	 */
-	getNodeByQuerySelector:function(selector) {
-		return this._getNodesByQuerySelector(selector,true);
+	getNode:function(selector) {
+		return this._getNodes(selector,true);
 	},
 
 	/**
 	 * Returns all nodes matching the selector
-	 * @param {String} selector - Optional selector to match the nodes to
+	 * @param {String} [selector] - Optional selector to match the nodes to
 	 * @return {Array} Array containing matched nodes or empty Array
 	 */
-	getNodesByQuerySelector:function(selector) {
-		return this._getNodesByQuerySelector(selector);
+	getNodes:function(selector) {
+		return this._getNodes(selector);
 	},
 
 	/**
 	 * Returns one or multiple nodes matching the selector
-	 * @param {String} selector - Optional selector to match the nodes to
+	 * @param {String} [selector] - Optional selector to match the nodes to
 	 * @param {Boolean} [singleResult] - Optional boolean to only ask one result
 	 * @returns {Array|Node|null}
 	 * @private
 	 */
-	_getNodesByQuerySelector:function(selector,singleResult) {
+	_getNodes:function(selector,singleResult) {
 
 		// if no query supplied return all nodes
 		if (typeof selector === 'undefined') {
+			if (singleResult) {
+				return this._nodes[0];
+			}
 			return this._nodes.concat();
 		}
 
@@ -161,10 +164,10 @@ Conditioner.prototype = {
 		for (;i<l;i++) {
 			node = this._nodes[i];
 			if (node.matchesSelector(selector)) {
-				results.push(node);
 				if (singleResult) {
 					return node;
 				}
+				results.push(node);
 			}
 		}
 

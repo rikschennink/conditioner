@@ -4,7 +4,7 @@
  * @constructor
  * @param {String} path - reference to module
  * @param {Element} element - reference to element
- * @param {Object} options - options for this ModuleController
+ * @param {Object} [options] - options for this ModuleController
  */
 var ModuleController = function(path,element,options) {
 
@@ -35,27 +35,26 @@ var ModuleController = function(path,element,options) {
 	);
 
 	// listen to ready event on condition manager
-	Observer.subscribe(this._conditionsManager,'ready',this._onReady.bind(this));
+	Observer.subscribe(this._conditionsManager,'ready',this._onInitialized.bind(this));
 
-	// by default module is not ready and not available unless it's not conditioned or conditions are already suitable
-	this._ready = !this.isConditioned() || this._conditionsManager.getSuitability();
+	// by default the module controller has not yet initialized and is not available
+	// unless the contained module is not conditioned or conditions are already suitable
+	this._initialized = !this.isModuleConditioned() || this._conditionsManager.getSuitability();
+
+	// not available at this moment
 	this._available = false;
-
 };
 
 ModuleController.prototype = {
 
 	/**
-	 * Returns true if the module is available for initialisation, this is true when conditions have been met
+	 * Returns true if the module is available for initialisation, this is true when conditions have been met.
+	 * This does not mean the module is active, it means the module is ready and suitable for activation.
 	 * @return {Boolean}
 	 * @public
 	 */
-	isAvailable:function() {
-
-		// remember
+	isModuleAvailable:function() {
 		this._available = this._conditionsManager.getSuitability();
-
-		// return
 		return this._available;
 	},
 
@@ -64,32 +63,34 @@ ModuleController.prototype = {
 	 * @returns {Boolean}
 	 * @public
 	 */
-	isActive:function() {
+	isModuleActive:function() {
 		return this._module !== null;
 	},
 
 	/**
-	 * Returns true if the module is dependent on certain conditions
+	 * Returns true if the module is requires certain conditions to be met
 	 * @return {Boolean}
 	 * @public
 	 */
-	isConditioned:function() {
+	isModuleConditioned:function() {
 		return typeof this._options.conditions !== 'undefined';
 	},
 
 	/**
-	 * Returns true if the module is ready, this is true when conditions have been read for the first time
+	 * Returns true if the module controller has finished the initialization process,
+	 * this is true when conditions have been read for the first time (and have been deemed suitable)
+	 * or no conditions have been set
 	 * @return {Boolean}
 	 * @public
 	 */
-	isReady:function() {
-		return this._ready;
+	hasInitialized:function() {
+		return this._initialized;
 	},
 
 	/**
-	 * Checks if the module matches the path
+	 * Checks if the module matches the supplied path
 	 * @param {String} path - path of module to test for
-	 * @return {Boolean} if matched
+	 * @return {Boolean}
 	 * @public
 	 */
 	matchesPath:function(path) {
@@ -98,22 +99,23 @@ ModuleController.prototype = {
 
 	/**
 	 * @private
+	 * @param {Boolean} suitable
 	 * @fires ready
 	 */
-	_onReady:function(suitable) {
+	_onInitialized:function(suitable) {
 
-		// module is now ready (this does not mean it's available)
-		this._ready = true;
+		// module has now completed the initialization process (this does not mean it's available)
+		this._initialized = true;
 
 		// listen to changes in conditions
 		Observer.subscribe(this._conditionsManager,'change',this._onConditionsChange.bind(this));
 
-		// let others know we are ready
-		Observer.publish(this,'ready');
+		// let others know we have initialized
+		Observer.publish(this,'init',this);
 
 		// are we available
 		if (suitable) {
-			this._onAvailable();
+			this._onBecameAvailable();
 		}
 
 	},
@@ -122,7 +124,7 @@ ModuleController.prototype = {
 	 * @private
 	 * @fires available
 	 */
-	_onAvailable:function() {
+	_onBecameAvailable:function() {
 
 		// module is now available
 		this._available = true;
@@ -145,7 +147,7 @@ ModuleController.prototype = {
 		}
 
 		if (!this._module && suitable) {
-			this._onAvailable();
+			this._onBecameAvailable();
 		}
 
 	},
@@ -248,7 +250,7 @@ ModuleController.prototype = {
 	},
 
 	/**
-	 * Unloads the module
+	 * Unloads the wrapped module
 	 * @fires unload
 	 * @return {Boolean}
 	 * @public
@@ -284,9 +286,9 @@ ModuleController.prototype = {
 	},
 
 	/**
-	 * Executes a methods on the loaded module
+	 * Executes a methods on the wrapped module
 	 * @param {String} method - method key
-	 * @param {Array} params - optional array containing the method parameters
+	 * @param {Array} [params] - optional array containing the method parameters
 	 * @return {Object} containing response of executed method and a status code
 	 * @public
 	 */

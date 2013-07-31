@@ -82,7 +82,7 @@ describe('Node',function(){
 		// act
 		var node = new Node(element);
 			node.init();
-		var result = node.getModuleControllerAll('mock/jasmine');
+		var result = node.getModuleControllers('mock/jasmine');
 
 		// assert
 		expect(function(){return typeof result !== 'undefined'}).toBeTruthy();
