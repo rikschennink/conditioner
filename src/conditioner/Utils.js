@@ -135,6 +135,9 @@ var Utils = (function(){
 		 * @static
 		 */
 		isDescendant:function(child,parent) {
+
+			// todo: look into https://developer.mozilla.org/en-US/docs/Web/API/Node.compareDocumentPosition
+
 			var node = child.parentNode;
 			while (node) {
 				if (node === parent) {
