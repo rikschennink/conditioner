@@ -86,11 +86,17 @@ Node.prototype = {
 	/**
 	 * Public method to check if the module matches the given query
 	 * @param {String} selector - CSS selector to match module to
+	 * @param {Document|Element} [context] - Context to search in
 	 * @return {Boolean}
 	 * @public
 	 */
-	matchesSelector:function(selector) {
-		return Utils.matchesSelector(this._element,selector);
+	matchesSelector:function(selector,context) {
+
+		if (context && !this.isDescendant(this._element,context)) {
+			return false;
+		}
+
+		return Utils.matchesSelector(this._element,selector,context);
 	},
 
 	/**

@@ -28,7 +28,7 @@ var Utils = (function(){
 		};
 	}
 	else {
-		// check if an elem matches a CSS selector
+		// check if an element matches a CSS selector
 		// https://gist.github.com/louisremi/2851541
 		_matchesSelector = function(element,selector) {
 
@@ -124,6 +124,25 @@ var Utils = (function(){
 				return false;
 			}
 			return _matchesSelector(element,selector);
+		},
+
+		/**
+		 * Tests if a child is a descendant of a given parent
+		 * @memberof Utils
+		 * @param child {Element}
+		 * @param parent {Element}
+		 * @returns {Boolean}
+		 * @static
+		 */
+		isDescendant:function(child,parent) {
+			var node = child.parentNode;
+			while (node) {
+				if (node === parent) {
+					return true;
+				}
+				node = node.parentNode;
+			}
+			return false;
 		}
 
 	};

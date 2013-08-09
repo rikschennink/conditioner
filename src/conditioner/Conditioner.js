@@ -127,29 +127,32 @@ Conditioner.prototype = {
 	/**
 	 * Returns the first Node matching the selector
 	 * @param {String} [selector] - Selector to match the nodes to
+	 * @param {Document|Element} [context] - Context to search in
 	 * @return {Node|null} First matched node or null
 	 */
-	getNode:function(selector) {
-		return this._getNodes(selector,true);
+	getNode:function(selector,context) {
+		return this._getNodes(selector,context,true);
 	},
 
 	/**
 	 * Returns all nodes matching the selector
 	 * @param {String} [selector] - Optional selector to match the nodes to
+	 * @param {Document|Element} [context] - Context to search in
 	 * @return {Array} Array containing matched nodes or empty Array
 	 */
-	getNodes:function(selector) {
-		return this._getNodes(selector);
+	getNodes:function(selector,context) {
+		return this._getNodes(selector,context);
 	},
 
 	/**
 	 * Returns one or multiple nodes matching the selector
 	 * @param {String} [selector] - Optional selector to match the nodes to
+	 * @param {Document|Element} [context] - Context to search in
 	 * @param {Boolean} [singleResult] - Optional boolean to only ask one result
 	 * @returns {Array|Node|null}
 	 * @private
 	 */
-	_getNodes:function(selector,singleResult) {
+	_getNodes:function(selector,context,singleResult) {
 
 		// if no query supplied return all nodes
 		if (typeof selector === 'undefined') {
@@ -160,10 +163,10 @@ Conditioner.prototype = {
 		}
 
 		// find matches (done by querying the node for a match)
-		var i=0,l = this._nodes.length,results=[],node;
+		var i=0,l=this._nodes.length,results=[],node;
 		for (;i<l;i++) {
 			node = this._nodes[i];
-			if (node.matchesSelector(selector)) {
+			if (node.matchesSelector(selector,context)) {
 				if (singleResult) {
 					return node;
 				}
