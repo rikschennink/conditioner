@@ -47,6 +47,31 @@ var Utils = (function(){
 		};
 	}
 
+	// define contains method based on browser capabilities
+	var _contains = null;
+	if (document.body.compareDocumentPosition) {
+		_contains = function(parent,child) {
+			return parent.compareDocumentPosition(a) & 16;
+		}
+	}
+	else if (document.body.contains) {
+		_contains = function(parent,child) {
+			return parent != child && parent.contains(child);
+		}
+	}
+	else {
+		_contains = function(parent,child) {
+			var node = child.parentNode;
+			while (node) {
+				if (node === parent) {
+					return true;
+				}
+				node = node.parentNode;
+			}
+			return false;
+		}
+	}
+
 	var exports = {
 
 		/**
@@ -135,17 +160,7 @@ var Utils = (function(){
 		 * @static
 		 */
 		isDescendant:function(child,parent) {
-
-			// todo: look into https://developer.mozilla.org/en-US/docs/Web/API/Node.compareDocumentPosition
-
-			var node = child.parentNode;
-			while (node) {
-				if (node === parent) {
-					return true;
-				}
-				node = node.parentNode;
-			}
-			return false;
+			return _contains(parent,child);
 		}
 
 	};
