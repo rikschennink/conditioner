@@ -68,7 +68,7 @@ ModuleController.prototype = {
 	},
 
 	/**
-	 * Returns true if the module is requires certain conditions to be met
+	 * Returns true if the module requires certain conditions to be met
 	 * @return {Boolean}
 	 * @public
 	 */
