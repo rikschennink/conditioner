@@ -90,8 +90,8 @@ title: Documentation • Conditioner.js
                 <ul>
                     <li><a href="#conditioner-set-options">setOptions(object)</a></li>
                     <li><a href="#conditioner-load-modules">loadModules(context)</a> &rarr; Array</li>
-                    <li><a href="#conditioner-get-node">getNodeByQuerySelector(selector)</a> &rarr; <a href="#node">Node</a> | null</li>
-                    <li><a href="#conditioner-get-nodes">getNodesByQuerySelector(selector)</a> &rarr; Array</li>
+                    <li><a href="#conditioner-get-node">getNode(selector,context)</a> &rarr; <a href="#node">Node</a> | null</li>
+                    <li><a href="#conditioner-get-nodes">getNodes(selector,context)</a> &rarr; Array</li>
                 </ul>
             </nav>
 
@@ -99,14 +99,14 @@ title: Documentation • Conditioner.js
 
             <nav class="sub code">
                 <ul>
-                    <li><a href="#conditioner-utils">Utils</a></li>
+                    <li><a href="#conditioner-merge-objects">mergeObjects</a></li>
                     <li><a href="#conditioner-observer">Observer</a></li>
                 </ul>
             </nav>
 
-            <p>Utils contains a method called <code>mergeObjects</code> which allows you to merge two objects resulting in a third merged object. The Observer is a simple pub / sub implementation.</p>
+            <p id="conditioner-merge-objects">Utils contains a method called <code>mergeObjects</code> which allows you to merge two objects resulting in a third merged object.
 
-            <p>It contains the following methods:</p>
+			<p id="conditioner-observer">The Observer is a simple pub / sub implementation. It contains the following methods:</p>
 
             <dl>
                 <dt><code>publish(obj,type,data)</code></dt>
@@ -154,25 +154,27 @@ conditioner.loadModules(context);{% endhighlight %}
 
 
 
-            <h4 class="code" id="conditioner-get-node">getNodeByQuerySelector</h4>
+            <h4 class="code" id="conditioner-get-node">getNode</h4>
             <p>Returns a single Node matching the supplied selector.</p>
 {% highlight javascript %}/**
 * Returns the first Node matching the selector
-* @param {string} selector - Selector to match the nodes to
-* @return {Node} First matched node
+* @param {String} [selector] - Selector to match the nodes to
+* @param {Document|Element} [context] - Context to search in
+* @return {Node|null} First matched node or null
 */
-conditioner.getNodeByQuerySelector(selector);{% endhighlight %}
+conditioner.getNode(selector,context);{% endhighlight %}
 
 
 
-            <h4 class="code" id="conditioner-get-nodes">getNodesByQuerySelector</h4>
+            <h4 class="code" id="conditioner-get-nodes">getNodes</h4>
             <p>Returns an Array of found Nodes matching the supplied selector.</p>
 {% highlight javascript %}/**
 * Returns all nodes matching the selector
-* @param {string} selector - Optional selector to match the nodes to
-* @return {Array} Array containing matched nodes
+* @param {String} [selector] - Optional selector to match the nodes to
+* @param {Document|Element} [context] - Context to search in
+* @return {Array} Array containing matched nodes or empty Array
 */
-conditioner.getNodesByQuerySelector(selector);{% endhighlight %}
+conditioner.getNodes(selector,context);{% endhighlight %}
 
 
         </section>
@@ -198,7 +200,7 @@ conditioner.getNodesByQuerySelector(selector);{% endhighlight %}
             <p>Returns a reference to the currently active ModuleController.</p>
 {% highlight javascript %}/**
 * Returns a reference to the currently active module controller
-* @return {ModuleController}
+* @return {ModuleController|null}
 * @public
 */
 node.getActiveModuleController();{% endhighlight %}
@@ -207,34 +209,35 @@ node.getActiveModuleController();{% endhighlight %}
             <h4 class="code" id="node-get-module-controller">getModuleController</h4>
             <p>Finds and returns the first module to match the supplied path.</p>
 {% highlight javascript %}/**
-* Returns the first module controller matching the given path
-* @param path {string} path to module
-* @return {ModuleController}
+* Returns the first ModuleController matching the given path
+* @param {String} [path] to module
+* @return {ModuleController|null}
 * @public
 */
 node.getModuleController(path);{% endhighlight %}
 
 
-            <h4 class="code" id="node-get-module-controller-all">getModuleControllerAll</h4>
+            <h4 class="code" id="node-get-module-controllers">getModuleControllers</h4>
             <p>Finds all ModuleControllers matching the supplied path and returns them as an array.</p>
 {% highlight javascript %}/**
 * Returns an array of ModuleControllers matching the given path
-* @param path {string} path to module
+* @param {String} [path] to module
 * @return {Array}
 * @public
 */
-node.getModuleControllerAll(path);{% endhighlight %}
+node.getModuleControllers(path);{% endhighlight %}
 
 
             <h4 class="code" id="node-matches-selector">matchesSelector</h4>
             <p>Tests if the element contained in the Node object matches the supplied CSS selector.</p>
 {% highlight javascript %}/**
 * Public method to check if the module matches the given query
-* @param {string} selector
-* @return {boolean}
+* @param {String} selector - CSS selector to match module to
+* @param {Document|Element} [context] - Context to search in
+* @return {Boolean}
 * @public
 */
-node.matchesSelector(selector);{% endhighlight %}
+node.matchesSelector(selector,context);{% endhighlight %}
 
 
             <h4 class="code" id="node-execute">execute</h4>
@@ -261,7 +264,8 @@ node.execute(method,[params]);{% endhighlight %}
             <nav class="sub code">
                 <ul>
                     <li><a href="#module-controller-matches-path">matchesPath</a> &rarr; boolean</li>
-                    <li><a href="#module-controller-is-active">isActive</a> &rarr; boolean</li>
+                    <li><a href="#module-controller-is-module-active">isModuleActive</a> &rarr; boolean</li>
+					<li><a href="#module-controller-is-module-available">isModuleAvailable</a> &rarr; boolean</li>
                     <li><a href="#module-controller-load">load</a></li>
                     <li><a href="#module-controller-unload">unload</a> &rarr; boolean</li>
                     <li><a href="#module-controller-execute">execute</a> &rarr; object</li>
@@ -278,14 +282,26 @@ node.execute(method,[params]);{% endhighlight %}
 */
 moduleController.matchesPath(path);{% endhighlight %}
 
-        <h4 class="code" id="module-controller-is-active">isActive</h4>
+        <h4 class="code" id="module-controller-is-module-active">isModuleActive</h4>
         <p>Returns true if the module contained within the ModuleController is currently loaded.</p>
 {% highlight javascript %}/**
 * Returns true if module is currently active and loaded
-* @returns {boolean}
+* @returns {Boolean}
 * @public
 */
-moduleController.isActive();{% endhighlight %}
+moduleController.isModuleActive();{% endhighlight %}
+
+
+		<h4 class="code" id="module-controller-is-module-available">isModuleAvailable</h4>
+		<p>Returns true if the module is available for initialisation.</p>
+{% highlight javascript %}/**
+* Returns true if the module is available for initialisation, this is true when conditions have been met.
+* This does not mean the module is active, it means the module is ready and suitable for activation.
+* @return {Boolean}
+* @public
+*/
+moduleController.isModuleAvailable();{% endhighlight %}
+
 
         <h4 class="code" id="module-controller-load">load</h4>
         <p>Loads the Module if it's available (if conditions suitable). Publishes the 'load' event once finished.</p>
