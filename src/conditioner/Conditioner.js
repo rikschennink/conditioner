@@ -155,7 +155,7 @@ Conditioner.prototype = {
 	_getNodes:function(selector,context,singleResult) {
 
 		// if no query supplied return all nodes
-		if (typeof selector === 'undefined') {
+		if (typeof selector === 'undefined' && typeof context === 'undefined') {
 			if (singleResult) {
 				return this._nodes[0];
 			}
