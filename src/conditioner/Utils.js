@@ -51,7 +51,7 @@ var Utils = (function(){
 	var _contains = null;
 	if (document.body.compareDocumentPosition) {
 		_contains = function(parent,child) {
-			return parent.compareDocumentPosition(a) & 16;
+			return parent.compareDocumentPosition(child) & 16;
 		}
 	}
 	else if (document.body.contains) {
