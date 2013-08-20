@@ -38,7 +38,7 @@ define(['require'],function(require) {
 			};
 		}
 		else {
-			// check if an elem matches a CSS selector
+			// check if an element matches a CSS selector
 			// https://gist.github.com/louisremi/2851541
 			_matchesSelector = function(element,selector) {
 
@@ -52,6 +52,32 @@ define(['require'],function(require) {
 				// loop on the nodeList
 				while (i--) {
 					if (nodeList[i] == element) {return true;}
+				}
+				return false;
+			};
+		}
+
+		// define contains method based on browser capabilities
+		var _contains = null;
+		if (el && el.compareDocumentPosition) {
+			_contains = function(parent,child) {
+				/* jshint -W016 */
+				return parent.compareDocumentPosition(child) & 16;
+			};
+		}
+		else if (el && el.contains) {
+			_contains = function(parent,child) {
+				return parent != child && parent.contains(child);
+			};
+		}
+		else {
+			_contains = function(parent,child) {
+				var node = child.parentNode;
+				while (node) {
+					if (node === parent) {
+						return true;
+					}
+					node = node.parentNode;
 				}
 				return false;
 			};
@@ -134,6 +160,18 @@ define(['require'],function(require) {
 					return false;
 				}
 				return _matchesSelector(element,selector);
+			},
+
+			/**
+			 * Tests if a child is a descendant of a given parent
+			 * @memberof Utils
+			 * @param child {Element}
+			 * @param parent {Element}
+			 * @returns {Boolean}
+			 * @static
+			 */
+			isDescendant:function(child,parent) {
+				return _contains(parent,child);
 			}
 
 		};
@@ -1407,11 +1445,17 @@ define(['require'],function(require) {
 		/**
 		 * Public method to check if the module matches the given query
 		 * @param {String} selector - CSS selector to match module to
+		 * @param {Document|Element} [context] - Context to search in
 		 * @return {Boolean}
 		 * @public
 		 */
-		matchesSelector:function(selector) {
-			return Utils.matchesSelector(this._element,selector);
+		matchesSelector:function(selector,context) {
+
+			if (context && !this.isDescendant(this._element,context)) {
+				return false;
+			}
+
+			return Utils.matchesSelector(this._element,selector,context);
 		},
 
 		/**
@@ -1851,29 +1895,32 @@ define(['require'],function(require) {
 		/**
 		 * Returns the first Node matching the selector
 		 * @param {String} [selector] - Selector to match the nodes to
+		 * @param {Document|Element} [context] - Context to search in
 		 * @return {Node|null} First matched node or null
 		 */
-		getNode:function(selector) {
-			return this._getNodes(selector,true);
+		getNode:function(selector,context) {
+			return this._getNodes(selector,context,true);
 		},
 
 		/**
 		 * Returns all nodes matching the selector
 		 * @param {String} [selector] - Optional selector to match the nodes to
+		 * @param {Document|Element} [context] - Context to search in
 		 * @return {Array} Array containing matched nodes or empty Array
 		 */
-		getNodes:function(selector) {
-			return this._getNodes(selector);
+		getNodes:function(selector,context) {
+			return this._getNodes(selector,context);
 		},
 
 		/**
 		 * Returns one or multiple nodes matching the selector
 		 * @param {String} [selector] - Optional selector to match the nodes to
+		 * @param {Document|Element} [context] - Context to search in
 		 * @param {Boolean} [singleResult] - Optional boolean to only ask one result
 		 * @returns {Array|Node|null}
 		 * @private
 		 */
-		_getNodes:function(selector,singleResult) {
+		_getNodes:function(selector,context,singleResult) {
 
 			// if no query supplied return all nodes
 			if (typeof selector === 'undefined') {
@@ -1884,10 +1931,10 @@ define(['require'],function(require) {
 			}
 
 			// find matches (done by querying the node for a match)
-			var i=0,l = this._nodes.length,results=[],node;
+			var i=0,l=this._nodes.length,results=[],node;
 			for (;i<l;i++) {
 				node = this._nodes[i];
-				if (node.matchesSelector(selector)) {
+				if (node.matchesSelector(selector,context)) {
 					if (singleResult) {
 						return node;
 					}

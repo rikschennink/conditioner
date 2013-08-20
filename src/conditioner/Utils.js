@@ -49,15 +49,16 @@ var Utils = (function(){
 
 	// define contains method based on browser capabilities
 	var _contains = null;
-	if (document.body.compareDocumentPosition) {
+	if (el && el.compareDocumentPosition) {
 		_contains = function(parent,child) {
+			/* jshint -W016 */
 			return parent.compareDocumentPosition(child) & 16;
-		}
+		};
 	}
-	else if (document.body.contains) {
+	else if (el && el.contains) {
 		_contains = function(parent,child) {
 			return parent != child && parent.contains(child);
-		}
+		};
 	}
 	else {
 		_contains = function(parent,child) {
@@ -69,7 +70,7 @@ var Utils = (function(){
 				node = node.parentNode;
 			}
 			return false;
-		}
+		};
 	}
 
 	var exports = {
