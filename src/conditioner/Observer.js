@@ -60,7 +60,7 @@ var Observer = {
 	 * @memberof Observer
 	 * @param {Object} obj - Object to fire the event on
 	 * @param {String} type - Event type to fire
-	 * @param {Object} data - optional data carrier
+	 * @param {Object} [data] - optional data carrier
 	 * @static
 	 */
 	publish:function(obj,type,data) {

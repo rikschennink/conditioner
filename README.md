@@ -1,5 +1,7 @@
 # Conditioner
 
+**This library is still under development so new versions might break backwards compatibility.**
+
 ## Introduction
 
 Conditioner.js is a javascript library for loading and unloading behavior based on environment conditions.

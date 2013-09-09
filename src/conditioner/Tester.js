@@ -1,5 +1,5 @@
 /**
- * @param {TestBase} test
+ * @param {function} test
  * @param {String} expected
  * @param {Element} element
  * @constructor

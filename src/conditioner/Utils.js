@@ -28,7 +28,7 @@ var Utils = (function(){
 		};
 	}
 	else {
-		// check if an elem matches a CSS selector
+		// check if an element matches a CSS selector
 		// https://gist.github.com/louisremi/2851541
 		_matchesSelector = function(element,selector) {
 
@@ -42,6 +42,32 @@ var Utils = (function(){
 			// loop on the nodeList
 			while (i--) {
 				if (nodeList[i] == element) {return true;}
+			}
+			return false;
+		};
+	}
+
+	// define contains method based on browser capabilities
+	var _contains = null;
+	if (el && el.compareDocumentPosition) {
+		_contains = function(parent,child) {
+			/* jshint -W016 */
+			return parent.compareDocumentPosition(child) & 16;
+		};
+	}
+	else if (el && el.contains) {
+		_contains = function(parent,child) {
+			return parent != child && parent.contains(child);
+		};
+	}
+	else {
+		_contains = function(parent,child) {
+			var node = child.parentNode;
+			while (node) {
+				if (node === parent) {
+					return true;
+				}
+				node = node.parentNode;
 			}
 			return false;
 		};
@@ -124,6 +150,18 @@ var Utils = (function(){
 				return false;
 			}
 			return _matchesSelector(element,selector);
+		},
+
+		/**
+		 * Tests if a child is a descendant of a given parent
+		 * @memberof Utils
+		 * @param child {Element}
+		 * @param parent {Element}
+		 * @returns {Boolean}
+		 * @static
+		 */
+		isDescendant:function(child,parent) {
+			return _contains(parent,child);
 		}
 
 	};

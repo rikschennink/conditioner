@@ -20,10 +20,10 @@ var Node = function(element) {
 	var prio = this._element.getAttribute('data-priority');
 	this._priority = !prio ? 0 : parseInt(prio,10);
 
-	// contains references to all module controllers
+	// contains references to all module adapters
 	this._moduleControllers = [];
 
-	// contains reference to currently active module controller
+	// contains reference to currently active module adapter
 	this._activeModuleController = null;
 
 	// method to unbind
@@ -49,29 +49,29 @@ Node.prototype = {
 	init:function() {
 
 		// parse element module attributes
-		this._moduleControllers = this._createModuleControllers();
+		this._moduleControllers = this._wrapModuleControllers();
 
 		// initialize
 		var i=0,l=this._moduleControllers.length,mc;
 
-		// if no module controllers found
+		// if no module adapters found
 		if (!l) {
 			throw new Error('Node: "element" has to have a "data-module" attribute containing a reference to a Module.');
 		}
 
-		// listen to ready events on module controllers
+		// listen to init events on module adapters
 		for (;i<l;i++) {
 
 			mc = this._moduleControllers[i];
 
-			// if module already ready, jump to _onModuleReady method and don't bind listener
-			if (mc.isReady()) {
-				this._onModuleReady();
+			// if module already has initialized, jump to _onModuleInitialized method and don't bind listener
+			if (mc.hasInitialized()) {
+				this._onModuleInitialized();
 				continue;
 			}
 
-			// otherwise, listen to ready event
-			Observer.subscribe(mc,'ready',this._onModuleReady.bind(this));
+			// otherwise, listen to init event
+			Observer.subscribe(mc,'init',this._onModuleInitialized.bind(this));
 		}
 	},
 
@@ -85,17 +85,23 @@ Node.prototype = {
 
 	/**
 	 * Public method to check if the module matches the given query
-	 * @param {String} selector
+	 * @param {String} selector - CSS selector to match module to
+	 * @param {Document|Element} [context] - Context to search in
 	 * @return {Boolean}
 	 * @public
 	 */
-	matchesSelector:function(selector) {
-		return Utils.matchesSelector(this._element,selector);
+	matchesSelector:function(selector,context) {
+
+		if (context && !this.isDescendant(this._element,context)) {
+			return false;
+		}
+
+		return Utils.matchesSelector(this._element,selector,context);
 	},
 
 	/**
-	 * Returns a reference to the currently active module controller
-	 * @return {ModuleController}
+	 * Returns a reference to the currently active module adapter
+	 * @return {ModuleController|null}
 	 * @public
 	 */
 	getActiveModuleController:function() {
@@ -104,46 +110,63 @@ Node.prototype = {
 
 	/**
 	 * Returns the first ModuleController matching the given path
-	 * @param path {String} path to module
-	 * @return {ModuleController}
+	 * @param {String} [path] to module
+	 * @return {ModuleController|null}
 	 * @public
 	 */
 	getModuleController:function(path) {
-		return this.getModuleControllerAll(path)[0];
+		return this._getModuleControllers(path,true);
 	},
 
 	/**
 	 * Returns an array of ModuleControllers matching the given path
-	 * @param path {String} path to module
+	 * @param {String} [path] to module
 	 * @return {Array}
 	 * @public
 	 */
-	getModuleControllerAll:function(path) {
+	getModuleControllers:function(path) {
+		return this._getModuleControllers(path);
+	},
+
+	/**
+	 * Returns one or multiple ModuleControllers matching the supplied path
+	 * @param {String} [path] - Optional path to match the nodes to
+	 * @param {Boolean} [singleResult] - Optional boolean to only ask one result
+	 * @returns {Array|ModuleController|null}
+	 * @private
+	 */
+	_getModuleControllers:function(path,singleResult) {
 
 		if (typeof path === 'undefined') {
+			if (singleResult) {
+				return this._moduleControllers[0];
+			}
 			return this._moduleControllers.concat();
 		}
 
-		var i=0,l=this._moduleControllers.length,result=[],mc;
+		var i=0,l=this._moduleControllers.length,results=[],mc;
 		for (;i<l;i++) {
 			mc = this._moduleControllers[i];
 			if (mc.matchesPath(path)) {
-				result.push(mc);
+				if (singleResult) {
+					return mc;
+				}
+				results.push(mc);
 			}
 		}
-		return result;
+		return singleResult ? null : results;
 	},
 
 	/**
 	 * Public method for safely executing methods on the loaded module
 	 * @param {String} method - method key
-	 * @param {Array} params - array containing the method parameters
+	 * @param {Array} [params] - array containing the method parameters
 	 * @return {Object} returns object containing status code and possible response data
 	 * @public
 	 */
 	execute:function(method,params) {
 
-		// if active module controller defined
+		// if active module adapter defined
 		if (this._activeModuleController) {
 			return this._activeModuleController.execute(method,params);
 		}
@@ -156,38 +179,37 @@ Node.prototype = {
 	},
 
 	/**
-	 * Called when a module has indicated it is ready
+	 * Called when a module has indicated it's initialization is done
 	 * @private
 	 */
-	_onModuleReady:function() {
+	_onModuleInitialized:function() {
 
 		var i=this._moduleControllers.length;
 
-		// check if all modules ready, if so, call on modules ready
+		// check if all modules have initialized, if so move on to the next init stage
 		while (--i >= 0) {
-			if (!this._moduleControllers[i].isReady()) {
+			if (!this._moduleControllers[i].hasInitialized()) {
 				return;
 			}
 		}
 
-		// all modules ready
-		this._onModulesReady();
+		this._onModulesInitialized();
 
 	},
 
 	/**
-	 * Called when all modules are ready
+	 * Called when all modules have been initialized
 	 * @private
 	 */
-	_onModulesReady:function() {
+	_onModulesInitialized:function() {
 
-		// find suitable active module controller
-		var moduleController = this._getSuitableActiveModuleController();
-		if (moduleController) {
-			this._setActiveModuleController(moduleController);
+		// find suitable active module adapter
+		var ModuleController = this._getSuitableActiveModuleController();
+		if (ModuleController) {
+			this._setActiveModuleController(ModuleController);
 		}
 
-		// listen to available events on controllers
+		// listen to available events on adapters
 		var i=0,l=this._moduleControllers.length;
 		for (;i<l;i++) {
 			Observer.subscribe(this._moduleControllers[i],'available',this._onModuleAvailable.bind(this));
@@ -196,11 +218,11 @@ Node.prototype = {
 	},
 
 	/**
-	 * Called when a module controller has indicated it is ready to be loaded
-	 * @param moduleController
+	 * Called when a module adapter has indicated it is ready to be loaded
+	 * @param ModuleController
 	 * @private
 	 */
-	_onModuleAvailable:function(moduleController) {
+	_onModuleAvailable:function(ModuleController) {
 
 		// setup vars
 		var i=0,l=this._moduleControllers.length,mc;
@@ -209,9 +231,9 @@ Node.prototype = {
 
 			mc = this._moduleControllers[i];
 
-			if (mc !== moduleController &&
-				mc.isAvailable() &&
-				mc.isConditioned()) {
+			if (mc !== ModuleController &&
+				mc.isModuleAvailable() &&
+				mc.isModuleConditioned()) {
 
 				// earlier or conditioned module is ready, therefor cannot load this module
 
@@ -219,47 +241,47 @@ Node.prototype = {
 			}
 		}
 
-		// load supplied module controller as active module
-		this._setActiveModuleController(moduleController);
+		// load supplied module adapter as active module
+		this._setActiveModuleController(ModuleController);
 
 	},
 
 	/**
-	 * Sets the active module controller
-	 * @param moduleController
+	 * Sets the active module adapter
+	 * @param ModuleController
 	 * @private
 	 */
-	_setActiveModuleController:function(moduleController) {
+	_setActiveModuleController:function(ModuleController) {
 
 		// if not already loaded
-		if (moduleController === this._activeModuleController) {
+		if (ModuleController === this._activeModuleController) {
 			return;
 		}
 
-		// clean up active module controller reference
+		// clean up active module adapter reference
 		this._cleanActiveModuleController();
 
-		// set new active module controller
-		this._activeModuleController = moduleController;
+		// set new active module adapter
+		this._activeModuleController = ModuleController;
 
 		// listen to unload event so we can load another module if necessary
 		Observer.subscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
 
-		// propagate events from the module controller to the node so people can subscribe to events on the node
+		// propagate events from the module adapter to the node so people can subscribe to events on the node
 		Observer.inform(this._activeModuleController,this);
 
-		// finally load the module controller
+		// finally load the module adapter
 		this._activeModuleController.load();
 
 	},
 
 	/**
-	 * Removes the active module controller
+	 * Removes the active module adapter
 	 * @private
 	 */
 	_cleanActiveModuleController:function() {
 
-		// if no module controller defined do nothing
+		// if no module adapter defined do nothing
 		if (!this._activeModuleController) {
 			return;
 		}
@@ -267,10 +289,10 @@ Node.prototype = {
 		// stop listening to unload
 		Observer.unsubscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
 
-		// conceal events from active module controller
+		// conceal events from active module adapter
 		Observer.conceal(this._activeModuleController,this);
 
-		// unload controller
+		// unload adapter
 		this._activeModuleController.unload();
 
 		// remove reference
@@ -283,21 +305,21 @@ Node.prototype = {
 	 */
 	_onActiveModuleUnload:function() {
 
-		// clean up active module controller reference
+		// clean up active module adapter reference
 		this._cleanActiveModuleController();
 
 		// active module was unloaded, find another active module
-		var moduleController = this._getSuitableActiveModuleController();
-		if(!moduleController) {
+		var ModuleController = this._getSuitableActiveModuleController();
+		if(!ModuleController) {
 			return;
 		}
 
-		// set found module controller as new active module controller
-		this._setActiveModuleController(moduleController);
+		// set found module adapter as new active module adapter
+		this._setActiveModuleController(ModuleController);
 	},
 
 	/**
-	 * Returns a suitable module controller
+	 * Returns a suitable module adapter
 	 * @returns {null|ModuleController}
 	 * @private
 	 */
@@ -309,8 +331,8 @@ Node.prototype = {
 
 			mc = this._moduleControllers[i];
 
-			// if not ready, skip to next controller
-			if (!mc.isAvailable()) {
+			// if not ready, skip to next adapter
+			if (!mc.isModuleAvailable()) {
 				continue;
 			}
 
@@ -321,11 +343,11 @@ Node.prototype = {
 	},
 
 	/**
-	 * Returns an array of module controllers found specified on the element
+	 * Returns an array of module adapters found specified on the element
 	 * @returns {Array}
 	 * @private
 	 */
-	_createModuleControllers:function() {
+	_wrapModuleControllers:function() {
 
 		var result = [],
 			config = this._element.getAttribute('data-module') || '',
@@ -335,7 +357,7 @@ Node.prototype = {
 
 			var specs;
 
-			// add multiple module controllers
+			// add multiple module adapters
 			try {
 				specs = JSON.parse(config);
 			}
@@ -370,7 +392,7 @@ Node.prototype = {
 		}
 		else if (config.length) {
 
-			// add default module controller
+			// add default module adapter
 			result.push(
 				new ModuleController(config,this._element,{
 					'conditions':this._element.getAttribute('data-conditions'),
