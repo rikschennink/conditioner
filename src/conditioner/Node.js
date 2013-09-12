@@ -84,6 +84,14 @@ Node.prototype = {
 	},
 
 	/**
+	 * Returns the element linked to this node
+	 * @public
+	 */
+	getElement:function() {
+		return this._element;
+	},
+
+	/**
 	 * Public method to check if the module matches the given query
 	 * @param {String} selector - CSS selector to match module to
 	 * @param {Document|Element} [context] - Context to search in
@@ -100,7 +108,15 @@ Node.prototype = {
 	},
 
 	/**
-	 * Returns a reference to the currently active module adapter
+	 * Returns true if any of the nodes modules are active
+	 * @public
+	 */
+	hasLoadedModule:function() {
+		return this._activeModuleController ? this._activeModuleController.isModuleActive() : false;
+	},
+
+	/**
+	 * Returns a reference to the currently active module controller
 	 * @return {ModuleController|null}
 	 * @public
 	 */
