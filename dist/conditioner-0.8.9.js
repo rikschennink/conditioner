@@ -1451,7 +1451,7 @@ define(['require'],function(require) {
 		 */
 		matchesSelector:function(selector,context) {
 
-			if (context && !this.isDescendant(this._element,context)) {
+			if (context && !Utils.isDescendant(this._element,context)) {
 				return false;
 			}
 
