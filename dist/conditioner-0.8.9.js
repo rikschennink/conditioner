@@ -1104,7 +1104,7 @@ define(['require'],function(require) {
 		},
 
 		/**
-		 * Returns true if the module is requires certain conditions to be met
+		 * Returns true if the module requires certain conditions to be met
 		 * @return {Boolean}
 		 * @public
 		 */
@@ -1222,7 +1222,7 @@ define(['require'],function(require) {
 		_onLoad:function() {
 
 			// if no longer available for loading stop here
-			if (!this.isAvailable()) {
+			if (!this.isModuleAvailable()) {
 				return;
 			}
 
@@ -1923,7 +1923,7 @@ define(['require'],function(require) {
 		_getNodes:function(selector,context,singleResult) {
 
 			// if no query supplied return all nodes
-			if (typeof selector === 'undefined') {
+			if (typeof selector === 'undefined' && typeof context === 'undefined') {
 				if (singleResult) {
 					return this._nodes[0];
 				}

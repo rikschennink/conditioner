@@ -186,7 +186,7 @@ ModuleController.prototype = {
 	_onLoad:function() {
 
 		// if no longer available for loading stop here
-		if (!this.isAvailable()) {
+		if (!this.isModuleAvailable()) {
 			return;
 		}
 
