@@ -24,7 +24,7 @@ var Utils = (function(){
 	if (_method) {
 		// use native matchesSelector method
 		_matchesSelector = function(element,selector) {
-			element[_method](selector);
+			return element[_method](selector);
 		};
 	}
 	else {
@@ -52,7 +52,7 @@ var Utils = (function(){
 	if (el && el.compareDocumentPosition) {
 		_contains = function(parent,child) {
 			/* jshint -W016 */
-			return parent.compareDocumentPosition(child) & 16;
+			return !!(parent.compareDocumentPosition(child) & 16);
 		};
 	}
 	else if (el && el.contains) {
