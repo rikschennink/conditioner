@@ -1,7 +1,4 @@
-/**
- * @namespace Observer
- */
-var Observer = {
+define({
 
 	/**
 	 * Subscribe to an event
@@ -143,4 +140,5 @@ var Observer = {
 
 		return false;
 	}
-};
+
+});

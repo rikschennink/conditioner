@@ -1,330 +1,290 @@
-// conditioner v0.8.9 - ConditionerJS - Frizz free, environment-aware, javascript modules.
+
+define('conditioner/Observer',{
+
+	/**
+	 * Subscribe to an event
+	 * @memberof Observer
+	 * @param {Object} obj - Object to subscribe to
+	 * @param {String} type - Event type to listen for
+	 * @param {Function} fn - Function to call when event fires
+	 * @static
+	 */
+	subscribe:function(obj,type,fn) {
+
+		if (!obj._subscriptions) {
+			obj._subscriptions = [];
+		}
+
+		// check if already added
+		var test,i=0,l=obj._subscriptions;
+		for (; i<l; i++) {
+			test = obj._subscriptions[i];
+			if (test.type === type && test.fn === fn) {
+				return;
+			}
+		}
+
+		// add event
+		obj._subscriptions.push({'type':type,'fn':fn});
+	},
+
+	/**
+	 * Unsubscribe from further notifications
+	 * @memberof Observer
+	 * @param {Object} obj - Object to unsubscribe from
+	 * @param {String} type - Event type to match
+	 * @param {Function} fn - Function to match
+	 * @static
+	 */
+	unsubscribe:function(obj,type,fn) {
+
+		if (!obj._subscriptions) {
+			return;
+		}
+
+		// find and remove
+		var test,i=obj._subscriptions.length;
+		while (--i >= 0) {
+			test = obj._subscriptions[i];
+			if (test.type === type && test.fn === fn) {
+				obj._subscriptions.splice(i,1);
+				break;
+			}
+		}
+	},
+
+	/**
+	 * Publish an event
+	 * @memberof Observer
+	 * @param {Object} obj - Object to fire the event on
+	 * @param {String} type - Event type to fire
+	 * @param {Object} [data] - optional data carrier
+	 * @static
+	 */
+	publish:function(obj,type,data) {
+
+		if (!obj._subscriptions) {
+			obj._subscriptions = [];
+		}
+
+		// find and execute callback
+		var subscriptions=[],subscription,i=0,l = obj._subscriptions.length;
+		for (;i<l;i++) {
+			subscription = obj._subscriptions[i];
+			if (subscription.type === type) {
+				subscriptions.push(subscription);
+			}
+		}
+
+		// call callbacks
+		l = subscriptions.length;
+		for (i=0;i<l;i++) {
+			subscriptions[i].fn(data);
+		}
+
+		// see if any receivers should be informed
+		if (obj._receivers) {
+			l = obj._receivers.length;
+			for (i=0;i<l;i++) {
+				this.publish(obj._receivers[i],type,data);
+			}
+		}
+
+	},
+
+	/**
+	 * Setup propagation target for events so they can bubble up the object tree
+	 * @memberof Observer
+	 * @param {Object} informant - Object to set as origin
+	 * @param {Object} receiver - Object to set as target
+	 * @return {Boolean} if setup was successful
+	 * @static
+	 */
+	inform:function(informant,receiver) {
+
+		if (!informant || !receiver) {
+			return false;
+		}
+
+		if (!informant._receivers) {
+			informant._receivers = [];
+		}
+
+		informant._receivers.push(receiver);
+
+		return true;
+	},
+
+	/**
+	 * Remove propagation target
+	 * @memberof Observer
+	 * @param {Object} informant - Object set as origin
+	 * @param {Object} receiver - Object set as target
+	 * @return {Boolean} if removed successful
+	 * @static
+	 */
+	conceal:function(informant,receiver) {
+
+		if (!informant || !receiver || !informant._receivers) {
+			return false;
+		}
+
+		// find and remove
+		var item,i=informant._receivers.length;
+		while (--i >= 0) {
+			item = informant._receivers[i];
+			if (item === receiver) {
+				informant._receivers.splice(i,1);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+});
+
+define('conditioner/contains',[],function(){
+
+	// define contains method based on browser capabilities
+	if (el && el.compareDocumentPosition) {
+		return function(parent,child) {
+			/* jshint -W016 */
+			return !!(parent.compareDocumentPosition(child) & 16);
+		};
+	}
+	else if (el && el.contains) {
+		return function(parent,child) {
+			return parent != child && parent.contains(child);
+		};
+	}
+	else {
+		return function(parent,child) {
+			var node = child.parentNode;
+			while (node) {
+				if (node === parent) {
+					return true;
+				}
+				node = node.parentNode;
+			}
+			return false;
+		};
+	}
+
+});
+define('conditioner/matchesSelector',[],function() {
+
+	// define method used for matchesSelector
+	var _matchesSelector = null,_method = null,el = document ? document.body : null;
+	if (!el || el.matches) {
+		_method = 'matches';
+	}
+	else if (el.webkitMatchesSelector) {
+		_method = 'webkitMatchesSelector';
+	}
+	else if (el.mozMatchesSelector) {
+		_method = 'mozMatchesSelector';
+	}
+	else if (el.msMatchesSelector) {
+		_method = 'msMatchesSelector';
+	}
+	else if (el.oMatchesSelector) {
+		_method = 'oMatchesSelector';
+	}
+
+	// if method found use native matchesSelector
+	if (_method) {
+		return function(element,selector) {
+			return element[_method](selector);
+		};
+	}
+
+	// check if an element matches a CSS selector
+	// https://gist.github.com/louisremi/2851541
+	return function(element,selector) {
+
+		// We'll use querySelectorAll to find all element matching the selector,
+		// then check if the given element is included in that list.
+		// Executing the query on the parentNode reduces the resulting nodeList,
+		// document doesn't have a parentNode, though.
+		var nodeList = (element.parentNode || document).querySelectorAll(selector) || [],
+			i = nodeList.length;
+
+		// loop through nodeList
+		while (i--) {
+			if (nodeList[i] == element) {return true;}
+		}
+		return false;
+	};
+
+});
+define('conditioner/mergeObjects',[],function(){
+	var exports = function(target, src) {
+
+		var array = Array.isArray(src);
+		var dst = array && [] || {};
+
+		src = src || {};
+
+		if (array) {
+
+			target = target || [];
+			dst = dst.concat(target);
+
+			src.forEach(function(e, i) {
+
+				if (typeof e === 'object') {
+					dst[i] = exports(target[i], e);
+				}
+				else {
+					if (target.indexOf(e) === -1) {
+						dst.push(e);
+					}
+				}
+			});
+		}
+		else {
+
+			if (target && typeof target === 'object') {
+
+				Object.keys(target).forEach(function (key) {
+					dst[key] = target[key];
+				});
+
+			}
+
+			Object.keys(src).forEach(function (key) {
+
+				if (typeof src[key] !== 'object' || !src[key]) {
+					dst[key] = src[key];
+				}
+				else {
+					if (!target[key]) {
+						dst[key] = src[key];
+					}
+					else {
+						dst[key] = exports(target[key], src[key]);
+					}
+				}
+
+			});
+		}
+
+		return dst;
+	};
+
+	return exports;
+});
+// conditioner v0.9.0 - ConditionerJS - Frizz free, environment-aware, javascript modules.
 // Copyright (c) 2013 Rik Schennink - http://conditionerjs.com
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
-define(['require'],function(require) {
+define('conditioner',['require','conditioner/Observer','conditioner/contains','conditioner/matchesSelector','conditioner/mergeObjects'],function(require,Observer,contains,matchesSelector,mergeObjects) {
 
-	'use strict';
+	
 
 	/**
 	 * @module conditioner
 	 */
-	/**
-	 * @namespace Utils
-	 */
-	var Utils = (function(){
-
-		// define method used for matchesSelector
-		var _matchesSelector = null,_method = null,el = document ? document.body : null;
-		if (!el || el.matches) {
-			_method = 'matches';
-		}
-		else if (el.webkitMatchesSelector) {
-			_method = 'webkitMatchesSelector';
-		}
-		else if (el.mozMatchesSelector) {
-			_method = 'mozMatchesSelector';
-		}
-		else if (el.msMatchesSelector) {
-			_method = 'msMatchesSelector';
-		}
-		else if (el.oMatchesSelector) {
-			_method = 'oMatchesSelector';
-		}
-
-		if (_method) {
-			// use native matchesSelector method
-			_matchesSelector = function(element,selector) {
-				return element[_method](selector);
-			};
-		}
-		else {
-			// check if an element matches a CSS selector
-			// https://gist.github.com/louisremi/2851541
-			_matchesSelector = function(element,selector) {
-
-				// We'll use querySelectorAll to find all element matching the selector,
-				// then check if the given element is included in that list.
-				// Executing the query on the parentNode reduces the resulting nodeList,
-				// document doesn't have a parentNode, though.
-				var nodeList = (element.parentNode || document).querySelectorAll(selector) || [],
-					i = nodeList.length;
-
-				// loop on the nodeList
-				while (i--) {
-					if (nodeList[i] == element) {return true;}
-				}
-				return false;
-			};
-		}
-
-		// define contains method based on browser capabilities
-		var _contains = null;
-		if (el && el.compareDocumentPosition) {
-			_contains = function(parent,child) {
-				/* jshint -W016 */
-				return !!(parent.compareDocumentPosition(child) & 16);
-			};
-		}
-		else if (el && el.contains) {
-			_contains = function(parent,child) {
-				return parent != child && parent.contains(child);
-			};
-		}
-		else {
-			_contains = function(parent,child) {
-				var node = child.parentNode;
-				while (node) {
-					if (node === parent) {
-						return true;
-					}
-					node = node.parentNode;
-				}
-				return false;
-			};
-		}
-
-		var exports = {
-
-			/**
-			 * Based on https://github.com/nrf110/deepmerge/blob/master/index.js
-			 * @memberof Utils
-			 * @param target {Object}
-			 * @param src {Object}
-			 * @returns {Object}
-			 * @static
-			 */
-			mergeObjects:function(target, src) {
-
-				var array = Array.isArray(src);
-				var dst = array && [] || {};
-
-				src = src || {};
-
-				if (array) {
-
-					target = target || [];
-					dst = dst.concat(target);
-
-					src.forEach(function(e, i) {
-
-						if (typeof e === 'object') {
-							dst[i] = exports.mergeObjects(target[i], e);
-						}
-						else {
-							if (target.indexOf(e) === -1) {
-								dst.push(e);
-							}
-						}
-					});
-				}
-				else {
-
-					if (target && typeof target === 'object') {
-
-						Object.keys(target).forEach(function (key) {
-							dst[key] = target[key];
-						});
-
-					}
-
-					Object.keys(src).forEach(function (key) {
-
-						if (typeof src[key] !== 'object' || !src[key]) {
-							dst[key] = src[key];
-						}
-						else {
-							if (!target[key]) {
-								dst[key] = src[key];
-							}
-							else {
-								dst[key] = exports.mergeObjects(target[key], src[key]);
-							}
-						}
-
-					});
-				}
-
-				return dst;
-			},
-
-			/**
-			 * matches an element to a selector
-			 * @memberof Utils
-			 * @param {Element} element
-			 * @param {String} selector
-			 * @return {Boolean}
-			 * @static
-			 */
-			matchesSelector:function(element,selector) {
-				if (!element) {
-					return false;
-				}
-				return _matchesSelector(element,selector);
-			},
-
-			/**
-			 * Tests if a child is a descendant of a given parent
-			 * @memberof Utils
-			 * @param child {Element}
-			 * @param parent {Element}
-			 * @returns {Boolean}
-			 * @static
-			 */
-			isDescendant:function(child,parent) {
-				return _contains(parent,child);
-			}
-
-		};
-
-		return exports;
-
-	}());
-	/**
-	 * @namespace Observer
-	 */
-	var Observer = {
-
-		/**
-		 * Subscribe to an event
-		 * @memberof Observer
-		 * @param {Object} obj - Object to subscribe to
-		 * @param {String} type - Event type to listen for
-		 * @param {Function} fn - Function to call when event fires
-		 * @static
-		 */
-		subscribe:function(obj,type,fn) {
-
-			if (!obj._subscriptions) {
-				obj._subscriptions = [];
-			}
-
-			// check if already added
-			var test,i=0,l=obj._subscriptions;
-			for (; i<l; i++) {
-				test = obj._subscriptions[i];
-				if (test.type === type && test.fn === fn) {
-					return;
-				}
-			}
-
-			// add event
-			obj._subscriptions.push({'type':type,'fn':fn});
-		},
-
-		/**
-		 * Unsubscribe from further notifications
-		 * @memberof Observer
-		 * @param {Object} obj - Object to unsubscribe from
-		 * @param {String} type - Event type to match
-		 * @param {Function} fn - Function to match
-		 * @static
-		 */
-		unsubscribe:function(obj,type,fn) {
-
-			if (!obj._subscriptions) {
-				return;
-			}
-
-			// find and remove
-			var test,i=obj._subscriptions.length;
-			while (--i >= 0) {
-				test = obj._subscriptions[i];
-				if (test.type === type && test.fn === fn) {
-					obj._subscriptions.splice(i,1);
-					break;
-				}
-			}
-		},
-
-		/**
-		 * Publish an event
-		 * @memberof Observer
-		 * @param {Object} obj - Object to fire the event on
-		 * @param {String} type - Event type to fire
-		 * @param {Object} [data] - optional data carrier
-		 * @static
-		 */
-		publish:function(obj,type,data) {
-
-			if (!obj._subscriptions) {
-				obj._subscriptions = [];
-			}
-
-			// find and execute callback
-			var subscriptions=[],subscription,i=0,l = obj._subscriptions.length;
-			for (;i<l;i++) {
-				subscription = obj._subscriptions[i];
-				if (subscription.type === type) {
-					subscriptions.push(subscription);
-				}
-			}
-
-			// call callbacks
-			l = subscriptions.length;
-			for (i=0;i<l;i++) {
-				subscriptions[i].fn(data);
-			}
-
-			// see if any receivers should be informed
-			if (obj._receivers) {
-				l = obj._receivers.length;
-				for (i=0;i<l;i++) {
-					this.publish(obj._receivers[i],type,data);
-				}
-			}
-
-		},
-
-		/**
-		 * Setup propagation target for events so they can bubble up the object tree
-		 * @memberof Observer
-		 * @param {Object} informant - Object to set as origin
-		 * @param {Object} receiver - Object to set as target
-		 * @return {Boolean} if setup was successful
-		 * @static
-		 */
-		inform:function(informant,receiver) {
-
-			if (!informant || !receiver) {
-				return false;
-			}
-
-			if (!informant._receivers) {
-				informant._receivers = [];
-			}
-
-			informant._receivers.push(receiver);
-
-			return true;
-		},
-
-		/**
-		 * Remove propagation target
-		 * @memberof Observer
-		 * @param {Object} informant - Object set as origin
-		 * @param {Object} receiver - Object set as target
-		 * @return {Boolean} if removed successful
-		 * @static
-		 */
-		conceal:function(informant,receiver) {
-
-			if (!informant || !receiver || !informant._receivers) {
-				return false;
-			}
-
-			// find and remove
-			var item,i=informant._receivers.length;
-			while (--i >= 0) {
-				item = informant._receivers[i];
-				if (item === receiver) {
-					informant._receivers.splice(i,1);
-					return true;
-				}
-			}
-
-			return false;
-		}
-	};
 	/**
 	 * @constructor
 	 */
@@ -1246,10 +1206,10 @@ define(['require'],function(require) {
 			}
 
 			// merge module global options with element options if found
-			options = globalOptions ? Utils.mergeObjects(globalOptions,elementOptions) : elementOptions;
+			options = globalOptions ? mergeObjects(globalOptions,elementOptions) : elementOptions;
 
 			// merge module default options with result of previous merge
-			options = this._Module.options ? Utils.mergeObjects(this._Module.options,options) : options;
+			options = this._Module.options ? mergeObjects(this._Module.options,options) : options;
 
 			// set reference
 			if (typeof this._Module === 'function') {
@@ -1459,11 +1419,11 @@ define(['require'],function(require) {
 		 */
 		matchesSelector:function(selector,context) {
 
-			if (context && !Utils.isDescendant(this._element,context)) {
+			if (context && !contains(context,this._element)) {
 				return false;
 			}
 
-			return Utils.matchesSelector(this._element,selector,context);
+			return matchesSelector(this._element,selector,context);
 		},
 
 		/**
@@ -1800,14 +1760,14 @@ define(['require'],function(require) {
 		/**
 		 * Reference to Observer object
 		 * @property {Observer}
-		 */
 		this.Observer = Observer;
+		 */
 
 		/**
 		 * Reference to mergeObject method
 		 * @property {Function} mergeObjects
-		 */
 		this.mergeObjects = Utils.mergeObjects;
+		 */
 	};
 
 	Conditioner.prototype = {
@@ -1824,7 +1784,7 @@ define(['require'],function(require) {
 			}
 
 			// update options
-			this._options = Utils.mergeObjects(this._options,options);
+			this._options = mergeObjects(this._options,options);
 
 			// loop over modules
 			var config,path,mod,alias;
