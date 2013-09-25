@@ -2,7 +2,7 @@
  * Tests if what consent the user has given concerning cookie storage
  * @module tests/cookie
  */
-define(['conditioner','security/StorageConsentGuard'],function(conditioner,StorageConsentGuard){
+define(['conditioner/Observer','security/StorageConsentGuard'],function(Observer,StorageConsentGuard){
 
     'use strict';
 
@@ -18,7 +18,7 @@ define(['conditioner','security/StorageConsentGuard'],function(conditioner,Stora
 
             // listen to changes on storage guard
             var guard = StorageConsentGuard.getInstance();
-            conditioner.Observer.subscribe(guard,'change',function() {
+            Observer.subscribe(guard,'change',function() {
                 measure();
             });
 
