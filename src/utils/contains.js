@@ -1,6 +1,7 @@
-define(function(){
+define(function() {
 
 	// define contains method based on browser capabilities
+	var el = document ? document.body : null;
 	if (el && el.compareDocumentPosition) {
 		return function(parent,child) {
 			/* jshint -W016 */

@@ -17,8 +17,6 @@ module.exports = function(grunt) {
 		},
 		jasmine:{
 			src:[
-				'<%= path.conditioner %>/Utils.js',
-				'<%= path.conditioner %>/Observer.js',
 				'<%= path.conditioner %>/ExpressionBase.js',
 				'<%= path.conditioner %>/UnaryExpression.js',
 				'<%= path.conditioner %>/BinaryExpression.js',
@@ -32,11 +30,23 @@ module.exports = function(grunt) {
 			],
 			options:{
 				specs:'<%= path.spec %>/*.js',
-				vendor:'<%= path.spec %>/lib/require.js',
 				helpers:[
-					'<%= path.spec %>/lib/main.js',
 					'<%= path.spec %>/shim/Function.bind.js'
-				]
+				],
+				template:require('grunt-template-jasmine-requirejs'),
+				templateOptions:{
+					requireConfig:{
+						baseUrl:'./src/',
+						callback: function() {
+							require(['utils/Observer','utils/contains','utils/matchesSelector','utils/mergeObjects'],function(Observer,contains,matchesSelector,mergeObjects) {
+								window['Observer'] = Observer;
+								window['contains'] = contains;
+								window['matchesSelector'] = matchesSelector;
+								window['mergeObjects'] = mergeObjects;
+							});
+						}
+					}
+				}
 			}
 		},
 		concat:{
