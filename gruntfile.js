@@ -175,7 +175,6 @@ module.exports = function(grunt) {
 	grunt.registerTask('test',['jshint','jasmine']);
 
 	// build
-	//grunt.registerTask('lib',['concat','copy','uglify']);
 	grunt.registerTask('lib',['concat','copy','requirejs','clean','uglify']);
 
 	// build than test
