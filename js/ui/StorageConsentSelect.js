@@ -1,4 +1,4 @@
-define(['security/StorageConsentGuard'],function(IStorageGuard){
+define(['security/StorageConsentGuard'],function(StorageConsentGuard){
 
     'use strict';
 
@@ -10,7 +10,7 @@ define(['security/StorageConsentGuard'],function(IStorageGuard){
         this._options = options;
 
         // set reference to storage guard
-        this._storageGuard = IStorageGuard.getInstance();
+        this._storageGuard = StorageConsentGuard.getInstance();
 
         // store inner HTML
         this._inner = this._element.innerHTML;

@@ -11,11 +11,11 @@ module.exports = function(grunt) {
 
                     preserveLicenseComments:false,
                     findNestedDependencies:true,
-                    optimize:'none',
+                    optimize:'uglify2',
 
                     baseUrl:'js/',
                     paths:{
-                        'conditioner':'lib/rikschennink/conditioner-0.8.9.min'
+                        'conditioner':'lib/rikschennink/conditioner-0.9.0.min'
                     },
 
                     name:'lib/jrburke/require',

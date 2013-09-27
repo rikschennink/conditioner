@@ -1,4 +1,4 @@
-define(['conditioner','module'],function(conditioner,module){
+define(['conditioner/Observer','conditioner/mergeObjects','module'],function(Observer,mergeObjects,module){
 
     'use strict';
 
@@ -24,7 +24,7 @@ define(['conditioner','module'],function(conditioner,module){
         }
 
         // sets initial options
-        this._options = conditioner.mergeObjects({
+        this._options = mergeObjects({
             'initial':'all',
             'levels':['all','none']
         },options);
@@ -52,7 +52,7 @@ define(['conditioner','module'],function(conditioner,module){
 
         this._level = level;
 
-        conditioner.Observer.publish(this,'change',this._level);
+        Observer.publish(this,'change',this._level);
     };
 
 
