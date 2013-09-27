@@ -1757,18 +1757,6 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 
 		// array of all parsed nodes
 		this._nodes = [];
-
-		/**
-		 * Reference to Observer object
-		 * @property {Observer}
-		this.Observer = Observer;
-		 */
-
-		/**
-		 * Reference to mergeObject method
-		 * @property {Function} mergeObjects
-		this.mergeObjects = Utils.mergeObjects;
-		 */
 	};
 
 	Conditioner.prototype = {
