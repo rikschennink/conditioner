@@ -11,7 +11,7 @@ module.exports = function(grunt) {
 
                     preserveLicenseComments:false,
                     findNestedDependencies:true,
-                    optimize:'none',
+                    optimize:'uglify2',
 
                     baseUrl:'js/',
                     paths:{
