@@ -12,18 +12,6 @@ var Conditioner = function() {
 
 	// array of all parsed nodes
 	this._nodes = [];
-
-	/**
-	 * Reference to Observer object
-	 * @property {Observer}
-	 */
-	this.Observer = Observer;
-
-	/**
-	 * Reference to mergeObject method
-	 * @property {Function} mergeObjects
-	 */
-	this.mergeObjects = Utils.mergeObjects;
 };
 
 Conditioner.prototype = {
@@ -40,7 +28,7 @@ Conditioner.prototype = {
 		}
 
 		// update options
-		this._options = Utils.mergeObjects(this._options,options);
+		this._options = mergeObjects(this._options,options);
 
 		// loop over modules
 		var config,path,mod,alias;

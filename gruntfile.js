@@ -3,11 +3,12 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg:grunt.file.readJSON('package.json'),
 		path:{
-			src:'src',
-			spec:'spec',
+			src:'./src',
+			spec:'./spec',
 			conditioner:'<%= path.src %>/conditioner',
 			wrapper:'<%= path.src %>/wrapper',
-			tests:'<%= path.src %>/tests'
+			tests:'<%= path.src %>/tests',
+			utils:'<%= path.src %>/utils'
 		},
 		meta: {
 			banner:'// <%= pkg.name %> v<%= pkg.version %> - <%= pkg.description %>\n' +
@@ -16,8 +17,6 @@ module.exports = function(grunt) {
 		},
 		jasmine:{
 			src:[
-				'<%= path.conditioner %>/Utils.js',
-				'<%= path.conditioner %>/Observer.js',
 				'<%= path.conditioner %>/ExpressionBase.js',
 				'<%= path.conditioner %>/UnaryExpression.js',
 				'<%= path.conditioner %>/BinaryExpression.js',
@@ -31,11 +30,23 @@ module.exports = function(grunt) {
 			],
 			options:{
 				specs:'<%= path.spec %>/*.js',
-				vendor:'<%= path.spec %>/lib/require.js',
 				helpers:[
-					'<%= path.spec %>/lib/main.js',
 					'<%= path.spec %>/shim/Function.bind.js'
-				]
+				],
+				template:require('grunt-template-jasmine-requirejs'),
+				templateOptions:{
+					requireConfig:{
+						baseUrl:'./src/',
+						callback: function() {
+							require(['utils/Observer','utils/contains','utils/matchesSelector','utils/mergeObjects'],function(Observer,contains,matchesSelector,mergeObjects) {
+								window['Observer'] = Observer;
+								window['contains'] = contains;
+								window['matchesSelector'] = matchesSelector;
+								window['mergeObjects'] = mergeObjects;
+							});
+						}
+					}
+				}
 			}
 		},
 		concat:{
@@ -63,9 +74,6 @@ module.exports = function(grunt) {
 				src:[
 					'<%= path.wrapper %>/intro.js',
 
-					'<%= path.conditioner %>/Utils.js',
-					'<%= path.conditioner %>/Observer.js',
-
 					'<%= path.conditioner %>/ExpressionBase.js',
 					'<%= path.conditioner %>/UnaryExpression.js',
 					'<%= path.conditioner %>/BinaryExpression.js',
@@ -82,7 +90,7 @@ module.exports = function(grunt) {
 
 					'<%= path.wrapper %>/outro.js'
 				],
-				dest:'dist/<%= pkg.name %>-<%= pkg.version %>.js'
+				dest:'dist/<%= pkg.name %>.js'
 			}
 		},
 		copy: {
@@ -90,14 +98,42 @@ module.exports = function(grunt) {
 				expand:true,
 				cwd:'<%= path.tests %>',
 				src:'*',
-				dest:'dist/tests/'
+				dest:'./dist/tests/'
+			},
+			utils: {
+				expand:true,
+				cwd:'<%= path.utils %>',
+				src:'*',
+				dest:'./dist/conditioner/'
 			}
 		},
+		requirejs:{
+			compile:{
+				options:{
+					optimize:'none',
+					baseUrl:'./dist',
+					name:'<%= pkg.name %>',
+					out:'./dist/conditioner-<%= pkg.version %>.js',
+					preserveLicenseComments:false,
+					useSourceUrl:false,
+					include:[
+						'conditioner/Observer',
+						'conditioner/contains',
+						'conditioner/matchesSelector',
+						'conditioner/mergeObjects'
+					]
+				}
+			}
+		},
+		clean:[
+			'./dist/conditioner',
+			'./dist/conditioner.js'
+		],
 		uglify: {
 			tests: {
 				expand: true,
 				src:'*',
-				dest:'dist/tests.min/',
+				dest:'./dist/tests.min/',
 				cwd:'<%= copy.tests.dest %>'
 			},
 			lib: {
@@ -105,8 +141,8 @@ module.exports = function(grunt) {
 					banner:'<%= meta.banner %>',
 					report:'gzip'
 				},
-				src:'<%= concat.dist.dest %>',
-				dest:'dist/<%= pkg.name %>-<%= pkg.version %>.min.js'
+				src:'<%= requirejs.compile.options.out %>',
+				dest:'./dist/<%= pkg.name %>-<%= pkg.version %>.min.js'
 			}
 		},
 		jshint:{
@@ -133,12 +169,13 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-clean');
 
 	// test
 	grunt.registerTask('test',['jshint','jasmine']);
 
 	// build
-	grunt.registerTask('lib',['concat','copy','uglify']);
+	grunt.registerTask('lib',['concat','copy','requirejs','clean','uglify']);
 
 	// build than test
 	grunt.registerTask('default',['lib','test']);

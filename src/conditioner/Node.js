@@ -100,11 +100,11 @@ Node.prototype = {
 	 */
 	matchesSelector:function(selector,context) {
 
-		if (context && !Utils.isDescendant(this._element,context)) {
+		if (context && !contains(context,this._element)) {
 			return false;
 		}
 
-		return Utils.matchesSelector(this._element,selector,context);
+		return matchesSelector(this._element,selector,context);
 	},
 
 	/**

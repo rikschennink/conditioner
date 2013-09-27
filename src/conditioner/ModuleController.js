@@ -210,10 +210,10 @@ ModuleController.prototype = {
 		}
 
 		// merge module global options with element options if found
-		options = globalOptions ? Utils.mergeObjects(globalOptions,elementOptions) : elementOptions;
+		options = globalOptions ? mergeObjects(globalOptions,elementOptions) : elementOptions;
 
 		// merge module default options with result of previous merge
-		options = this._Module.options ? Utils.mergeObjects(this._Module.options,options) : options;
+		options = this._Module.options ? mergeObjects(this._Module.options,options) : options;
 
 		// set reference
 		if (typeof this._Module === 'function') {
