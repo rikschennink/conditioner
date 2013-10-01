@@ -1327,7 +1327,7 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 	var Node = function(element) {
 
 		if (!element) {
-			throw new Error('Node: "element" is a required parameter.');
+			throw new Error('Node(element): "element" is a required parameter.');
 		}
 
 		// set element reference
@@ -1364,20 +1364,21 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 
 		/**
 		 * Initializes the node
+	     * @param {Array} controllers
 		 * @public
 		 */
-		init:function() {
+		init:function(controllers) {
+
+	        // if no module adapters found
+	        if (!controllers || !controllers.length) {
+	            throw new Error('Node.init(controllers): Expects an array of module controllers as parameters.');
+	        }
 
 			// parse element module attributes
-			this._moduleControllers = this._wrapModuleControllers();
+	        this._moduleControllers = controllers;
 
 			// initialize
 			var i=0,l=this._moduleControllers.length,mc;
-
-			// if no module adapters found
-			if (!l) {
-				throw new Error('Node: "element" has to have a "data-module" attribute containing a reference to a Module.');
-			}
 
 			// listen to init events on module adapters
 			for (;i<l;i++) {
@@ -1676,72 +1677,7 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 			}
 
 			return null;
-		},
-
-		/**
-		 * Returns an array of module adapters found specified on the element
-		 * @returns {Array}
-		 * @private
-		 */
-		_wrapModuleControllers:function() {
-
-			var result = [],
-				config = this._element.getAttribute('data-module') || '',
-				advanced = config.charAt(0) === '[';
-
-			if (advanced) {
-
-				var specs;
-
-				// add multiple module adapters
-				try {
-					specs = JSON.parse(config);
-				}
-				catch(e) {
-					// failed parsing spec
-					throw new Error('Node: "data-module" attribute containing a malformed JSON string.');
-				}
-
-				// no specification found or specification parsing failed
-				if (!specs) {
-					return [];
-				}
-
-				// setup vars
-				var l=specs.length,i=0,spec;
-
-				// create specs
-				for (;i<l;i++) {
-
-					spec = specs[i];
-
-					result.push(
-						new ModuleController(spec.path,this._element,{
-							'conditions':spec.conditions,
-							'options':spec.options
-						})
-					);
-
-				}
-
-
-			}
-			else if (config.length) {
-
-				// add default module adapter
-				result.push(
-					new ModuleController(config,this._element,{
-						'conditions':this._element.getAttribute('data-conditions'),
-						'options':this._element.getAttribute('data-options')
-					})
-				);
-
-			}
-
-			return result;
-
 		}
-
 	};
 	/**
 	 * @exports Conditioner
@@ -1847,7 +1783,7 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 			// initialize modules depending on assigned priority (in reverse, but priority is reversed as well so all is okay)
 			i = nodes.length;
 			while (--i >= 0) {
-				nodes[i].init();
+				nodes[i].init(this._getModuleControllersByElement(nodes[i].getElement()));
 			}
 
 			// merge new nodes with currently active nodes list
@@ -1857,7 +1793,48 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 			return nodes;
 		},
 
-		/**
+	    /**
+	     * load a single module
+	     * @param context
+	     * @param options {Array} - module controller configurations
+	     * [
+	     *     {
+	     *         path: 'path/to/module',
+	     *         conditions: 'config',
+	     *         options: {
+	     *             foo: 'bar'
+	     *         }
+	     *     }
+	     * ]
+	     */
+	    load:function(context,controllers) {
+
+	        if (!controllers) {return;}
+
+	        var node,i=0,l=options.length,moduleControllers=[],controller;
+
+	        // create node
+	        node = new Node(context);
+
+	        // create controllers
+	        for (;i<l;i++) {
+	            controller = options[i];
+	            moduleControllers.push(
+	                new ModuleController(controller.path,context,{
+	                    'conditions':controller.conditions,
+	                    'options':controller.options
+	                })
+	            );
+	        }
+
+	        // create initialize
+	        node.init(moduleControllers);
+
+	        // remember so can later be retrieved through getNode methodes
+	        this._nodes.push(node);
+	    },
+
+	    /**
 		 * Returns the first Node matching the selector
 		 * @param {String} [selector] - Selector to match the nodes to
 		 * @param {Document|Element} [context] - Context to search in
@@ -1908,7 +1885,67 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 			}
 
 			return singleResult ? null : results;
-		}
+		},
+
+	    /**
+	     * Parses module controller configuration on element and returns array of module controllers
+	     * @param element {Element}
+	     * @returns {Array}
+	     * @private
+	     */
+	    _getModuleControllersByElement:function(element) {
+
+	        var controllers = [],
+	            config = element.getAttribute('data-module') || '',
+	            advanced = config.charAt(0) === '[';
+
+	        if (advanced) {
+
+	            var specs;
+
+	            // add multiple module adapters
+	            try {
+	                specs = JSON.parse(config);
+	            }
+	            catch(e) {
+	                // failed parsing spec
+	                throw new Error('Node: "data-module" attribute containing a malformed JSON string.');
+	            }
+
+	            // no specification found or specification parsing failed
+	            if (!specs) {
+	                return [];
+	            }
+
+	            // setup vars
+	            var l=specs.length,i=0,spec;
+
+	            // create specs
+	            for (;i<l;i++) {
+
+	                spec = specs[i];
+
+	                controllers.push(
+	                    new ModuleController(spec.path,element,{
+	                        'conditions':spec.conditions,
+	                        'options':spec.options
+	                    })
+	                );
+	            }
+	        }
+	        else if (config.length) {
+
+	            controllers.push(
+	                new ModuleController(config,element,{
+	                    'conditions':element.getAttribute('data-conditions'),
+	                    'options':element.getAttribute('data-options')
+	                })
+	            );
+
+	        }
+
+	        return controllers;
+	    }
 
 	};
 

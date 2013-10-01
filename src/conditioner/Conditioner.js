@@ -102,7 +102,7 @@ Conditioner.prototype = {
 		// initialize modules depending on assigned priority (in reverse, but priority is reversed as well so all is okay)
 		i = nodes.length;
 		while (--i >= 0) {
-			nodes[i].init();
+			nodes[i].init(this._getModuleControllersByElement(nodes[i].getElement()));
 		}
 
 		// merge new nodes with currently active nodes list
@@ -112,7 +112,48 @@ Conditioner.prototype = {
 		return nodes;
 	},
 
-	/**
+    /**
+     * load a single module
+     * @param context
+     * @param controllers {Array} - module controller configurations
+     * [
+     *     {
+     *         path: 'path/to/module',
+     *         conditions: 'config',
+     *         options: {
+     *             foo: 'bar'
+     *         }
+     *     }
+     * ]
+     */
+    loadModule:function(context,controllers) {
+
+        if (!controllers) {return;}
+
+        var node,i=0,l=options.length,moduleControllers=[],controller;
+
+        // create node
+        node = new Node(context);
+
+        // create controllers
+        for (;i<l;i++) {
+            controller = options[i];
+            moduleControllers.push(
+                new ModuleController(controller.path,context,{
+                    'conditions':controller.conditions,
+                    'options':controller.options
+                })
+            );
+        }
+
+        // create initialize
+        node.init(moduleControllers);
+
+        // remember so can later be retrieved through getNode methodes
+        this._nodes.push(node);
+    },
+
+    /**
 	 * Returns the first Node matching the selector
 	 * @param {String} [selector] - Selector to match the nodes to
 	 * @param {Document|Element} [context] - Context to search in
@@ -163,6 +204,66 @@ Conditioner.prototype = {
 		}
 
 		return singleResult ? null : results;
-	}
+	},
+
+    /**
+     * Parses module controller configuration on element and returns array of module controllers
+     * @param element {Element}
+     * @returns {Array}
+     * @private
+     */
+    _getModuleControllersByElement:function(element) {
+
+        var controllers = [],
+            config = element.getAttribute('data-module') || '',
+            advanced = config.charAt(0) === '[';
+
+        if (advanced) {
+
+            var specs;
+
+            // add multiple module adapters
+            try {
+                specs = JSON.parse(config);
+            }
+            catch(e) {
+                // failed parsing spec
+                throw new Error('Node: "data-module" attribute containing a malformed JSON string.');
+            }
+
+            // no specification found or specification parsing failed
+            if (!specs) {
+                return [];
+            }
+
+            // setup vars
+            var l=specs.length,i=0,spec;
+
+            // create specs
+            for (;i<l;i++) {
+
+                spec = specs[i];
+
+                controllers.push(
+                    new ModuleController(spec.path,element,{
+                        'conditions':spec.conditions,
+                        'options':spec.options
+                    })
+                );
+            }
+        }
+        else if (config.length) {
+
+            controllers.push(
+                new ModuleController(config,element,{
+                    'conditions':element.getAttribute('data-conditions'),
+                    'options':element.getAttribute('data-options')
+                })
+            );
+
+        }
+
+        return controllers;
+    }
 
 };

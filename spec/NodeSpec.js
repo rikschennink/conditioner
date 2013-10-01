@@ -11,7 +11,7 @@
 
 			// act, assert
 			expect(function(){new Node();}).toThrow(
-				new Error('Node: "element" is a required parameter.')
+				new Error('Node(element): "element" is a required parameter.')
 			);
 
 		});
@@ -43,7 +43,7 @@
 
 		});
 
-		it('will throw an error when no "data-module" attribute defined',function(){
+		it('will throw an error when no controllers supplied on init method.',function(){
 
 			// arrange
 			var element = document.createElement('div');
@@ -53,10 +53,12 @@
 
 			// assert
 			expect(function(){node.init();}).toThrow(
-				new Error('Node: "element" has to have a "data-module" attribute containing a reference to a Module.')
+				new Error('Node.init(controllers): Expects an array of module controllers as parameters.')
 			);
 
 		});
+
+        /*
 
 		it('will return a module controller reference when "data-module" attribute defined',function(){
 
@@ -106,6 +108,9 @@
 			);
 
 		});
+
+        */
+
 
 	});
 
