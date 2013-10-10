@@ -51,10 +51,10 @@ var ExpressionFormatter = {
 		// read explicit expressions
 		for (;i<l;i++) {
 
-			c = expression.charAt(i);
+			c = expression.charCodeAt(i);
 
-			// check if an expression
-			if (c === '{') {
+			// check if an expression, test for '{'
+			if (c === 123) {
 
 				// now reading the expression
 				isValue = true;
@@ -65,11 +65,13 @@ var ExpressionFormatter = {
 				// fetch path
 				k = i-2;
 				while(k>=0) {
-					n = expression.charAt(k);
-					if (n === ' ' || n === '(') {
+					n = expression.charCodeAt(k);
+
+                    // test for ' ' or '('
+					if (n === 32 || n === 40) {
 						break;
 					}
-					path = n + path;
+					path = expression.charAt(k) + path;
 					k--;
 				}
 
@@ -77,7 +79,7 @@ var ExpressionFormatter = {
 				continue;
 
 			}
-			else if (c === '}') {
+			else if (c === 125) { // '}'
 
 				lastIndex = target.length-1;
 				index = lastIndex+1;
@@ -103,13 +105,13 @@ var ExpressionFormatter = {
 
 			// if we are reading an expression add characters to expression
 			if (isValue) {
-				value += c;
+				value += expression.charAt(i);
 				continue;
 			}
 
 			// if not in expression
-			// check if goes up a level
-			if (c === '(') {
+			// check if goes up a level, test for '('
+			if (c === 40) {
 
 				// create new empty array in target
 				target.push([]);
@@ -122,8 +124,8 @@ var ExpressionFormatter = {
 
 			}
 
-			// find out if next set of characters is a logical operator
-			if (c === ' ' || i===0 || c === '(') {
+			// find out if next set of characters is a logical operator. Testing for ' ' or '('
+			if (c === 32 || i === 0 || c === 40) {
 
 				operator = expression.substr(i,5).match(/and |or |not /g);
 				if (!operator) {
@@ -141,8 +143,8 @@ var ExpressionFormatter = {
 				i+=ol;
 			}
 
-			// expression or level finished, time to clean up
-			if (c === ')' || i === l-1) {
+			// expression or level finished, time to clean up. Testing for ')'
+			if (c === 41 || i === l-1) {
 
 				do {
 

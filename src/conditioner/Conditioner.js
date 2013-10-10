@@ -216,9 +216,11 @@ Conditioner.prototype = {
 
         var controllers = [],
             config = element.getAttribute('data-module') || '',
-            advanced = config.charAt(0) === '[';
 
-        if (advanced) {
+        // test if first character is a '[', if so multiple modules have been defined
+        multiple = config.charCodeAt(0) === 91;
+
+        if (multiple) {
 
             var specs;
 
@@ -228,7 +230,7 @@ Conditioner.prototype = {
             }
             catch(e) {
                 // failed parsing spec
-                throw new Error('Node: "data-module" attribute containing a malformed JSON string.');
+                throw new Error('Conditioner.load(context): "data-module" attribute contains a malformed JSON string.');
             }
 
             // no specification found or specification parsing failed
