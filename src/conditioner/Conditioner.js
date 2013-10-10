@@ -130,14 +130,14 @@ Conditioner.prototype = {
 
         if (!controllers) {return;}
 
-        var node,i=0,l=options.length,moduleControllers=[],controller;
+        var node,i=0,l=controllers.length,moduleControllers=[],controller;
 
         // create node
         node = new Node(element);
 
         // create controllers
         for (;i<l;i++) {
-            controller = options[i];
+            controller = controllers[i];
             moduleControllers.push(
                 new ModuleController(controller.path,element,{
                     'conditions':controller.conditions,
