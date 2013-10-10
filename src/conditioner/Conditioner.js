@@ -52,11 +52,11 @@ Conditioner.prototype = {
 	},
 
 	/**
-	 * Loads modules within the given context
+	 * Loads all modules within the supplied dom tree
 	 * @param {Document|Element} context - Context to find modules in
 	 * @return {Array} - Array of found Nodes
 	 */
-	loadModules:function(context) {
+	load:function(context) {
 
 		// if no context supplied throw error
 		if (!context) {
@@ -113,8 +113,7 @@ Conditioner.prototype = {
 	},
 
     /**
-     * load a single module
-     * @param context
+     * Bind module controller(s) to supplied element
      * @param controllers {Array} - module controller configurations
      * [
      *     {
@@ -125,21 +124,22 @@ Conditioner.prototype = {
      *         }
      *     }
      * ]
+     * @param element
      */
-    loadModule:function(context,controllers) {
+    bind:function(controllers,element) {
 
         if (!controllers) {return;}
 
         var node,i=0,l=options.length,moduleControllers=[],controller;
 
         // create node
-        node = new Node(context);
+        node = new Node(element);
 
         // create controllers
         for (;i<l;i++) {
             controller = options[i];
             moduleControllers.push(
-                new ModuleController(controller.path,context,{
+                new ModuleController(controller.path,element,{
                     'conditions':controller.conditions,
                     'options':controller.options
                 })

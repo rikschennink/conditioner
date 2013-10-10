@@ -34,7 +34,7 @@
 
 			// act
 			var conditioner = new Conditioner();
-			var results = conditioner.loadModules(group);
+			var results = conditioner.load(group);
 
 			// assert
 			expect(function(){return typeof results !== 'undefined'}).toBeTruthy();
@@ -63,7 +63,7 @@
 
 			// act
 			var conditioner = new Conditioner();
-			var results = conditioner.loadModules(group);
+			var results = conditioner.load(group);
 
 			// assert
 			expect(function(){return typeof results !== 'undefined'}).toBeTruthy();
@@ -74,7 +74,6 @@
 		});
 
 		it('will return the correct node when calling "getNode()"',function(){
-
 
 			// arrange
 			var a = document.createElement('div');
@@ -91,10 +90,10 @@
 
 			// act
 			var conditioner = new Conditioner();
-			conditioner.loadModules(group);
+			conditioner.load(group);
 
 			// assert
-			//expect(conditioner.getNode('#b')).toBeDefined();
+			expect(conditioner.getNode('#b')).toBeDefined();
 
 		});
 
