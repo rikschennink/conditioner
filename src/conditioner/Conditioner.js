@@ -114,7 +114,7 @@ Conditioner.prototype = {
 
     /**
      * Bind module controller(s) to supplied element
-     * @param controllers {Array} - module controller configurations
+     * @param controllers {Array|Object} - module controller configurations
      * [
      *     {
      *         path: 'path/to/module',
@@ -130,6 +130,10 @@ Conditioner.prototype = {
 
         if (!controllers) {return;}
 
+        // if controllers is object put in array
+        controllers = controllers.length ? controllers : [controllers];
+
+        // vars
         var node,i=0,l=controllers.length,moduleControllers=[],controller;
 
         // create node
