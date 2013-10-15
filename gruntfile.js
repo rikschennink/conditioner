@@ -83,26 +83,14 @@ module.exports = function(grunt) {
         watch: {
             css:{
                 files: ['./sass/**/*'],
-                tasks: ['sass','reload']
+                tasks: ['sass']
             },
             html:{
                 files:['_includes/*','_layouts/*','index.html'],
-                tasks:['jekyll:build','reload']
+                tasks:['jekyll:build']
             }
         }
     });
-
-
-    // reload chrome on save
-    grunt.registerTask("reload", "reload Chrome on OS X",
-        function() {
-            require("child_process").exec("osascript " +
-                "-e 'tell application \"Google Chrome\" " +
-                "to tell the active tab of its first window' " +
-                "-e 'reload' " +
-                "-e 'end tell'");
-        }
-    );
 
 
     // tasks
@@ -114,6 +102,10 @@ module.exports = function(grunt) {
 
 
     // build all the things
-    grunt.registerTask('default',['jshint','sass','requirejs']);
+    grunt.registerTask('build',['jshint','sass','requirejs']);
+
+
+    // setup dev server
+    grunt.registerTask('develop',['build','jekyll:server'])
 
 };
