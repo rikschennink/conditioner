@@ -58,7 +58,7 @@ Conditioner.prototype = {
 	 */
 	load:function(context) {
 
-		// if no context supplied throw error
+		// if no context supplied, throw error
 		if (!context) {
 			throw new Error('Conditioner.loadModules(context): "context" is a required parameter.');
 		}
@@ -92,9 +92,9 @@ Conditioner.prototype = {
 
 		// sort nodes by priority:
 		// higher numbers go first,
-		// then 0 (or no priority assigned),
+		// then 0 (a.k.a. no priority assigned),
 		// then negative numbers
-		// - (it's actually the other way around but that's because of the reversed while loop)
+		// note: it's actually the other way around but that's because of the reversed while loop coming next
 		nodes.sort(function(a,b){
 			return a.getPriority() - b.getPriority();
 		});
@@ -114,7 +114,7 @@ Conditioner.prototype = {
 
     /**
      * Bind module controller(s) to supplied element
-     * @param controllers {Array|Object} - module controller configurations
+     * @param {Array|Object} controllers - module controller configurations
      * [
      *     {
      *         path: 'path/to/module',
@@ -124,7 +124,7 @@ Conditioner.prototype = {
      *         }
      *     }
      * ]
-     * @param element
+     * @param {Element} element - Element to bind the controllers to
      */
     bind:function(controllers,element) {
 
@@ -212,7 +212,7 @@ Conditioner.prototype = {
 
     /**
      * Parses module controller configuration on element and returns array of module controllers
-     * @param element {Element}
+     * @param {Element} element
      * @returns {Array}
      * @private
      */
