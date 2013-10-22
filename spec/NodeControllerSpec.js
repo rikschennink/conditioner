@@ -2,7 +2,7 @@
 
 	'use strict';
 
-	describe('Node',function(){
+	describe('NodeController',function(){
 
 		it('will throw error when not passed and "element" in constructor',function(){
 
@@ -10,8 +10,8 @@
 			// var element = document.createElement('div');
 
 			// act, assert
-			expect(function(){new Node();}).toThrow(
-				new Error('Node(element): "element" is a required parameter.')
+			expect(function(){new NodeController();}).toThrow(
+				new Error('NodeController(element): "element" is a required parameter.')
 			);
 
 		});
@@ -22,10 +22,10 @@
 			var element = document.createElement('div');
 
 			// act
-			var node = new Node(element);
+			var node = new NodeController(element);
 
 			// assert
-			expect(Node.hasProcessed(element)).toEqual(true);
+			expect(NodeController.hasProcessed(element)).toEqual(true);
 
 		});
 
@@ -36,7 +36,7 @@
 			element.setAttribute('data-priority','5');
 
 			// act
-			var node = new Node(element);
+			var node = new NodeController(element);
 
 			// assert
 			expect(node.getPriority()).toEqual(5);
@@ -49,11 +49,11 @@
 			var element = document.createElement('div');
 
 			// act
-			var node = new Node(element);
+			var node = new NodeController(element);
 
 			// assert
 			expect(function(){node.init();}).toThrow(
-				new Error('Node.init(controllers): Expects an array of module controllers as parameters.')
+				new Error('NodeController.init(controllers): Expects an array of module controllers as parameters.')
 			);
 
 		});

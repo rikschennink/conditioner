@@ -1,4 +1,4 @@
 
-	return new Conditioner();
+	return new ModuleLoader();
 
 });

@@ -1,11 +1,11 @@
 /**
- * @exports Conditioner
+ * @exports ModuleLoader
  * @class
  * @constructor
  */
-var Conditioner = function() {
+var ModuleLoader = function() {
 
-	// options for conditioner
+	// options for ModuleLoader
 	this._options = {
 		'modules':{}
 	};
@@ -14,7 +14,7 @@ var Conditioner = function() {
 	this._nodes = [];
 };
 
-Conditioner.prototype = {
+ModuleLoader.prototype = {
 
 	/**
 	 * Set custom options
@@ -24,7 +24,7 @@ Conditioner.prototype = {
 	setOptions:function(options) {
 
 		if (!options) {
-			throw new Error('Conditioner.setOptions(options): "options" is a required parameter.');
+			throw new Error('ModuleLoader.setOptions(options): "options" is a required parameter.');
 		}
 
 		// update options
@@ -51,6 +51,7 @@ Conditioner.prototype = {
 		}
 	},
 
+
 	/**
 	 * Loads all modules within the supplied dom tree
 	 * @param {Document|Element} context - Context to find modules in
@@ -60,7 +61,7 @@ Conditioner.prototype = {
 
 		// if no context supplied, throw error
 		if (!context) {
-			throw new Error('Conditioner.loadModules(context): "context" is a required parameter.');
+			throw new Error('ModuleLoader.loadModules(context): "context" is a required parameter.');
 		}
 
 		// register vars and get elements
@@ -82,12 +83,12 @@ Conditioner.prototype = {
 			element = elements[i];
 
 			// test if already processed
-			if (Node.hasProcessed(element)) {
+			if (NodeController.hasProcessed(element)) {
 				continue;
 			}
 
 			// create new node
-			nodes.push(new Node(element));
+			nodes.push(new NodeController(element));
 		}
 
 		// sort nodes by priority:
@@ -113,7 +114,8 @@ Conditioner.prototype = {
 	},
 
     /**
-     * Bind module controller(s) to supplied element
+     * Decorate the given element with the passed module controller(s)
+     * @param {Element} element - Element to bind the controllers to
      * @param {Array|Object} controllers - module controller configurations
      * [
      *     {
@@ -124,9 +126,8 @@ Conditioner.prototype = {
      *         }
      *     }
      * ]
-     * @param {Element} element - Element to bind the controllers to
      */
-    bind:function(controllers,element) {
+    decorate:function(element,controllers) {
 
         if (!controllers) {return;}
 
@@ -137,7 +138,7 @@ Conditioner.prototype = {
         var node,i=0,l=controllers.length,moduleControllers=[],controller;
 
         // create node
-        node = new Node(element);
+        node = new NodeController(element);
 
         // create controllers
         for (;i<l;i++) {
@@ -234,7 +235,7 @@ Conditioner.prototype = {
             }
             catch(e) {
                 // failed parsing spec
-                throw new Error('Conditioner.load(context): "data-module" attribute contains a malformed JSON string.');
+                throw new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.');
             }
 
             // no specification found or specification parsing failed

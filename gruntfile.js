@@ -24,9 +24,9 @@ module.exports = function(grunt) {
 				'<%= path.conditioner %>/ConditionsManager.js',
 				'<%= path.conditioner %>/ModuleRegister.js',
 				'<%= path.conditioner %>/ModuleController.js',
-				'<%= path.conditioner %>/Node.js',
+				'<%= path.conditioner %>/NodeController.js',
 				'<%= path.conditioner %>/ModuleBase.js',
-				'<%= path.conditioner %>/Conditioner.js'
+				'<%= path.conditioner %>/ModuleLoader.js'
 			],
 			options:{
 				specs:'<%= path.spec %>/*.js',
@@ -85,8 +85,8 @@ module.exports = function(grunt) {
 					'<%= path.conditioner %>/ModuleRegister.js',
 					'<%= path.conditioner %>/ConditionsManager.js',
 					'<%= path.conditioner %>/ModuleController.js',
-					'<%= path.conditioner %>/Node.js',
-					'<%= path.conditioner %>/Conditioner.js',
+					'<%= path.conditioner %>/NodeController.js',
+					'<%= path.conditioner %>/ModuleLoader.js',
 
 					'<%= path.wrapper %>/outro.js'
 				],
@@ -178,6 +178,6 @@ module.exports = function(grunt) {
 	grunt.registerTask('lib',['concat','copy','requirejs','clean','uglify']);
 
 	// build than test
-	grunt.registerTask('default',['lib','test']);
+	grunt.registerTask('develop',['lib','test']);
 
 };

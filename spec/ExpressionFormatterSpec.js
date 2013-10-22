@@ -1,6 +1,7 @@
 (function(){
 
 	'use strict';
+
 	describe('ExpressionFormatter.getExpressionsCount',function(){
 
 		it('will return the correct amount of sub expressions',function(){

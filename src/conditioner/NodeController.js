@@ -1,13 +1,13 @@
 /**
- * @exports Node
+ * @exports NodeController
  * @class
  * @constructor
- * @param {Element} element
+ * @param {Object} element
  */
-var Node = function(element) {
+var NodeController = function(element) {
 
 	if (!element) {
-		throw new Error('Node(element): "element" is a required parameter.');
+		throw new Error('NodeController(element): "element" is a required parameter.');
 	}
 
 	// set element reference
@@ -36,22 +36,22 @@ var Node = function(element) {
  * @param {Element} element
  * @static
  */
-Node.hasProcessed = function(element) {
+NodeController.hasProcessed = function(element) {
 	return element.getAttribute('data-processed') === 'true';
 };
 
-Node.prototype = {
+NodeController.prototype = {
 
 	/**
 	 * Initializes the node
-     * @param controllers {Array}
+     * @param {Array} controllers
 	 * @public
 	 */
 	init:function(controllers) {
 
         // if no module adapters found
         if (!controllers || !controllers.length) {
-            throw new Error('Node.init(controllers): Expects an array of module controllers as parameters.');
+            throw new Error('NodeController.init(controllers): Expects an array of module controllers as parameters.');
         }
 
 		// parse element module attributes
@@ -236,7 +236,7 @@ Node.prototype = {
 
 	/**
 	 * Called when a module adapter has indicated it is ready to be loaded
-	 * @param ModuleController
+	 * @param {ModuleController} ModuleController
 	 * @private
 	 */
 	_onModuleAvailable:function(ModuleController) {
@@ -265,7 +265,7 @@ Node.prototype = {
 
 	/**
 	 * Sets the active module adapter
-	 * @param ModuleController
+	 * @param {ModuleController} ModuleController
 	 * @private
 	 */
 	_setActiveModuleController:function(ModuleController) {

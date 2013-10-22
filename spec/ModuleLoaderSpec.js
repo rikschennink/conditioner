@@ -2,7 +2,7 @@
 
 	'use strict';
 
-	describe('Conditioner',function(){
+	describe('ModuleLoader',function(){
 
 		it('will throw error when passing no value to setOptions()',function(){
 
@@ -10,11 +10,11 @@
 			// var options = {}
 
 			// act
-			var conditioner = new Conditioner();
+			var loader = new ModuleLoader();
 
 			// assert
-			expect(function(){conditioner.setOptions();}).toThrow(
-				new Error('Conditioner.setOptions(options): "options" is a required parameter.')
+			expect(function(){loader.setOptions();}).toThrow(
+				new Error('ModuleLoader.setOptions(options): "options" is a required parameter.')
 			);
 
 		});
@@ -33,8 +33,8 @@
 			group.appendChild(b);
 
 			// act
-			var conditioner = new Conditioner();
-			var results = conditioner.load(group);
+			var loader = new ModuleLoader();
+			var results = loader.load(group);
 
 			// assert
 			expect(function(){return typeof results !== 'undefined'}).toBeTruthy();
@@ -62,8 +62,8 @@
 			group.appendChild(c);
 
 			// act
-			var conditioner = new Conditioner();
-			var results = conditioner.load(group);
+			var loader = new ModuleLoader();
+			var results = loader.load(group);
 
 			// assert
 			expect(function(){return typeof results !== 'undefined'}).toBeTruthy();
@@ -89,11 +89,11 @@
 			group.appendChild(b);
 
 			// act
-			var conditioner = new Conditioner();
-			conditioner.load(group);
+			var loader = new ModuleLoader();
+			loader.load(group);
 
 			// assert
-			expect(conditioner.getNode('#b')).toBeDefined();
+			expect(loader.getNode('#b')).toBeDefined();
 
 		});
 
@@ -113,11 +113,11 @@
             group.appendChild(b);
 
             // act
-            var conditioner = new Conditioner();
+            var loader = new ModuleLoader();
 
             // assert
-            expect(function(){conditioner.load(group);}).toThrow(
-                new Error('Conditioner.load(context): "data-module" attribute contains a malformed JSON string.')
+            expect(function(){loader.load(group);}).toThrow(
+                new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.')
             );
 
         });
