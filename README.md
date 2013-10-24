@@ -35,10 +35,10 @@ The following HTML snippet shows how to setup this Google Map using Conditioner.
 
 Now the HTML is setup, we only have to tell the Conditioner to look for modules in a certain section of the DOM and we're done. 
 
-We can accomplish this by using the `loadModules` method.
+We can accomplish this by calling the `init` method.
 
 ```javascript
-conditioner.loadModules(document);
+conditioner.init();
 ```
 
 ## Documentation
