@@ -40,10 +40,10 @@ title: Conditioner.js • Frizz free, environment-aware, javascript modules.
 
 <p>Now the HTML is setup, we only have to tell the Conditioner to look for modules in a certain section of the DOM and we're done.</p>
 
-<p>We can accomplish this by using the <code>loadModules</code> method.</p>
+<p>We can accomplish this by calling the <code>init</code> method.</p>
 
 {% highlight html %}
-conditioner.loadModules(document);
+conditioner.init();
 {% endhighlight %}
 
 <p>The map module specified above is located right below this paragraph, it should be loading right now (if your window is at least 40ems wide). Go on and resize that browser window, Conditioner will load and unload the map on the fly.</p>
