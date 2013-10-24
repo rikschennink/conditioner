@@ -34,7 +34,7 @@
 
 			// act
 			var loader = new ModuleLoader();
-			var results = loader.load(group);
+			var results = loader.parse(group);
 
 			// assert
 			expect(function(){return typeof results !== 'undefined'}).toBeTruthy();
@@ -63,7 +63,7 @@
 
 			// act
 			var loader = new ModuleLoader();
-			var results = loader.load(group);
+			var results = loader.parse(group);
 
 			// assert
 			expect(function(){return typeof results !== 'undefined'}).toBeTruthy();
@@ -90,7 +90,7 @@
 
 			// act
 			var loader = new ModuleLoader();
-			loader.load(group);
+			loader.parse(group);
 
 			// assert
 			expect(loader.getNode('#b')).toBeDefined();
@@ -116,7 +116,7 @@
             var loader = new ModuleLoader();
 
             // assert
-            expect(function(){loader.load(group);}).toThrow(
+            expect(function(){loader.parse(group);}).toThrow(
                 new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.')
             );
 

@@ -16,6 +16,21 @@ var ModuleLoader = function() {
 
 ModuleLoader.prototype = {
 
+    /**
+     * Initialises the conditioner en parse the document for modules
+     * @param {Object} [options] - optional options to override
+     * @public
+     */
+    init:function(options) {
+
+        if (options) {
+            this.setOptions(options);
+        }
+
+        this.parse(document);
+
+    },
+
 	/**
 	 * Set custom options
 	 * @param {Object} options - options to override
@@ -57,7 +72,7 @@ ModuleLoader.prototype = {
 	 * @param {Document|Element} context - Context to find modules in
 	 * @return {Array} - Array of found Nodes
 	 */
-	load:function(context) {
+	parse:function(context) {
 
 		// if no context supplied, throw error
 		if (!context) {
@@ -127,7 +142,7 @@ ModuleLoader.prototype = {
      *     }
      * ]
      */
-    decorate:function(element,controllers) {
+    load:function(element,controllers) {
 
         if (!controllers) {return;}
 

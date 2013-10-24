@@ -22,7 +22,6 @@
 
 	describe('ExpressionFormatter.fromString',function(){
 
-
 		var parse = function(str) {
 			return ExpressionFormatter.fromString(str);
 		};
