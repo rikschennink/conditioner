@@ -12,7 +12,7 @@
     // load conditioner
     requirejs(['conditioner'],function(conditioner) {
 
-            conditioner.setOptions({
+            conditioner.init({
                 'modules':{
                     'ui/StarGazers':{
                         'options':{
@@ -38,8 +38,6 @@
                     }
                 }
             });
-
-            conditioner.loadModules(document);
 
         }
     );

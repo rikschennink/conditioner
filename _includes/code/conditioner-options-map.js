@@ -1,4 +1,4 @@
-conditioner.setOptions({
+conditioner.init({
     'modules':{
         'ui/Map':{
             'options':{

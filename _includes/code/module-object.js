@@ -14,7 +14,7 @@ define(function(){
 
         /**
          * Called by Conditioner to load the module
-         * @param {Node} element
+         * @param {Element} element
          * @param {Object} options
          * @returns {Object}
          */

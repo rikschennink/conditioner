@@ -69,7 +69,7 @@ title: Documentation • Conditioner.js
         <nav class="sub code">
             <ul>
                 <li><a href="#conditioner">conditioner</a> : object</li>
-                <li><a href="#node">Node</a> : Class</li>
+                <li><a href="#node-controller">NodeController</a> : Class</li>
                 <li><a href="#module-controller">ModuleController</a> : Class</li>
             </ul>
         </nav>
@@ -78,22 +78,44 @@ title: Documentation • Conditioner.js
         <section>
 
             <h3 class="code" id="conditioner">conditioner</h3>
-            <p>Call <code>loadModules(document)</code> on the conditioner object to start loading the modules defined in the HTML document. Once this is done the conditioner will return the array of
-                Nodes it found and will initialize them once they are ready.</p>
+            <p>Call <code>init()</code> on the conditioner object to start loading the modules in the HTML document. Once this is done the conditioner will return the nodes it found as an array and will initialize them automatically once they are ready.</p>
 
-            <p>Each <a href="#node">Node</a> contains one or more ModuleControllers, for each Node only one <a href="#module-controller">ModuleController</a> can have an active
-                <a href="#module-base">Module</a>.</p>
+            <p>Each <a href="#node-controller">Node</a> contains one or more ModuleControllers, for each node only one <a href="#module-controller">ModuleController</a> can have an active <a href="#module-base">Module</a>.</p>
 
             <p>The following methods are available on the conditioner object.</p>
 
             <nav class="sub code">
                 <ul>
+                    <li><a href="#conditioner-init">init(object)</a></li>
                     <li><a href="#conditioner-set-options">setOptions(object)</a></li>
-                    <li><a href="#conditioner-load-modules">loadModules(context)</a> &rarr; Array</li>
-                    <li><a href="#conditioner-get-node">getNode(selector,context)</a> &rarr; <a href="#node">Node</a> | null</li>
+                    <li><a href="#conditioner-parse">parse(context)</a> &rarr; Array</li>
+                    <li><a href="#conditioner-load">load(element,controllers)</a> &rarr; <a href="#node-controller">NodeController</a> | null</li>
+                    <li><a href="#conditioner-get-node">getNode(selector,context)</a> &rarr; <a href="#node-controller">NodeController</a> | null</li>
                     <li><a href="#conditioner-get-nodes">getNodes(selector,context)</a> &rarr; Array</li>
                 </ul>
             </nav>
+
+            <h4 class="code" id="conditioner-init">init</h4>
+            <p>Shortcut to initialise conditioner. You can pass options along, init will automatically call the <a
+                    href="#conditioner-parse">parse</a> method passing the document scope as a parameter.</p>
+
+{% highlight javascript %}/**
+* Initialise the conditioner
+* @param {object} [options]
+* @public
+*/
+conditioner.init({
+    'modules':{
+        'ui/Clock':'IClock',
+        'ui/Map':{
+            'alias':'IMap',
+            'options':{
+                'zoom':10
+            }
+        }
+    }
+}
+});{% endhighlight %}
 
             <h4 class="code" id="conditioner-set-options">setOptions</h4>
             <p>Allows defining of page level Module options and shortcuts to modules.</p>
@@ -117,7 +139,7 @@ conditioner.setOptions({
 
 
 
-            <h4 class="code" id="conditioner-load-modules">loadModules</h4>
+            <h4 class="code" id="conditioner-parse">parse</h4>
             <p>Finds and loads all Modules defined on child elements of the supplied context. Returns an array of found Nodes.</p>
 
 {% highlight javascript %}/**
@@ -125,9 +147,28 @@ conditioner.setOptions({
 * @param {element} context - Context to search for modules
 * @return {Array} - Array of found Nodes
 */
-conditioner.loadModules(context);{% endhighlight %}
+conditioner.parse(context);{% endhighlight %}
 
 
+            <h4 class="code" id="conditioner-load">load</h4>
+            <p>Creates a NodeController based on the passed element and set op controllers.</p>
+
+{% highlight javascript %}/**
+* Setup the given element with the passed module controller(s)
+* @param {Element} element - Element to bind the controllers to
+* @param {Array|Object} controllers - module controller configurations
+* [
+*     {
+*         path: 'path/to/module',
+*         conditions: 'config',
+*         options: {
+*             foo: 'bar'
+*         }
+*     }
+* ]
+* @return {NodeController|null} - The newly created node or null if something went wrong
+*/
+conditioner.load(element,controllers);{% endhighlight %}
 
             <h4 class="code" id="conditioner-get-node">getNode</h4>
             <p>Returns a single Node matching the supplied selector.</p>
@@ -157,21 +198,21 @@ conditioner.getNodes(selector,context);{% endhighlight %}
 
         <section>
 
-            <h3 class="code" id="node">Node</h3>
+            <h3 class="code" id="node-controller">NodeController</h3>
 
             <p>For each element found having a <code>data-module</code> attribute an object of type Node is made. The node object can then be queried for the ModuleControllers it contains.</p>
 
             <nav class="sub code">
                 <ul>
-                    <li><a href="#node-get-active-module-controller">getActiveModuleController</a> &rarr; <a href="#module-controller">ModuleController</a> | null</li>
-                    <li><a href="#node-get-module-controller">getModuleController</a> &rarr; <a href="#module-controller">ModuleController</a> | null</li>
-                    <li><a href="#node-get-module-controller-all">getModuleControllerAll</a> &rarr; Array</li>
-                    <li><a href="#node-matches-selector">matchesSelector</a> &rarr; boolean</li>
-                    <li><a href="#node-execute">execute</a> &rarr; object</li>
+                    <li><a href="#node-controller-get-active-module-controller">getActiveModuleController</a> &rarr; <a href="#module-controller">ModuleController</a> | null</li>
+                    <li><a href="#node-controller-get-module-controller">getModuleController</a> &rarr; <a href="#module-controller">ModuleController</a> | null</li>
+                    <li><a href="#node-controller-get-module-controller-all">getModuleControllerAll</a> &rarr; Array</li>
+                    <li><a href="#node-controller-matches-selector">matchesSelector</a> &rarr; boolean</li>
+                    <li><a href="#node-controller-execute">execute</a> &rarr; object</li>
                 </ul>
             </nav>
 
-            <h4 class="code" id="node-get-active-module-controller">getActiveModuleController</h4>
+            <h4 class="code" id="node-controller-get-active-module-controller">getActiveModuleController</h4>
             <p>Returns a reference to the currently active ModuleController.</p>
 {% highlight javascript %}/**
 * Returns a reference to the currently active module controller
@@ -181,7 +222,7 @@ conditioner.getNodes(selector,context);{% endhighlight %}
 node.getActiveModuleController();{% endhighlight %}
 
 
-            <h4 class="code" id="node-get-module-controller">getModuleController</h4>
+            <h4 class="code" id="node-controller-get-module-controller">getModuleController</h4>
             <p>Finds and returns the first module to match the supplied path.</p>
 {% highlight javascript %}/**
 * Returns the first ModuleController matching the given path
@@ -192,7 +233,7 @@ node.getActiveModuleController();{% endhighlight %}
 node.getModuleController(path);{% endhighlight %}
 
 
-            <h4 class="code" id="node-get-module-controllers">getModuleControllers</h4>
+            <h4 class="code" id="node-controller-get-module-controllers">getModuleControllers</h4>
             <p>Finds all ModuleControllers matching the supplied path and returns them as an array.</p>
 {% highlight javascript %}/**
 * Returns an array of ModuleControllers matching the given path
@@ -203,7 +244,7 @@ node.getModuleController(path);{% endhighlight %}
 node.getModuleControllers(path);{% endhighlight %}
 
 
-            <h4 class="code" id="node-matches-selector">matchesSelector</h4>
+            <h4 class="code" id="node-controller-matches-selector">matchesSelector</h4>
             <p>Tests if the element contained in the Node object matches the supplied CSS selector.</p>
 {% highlight javascript %}/**
 * Public method to check if the module matches the given query
@@ -215,7 +256,7 @@ node.getModuleControllers(path);{% endhighlight %}
 node.matchesSelector(selector,context);{% endhighlight %}
 
 
-            <h4 class="code" id="node-execute">execute</h4>
+            <h4 class="code" id="node-controller-execute">execute</h4>
             <p>Safely tries to executes a method on the currently active Module. Always returns an object containing a status code and a response data property.</p>
 {% highlight javascript %}/**
 * Public method for safely executing methods on the loaded module

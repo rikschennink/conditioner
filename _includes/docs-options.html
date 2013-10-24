@@ -7,12 +7,11 @@
     <p>Specifying specific options for a single module at node level:</p>
     {% highlight html %}<a data-module="ui/Map" data-options='{"zoom":10}'> ... </a>{% endhighlight %}
 
-    <p>Specifying generic options for mulitple modules of a certain type:</p>
+    <p>Specifying generic options for multiple modules of a certain type on conditioner init:</p>
 	{% highlight javascript %}{% include code/conditioner-options-map.js %}{% endhighlight %}
 
     <p>Conditioner will merge page level options with node level options and pass the resulting options to the activated module.</p>
 
     <p>In the (not so exciting) example above the resulting option object would be <code>{"zoom":10}</code>, since node level options take precedence over page level options zoom level <code>10</code> overwrites zoom level <code>5</code>.</p>
-
 
 </section>

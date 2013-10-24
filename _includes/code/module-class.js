@@ -2,7 +2,7 @@ define(function(){
 
     /**
      * Exports a constructor
-     * @param {Node} element
+     * @param {Element} element
      * @param {Object} options
      */
     var exports = function(element,options) {

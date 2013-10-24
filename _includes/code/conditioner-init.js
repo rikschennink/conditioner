@@ -1,3 +1,3 @@
 requirejs(['conditioner'],function(conditioner) {
-    conditioner.loadModules(document);
+    conditioner.init();
 });
