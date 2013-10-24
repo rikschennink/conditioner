@@ -1812,7 +1812,7 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 		},
 
 	    /**
-	     * Decorate the given element with the passed module controller(s)
+	     * Setup the given element with the passed module controller(s)
 	     * @param {Element} element - Element to bind the controllers to
 	     * @param {Array|Object} controllers - module controller configurations
 	     * [
@@ -1824,10 +1824,11 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 	     *         }
 	     *     }
 	     * ]
+	     * @return {NodeController|null} - The newly created node or null if something went wrong
 	     */
 	    load:function(element,controllers) {
 
-	        if (!controllers) {return;}
+	        if (!controllers) {return null;}
 
 	        // if controllers is object put in array
 	        controllers = controllers.length ? controllers : [controllers];
@@ -1854,6 +1855,9 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 
 	        // remember so can later be retrieved through getNode methodes
 	        this._nodes.push(node);
+
+	        // return the loaded Node
+	        return node;
 	    },
 
 	    /**
