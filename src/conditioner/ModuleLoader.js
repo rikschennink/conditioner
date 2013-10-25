@@ -17,7 +17,7 @@ var ModuleLoader = function() {
 ModuleLoader.prototype = {
 
     /**
-     * Initialises the conditioner en parse the document for modules
+     * Initialises the conditioner and parses the document for modules
      * @param {Object} [options] - optional options to override
      * @public
      */
@@ -131,7 +131,7 @@ ModuleLoader.prototype = {
     /**
      * Setup the given element with the passed module controller(s)
      * @param {Element} element - Element to bind the controllers to
-     * @param {Array|Object} controllers - module controller configurations
+     * @param {Array|ModuleController} controllers - module controller configurations
      * [
      *     {
      *         path: 'path/to/module',
