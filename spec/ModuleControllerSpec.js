@@ -17,7 +17,7 @@
 
 			// arrange
 			var element = document.createElement('div');
-			var path = 'mock/jasmine';
+			var path = '../spec/mock/jasmine';
 
 			// act
 			var mc = new ModuleController(path,element);
@@ -31,7 +31,7 @@
 
 			// arrange
 			var element = document.createElement('div');
-			var path = 'mock/jasmine';
+			var path = '../spec/mock/jasmine';
 
 			// act
 			var mc = new ModuleController(path,element);
@@ -45,7 +45,7 @@
 
 			// arrange
 			var element = document.createElement('div');
-			var path = 'mock/jasmine';
+			var path = '../spec/mock/jasmine';
 
 			// act
 			var mc = new ModuleController(path,element);
@@ -59,20 +59,20 @@
 
 			// arrange
 			var element = document.createElement('div');
-			var path = 'mock/jasmine';
+			var path = '../spec/mock/jasmine';
 
 			// act
 			var mc = new ModuleController(path,element);
 
 			// assert
-			expect(mc.matchesPath('mock/jasmine')).toBeTruthy();
+			expect(mc.matchesPath('../spec/mock/jasmine')).toBeTruthy();
 		});
 
 		it ('will not contain an active module after unloading the module',function() {
 
 			// arrange
 			var element = document.createElement('div');
-			var path = 'mock/jasmine';
+			var path = '../spec/mock/jasmine';
 
 			// act
 			var mc = new ModuleController(path,element);

@@ -118,7 +118,7 @@ ModuleLoader.prototype = {
 		// initialize modules depending on assigned priority (in reverse, but priority is reversed as well so all is okay)
 		i = nodes.length;
 		while (--i >= 0) {
-			nodes[i].init(this._getModuleControllersByElement(nodes[i].getElement()));
+			nodes[i].load(this._getModuleControllersByElement(nodes[i].getElement()));
 		}
 
 		// merge new nodes with currently active nodes list
@@ -168,13 +168,24 @@ ModuleLoader.prototype = {
         }
 
         // create initialize
-        node.init(moduleControllers);
+        node.load(moduleControllers);
 
         // remember so can later be retrieved through getNode methodes
         this._nodes.push(node);
 
         // return the loaded Node
         return node;
+    },
+
+    /**
+     * Returns a synced controller group which fires a load event once all modules have loaded
+     * @param {ModuleController} [args] - list of module controllers to synchronize
+     * @return SyncedControllerGroup
+     */
+    sync:function(args) {
+        var group = Object.create(SyncedControllerGroup.prototype);
+        SyncedControllerGroup.apply(group, arguments);
+        return group;
     },
 
     /**

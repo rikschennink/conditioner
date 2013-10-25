@@ -43,7 +43,7 @@
 
 		});
 
-		it('will throw an error when no controllers supplied on init method.',function(){
+		it('will throw an error when no controllers supplied to load method.',function(){
 
 			// arrange
 			var element = document.createElement('div');
@@ -52,11 +52,83 @@
 			var node = new NodeController(element);
 
 			// assert
-			expect(function(){node.init();}).toThrow(
-				new Error('NodeController.init(controllers): Expects an array of module controllers as parameters.')
+			expect(function(){node.load();}).toThrow(
+				new Error('NodeController.load(controllers): Expects an array of module controllers as parameters.')
 			);
 
 		});
+
+        it('will return a module controller reference when "data-module" attribute defined',function(){
+
+            // arrange
+            var element = document.createElement('div');
+            var node = new NodeController(element);
+            node.load([new ModuleController('../spec/mock/jasmine',element)]);
+
+            // act
+            var mc = node.getModuleController();
+
+            // assert
+            expect(mc).toBeDefined();
+
+        });
+
+        it('will return two module controllers when multiple controllers are passed to the load method',function(){
+
+            // arrange
+            var element = document.createElement('div');
+            var node = new NodeController(element);
+            node.load([
+                new ModuleController('../spec/mock/jasmine',element),
+                new ModuleController('../spec/mock/jasmine',element)
+            ]);
+
+            // act
+            var mcs = node.getModuleControllers();
+
+            // assert
+            expect(mcs).toBeDefined();
+            expect(mcs.length).toEqual(2);
+
+        });
+
+        it('will receive load event fired by the active module controller',function(){
+
+            // arrange
+            var caught = false,node,element;
+
+            runs(function(){
+
+                // arrange
+                element = document.createElement('div');
+                node = new NodeController(element);
+
+                Observer.subscribe(node,'load',function(){
+                    caught = true;
+                });
+
+                // act
+                node.load([
+                    new ModuleController('../spec/mock/jasmine',element)
+                ]);
+
+            });
+
+            // act
+            waitsFor(function(){
+                return caught;
+            },'event should have been caught',50);
+
+            // assert
+            runs(function(){
+                expect(caught).toBe(true);
+            });
+
+        });
+
+
+
+
 
 	});
 

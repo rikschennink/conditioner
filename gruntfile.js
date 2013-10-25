@@ -17,6 +17,7 @@ module.exports = function(grunt) {
 		},
 		jasmine:{
 			src:[
+                '<%= path.utils %>/Observer.js',
 				'<%= path.conditioner %>/ExpressionBase.js',
 				'<%= path.conditioner %>/UnaryExpression.js',
 				'<%= path.conditioner %>/BinaryExpression.js',
@@ -26,9 +27,11 @@ module.exports = function(grunt) {
 				'<%= path.conditioner %>/ModuleController.js',
 				'<%= path.conditioner %>/NodeController.js',
 				'<%= path.conditioner %>/ModuleBase.js',
+                '<%= path.conditioner %>/SyncedControllerGroup.js',
 				'<%= path.conditioner %>/ModuleLoader.js'
 			],
 			options:{
+                keepRunner:true,
 				specs:'<%= path.spec %>/*.js',
 				helpers:[
 					'<%= path.spec %>/shim/Function.bind.js'
@@ -86,6 +89,7 @@ module.exports = function(grunt) {
 					'<%= path.conditioner %>/ConditionsManager.js',
 					'<%= path.conditioner %>/ModuleController.js',
 					'<%= path.conditioner %>/NodeController.js',
+                    '<%= path.conditioner %>/SyncedControllerGroup.js',
 					'<%= path.conditioner %>/ModuleLoader.js',
 
 					'<%= path.wrapper %>/outro.js'

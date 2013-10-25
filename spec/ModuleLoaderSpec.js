@@ -23,10 +23,10 @@
 
 			// arrange
 			var a = document.createElement('div');
-			a.setAttribute('data-module','mock/jasmine');
+			a.setAttribute('data-module','../spec/mock/jasmine');
 
 			var b = document.createElement('div');
-			b.setAttribute('data-module','mock/jasmine');
+			b.setAttribute('data-module','../spec/mock/jasmine');
 
 			var group = document.createElement('div');
 			group.appendChild(a);
@@ -46,15 +46,15 @@
 
 			// arrange
 			var a = document.createElement('div');
-			a.setAttribute('data-module','mock/jasmine');
+			a.setAttribute('data-module','../spec/mock/jasmine');
 			a.setAttribute('data-priority','-1');
 
 			var b = document.createElement('div');
 			b.setAttribute('data-priority','1');
-			b.setAttribute('data-module','mock/jasmine');
+			b.setAttribute('data-module','../spec/mock/jasmine');
 
 			var c = document.createElement('div');
-			c.setAttribute('data-module','mock/jasmine');
+			c.setAttribute('data-module','../spec/mock/jasmine');
 
 			var group = document.createElement('div');
 			group.appendChild(a);
@@ -78,11 +78,11 @@
 			// arrange
 			var a = document.createElement('div');
 			a.id = 'a';
-			a.setAttribute('data-module','mock/jasmine');
+			a.setAttribute('data-module','../spec/mock/jasmine');
 
 			var b = document.createElement('div');
 			b.id = 'b';
-			b.setAttribute('data-module','mock/jasmine');
+			b.setAttribute('data-module','../spec/mock/jasmine');
 
 			var group = document.createElement('div');
 			group.appendChild(a);
@@ -102,7 +102,7 @@
             // arrange
             var a = document.createElement('div');
             a.id = 'a';
-            a.setAttribute('data-module','mock/jasmine');
+            a.setAttribute('data-module','../spec/mock/jasmine');
 
             var b = document.createElement('div');
             b.id = 'b';
@@ -122,58 +122,6 @@
 
         });
 
-        /*
-
-         it('will return a module controller reference when "data-module" attribute defined',function(){
-
-         // arrange
-         var element = document.createElement('div');
-         element.setAttribute('data-module','mock/jasmine');
-
-         // act
-         var node = new Node(element);
-         node.init();
-         var result = node.getModuleController('mock/jasmine');
-
-         // assert
-         expect(function(){return typeof result !== 'undefined'}).toBeTruthy();
-
-         });
-
-         it('will return a multiple module controllers when "data-module" attribute contains JSON config',function(){
-
-         // arrange
-         var element = document.createElement('div');
-         element.setAttribute('data-module','[{"path":"mock/jasmine"},{"path":"mock/jasmine"}]');
-
-         // act
-         var node = new Node(element);
-         node.init();
-         var result = node.getModuleControllers('mock/jasmine');
-
-         // assert
-         expect(function(){return typeof result !== 'undefined'}).toBeTruthy();
-         expect(result instanceof Array).toBeTruthy();
-
-         });
-
-         it('will throw an error on malformed "data-module" attributes',function(){
-
-         // arrange
-         var element = document.createElement('div');
-         element.setAttribute('data-module','[{"mock/jasmine"},{]');
-
-         // act
-         var node = new Node(element);
-
-         // assert
-         expect(function(){node.init();}).toThrow(
-         new Error('Node: "data-module" attribute containing a malformed JSON string.')
-         );
-
-         });
-
-         */
 
 	});
 
