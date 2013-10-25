@@ -54,9 +54,14 @@ h3 {
 h4 {
     font-weight:normal;
     font-size:1.25em;
-    padding-top:3em;
+    padding-top:2em;
     margin:0 0 .5em;
     color:#555;
+
+    .code {
+        color:#aaa;
+        font-size:.875em;
+    }
 }
 
 h4+h5 {

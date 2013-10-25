@@ -12,11 +12,13 @@
 	</li>
 	<li>
 		<a href="{{ site.url }}/docs/#api">JavaScript API</a>
-		<ul>
-			<li><a href="{{ site.url }}/docs/#conditioner">Conditioner</a></li>
-			<li><a href="{{ site.url }}/docs/#node-controller">NodeController</a></li>
-			<li><a href="{{ site.url }}/docs/#module-controller">ModuleController</a></li>
-		</ul>
+        {% if site.api %}
+        <ul>
+            {% for item in site.api %}
+            <li><a href="{{ site.url }}/docs/#{{item.name}}">{{item.name}}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
 	</li>
 	<li><a href="{{ site.url }}/docs/#tests">Custom tests</a></li>
 </ul>

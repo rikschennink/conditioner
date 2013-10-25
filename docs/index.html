@@ -11,7 +11,6 @@ title: Documentation • Conditioner.js
     {% include nav-docs.html %}
     </nav>
 
-
     {% include docs-setup.html %}
 
     <section>
@@ -60,293 +59,90 @@ title: Documentation • Conditioner.js
 
     </section>
 
+
+
+
     <section>
 
         <h2 id="api">JavaScript API</h2>
 
         <p>Conditioner consists of a group of publicly accessible JavaScript Classes. These Classes allow you to safely access modules once they've been parsed. The starting point to load modules is always the <code>conditioner</code> object of which there is only one instance.</p>
 
+        {% if site.api %}
         <nav class="sub code">
             <ul>
-                <li><a href="#conditioner">conditioner</a> : object</li>
-                <li><a href="#node-controller">NodeController</a> : Class</li>
-                <li><a href="#module-controller">ModuleController</a> : Class</li>
+                {% for item in site.api %}
+                <li>
+                    <a href="#{{item.name}}">{{item.name}}</a>{% if item.type %}&nbsp;:&nbsp;{{item.type}}{% endif %}
+                </li>
+                {% endfor %}
             </ul>
         </nav>
+        {% endif %}
 
-
+        {% for item in site.api %}
         <section>
+            <h3 id="{{ item.name }}">{{ item.name }}</h3>
+            {{ item.description | markdownify }}
 
-            <h3 class="code" id="conditioner">conditioner</h3>
-            <p>Call <code>init()</code> on the conditioner object to start loading the modules in the HTML document. Once this is done the conditioner will return the nodes it found as an array and will initialize them automatically once they are ready.</p>
+            {% if item.events %}
+            <table class="events">
+                <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for event in item.events %}
+                <tr>
+                    <th>{{event.name}}</th>
+                    <td>{{ event.description | markdownify }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
 
-            <p>Each <a href="#node-controller">Node</a> contains one or more ModuleControllers, for each node only one <a href="#module-controller">ModuleController</a> can have an active <a href="#module-base">Module</a>.</p>
-
-            <p>The following methods are available on the conditioner object.</p>
-
+            {% if item.methods %}
             <nav class="sub code">
                 <ul>
-                    <li><a href="#conditioner-init">init(object)</a></li>
-                    <li><a href="#conditioner-set-options">setOptions(object)</a></li>
-                    <li><a href="#conditioner-parse">parse(context)</a> &rarr; Array</li>
-                    <li><a href="#conditioner-load">load(element,controllers)</a> &rarr; <a href="#node-controller">NodeController</a> | null</li>
-                    <li><a href="#conditioner-get-node">getNode(selector,context)</a> &rarr; <a href="#node-controller">NodeController</a> | null</li>
-                    <li><a href="#conditioner-get-nodes">getNodes(selector,context)</a> &rarr; Array</li>
+                    {% for method in item.methods %}
+                    <li><a href="#{{item.name}}-{{method.name}}">{{method.name}}({% for param in method.params %}{% if forloop.index > 1 %}, {% endif %}{{ param.name }}{% endfor %})</a>{% if method.returns %}&nbsp;→&nbsp;{{method.returns}}{% endif %}</li>
+                    {% endfor %}
                 </ul>
             </nav>
+            {% endif %}
 
-            <h4 class="code" id="conditioner-init">init</h4>
-            <p>Shortcut to initialise conditioner. You can pass options along, init will automatically call the <a
-                    href="#conditioner-parse">parse</a> method passing the document scope as a parameter.</p>
+            {% for method in item.methods %}
+            <h4 id="{{item.name}}-{{method.name}}">{{method.name}}{% if method.returns %}<span class="code">&nbsp;→&nbsp;{{method.returns}}</span>{% endif %}</h4>
+            {{ method.description | markdownify }}
 
-{% highlight javascript %}/**
-* Initialise the conditioner
-* @param {object} [options]
-* @public
-*/
-conditioner.init({
-    'modules':{
-        'ui/Clock':'IClock',
-        'ui/Map':{
-            'alias':'IMap',
-            'options':{
-                'zoom':10
-            }
-        }
-    }
-});{% endhighlight %}
+            {% if method.params %}
+            <table class="params">
+                <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for param in method.params %}
+                <tr>
+                    <th>{{param.name}}</th>
+                    <td>{{param.type}}</td>
+                    <td>{{param.description | markdownify}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
 
-            <h4 class="code" id="conditioner-set-options">setOptions</h4>
-            <p>Allows defining of page level Module options and shortcuts to modules.</p>
-
-{% highlight javascript %}/**
-* Set conditioner options
-* @param {object} options
-* @public
-*/
-conditioner.setOptions({
-    'modules':{
-        'ui/Clock':'IClock',
-        'ui/Map':{
-            'alias':'IMap',
-            'options':{
-                'zoom':10
-            }
-        }
-    }
-});{% endhighlight %}
-
-
-
-            <h4 class="code" id="conditioner-parse">parse</h4>
-            <p>Finds and loads all Modules defined on child elements of the supplied context. Returns an array of found Nodes.</p>
-
-{% highlight javascript %}/**
-* Loads modules found within the given context
-* @param {element} context - Context to search for modules
-* @return {Array} - Array of found Nodes
-*/
-conditioner.parse(context);{% endhighlight %}
-
-
-            <h4 class="code" id="conditioner-load">load</h4>
-            <p>Creates a NodeController based on the passed element and set of controllers.</p>
-
-{% highlight javascript %}/**
-* Setup the given element with the passed module controller(s)
-* @param {Element} element - Element to bind the controllers to
-* @param {Array|Object} controllers - module controller configurations
-* [
-*     {
-*         path: 'path/to/module',
-*         conditions: 'config',
-*         options: {
-*             foo: 'bar'
-*         }
-*     }
-* ]
-* @return {NodeController|null} - The newly created node or null if something went wrong
-*/
-conditioner.load(element,controllers);{% endhighlight %}
-
-            <h4 class="code" id="conditioner-get-node">getNode</h4>
-            <p>Returns a single Node matching the supplied selector.</p>
-{% highlight javascript %}/**
-* Returns the first Node matching the selector
-* @param {String} [selector] - Selector to match the nodes to
-* @param {Document|Element} [context] - Context to search in
-* @return {Node|null} First matched node or null
-*/
-conditioner.getNode(selector,context);{% endhighlight %}
-
-
-
-            <h4 class="code" id="conditioner-get-nodes">getNodes</h4>
-            <p>Returns an Array of found Nodes matching the supplied selector.</p>
-{% highlight javascript %}/**
-* Returns all nodes matching the selector
-* @param {String} [selector] - Optional selector to match the nodes to
-* @param {Document|Element} [context] - Context to search in
-* @return {Array} Array containing matched nodes or empty Array
-*/
-conditioner.getNodes(selector,context);{% endhighlight %}
-
+            {% endfor %}
 
         </section>
-
-
-        <section>
-
-            <h3 class="code" id="node-controller">NodeController</h3>
-
-            <p>For each element found having a <code>data-module</code> attribute an object of type Node is made. The node object can then be queried for the ModuleControllers it contains.</p>
-
-            <nav class="sub code">
-                <ul>
-                    <li><a href="#node-controller-get-active-module-controller">getActiveModuleController</a> &rarr; <a href="#module-controller">ModuleController</a> | null</li>
-                    <li><a href="#node-controller-get-module-controller">getModuleController</a> &rarr; <a href="#module-controller">ModuleController</a> | null</li>
-                    <li><a href="#node-controller-get-module-controller-all">getModuleControllerAll</a> &rarr; Array</li>
-                    <li><a href="#node-controller-matches-selector">matchesSelector</a> &rarr; boolean</li>
-                    <li><a href="#node-controller-execute">execute</a> &rarr; object</li>
-                </ul>
-            </nav>
-
-            <h4 class="code" id="node-controller-get-active-module-controller">getActiveModuleController</h4>
-            <p>Returns a reference to the currently active ModuleController.</p>
-{% highlight javascript %}/**
-* Returns a reference to the currently active module controller
-* @return {ModuleController|null}
-* @public
-*/
-node.getActiveModuleController();{% endhighlight %}
-
-
-            <h4 class="code" id="node-controller-get-module-controller">getModuleController</h4>
-            <p>Finds and returns the first module to match the supplied path.</p>
-{% highlight javascript %}/**
-* Returns the first ModuleController matching the given path
-* @param {String} [path] to module
-* @return {ModuleController|null}
-* @public
-*/
-node.getModuleController(path);{% endhighlight %}
-
-
-            <h4 class="code" id="node-controller-get-module-controllers">getModuleControllers</h4>
-            <p>Finds all ModuleControllers matching the supplied path and returns them as an array.</p>
-{% highlight javascript %}/**
-* Returns an array of ModuleControllers matching the given path
-* @param {String} [path] to module
-* @return {Array}
-* @public
-*/
-node.getModuleControllers(path);{% endhighlight %}
-
-
-            <h4 class="code" id="node-controller-matches-selector">matchesSelector</h4>
-            <p>Tests if the element contained in the Node object matches the supplied CSS selector.</p>
-{% highlight javascript %}/**
-* Public method to check if the module matches the given query
-* @param {String} selector - CSS selector to match module to
-* @param {Document|Element} [context] - Context to search in
-* @return {Boolean}
-* @public
-*/
-node.matchesSelector(selector,context);{% endhighlight %}
-
-
-            <h4 class="code" id="node-controller-execute">execute</h4>
-            <p>Safely tries to executes a method on the currently active Module. Always returns an object containing a status code and a response data property.</p>
-{% highlight javascript %}/**
-* Public method for safely executing methods on the loaded module
-* @param {string} method - method key
-* @param {Array} params - array containing the method parameters
-* @return {object} returns object containing status code and possible response data
-* @public
-*/
-node.execute(method,[params]);{% endhighlight %}
-
-        </section>
-
-
-
-
-        <section>
-
-            <h3 class="code" id="module-controller">ModuleController</h3>
-
-            <p>The ModuleController loads and unloads the contained Module based on the conditions received. It propagates events from the contained Module so you can safely subscribe to them.</p>
-            <nav class="sub code">
-                <ul>
-                    <li><a href="#module-controller-matches-path">matchesPath</a> &rarr; boolean</li>
-                    <li><a href="#module-controller-is-module-active">isModuleActive</a> &rarr; boolean</li>
-					<li><a href="#module-controller-is-module-available">isModuleAvailable</a> &rarr; boolean</li>
-                    <li><a href="#module-controller-load">load</a></li>
-                    <li><a href="#module-controller-unload">unload</a> &rarr; boolean</li>
-                    <li><a href="#module-controller-execute">execute</a> &rarr; object</li>
-                </ul>
-            </nav>
-
-        <h4 class="code" id="module-controller-matches-path">matchesPath</h4>
-        <p>Returns true if the ModuleController is in charge of a module with the given path.</p>
-{% highlight javascript %}/**
-* Checks if the module matches the path
-* @param {string} path - path of module to test for
-* @return {boolean} if matched
-* @public
-*/
-moduleController.matchesPath(path);{% endhighlight %}
-
-        <h4 class="code" id="module-controller-is-module-active">isModuleActive</h4>
-        <p>Returns true if the module contained within the ModuleController is currently loaded.</p>
-{% highlight javascript %}/**
-* Returns true if module is currently active and loaded
-* @returns {Boolean}
-* @public
-*/
-moduleController.isModuleActive();{% endhighlight %}
-
-
-		<h4 class="code" id="module-controller-is-module-available">isModuleAvailable</h4>
-		<p>Returns true if the module is available for initialisation.</p>
-{% highlight javascript %}/**
-* Returns true if the module is available for initialisation, this is true when conditions have been met.
-* This does not mean the module is active, it means the module is ready and suitable for activation.
-* @return {Boolean}
-* @public
-*/
-moduleController.isModuleAvailable();{% endhighlight %}
-
-
-        <h4 class="code" id="module-controller-load">load</h4>
-        <p>Loads the Module if it's available (if conditions suitable). Publishes the 'load' event once finished.</p>
-{% highlight javascript %}/**
-* Load the module contained in this ModuleController
-* @public
-* @fires load
-*/
-moduleController.load();{% endhighlight %}
-
-        <h4 class="code" id="module-controller-unload">unload</h4>
-        <p>Unloads the Module if it's not already unloaded. Publishes the 'unload' event once done.</p>
-{% highlight javascript %}/**
-* Unloads the Module
-* @fires unload
-* @return {boolean}
-* @public
-*/
-moduleController.unload();{% endhighlight %}
-
-        <h4 class="code" id="module-controller-execute">execute</h4>
-        <p>Safely tries to execute a method on the module contained within the ModuleController.</p>
-{% highlight javascript %}/**
-* Executes a methods on the loaded module
-* @param {string} method - method key
-* @param {Array} params - optional array containing the method parameters
-* @return {object} containing response of executed method and a status code
-* @public
-*/
-moduleController.execute(method,[params]);{% endhighlight %}
+        {% endfor %}
 
     </section>
 
