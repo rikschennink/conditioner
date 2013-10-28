@@ -1,6 +1,7 @@
 define(function(){
 
-    var _uid = 0,_db = {};
+    var _uid = 1, // start at 1 because !uid returns false when uid===0
+        _db = {};
 
     return {
 
@@ -11,7 +12,7 @@ define(function(){
                 uid = _uid++;
                 obj.__pubSubUID = uid;
                 _db[uid] = {
-                    obj:obj
+                    'obj':obj
                 };
             }
 

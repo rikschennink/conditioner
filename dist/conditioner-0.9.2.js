@@ -1,7 +1,8 @@
 
 define('conditioner/Observer',[],function(){
 
-    var _uid = 0,_db = {};
+    var _uid = 1, // start at 1 because !uid returns false when uid===0
+        _db = {};
 
     return {
 
@@ -1572,7 +1573,6 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 			}
 
 			this._onModulesInitialized();
-
 		},
 
 		/**
@@ -1809,7 +1809,7 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 	ModuleLoader.prototype = {
 
 	    /**
-	     * Initialises the conditioner en parse the document for modules
+	     * Initialises the conditioner and parses the document for modules
 	     * @param {Object} [options] - optional options to override
 	     * @public
 	     */
@@ -1923,7 +1923,7 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 	    /**
 	     * Setup the given element with the passed module controller(s)
 	     * @param {Element} element - Element to bind the controllers to
-	     * @param {Array|Object} controllers - module controller configurations
+	     * @param {Array|ModuleController} controllers - module controller configurations
 	     * [
 	     *     {
 	     *         path: 'path/to/module',

@@ -211,7 +211,6 @@ NodeController.prototype = {
 		}
 
 		this._onModulesInitialized();
-
 	},
 
 	/**

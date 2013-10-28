@@ -92,6 +92,24 @@
 
         });
 
+        it('will load the first module when multiple non conditioned module controllers are passed to the load method',function(){
+
+            // arrange
+            var element = document.createElement('div');
+            var a = new ModuleController('../spec/mock/jasmine',element),
+                b = new ModuleController('../spec/mock/jasmine',element),
+                c = new ModuleController('../spec/mock/jasmine',element);
+            var node = new NodeController(element);
+            node.load([a,b,c]);
+
+            // act
+            var mc = node.getActiveModuleController();
+
+            // assert
+            expect(mc).toBe(a);
+
+        });
+
         it('will receive load event fired by the active module controller',function(){
 
             // arrange
