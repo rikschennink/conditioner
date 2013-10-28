@@ -72,12 +72,12 @@ module.exports = function(grunt) {
                 port:4000,
                 watch:true,
                 safe:true,
-                config:'./_config-local.yml,./_api.yml'
+                config:'./_config-local.yml'
             },
             build:{
                 src:'./',
                 dest:'_site',
-                config:'./_config-local.yml,./_api.yml'
+                config:'./_config-local.yml'
             }
         },
         watch: {
