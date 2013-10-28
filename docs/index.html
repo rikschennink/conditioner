@@ -1,13 +1,12 @@
 ---
-layout: default
+layout: content
 title: Documentation • Conditioner.js
 ---
-
 <section>
 
-    <h1 id="introduction" class="title">Documentation</h1>
+    <h1 class="title">Documentation</h1>
 
-    <nav class="index">
+    <nav class="sub main">
     {% include nav-docs.html %}
     </nav>
 
@@ -17,7 +16,7 @@ title: Documentation • Conditioner.js
 
         <h2 id="module-outline">Module outline</h2>
 
-        <p>Conditioner does not force you to write your modules in a certain way. Only if you wan't to unload your modules or pass custom options does it expect certain properties an methods to be there.</p>
+        <p>Conditioner does not force you to write your modules in a certain way. Only if you want to unload your modules or pass custom options does it expect certain properties an methods to be there.</p>
 
         <p>The following two basic module examples both contain an <code>unload</code> method and an <code>options</code> property. If your module will never be unloaded you can omit the unload method, the same goes for the options property.</p>
 
@@ -115,29 +114,34 @@ title: Documentation • Conditioner.js
             {% endif %}
 
             {% for method in item.methods %}
-            <h4 id="{{item.name}}-{{method.name}}">{{method.name}}{% if method.returns %}<span class="code">&nbsp;→&nbsp;{{method.returns}}</span>{% endif %}</h4>
-            {{ method.description | markdownify }}
 
-            {% if method.params %}
-            <table class="params">
-                <thead>
-                <tr>
-                    <th>Parameter</th>
-                    <th>Type</th>
-                    <th>Description</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for param in method.params %}
-                <tr>
-                    <th>{{param.name}}</th>
-                    <td>{{param.type}}</td>
-                    <td>{{param.description | markdownify}}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
+            <section class="method">
+
+                <h4 id="{{item.name}}-{{method.name}}">{{method.name}}{% if method.returns %}<span class="code">&nbsp;→&nbsp;{{method.returns}}</span>{% endif %}</h4>
+                {{ method.description | markdownify }}
+
+                {% if method.params %}
+                <table class="params">
+                    <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for param in method.params %}
+                    <tr>
+                        <th>{{param.name}}</th>
+                        <td>{{param.type}}</td>
+                        <td>{{param.description | markdownify}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+
+            </section>
 
             {% endfor %}
 

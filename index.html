@@ -1,12 +1,16 @@
 ---
-layout: default
+layout: landing
 type: landing
 title: Conditioner.js • Frizz free, environment-aware, javascript modules.
 ---
 
-<nav class="index">
+<p class="introduction"><strong>A javascript library for loading and unloading behavior based on environment conditions.</strong></p>
+
+<nav class="index main">
+    <h2 class="print">Navigation</h2>
     <ul>
         <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#example">Example</a></li>
         <li><a href="#requirements">Requirements</a></li>
         <li><a href="#download">Download</a></li>
         <li><a href="#documentation">Documentation</a></li>
@@ -15,102 +19,110 @@ title: Conditioner.js • Frizz free, environment-aware, javascript modules.
     </ul>
 </nav>
 
-<h2 id="introduction" class="print">Introduction</h2>
+<section id="introduction" class="intro">
 
-<p class="introduction"><strong><span>Conditioner.js </span>A javascript library for loading and unloading behavior based on environment conditions.</strong></p>
+    <h2 class="print">Introduction</h2>
 
-<div class="introduction-block">
-    <h3>Environment aware</h3>
-    <p>Conditioner automatically loads and unloads modules based on the state of their surroundings.</p><p>You define the required state, conditioner takes it from there.</p>
-</div><div class="introduction-block">
-<h3>Frizz free</h3>
-<p>Modules are loaded separate from each other preventing them  from getting into fights.</p><p>Conditioner exposes an API that allows for structured peace negotiations between modules.</p>
-</div>
+    <div class="introduction-block">
+        <h3>Environment aware</h3>
+        <p>Conditioner automatically loads and unloads modules based on the state of their surroundings.</p><p>You define the required state, conditioner takes it from there.</p>
+    </div>
 
-<h3>Example</h3>
-<p>Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map. It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map. And to save a request and some bits and bytes you might only want to start loading the map once the map container becomes visible to the user.</p>
+    <div class="introduction-block">
+        <h3>Frizz free</h3>
+        <p>Modules are loaded separate from each other preventing them  from getting into fights.</p><p>Conditioner exposes an API that allows for structured peace negotiations between modules.</p>
+    </div>
 
-<p>The following HTML snippet shows how to setup this Google Map using Conditioner. There are two things going on, the Map module is bound using the <code>data-module</code> attribute and the required conditions are set via the <code>data-conditions</code> attribute.</p>
+</section>
+
+<section id="example">
+
+    <h2>Example</h2>
+
+    <p>Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map. It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map. And to save a request and some bits and bytes you might only want to start loading the map once the map container becomes visible to the user.</p>
+
+    <p>The following HTML snippet shows how to setup this Google Map using Conditioner. There are two things going on, the Map module is bound using the <code>data-module</code> attribute and the required conditions are set via the <code>data-conditions</code> attribute.</p>
 
 {% highlight html %}
 <a href="http://maps.google.com/?ll=51.741,3.822"
-    data-module="ui/Map"
-    data-conditions="media:{(min-width:40em)} and element:{seen}"> ... </a>
+   data-module="ui/Map"
+   data-conditions="media:{(min-width:40em)} and element:{seen}"> ... </a>
 {% endhighlight %}
 
-<p>Now the HTML is setup, we only have to tell the Conditioner to look for modules in a certain section of the DOM and we're done.</p>
+    <p>Now the HTML is setup, we only have to tell the Conditioner to look for modules in a certain section of the DOM and we're done.</p>
 
-<p>We can accomplish this by calling the <code>init</code> method.</p>
+    <p>We can accomplish this by calling the <code>init</code> method.</p>
 
 {% highlight html %}
 conditioner.init();
 {% endhighlight %}
 
-<p>The map module specified above is located right below this paragraph, it should be loading right now (if your window is at least 40ems wide). Go on and resize that browser window, Conditioner will load and unload the map on the fly.</p>
+    <p>The map module specified above is located right below this paragraph, it should be loading right now (if your window is at least 40ems wide). Go on and resize that browser window, Conditioner will load and unload the map on the fly.</p>
 
-<div class="component">
-    <a href="http://maps.google.com/?ll=51.741380,3.822169&z=13"
-       data-module="ui/Map"
-       data-priority="2"
-       data-conditions="media:{(min-width:40em)} and element:{seen} or not media:{supported}">Coast of Holland at Google Maps</a>
-</div>
+    <div class="component">
+        <a href="http://maps.google.com/?ll=51.741380,3.822169&z=13"
+           data-module="ui/Map"
+           data-priority="2"
+           data-conditions="media:{(min-width:40em)} and element:{seen} or not media:{supported}">Coast of Holland at Google Maps</a>
+    </div>
 
+</section>
 
+<section id="requirements">
 
+    <h2>Requirements</h2>
 
+    <p>Conditioner is based on RequireJS so you'll need RequireJS to make it fly. RequireJS is awesome at what it does, to not leverage that awesomeness and write a module loader of our own would just be silly. <a href="http://requirejs.org" title="RequireJS - A JavaScript Module Loader" target="_blank">Get RequireJS</a></p>
 
-<h2 id="requirements">Requirements</h2>
-<p>Conditioner is based on RequireJS so you'll need RequireJS to make it fly. RequireJS is awesome at what it does, to not leverage that awesomeness and write a module loader of our own would just be silly. <a href="http://requirejs.org" title="RequireJS - A JavaScript Module Loader" target="_blank">Get RequireJS</a></p>
+    <p>Conditioner requires a modern browser to function. If you require IE8 support and want to use media queries as conditions you can use the <code>or not media:{supported}</code> condition to still load a module on IE8.</p>
 
-<p>Conditioner requires a modern browser to function. If you require IE8 support and want to use media queries as conditions you can use the <code>or not media:{supported}</code> condition to still load a module on IE8.</p>
+</section>
 
+<section id="download">
 
+    <h2>Download</h2>
 
+    <p>As the library is still being worked on I would advice not to use it in any big project for now.</p>
 
-<h2 id="download">Download</h2>
-<p>As the library is still being worked on I would advice not to use it in any big project for now.</p>
+    <p>The latest version of the library can be downloaded below:</p>
+    <ul class="files">
+        <li><a href="{{ site.rawurl }}/dist/conditioner-{{ site.version }}.js">Development</a></li>
+        <li><a href="{{ site.rawurl }}/dist/conditioner-{{ site.version }}.min.js">Production</a> ~ 2.5Kb gzipped</li>
+    </ul>
 
-<p>The latest version of the library can be downloaded below:</p>
-<ul class="files">
-    <li><a href="{{ site.rawurl }}/dist/conditioner-{{ site.version }}.js">Development</a></li>
-    <li><a href="{{ site.rawurl }}/dist/conditioner-{{ site.version }}.min.js">Production</a> ~ 2.5Kb gzipped</li>
-</ul>
+    <p>The library does not include the default tests as these might differ for each project. At the moment the following tests are available for download.</p>
 
-<p>The library does not include the default tests as these might differ for each project. At the moment the following tests are available for download.</p>
+    <ul class="files">
+        <li><a href="{{ site.rawurl }}/dist/tests.min/media.js">Media</a></li>
+        <li><a href="{{ site.rawurl }}/dist/tests.min/element.js">Element</a></li>
+        <li><a href="{{ site.rawurl }}/dist/tests.min/window.js">Window</a></li>
+        <li><a href="{{ site.rawurl }}/dist/tests.min/pointer.js">Pointer</a></li>
+        <li><a href="{{ site.rawurl }}/dist/tests.min/connection.js">Connection</a></li>
+    </ul>
 
-<ul class="files">
-    <li><a href="{{ site.rawurl }}/dist/tests.min/media.js">Media</a></li>
-    <li><a href="{{ site.rawurl }}/dist/tests.min/element.js">Element</a></li>
-    <li><a href="{{ site.rawurl }}/dist/tests.min/window.js">Window</a></li>
-    <li><a href="{{ site.rawurl }}/dist/tests.min/pointer.js">Pointer</a></li>
-    <li><a href="{{ site.rawurl }}/dist/tests.min/connection.js">Connection</a></li>
-</ul>
+</section>
 
+<nav class="sub" id="documentation">
+    <h2>Documentation</h2>
 
+    <p>The docs contain an example on how to quickly setup Conditioner. See the index below.</p>
 
-
-
-<h2 id="documentation">Documentation</h2>
-
-<p>The docs contain an example on how to quickly setup Conditioner. See the index below.</p>
-
-<nav class="sub">
-	{% include nav-docs.html %}
+    {% include nav-docs.html %}
 </nav>
 
+<nav class="sub" id="examples">
 
+    <h2>Examples</h2>
 
+    <p>Some example implementations.</p>
 
-
-<h2 id="examples">Examples</h2>
-
-<p>Some example implementations.</p>
-
-<nav class="sub">
     {% include nav-examples.html %}
 </nav>
 
+<section id="license">
 
+    <h2>License</h2>
 
-<h2 id="license">License</h2>
-<p><a href="http://www.opensource.org/licenses/mit-license.php">MIT license</a></p>
+    <p><a href="http://www.opensource.org/licenses/mit-license.php">MIT license</a></p>
+
+</section>

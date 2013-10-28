@@ -3,116 +3,75 @@
 /**
  * Body + Header layouting
  */
-@media (min-width:38em) {
+@media (min-width:38rem) {
 
 	body {
 		position:relative;
 	}
 
-    h2 {
-        font-size:1.25em;
-    }
-
-    h3 .code {
-        display:inline-block;
-        &:before {
-            content:'(';
-        }
-        &:after {
-            content:')';
-        }
-    }
-
-
 	.git {
-		left:0;
-		right:0;
-		padding-left:.5em;
-		top:-3.75em;
-		border-radius:0 0 .25em .25em;
-
+		left:1rem;
+		right:1rem;
+        padding-left:.5rem;
+        padding-right:.5rem;
+		border-radius:0;
 	}
 
+    h1.logo {
+        left:1rem;
+    }
 
-    nav.code {
-        font-size:1em;
+    .intro {
+        display:table;
+        border-top:2px solid #f3f3f3;
     }
 
 	.introduction-block {
 
-		display:inline-block;
-		box-sizing:border-box;
-		-moz-box-sizing:border-box;
+        display:table-cell;
 		width:50%;
-		padding:0 2em 0 0;
+		padding:0 2rem 0 0;
 		vertical-align:top;
-		border-top: 2px solid #f3f3f3;
 
 		+.introduction-block {
-			padding:0 0 0 2em;
+			padding:0 0 0 2rem;
 		}
 	}
+
+    h1,h2,h3,h4,h5 {
+
+        .code {
+            display:inline-block;
+            color:#aaa;
+            font-size:.875rem
+        }
+
+    }
+
+    nav.sub.code {
+
+        >ul {
+
+            a {
+                &:after {
+                    display:inline;
+                    clear:none;
+                    content:'';
+                }
+            }
+        }
+
+    }
+
+
 
 }
 
-@media (min-width:62em) {
+@media (min-width:62rem) {
 
     body {
-        margin-left:16em;
+        margin-left:17rem;
     }
-
-    h1.logo {
-        position:fixed;
-        left:0;
-        top:.875em;
-        width:11.25em;
-        padding-top:.5em;
-		font-size:1.25em;
-        text-align:right;
-		z-index:2;
-    }
-
-	h1.logo a {
-		color:#8596A2;
-	}
-
-    h1.title,
-    h1.logo+em {
-        margin:-.3875em 0 .5em 0;
-        font-size:1.25em;
-    }
-
-	h1.logo.landing {
-		position:absolute;
-		left:-9999em;
-		top:-9999em;
-		height:1px;
-		width:1px;
-		text-indent:-9999em;
-	}
-
-    h2 {
-        font-size:1.5em;
-    }
-
-    .git {
-        top:-2em;
-	    left:auto;
-	    padding-right:.5em;
-    }
-
-	.introduction {
-
-		margin-top:0;
-		margin-right:25%;
-
-		span {
-			display:block;
-			font-size:1.75em;
-			color:#333;
-			text-transform:lowercase;
-		}
-	}
 
 	nav>a {
         position:absolute;
@@ -121,18 +80,18 @@
         border-bottom:1px solid #ddd;
         border-radius:0;
         padding-top:0;
-        padding-bottom:1em;
-        margin-bottom:1em;
+        padding-bottom:1rem;
+        margin-bottom:1rem;
     }
 
-    nav.index {
+    nav.main {
         position:fixed;
 		background:#40494E;
         left:0;
         top:0;
 		bottom:0;
-		padding:5em 0 0 0;
-        width:16em;
+		padding:5rem 0 0 0;
+        width:16rem;
         margin:0;
         text-align:right;
 		z-index:1;
@@ -143,8 +102,9 @@
 
 		>ul {
 			border-top:1px dotted #516574;
-			padding-top:1.5em;
-			padding-right:2em;
+			padding-top:1.5rem;
+			padding-right:2rem;
+            background:transparent;
 		}
 
         >ul>li>a:after {
@@ -152,11 +112,10 @@
             top:50%;
             height:0;
             width:0;
-            border:solid transparent;
+            border:5px solid transparent;
             pointer-events:none;
             content:'';
             margin-top:-5px;
-            border-width:5px;
         }
 
 		a {
@@ -175,8 +134,35 @@
 
     }
 
-	h1.logo.landing~nav.index {
-		padding-top:3em;
+    .git {
+        left:auto;
+        border-radius:0 0 .25rem .25rem;
+    }
+
+
+    h1.logo {
+
+        position:fixed;
+        left:0;
+        top:1.5rem;
+        padding:0;
+        z-index:2;
+        width:14rem;
+        text-align:right;
+
+        a {
+            color:#8596A2;
+        }
+    }
+
+    .landing h1.logo {
+        position:static;
+        text-align:left;
+    }
+
+	.landing nav.main {
+
+		padding-top:4rem;
 
 		>ul {
 			border-top:none;

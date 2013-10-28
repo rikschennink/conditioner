@@ -1,13 +1,79 @@
 
+/**
+ * indexnav
+ */
+nav.index {
+
+    margin-bottom:1.5rem;
+
+    li {
+        display:inline-block;
+        margin-right:.5em;
+    }
+}
+
+
+/**
+ * subnav
+ */
+nav.sub {
+
+    >ul {
+
+        padding:1rem;
+        background:lighten($primary-color,50%);
+
+    }
+
+    ul ul {
+        margin-left:1rem;
+        font-size:.875em;
+    }
+
+    ul ul a {
+        text-decoration:none;
+
+        &:hover {
+            text-decoration:underline;
+        }
+    }
+
+}
+
+nav.sub.code {
+
+    >ul {
+        background:lighten($secondary-color,42%);
+        color:$secondary-color;
+
+        li {
+            font-size:.875rem;
+        }
+
+        a {
+            color:darken($secondary-color,15%);
+
+            &:after {
+                display:table;
+                clear:both;
+                content:'';
+            }
+        }
+    }
+
+}
+
+
 
 /**
  * introduction
  */
 .introduction {
-    margin:1em 0;
+
+    margin-bottom:2rem;
 	color:#999;
-    font-size:1.75em;
-    font-family:OpenSans,sans-serif;
+    font-size:1.25rem;
+    font-family:OpenSans, sans-serif;
 
 	strong {
 		font-weight:normal;
@@ -23,12 +89,31 @@
  * block
  */
 .introduction-block {
-	font-size:1.25em;
+	font-size:1.125rem;
 	color:#555;
 }
 
 .introduction-block h3 {
 	text-transform:capitalize;
+}
+
+
+/**
+ * Method
+ */
+section.method {
+
+    padding:0 0 1rem 0;
+    margin-bottom:1rem;
+    border-bottom:1px dotted #ddd;
+
+    h4,p,.params {
+        margin-bottom:.25rem;
+    }
+
+    p {
+        font-size:.875rem;
+    }
 }
 
 
@@ -43,15 +128,15 @@
 h3 .code {
 	display:block;
 	color:#999;
-	font-size:.75em;
+	font-size:.75rem;
 }
 
 h3.code {
-	font-size:1.25em;
+	font-size:1.25rem;
 }
 
 h4.code {
-	font-size:1.125em;
+	font-size:1.125rem;
 }
 
 
@@ -59,7 +144,8 @@ h4.code {
  * Highlight Code Block
  */
 .highlight {
-    margin:1em 0;
+
+    margin:1rem 0;
 
     pre {
         background:#f6f6f6;
@@ -67,23 +153,45 @@ h4.code {
     
     code {
         display:block;
-        padding:.375em .5em;
+        padding:.375rem .5rem;
         word-wrap:break-word;
     }
 }
 
 
+/**
+ * Title
+ */
+h1.title {
+    padding-top:0;
+}
 
 /**
  * Logo
  */
 h1.logo {
-	padding:0;
-	margin:1em 0 .5em 0;
-	font-size:1.75em;
+    position:absolute;
+    top:0;
+    left:0;
+    padding:0 1rem;
+    font-size:1rem;
+    line-height:2;
+    margin-top:0;
 	white-space:nowrap;
-	line-height:1;
 	text-transform:lowercase;
+
+    a {
+        color:#999;
+        text-decoration:none;
+    }
+}
+
+.landing h1.logo {
+
+    position:static;
+    font-size:1.75rem;
+    padding:0;
+    line-height:1.5;
 
     a {
         color:#333;
@@ -91,41 +199,38 @@ h1.logo {
     }
 }
 
-h1.title,
-h1.logo+em {
-	display:block;
-	padding:0;
-	margin:0;
-	text-transform:lowercase;
-	font-style:normal;
-	font-family:OpenSans,sans-serif;
-	color:#888;
-	font-size:1em;
-	max-width:70%;
-}
-
 
 /**
  * Git block
  */
 .git {
+
 	position:absolute;
 	top:0;
 	left:0;
 	right:0;
-	min-height:1em;
+	min-height:2.125rem;
 	display:block;
-	padding:.5em 2em;
+	padding:0 1rem;
 	background:#efefef;
+    text-align:right;
+    line-height:2;
 
     iframe {
-        display:block;
+        display:inline-block;
+        vertical-align:middle;
     }
 }
 
 .js .git {
     display:none;
-    &[data-initialized] {display:block;}
+    &[data-initialized] {
+        display:block;
+    }
+}
+
+.landing .git {
+    text-align:left;
 }
 
 
@@ -135,7 +240,7 @@ h1.logo+em {
  * Note
  */
 p.note {
-	font-size:.875em;
+	font-size:.875rem;
 	color:#999;
 }
 
@@ -145,9 +250,7 @@ p.note {
  * Files list
  */
 .files {
-	margin:0;
 	padding:0;
-	list-style-type: none;
 }
 
 
