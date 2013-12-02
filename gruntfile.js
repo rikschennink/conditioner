@@ -41,11 +41,12 @@ module.exports = function(grunt) {
 					requireConfig:{
 						baseUrl:'./src/',
 						callback: function() {
-							require(['utils/Observer','utils/contains','utils/matchesSelector','utils/mergeObjects'],function(Observer,contains,matchesSelector,mergeObjects) {
+							require(['utils/Observer','utils/contains','utils/matchesSelector','utils/mergeObjects','utils/extendClass'],function(Observer,contains,matchesSelector,mergeObjects,extendClass) {
 								window['Observer'] = Observer;
 								window['contains'] = contains;
 								window['matchesSelector'] = matchesSelector;
 								window['mergeObjects'] = mergeObjects;
+                                window['extendClass'] = extendClass;
 							});
 						}
 					}
@@ -124,7 +125,8 @@ module.exports = function(grunt) {
 						'conditioner/Observer',
 						'conditioner/contains',
 						'conditioner/matchesSelector',
-						'conditioner/mergeObjects'
+						'conditioner/mergeObjects',
+                        'conditioner/extendClass'
 					]
 				}
 			}
