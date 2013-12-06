@@ -1,35 +1,12 @@
-/*
+define(['conditioner/mergeObjects'],function(mergeObjects){
 
+    return function(parent,child,childOptions) {
 
-## Inheritance / Composites problems with passing / inheriting options.
-
-Map.options = {
-    'zoom':2
-};
-
-
-require('conditioner/extends','ui/Map',function(_extends,_super){
-
-    var QuickMap = _extends(_super,function(){
-        // constructor
-    });
-
-    QuickMap.options.add({
-        'foo':'bar'
-    });
-
-    return QuickMap;
-
-});
-*/
-
-
-define(['utils/mergeObjects'],function(mergeObjects){
-
-    return function(parent,child) {
+        // set child options to empty object if not defined
+        childOptions = childOptions || {};
 
         // copy options
-        child.options = parent.options ? mergeObjects(parent.options,{}) : {};
+        child.options = parent.options ? mergeObjects(parent.options,childOptions) : childOptions;
 
         // copy prototype
         child.prototype = Object.create(parent.prototype);

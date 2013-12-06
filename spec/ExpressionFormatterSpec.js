@@ -9,10 +9,10 @@
 			// arrange
 			var expression = 'foo:{bar:1} and (foo:{bar:2_1} or foo:{bar:2_2})';
 
-			// assert
+			// act
 			var result = ExpressionFormatter.getExpressionsCount(expression);
 
-			// act
+			// assert
 			expect(result).toBe(3);
 
 		});

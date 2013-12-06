@@ -39,6 +39,11 @@ module.exports = function(grunt) {
 				template:require('grunt-template-jasmine-requirejs'),
 				templateOptions:{
 					requireConfig:{
+                        map:{
+                            '*':{
+                                'conditioner/mergeObjects':'utils/mergeObjects'
+                            }
+                        },
 						baseUrl:'./src/',
 						callback: function() {
 							require(['utils/Observer','utils/contains','utils/matchesSelector','utils/mergeObjects','utils/extendClass'],function(Observer,contains,matchesSelector,mergeObjects,extendClass) {

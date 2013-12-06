@@ -2110,7 +2110,7 @@ Map.options = {
 };
 
 
-require('conditioner/extends','ui/Map',function(_extends,_super){
+require('conditioner/extendClass','ui/Map',function(_extends,_super){
 
     var QuickMap = _extends(_super,function(){
         // constructor
@@ -2123,9 +2123,10 @@ require('conditioner/extends','ui/Map',function(_extends,_super){
     return QuickMap;
 
 });
+*/
 
 
-define(['conditioner/mergeObjects'],function(mergeObjects){
+define('conditioner/extendClass',['conditioner/mergeObjects'],function(mergeObjects){
 
     return function(parent,child) {
 
@@ -2141,6 +2142,3 @@ define(['conditioner/mergeObjects'],function(mergeObjects){
     }
 
 });
-
- */;
-define("conditioner/extendClass", function(){});
