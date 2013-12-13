@@ -41,7 +41,8 @@ module.exports = function(grunt) {
 					requireConfig:{
                         map:{
                             '*':{
-                                'conditioner/mergeObjects':'utils/mergeObjects'
+                                'conditioner/mergeObjects':'utils/mergeObjects',
+                                'conditioner/Observer':'utils/observer'
                             }
                         },
 						baseUrl:'./src/',

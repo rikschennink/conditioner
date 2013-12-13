@@ -1,6 +1,6 @@
 define(function(){
 
-    var exports = function(){};
+    var exports = function() {};
 
     exports.options = {
         'foo':'bar'
@@ -11,5 +11,5 @@ define(function(){
     };
 
     return exports;
-    
+
 });
