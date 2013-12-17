@@ -1,11 +1,11 @@
-define(['conditioner/extendClass','../mock/foo'],function(extendClass,_super){
+define(['conditioner/extendClass','../mock/bar'],function(extendClass,_super){
 
 
-    console.log('Module: BAR');
+    console.log('Module: BAZ');
 
 
     var exports = extendClass(
-        '../spec/mock/foo',
+        '../spec/mock/bar',
         _super,
         function(element,options) {
             this._element = element;
@@ -14,7 +14,7 @@ define(['conditioner/extendClass','../mock/foo'],function(extendClass,_super){
     );
 
     exports.options = {
-        'bar':'1'
+        'baz':'1'
     };
 
     exports.protoype = {};

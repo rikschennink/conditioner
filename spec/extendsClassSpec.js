@@ -2,56 +2,52 @@
 
     'use strict';
 
-
-    //[v] - Inherit options from parent class.
-    //[x] - When constructing modules, use page level options and parent level options to create child options set.
-
-
     describe('extendClass',function(){
-
-        it('will copy parent class options to child',function(){
-
-            // arrange
-            var Foo = function() {};
-            Foo.options = {'foo':'bar'};
-
-            // act
-            var Bar = extendClass(Foo,function() {
-
-                // Bar constructor
-
-            });
-
-            // assert
-            expect(Bar.options).toBeDefined();
-            expect(Bar.options.foo).toBe('bar');
-
-        });
 
         it('will inherit parent page level options',function() {
 
             // arrange
-            var Foo = function() {};
-            Foo.options = {'foo':'bar'};
-
-            var Bar = extendClass(Foo,function() {
-                // Bar constructor
-            });
-
-            // create dom nodes
-            var a = document.createElement('div');
-            a.setAttribute('data-module','../spec/mock/foo');
-
-            var b = document.createElement('div');
-            b.setAttribute('data-module','../spec/mock/bar');
+            var node = document.createElement('div');
+            node.setAttribute('data-module','../spec/mock/baz');
 
             var group = document.createElement('div');
-            group.appendChild(a);
-            group.appendChild(b);
+            group.appendChild(node);
 
             // act
             var loader = new ModuleLoader();
+            loader.setOptions({
+                'modules':{
+                    '../spec/mock/foo':{
+                        'options':{
+                            'foo':'2'
+                        }
+                    },
+                    '../spec/mock/bar':{
+                        'options':{
+                            'bar':'2'
+                        }
+                    },
+                    '../spec/mock/baz':{
+                        'options':{
+                            'baz':'2',
+                            'bar':'4'
+                        }
+                    }
+                }
+            });
+
+            // find modules
             var results = loader.parse(group);
+
+            // sync load event of modules
+            var syncedGroup = loader.sync(results);
+            Observer.subscribe(syncedGroup,'load',function() {
+
+                //console.info('result:',results[0]._activeModuleController._module._options);
+
+                //console.info('child:',results[1]._activeModuleController._module._options);
+
+            });
 
             // assert
             expect(results).toBeDefined();

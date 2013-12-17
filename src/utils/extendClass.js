@@ -1,18 +1,17 @@
-define(['conditioner/mergeObjects'],function(mergeObjects){
+define(function(){
 
-    return function(parent,child,childOptions) {
+    return function(id,Parent,Child) {
 
-        // set child options to empty object if not defined
-        childOptions = childOptions || {};
+        Child._Super = id;
 
-        // copy options
-        child.options = parent.options ? mergeObjects(parent.options,childOptions) : childOptions;
+        // set reference to super class
+        Child._Parent = Parent;
 
         // copy prototype
-        child.prototype = Object.create(parent.prototype);
+        Child.prototype = Object.create(Parent.prototype);
 
         // return the constructor
-        return child;
+        return Child;
 
     }
 

@@ -1,14 +1,19 @@
 define(function(){
 
-    var exports = function() {};
+
+    console.log('Module: FOO');
+
+
+    var exports = function(element,options) {
+        this._element = element;
+        this._options = options;
+    };
 
     exports.options = {
-        'foo':'bar'
+        'foo':'1'
     };
 
-    exports.protoype = {
-
-    };
+    exports.protoype = {};
 
     return exports;
 

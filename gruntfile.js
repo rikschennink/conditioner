@@ -41,6 +41,7 @@ module.exports = function(grunt) {
 					requireConfig:{
                         map:{
                             '*':{
+                                'conditioner/extendClass':'utils/extendClass',
                                 'conditioner/mergeObjects':'utils/mergeObjects',
                                 'conditioner/Observer':'utils/observer'
                             }

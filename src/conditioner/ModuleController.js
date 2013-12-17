@@ -166,7 +166,7 @@ ModuleController.prototype = {
 
 		// load module, and remember reference
 		var self = this;
-		require([this._path],function(Module){
+		require([this._path,'module'],function(Module) {
 
 			// set reference to Module
 			self._Module = Module;
@@ -191,29 +191,75 @@ ModuleController.prototype = {
 		}
 
 		// get module specification
-		var specification = ModuleRegister.getModuleByPath(this._path),
-			globalOptions = specification ? specification.config : {},
-			elementOptions = {},
-			options;
+		var pageOptionsStack = [],
+            moduleOptionsStack = [],
+            specification,
+            moduleOptions,
+            pageOptions,
+			elementOptions,
+            i, m, options;
 
-		// parse element options
-		if (typeof this._options.options === 'string') {
-			try {
-				elementOptions = JSON.parse(this._options.options);
-			}
-			catch(e) {
-				throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
-			}
-		}
-		else {
-			elementOptions = this._options.options;
-		}
 
-		// merge module global options with element options if found
-		options = globalOptions ? mergeObjects(globalOptions,elementOptions) : elementOptions;
+        // parse element options
+        if (typeof this._options.options === 'string') {
+            try {
+                elementOptions = JSON.parse(this._options.options);
+            }
+            catch(e) {
+                throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
+            }
+        }
+        else {
+            elementOptions = this._options.options;
+        }
 
-		// merge module default options with result of previous merge
-		options = this._Module.options ? mergeObjects(this._Module.options,options) : options;
+
+        // merge options from super classes to create default module options set
+        if (this._Module._Parent) {
+
+            // get module reference
+            m = this._Module;
+
+            // find super module
+            do {
+
+                console.log(m.options);
+
+                // if has options add to stack
+                if (m.options) {
+
+                    moduleOptionsStack.push(m.options);
+
+                    if (m._Super) {
+                        specification = ModuleRegister.getModuleByPath(m._Super);
+                    }
+
+                    pageOptionsStack.push(specification ? specification.config : {});
+
+                }
+            }
+            while(m = m._Parent);
+
+            i = moduleOptionsStack.length-1;
+            while (i >= 0) {
+                pageOptions = mergeObjects(pageOptions,pageOptionsStack[i]);
+                moduleOptions = mergeObjects(moduleOptions,moduleOptionsStack[i]);
+                i--;
+            }
+        }
+        specification = ModuleRegister.getModuleByPath(this._path);
+        moduleOptions = mergeObjects(moduleOptions,this._Module.options);
+        pageOptions = mergeObjects(pageOptions,specification ? specification.config : {});
+
+        // merge module page options with element options if found
+        options = pageOptions ? mergeObjects(pageOptions,elementOptions) : elementOptions;
+
+        // setup final options by merging page module options with page and element options
+        options = moduleOptions ? mergeObjects(moduleOptions,options) : options;
+
+
+        console.log('final:',options);
+
 
 		// set reference
 		if (typeof this._Module === 'function') {

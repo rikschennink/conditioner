@@ -179,12 +179,21 @@ ModuleLoader.prototype = {
 
     /**
      * Returns a synced controller group which fires a load event once all modules have loaded
-     * @param {ModuleController} [args] - list of module controllers to synchronize
-     * @return SyncedControllerGroup
+     * {ModuleController|NodeController} [arguments] - list of module controllers or node controllers to synchronize
+     * @return SyncedControllerGroup.prototype
      */
-    sync:function(args) {
+    sync:function() {
+
         var group = Object.create(SyncedControllerGroup.prototype);
+
+        // test if user passed an array instead of separate arguments
+        if (arguments.length == 1 && !arguments.slice) {
+            arguments = arguments[0];
+        }
+
+        // create synced controller group using passed arguments
         SyncedControllerGroup.apply(group, arguments);
+
         return group;
     },
 

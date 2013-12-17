@@ -2100,38 +2100,15 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 	return new ModuleLoader();
 
 });
-/*
-
-
-## Inheritance / Composites problems with passing / inheriting options.
-
-Map.options = {
-    'zoom':2
-};
-
-
-require('conditioner/extendClass','ui/Map',function(_extends,_super){
-
-    var QuickMap = _extends(_super,function(){
-        // constructor
-    });
-
-    QuickMap.options.add({
-        'foo':'bar'
-    });
-
-    return QuickMap;
-
-});
-*/
-
-
 define('conditioner/extendClass',['conditioner/mergeObjects'],function(mergeObjects){
 
-    return function(parent,child) {
+    return function(parent,child,childOptions) {
+
+        // set child options to empty object if not defined
+        childOptions = childOptions || {};
 
         // copy options
-        child.options = parent.options ? mergeObjects(parent.options,{}) : {};
+        child.options = parent.options ? mergeObjects(parent.options,childOptions) : childOptions;
 
         // copy prototype
         child.prototype = Object.create(parent.prototype);
