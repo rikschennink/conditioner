@@ -5,7 +5,6 @@ define(['conditioner/extendClass','../mock/foo'],function(extendClass,_super){
 
 
     var exports = extendClass(
-        '../spec/mock/foo',
         _super,
         function(element,options) {
             this._element = element;
@@ -18,6 +17,8 @@ define(['conditioner/extendClass','../mock/foo'],function(extendClass,_super){
     };
 
     exports.protoype = {};
+
+
 
     return exports;
 

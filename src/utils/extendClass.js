@@ -1,11 +1,9 @@
 define(function(){
 
-    return function(id,Parent,Child) {
-
-        Child._Super = id;
+    return function(Parent,Child) {
 
         // set reference to super class
-        Child._Parent = Parent;
+        Child.__parent = Parent;
 
         // copy prototype
         Child.prototype = Object.create(Parent.prototype);
