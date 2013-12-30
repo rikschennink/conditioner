@@ -2,6 +2,7 @@
  * @namespace ModuleRegister
  */
 var ModuleRegister = {
+
 	_modules:{},
 
 	/**

@@ -1,24 +1,19 @@
-define(['conditioner/extendClass','../mock/foo'],function(extendClass,_super){
-
+define(['conditioner/extendClass','../mock/foo'],function(_extend,_super){
 
     console.log('Module: BAR');
 
+    var exports = function Bar(element,options) {
+        this._element = element;
+        this._options = options;
+    };
 
-    var exports = extendClass(
-        _super,
-        function(element,options) {
-            this._element = element;
-            this._options = options;
-        }
-    );
+    _extend(exports,'../mock/foo');
 
     exports.options = {
-        'bar':'1'
+        'bar':1
     };
 
     exports.protoype = {};
-
-
 
     return exports;
 

@@ -166,7 +166,7 @@ ModuleController.prototype = {
 
 		// load module, and remember reference
 		var self = this;
-		require([this._path,'module'],function(Module) {
+		require([this._path],function(Module) {
 
 			// set reference to Module
 			self._Module = Module;
@@ -214,8 +214,12 @@ ModuleController.prototype = {
         }
 
 
+
+
+
+
         // merge options from super classes to create default module options set
-        if (this._Module._Parent) {
+        if (this._Module.__parent) {
 
             // get module reference
             m = this._Module;
@@ -238,7 +242,7 @@ ModuleController.prototype = {
 
                 }
             }
-            while(m = m._Parent);
+            while(m = m.__parent);
 
             i = moduleOptionsStack.length-1;
             while (i >= 0) {

@@ -319,7 +319,7 @@ define('conditioner/mergeObjects',[],function(){
 // conditioner v0.9.2 - ConditionerJS - Frizz free, environment-aware, javascript modules.
 // Copyright (c) 2013 Rik Schennink - http://conditionerjs.com
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
-define('conditioner',['require','conditioner/Observer','conditioner/contains','conditioner/matchesSelector','conditioner/mergeObjects'],function(require,Observer,contains,matchesSelector,mergeObjects) {
+define(['require','conditioner/Observer','conditioner/contains','conditioner/matchesSelector','conditioner/mergeObjects'],function(require,Observer,contains,matchesSelector,mergeObjects) {
 
 	
 
@@ -834,7 +834,6 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 	 * @namespace ModuleRegister
 	 */
 	var ModuleRegister = {
-
 		_modules:{},
 
 		/**
@@ -853,6 +852,12 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 
 			// check if has config defined
 			if (config) {
+
+	            define(key + '/config',function(){
+	                return config;
+	            });
+
+	            console.log(key + '_config');
 
 				// set config entry
 				this._modules[key].config = config;
@@ -895,6 +900,12 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 			if (!path) {
 				throw new Error('ModuleRegister.getModuleById(path): "path" is a required parameter.');
 			}
+
+	        require([path + '_config'],function(cf){
+	            console.log('searching:',cf);
+	        });
+
+	        //return require(path + '_config');
 
 			return this._modules[path];
 
@@ -1205,7 +1216,7 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 
 			// load module, and remember reference
 			var self = this;
-			require([this._path],function(Module){
+			require([this._path],function(Module) {
 
 				// set reference to Module
 				self._Module = Module;
@@ -1230,29 +1241,75 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 			}
 
 			// get module specification
-			var specification = ModuleRegister.getModuleByPath(this._path),
-				globalOptions = specification ? specification.config : {},
-				elementOptions = {},
-				options;
+			var pageOptionsStack = [],
+	            moduleOptionsStack = [],
+	            specification,
+	            moduleOptions,
+	            pageOptions,
+				elementOptions,
+	            i, m, options;
 
-			// parse element options
-			if (typeof this._options.options === 'string') {
-				try {
-					elementOptions = JSON.parse(this._options.options);
-				}
-				catch(e) {
-					throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
-				}
-			}
-			else {
-				elementOptions = this._options.options;
-			}
 
-			// merge module global options with element options if found
-			options = globalOptions ? mergeObjects(globalOptions,elementOptions) : elementOptions;
+	        // parse element options
+	        if (typeof this._options.options === 'string') {
+	            try {
+	                elementOptions = JSON.parse(this._options.options);
+	            }
+	            catch(e) {
+	                throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
+	            }
+	        }
+	        else {
+	            elementOptions = this._options.options;
+	        }
 
-			// merge module default options with result of previous merge
-			options = this._Module.options ? mergeObjects(this._Module.options,options) : options;
+
+	        // merge options from super classes to create default module options set
+	        if (this._Module.__parent) {
+
+	            // get module reference
+	            m = this._Module;
+
+	            // find super module
+	            do {
+
+	                console.log(m.options);
+
+	                // if has options add to stack
+	                if (m.options) {
+
+	                    moduleOptionsStack.push(m.options);
+
+	                    if (m._Super) {
+	                        specification = ModuleRegister.getModuleByPath(m._Super);
+	                    }
+
+	                    pageOptionsStack.push(specification ? specification.config : {});
+
+	                }
+	            }
+	            while(m = m.__parent);
+
+	            i = moduleOptionsStack.length-1;
+	            while (i >= 0) {
+	                pageOptions = mergeObjects(pageOptions,pageOptionsStack[i]);
+	                moduleOptions = mergeObjects(moduleOptions,moduleOptionsStack[i]);
+	                i--;
+	            }
+	        }
+	        specification = ModuleRegister.getModuleByPath(this._path);
+	        moduleOptions = mergeObjects(moduleOptions,this._Module.options);
+	        pageOptions = mergeObjects(pageOptions,specification ? specification.config : {});
+
+	        // merge module page options with element options if found
+	        options = pageOptions ? mergeObjects(pageOptions,elementOptions) : elementOptions;
+
+	        // setup final options by merging page module options with page and element options
+	        options = moduleOptions ? mergeObjects(moduleOptions,options) : options;
+
+
+	        console.log('final:',options);
+
 
 			// set reference
 			if (typeof this._Module === 'function') {
@@ -1971,12 +2028,21 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 
 	    /**
 	     * Returns a synced controller group which fires a load event once all modules have loaded
-	     * @param {ModuleController} [args] - list of module controllers to synchronize
-	     * @return SyncedControllerGroup
+	     * {ModuleController|NodeController} [arguments] - list of module controllers or node controllers to synchronize
+	     * @return SyncedControllerGroup.prototype
 	     */
-	    sync:function(args) {
+	    sync:function() {
+
 	        var group = Object.create(SyncedControllerGroup.prototype);
+
+	        // test if user passed an array instead of separate arguments
+	        if (arguments.length == 1 && !arguments.slice) {
+	            arguments = arguments[0];
+	        }
+
+	        // create synced controller group using passed arguments
 	        SyncedControllerGroup.apply(group, arguments);
+
 	        return group;
 	    },
 
@@ -2100,21 +2166,18 @@ define('conditioner',['require','conditioner/Observer','conditioner/contains','c
 	return new ModuleLoader();
 
 });
-define('conditioner/extendClass',['conditioner/mergeObjects'],function(mergeObjects){
+define('conditioner/extendClass',[],function(){
 
-    return function(parent,child,childOptions) {
+    return function(Parent,Child) {
 
-        // set child options to empty object if not defined
-        childOptions = childOptions || {};
-
-        // copy options
-        child.options = parent.options ? mergeObjects(parent.options,childOptions) : childOptions;
+        // set reference to super class
+        Child.__parent = Parent;
 
         // copy prototype
-        child.prototype = Object.create(parent.prototype);
+        Child.prototype = Object.create(Parent.prototype);
 
         // return the constructor
-        return child;
+        return Child;
 
     }
 

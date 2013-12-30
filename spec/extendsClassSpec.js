@@ -29,12 +29,32 @@
                     },
                     '../spec/mock/baz':{
                         'options':{
-                            'baz':'2',
-                            'bar':'4'
+                            'baz':'2'
                         }
                     }
                 }
             });
+
+            /*
+
+             'modules':{
+             'Foo':{
+             'options':{
+             'foo':2
+             }
+             },
+             'Bar':{
+             'options':{
+             'bar':2
+             }
+             },
+             'Baz':{
+             'options':{
+             'baz':2
+             }
+             }
+             }
+             */
 
             // find modules
             var results = loader.parse(group);
