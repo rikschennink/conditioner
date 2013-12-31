@@ -100,7 +100,7 @@ var TestFactory = {
 
 	getTest:function(path,found) {
 
-		path = 'tests/' + path;
+		path = 'conditioner/tests/' + path;
 
 		require([path],function(config){
 

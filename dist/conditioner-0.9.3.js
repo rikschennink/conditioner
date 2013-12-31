@@ -770,7 +770,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 		getTest:function(path,found) {
 
-			path = 'tests/' + path;
+			path = 'conditioner/tests/' + path;
 
 			require([path],function(config){
 
@@ -878,8 +878,9 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 			// if no id supplied throw error
 			if (!path) {
-				throw new Error('ModuleRegistry.getModuleByPath(path): "path" is a required parameter.');
+				throw new Error('ModuleRegistry.getModule(path): "path" is a required parameter.');
 			}
+
 	        return this._options[path] || this._options[requirejs.toUrl(path)];
 
 		}
@@ -1037,7 +1038,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		}
 
 		// path to module
-		this._path = ModuleRegistry.getRedirect(this._path);
+		this._path = ModuleRegistry.getRedirect(path);
 	    this._alias = path;
 
 		// reference to element
