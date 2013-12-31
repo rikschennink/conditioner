@@ -123,6 +123,30 @@
         });
 
 
+        it('will instantiate correct node on module when using aliases',function(){
+
+            // arrange
+            var node = document.createElement('div');
+            node.setAttribute('data-module','IBaz');
+
+            var group = document.createElement('div');
+            group.appendChild(node);
+
+            // act
+            var loader = new ModuleLoader();
+            loader.setOptions({
+                'modules':{
+                    'mock/baz':'IBaz'
+                }
+            });
+            var results = loader.parse(group);
+
+            // assert
+            expect(results.length).toEqual(1);
+
+        });
+
+
 	});
 
 }());

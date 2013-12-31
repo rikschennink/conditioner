@@ -14,7 +14,8 @@ var ModuleController = function(path,element,options) {
 	}
 
 	// path to module
-	this._path = path;
+	this._path = ModuleRegistry.getRedirect(path);
+    this._alias = path;
 
 	// reference to element
 	this._element = element;
@@ -94,7 +95,7 @@ ModuleController.prototype = {
 	 * @public
 	 */
 	matchesPath:function(path) {
-		return this._path === path;
+		return this._path === path || this._alias === path;
 	},
 
 	/**
@@ -197,7 +198,7 @@ ModuleController.prototype = {
         do {
 
             // get settings
-            options = ModuleRegister.getModuleByPath(url);
+            options = ModuleRegistry.getModule(url);
 
             // stack the options
             stack.push({

@@ -61,7 +61,7 @@ ModuleLoader.prototype = {
 			config = typeof mod === 'string' ? null : mod.options || {};
 
 			// register this module
-			ModuleRegister.registerModule(path,config,alias);
+			ModuleRegistry.registerModule(path,config,alias);
 
 		}
 	},

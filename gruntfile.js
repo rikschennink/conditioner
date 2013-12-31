@@ -23,7 +23,7 @@ module.exports = function(grunt) {
                 '<%= path.conditioner %>/ExpressionFormatter.js',
                 '<%= path.conditioner %>/TestFactory.js',
                 '<%= path.conditioner %>/Tester.js',
-                '<%= path.conditioner %>/ModuleRegister.js',
+                '<%= path.conditioner %>/ModuleRegistry.js',
                 '<%= path.conditioner %>/ConditionsManager.js',
                 '<%= path.conditioner %>/ModuleController.js',
                 '<%= path.conditioner %>/NodeController.js',
@@ -98,11 +98,9 @@ module.exports = function(grunt) {
 					'<%= path.conditioner %>/UnaryExpression.js',
 					'<%= path.conditioner %>/BinaryExpression.js',
 					'<%= path.conditioner %>/ExpressionFormatter.js',
-
 					'<%= path.conditioner %>/TestFactory.js',
 					'<%= path.conditioner %>/Tester.js',
-
-					'<%= path.conditioner %>/ModuleRegister.js',
+                    '<%= path.conditioner %>/ModuleRegistry.js',
 					'<%= path.conditioner %>/ConditionsManager.js',
 					'<%= path.conditioner %>/ModuleController.js',
 					'<%= path.conditioner %>/NodeController.js',
