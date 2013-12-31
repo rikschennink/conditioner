@@ -830,20 +830,40 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 		return this._result;
 	};
-	/**
-	 * @namespace ModuleRegister
-	 */
 	var ModuleRegister = {
-		_modules:{},
+
+		//_modules:{},
+
+
+
+	    _options:{},
+	    _redirects:{},
+
 
 		/**
 		 * Register a module
 		 * @param {String} path - path to module
-		 * @param {Object} config - configuration to setup for module
+		 * @param {Object} options - configuration to setup for module
 		 * @param {String} alias - alias name for module
 		 * @static
 		 */
-		registerModule:function(path,config,alias) {
+		registerModule:function(path,options,alias) {
+
+	        var uri = requirejs.toUrl(path);
+
+	        this._options[uri] = options;
+
+	        if (alias) {
+	            this._redirects[alias] = uri;
+	        }
+
+	        var conf = {};
+	        conf[path] = options;
+	        requirejs.config({
+	            config:conf
+	        });
+
+	        /*
 
 			var key=alias||path,map,conf;
 
@@ -852,12 +872,6 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 			// check if has config defined
 			if (config) {
-
-	            define(key + '/config',function(){
-	                return config;
-	            });
-
-	            console.log(key + '_config');
 
 				// set config entry
 				this._modules[key].config = config;
@@ -886,6 +900,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 					}
 				});
 			}
+			*/
 		},
 
 		/**
@@ -901,13 +916,9 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 				throw new Error('ModuleRegister.getModuleById(path): "path" is a required parameter.');
 			}
 
-	        require([path + '_config'],function(cf){
-	            console.log('searching:',cf);
-	        });
+	        return this._options[requirejs.toUrl(path)];
 
-	        //return require(path + '_config');
-
-			return this._modules[path];
+			//return this._modules[path];
 
 		}
 
@@ -1262,6 +1273,10 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	        else {
 	            elementOptions = this._options.options;
 	        }
+
+
+
+
 
 
 	        // merge options from super classes to create default module options set
@@ -2168,17 +2183,21 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 });
 define('conditioner/extendClass',[],function(){
 
-    return function(Parent,Child) {
+    return function() {
 
-        // set reference to super class
-        Child.__parent = Parent;
+        // get child
+        var Child = arguments[arguments.length-1];
 
-        // copy prototype
-        Child.prototype = Object.create(Parent.prototype);
+        // set reference to super class path
+        // if index 0 is of type string this is a path, if not it is a require reference and path is (should be) located at index 1
+        Child.__super = typeof arguments[0] === 'string' ? arguments[0] : arguments[0].toUrl(arguments[1]);
 
-        // return the constructor
+        // require actual super module (should already have loaded before calling extend) and copy prototype to child
+        Child.prototype = Object.create(requirejs(Child.__super).prototype);
+
+        // return the Child Class
         return Child;
 
-    }
+    };
 
 });

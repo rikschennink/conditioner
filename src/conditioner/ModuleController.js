@@ -178,6 +178,56 @@ ModuleController.prototype = {
 
 	},
 
+    _parseOptionOverrides:function(options) {
+        if (typeof options === 'string') {
+            try {
+                return JSON.parse(options);
+            }
+            catch(e) {
+                throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
+            }
+        }
+        return options;
+    },
+
+    _parseOptions:function(url,Module,overrides) {
+
+        var stack = [],options,i,pageOptions = {},moduleOptions = {};
+
+        do {
+
+            // get settings
+            options = ModuleRegister.getModuleByPath(url);
+
+            // stack the options
+            stack.push({
+                'page':options,
+                'module':Module.options
+            });
+
+            // fetch super path
+            url = Module.__superUrl;
+
+        } while (Module = Module.__super);
+
+        // reverse loop over stack and merge options
+        i = stack.length;
+        while (i--) {
+            pageOptions = mergeObjects(pageOptions,stack[i].page);
+            moduleOptions = mergeObjects(moduleOptions,stack[i].module);
+        }
+
+        // merge page and module options
+        options = mergeObjects(moduleOptions,pageOptions);
+
+        // apply overrides
+        if (overrides) {
+            options = mergeObjects(options,this._parseOptionOverrides(overrides));
+        }
+
+        return options;
+    },
+
 	/**
 	 * Method called when module loaded
 	 * @fires load
@@ -190,80 +240,8 @@ ModuleController.prototype = {
 			return;
 		}
 
-		// get module specification
-		var pageOptionsStack = [],
-            moduleOptionsStack = [],
-            specification,
-            moduleOptions,
-            pageOptions,
-			elementOptions,
-            i, m, options;
-
-
-        // parse element options
-        if (typeof this._options.options === 'string') {
-            try {
-                elementOptions = JSON.parse(this._options.options);
-            }
-            catch(e) {
-                throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
-            }
-        }
-        else {
-            elementOptions = this._options.options;
-        }
-
-
-
-
-
-
-        // merge options from super classes to create default module options set
-        if (this._Module.__parent) {
-
-            // get module reference
-            m = this._Module;
-
-            // find super module
-            do {
-
-                console.log(m.options);
-
-                // if has options add to stack
-                if (m.options) {
-
-                    moduleOptionsStack.push(m.options);
-
-                    if (m._Super) {
-                        specification = ModuleRegister.getModuleByPath(m._Super);
-                    }
-
-                    pageOptionsStack.push(specification ? specification.config : {});
-
-                }
-            }
-            while(m = m.__parent);
-
-            i = moduleOptionsStack.length-1;
-            while (i >= 0) {
-                pageOptions = mergeObjects(pageOptions,pageOptionsStack[i]);
-                moduleOptions = mergeObjects(moduleOptions,moduleOptionsStack[i]);
-                i--;
-            }
-        }
-        specification = ModuleRegister.getModuleByPath(this._path);
-        moduleOptions = mergeObjects(moduleOptions,this._Module.options);
-        pageOptions = mergeObjects(pageOptions,specification ? specification.config : {});
-
-        // merge module page options with element options if found
-        options = pageOptions ? mergeObjects(pageOptions,elementOptions) : elementOptions;
-
-        // setup final options by merging page module options with page and element options
-        options = moduleOptions ? mergeObjects(moduleOptions,options) : options;
-
-
-        console.log('final:',options);
-
+        // parse and merge options for this module
+        var options = this._parseOptions(this._path,this._Module,this._options.options);
 
 		// set reference
 		if (typeof this._Module === 'function') {

@@ -1,18 +1,35 @@
-/**
- * @namespace ModuleRegister
- */
 var ModuleRegister = {
 
-	_modules:{},
+	//_modules:{},
+
+
+    _options:{},
+    _redirects:{},
+
 
 	/**
 	 * Register a module
 	 * @param {String} path - path to module
-	 * @param {Object} config - configuration to setup for module
+	 * @param {Object} options - configuration to setup for module
 	 * @param {String} alias - alias name for module
 	 * @static
 	 */
-	registerModule:function(path,config,alias) {
+	registerModule:function(path,options,alias) {
+
+        var uri = requirejs.toUrl(path);
+        this._options[uri] = options;
+
+        if (alias) {
+            this._redirects[alias] = path;
+        }
+
+        var conf = {};
+        conf[path] = options;
+        requirejs.config({
+            config:conf
+        });
+
+        /*
 
 		var key=alias||path,map,conf;
 
@@ -49,7 +66,17 @@ var ModuleRegister = {
 				}
 			});
 		}
+		*/
 	},
+
+    /**
+     * Returns the actual path if the path turns out to be a redirect
+     * @param path
+     * @returns {*}
+     */
+    getRedirectedPath:function(path) {
+        return this._redirects[path] || path;
+    },
 
 	/**
 	 * Get a registered module by path
@@ -64,7 +91,9 @@ var ModuleRegister = {
 			throw new Error('ModuleRegister.getModuleById(path): "path" is a required parameter.');
 		}
 
-		return this._modules[path];
+        return this._options[path] || this._options[requirejs.toUrl(path)];
+
+		//return this._modules[path];
 
 	}
 

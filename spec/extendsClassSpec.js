@@ -6,71 +6,65 @@
 
         it('will inherit parent page level options',function() {
 
+            var node,group,loader,results,syncedGroup,synced = false;
+
             // arrange
-            var node = document.createElement('div');
-            node.setAttribute('data-module','../spec/mock/baz');
+            runs(function(){
 
-            var group = document.createElement('div');
-            group.appendChild(node);
+                node = document.createElement('div');
+                node.setAttribute('data-module','mock/baz');
 
-            // act
-            var loader = new ModuleLoader();
-            loader.setOptions({
-                'modules':{
-                    '../spec/mock/foo':{
-                        'options':{
-                            'foo':'2'
-                        }
-                    },
-                    '../spec/mock/bar':{
-                        'options':{
-                            'bar':'2'
-                        }
-                    },
-                    '../spec/mock/baz':{
-                        'options':{
-                            'baz':'2'
+                group = document.createElement('div');
+                group.appendChild(node);
+
+                // act
+                loader = new ModuleLoader();
+                loader.setOptions({
+                    'modules':{
+                        'mock/foo':{
+                            'options':{
+                                'foo':2
+                            }
+                        },
+                        'mock/bar':{
+                            'options':{
+                                'bar':2
+                            }
+                        },
+                        'mock/baz':{
+                            'options':{
+                                'baz':2
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            /*
+                // find modules
+                results = loader.parse(group);
 
-             'modules':{
-             'Foo':{
-             'options':{
-             'foo':2
-             }
-             },
-             'Bar':{
-             'options':{
-             'bar':2
-             }
-             },
-             'Baz':{
-             'options':{
-             'baz':2
-             }
-             }
-             }
-             */
+                // sync load event of modules
+                syncedGroup = loader.sync(results);
 
-            // find modules
-            var results = loader.parse(group);
-
-            // sync load event of modules
-            var syncedGroup = loader.sync(results);
-            Observer.subscribe(syncedGroup,'load',function() {
-
-                //console.info('result:',results[0]._activeModuleController._module._options);
-
-                //console.info('child:',results[1]._activeModuleController._module._options);
+                // wait for load
+                Observer.subscribe(syncedGroup,'load',function() {
+                    synced = true;
+                });
 
             });
+
+            // act
+            waitsFor(function() {
+                return synced;
+            },'module group sync',100);
 
             // assert
-            expect(results).toBeDefined();
+            runs(function(){
+
+                expect(node.getAttribute('data-foo')).toBe('2');
+                expect(node.getAttribute('data-bar')).toBe('2');
+                expect(node.getAttribute('data-baz')).toBe('2');
+
+            });
 
         });
 

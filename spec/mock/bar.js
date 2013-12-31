@@ -1,19 +1,26 @@
-define(['conditioner/extendClass','../mock/foo'],function(_extend,_super){
 
-    console.log('Module: BAR');
+// has fixed path "mock/foo"
 
-    var exports = function Bar(element,options) {
-        this._element = element;
-        this._options = options;
-    };
+define(['utils/extendClass','mock/foo'],function(_extend,_super){
 
-    _extend(exports,'../mock/foo');
+    //console.log('Module: BAR');
+
+    var exports = _extend('mock/foo',function(element,options){
+
+        // bar
+
+        _super.call(this,element,options);
+
+        this._element.setAttribute('data-bar',options.bar);
+    });
 
     exports.options = {
         'bar':1
     };
 
-    exports.protoype = {};
+    exports.prototype.bar = function() {
+        console.log('bar function');
+    };
 
     return exports;
 

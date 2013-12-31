@@ -10,26 +10,26 @@ module.exports = function(grunt) {
 			tests:'<%= path.src %>/tests',
 			utils:'<%= path.src %>/utils'
 		},
-		meta: {
+		meta:{
 			banner:'// <%= pkg.name %> v<%= pkg.version %> - <%= pkg.description %>\n' +
 				   '// Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> - <%= pkg.homepage %>\n' +
 				   '// License: <%= _.map(pkg.licenses, function(x) {return x.type + " (" + x.url + ")";}).join(", ") %>\n'
 		},
 		jasmine:{
 			src:[
-                '<%= path.utils %>/Observer.js',
-				'<%= path.conditioner %>/ExpressionBase.js',
-				'<%= path.conditioner %>/UnaryExpression.js',
-				'<%= path.conditioner %>/BinaryExpression.js',
-				'<%= path.conditioner %>/ExpressionFormatter.js',
-				'<%= path.conditioner %>/ConditionsManager.js',
-				'<%= path.conditioner %>/ModuleRegister.js',
-				'<%= path.conditioner %>/ModuleController.js',
-				'<%= path.conditioner %>/NodeController.js',
-				'<%= path.conditioner %>/ModuleBase.js',
+                '<%= path.conditioner %>/ExpressionBase.js',
+                '<%= path.conditioner %>/UnaryExpression.js',
+                '<%= path.conditioner %>/BinaryExpression.js',
+                '<%= path.conditioner %>/ExpressionFormatter.js',
+                '<%= path.conditioner %>/TestFactory.js',
+                '<%= path.conditioner %>/Tester.js',
+                '<%= path.conditioner %>/ModuleRegister.js',
+                '<%= path.conditioner %>/ConditionsManager.js',
+                '<%= path.conditioner %>/ModuleController.js',
+                '<%= path.conditioner %>/NodeController.js',
                 '<%= path.conditioner %>/SyncedControllerGroup.js',
-				'<%= path.conditioner %>/ModuleLoader.js'
-			],
+                '<%= path.conditioner %>/ModuleLoader.js',
+            ],
 			options:{
                 keepRunner:true,
 				specs:'<%= path.spec %>/*.js',
@@ -39,16 +39,25 @@ module.exports = function(grunt) {
 				template:require('grunt-template-jasmine-requirejs'),
 				templateOptions:{
 					requireConfig:{
+                        paths:{
+                            'src/conditioner':'../src/conditioner',
+                            'utils':'../src/utils'
+                        },
                         map:{
                             '*':{
-                                'conditioner/extendClass':'utils/extendClass',
-                                'conditioner/mergeObjects':'utils/mergeObjects',
-                                'conditioner/Observer':'utils/observer'
+                                'conditioner/extendClass':'../src/utils/extendClass',
+                                'conditioner/mergeObjects':'../src/utils/mergeObjects',
+                                'conditioner/Observer':'../src/utils/observer'
                             }
                         },
-						baseUrl:'./src/',
+						baseUrl:'./spec/',
 						callback: function() {
-							require(['utils/Observer','utils/contains','utils/matchesSelector','utils/mergeObjects','utils/extendClass'],function(Observer,contains,matchesSelector,mergeObjects,extendClass) {
+							require(
+                                    ['utils/Observer',
+                                     'utils/contains',
+                                     'utils/matchesSelector',
+                                     'utils/mergeObjects',
+                                     'utils/extendClass'],function(Observer,contains,matchesSelector,mergeObjects,extendClass) {
 								window['Observer'] = Observer;
 								window['contains'] = contains;
 								window['matchesSelector'] = matchesSelector;
