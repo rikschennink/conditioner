@@ -15,12 +15,13 @@ module.exports = function(grunt) {
 
                     baseUrl:'js/',
                     paths:{
-                        'conditioner':'lib/rikschennink/conditioner-0.9.2.min'
+                        'conditioner':'lib/rikschennink/conditioner-0.9.3.min'
                     },
 
                     name:'lib/jrburke/require',
                     out:'js.min/built.js',
                     include:[
+
                         'conditioner',
 
                         // custom test
@@ -82,8 +83,8 @@ module.exports = function(grunt) {
         },
         watch: {
             css:{
-                files: ['./sass/**/*'],
-                tasks: ['sass']
+                files:['./sass/**/*'],
+                tasks:['sass']
             },
             html:{
                 files:['_includes/*','_layouts/*','index.html'],
@@ -92,6 +93,8 @@ module.exports = function(grunt) {
         }
     });
 
+    // if jekyll is giving you problems related to encoding on osx, run "export LC_ALL=en_US.UTF-8;"
+    // https://github.com/jekyll/jekyll/issues/960
 
     // tasks
     grunt.loadNpmTasks('grunt-contrib-sass');

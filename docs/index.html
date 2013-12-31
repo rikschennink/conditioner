@@ -1,6 +1,6 @@
 ---
 layout: content
-title: Documentation • Conditioner.js
+title: Documentation &bull; Conditioner.js
 ---
 <section>
 
@@ -107,7 +107,7 @@ title: Documentation • Conditioner.js
             <nav class="sub code">
                 <ul>
                     {% for method in item.methods %}
-                    <li><a href="#{{item.name}}-{{method.name}}">{{method.name}}({% for param in method.params %}{% if forloop.index > 1 %}, {% endif %}{{ param.name }}{% endfor %})</a>{% if method.returns %}&nbsp;→&nbsp;{{method.returns}}{% endif %}</li>
+                    <li><a href="#{{item.name}}-{{method.name}}">{{method.name}}({% for param in method.params %}{% if forloop.index > 1 %}, {% endif %}{{ param.name }}{% endfor %})</a>{% if method.returns %}&nbsp;&rarr;&nbsp;{{method.returns}}{% endif %}</li>
                     {% endfor %}
                 </ul>
             </nav>
@@ -117,7 +117,7 @@ title: Documentation • Conditioner.js
 
             <section class="method">
 
-                <h4 id="{{item.name}}-{{method.name}}">{{method.name}}{% if method.returns %}<span class="code">&nbsp;→&nbsp;{{method.returns}}</span>{% endif %}</h4>
+                <h4 id="{{item.name}}-{{method.name}}">{{method.name}}{% if method.returns %}<span class="code">&nbsp;&rarr;&nbsp;{{method.returns}}</span>{% endif %}</h4>
                 {{ method.description | markdownify }}
 
                 {% if method.params %}

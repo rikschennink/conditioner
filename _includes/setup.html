@@ -5,41 +5,41 @@
     requirejs.config({
         baseUrl:'{{ site.url }}/js/',
         paths:{
-            conditioner:'lib/rikschennink/conditioner-{{ site.version }}.min'
+            'conditioner/tests':'tests',
+            'conditioner':'lib/rikschennink/conditioner-{{ site.version }}.min'
         }
     });
 
     // load conditioner
     requirejs(['conditioner'],function(conditioner) {
 
-            conditioner.init({
-                'modules':{
-                    'ui/StarGazers':{
-                        'options':{
-	                        'width':90,
-                            'user':'rikschennink',
-                            'repo':'conditioner'
-                        }
-                    },
-                    'ui/StorageConsentSelect':{
-                        'options':{
-                            'label':{
-                                'level':{
-                                    'incognito':'Incognito'
-                                }
+        conditioner.init({
+            'modules':{
+                'ui/StarGazers':{
+                    'options':{
+                        'width':90,
+                        'user':'rikschennink',
+                        'repo':'conditioner'
+                    }
+                },
+                'ui/StorageConsentSelect':{
+                    'options':{
+                        'label':{
+                            'level':{
+                                'incognito':'Incognito'
                             }
                         }
-                    },
-                    'security/StorageConsentGuard':{
-                        'options':{
-                            'levels':['all','incognito','none'],
-                            'initial':'none'
-                        }
+                    }
+                },
+                'security/StorageConsentGuard':{
+                    'options':{
+                        'levels':['all','incognito','none'],
+                        'initial':'none'
                     }
                 }
-            });
+            }
+        });
 
-        }
-    );
+    });
 
 </script>

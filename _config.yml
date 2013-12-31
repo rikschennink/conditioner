@@ -2,7 +2,7 @@ pygments: true
 safe: true
 rawurl: "https://raw.github.com/rikschennink/conditioner/master"
 url: "http://conditionerjs.com"
-version: 0.9.2
+version: 0.9.3
 
 api:
  -
