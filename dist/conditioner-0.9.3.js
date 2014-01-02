@@ -2123,6 +2123,11 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 });
 define('conditioner/extendClass',[],function(){
 
+    /**
+     * JavaScript Inheritance
+     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_Revisited
+     */
+
     return function() {
 
         // get child constructor
@@ -2140,21 +2145,11 @@ define('conditioner/extendClass',[],function(){
             Child.__superUrl = req.toUrl(path);
         }
 
-        // get reference to require
-        //req = typeof arguments[0] === 'string' ? requirejs : arguments[0];
-        //path = typeof arguments[0] === 'string' ? arguments[0] : arguments[1];
-
-        // set reference to super class path
-        // if index 0 is of type string this is a path, if not it is a require reference and path is (should be) located at index 1
-        //Child.__superUrl = typeof arguments[0] === 'string' ? arguments[0] : req.toUrl(path);
-
         // set super object reference
         Child.__super = req(path);
 
         // require actual super module (should already have loaded before calling extend) and copy prototype to child
         Child.prototype = Object.create(Child.__super.prototype);
-
-        console.log(Child.constructor);
 
         // return the Child Class
         return Child;
