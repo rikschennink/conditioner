@@ -1,6 +1,4 @@
-/**
- * @namespace ExpressionFormatter
- */
+
 var ExpressionFormatter = {
 
 	/**

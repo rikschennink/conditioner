@@ -1,9 +1,11 @@
 
 // no dependencies
 
-define(function(){
+define(['module'],function(module){
 
     //console.log('Module: FOO');
+
+    //console.log(module.config().foo);
 
     var exports = function(element,options) {
 

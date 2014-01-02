@@ -19,10 +19,10 @@ var ModuleRegistry = {
             this._redirects[alias] = path;
         }
 
-        var conf = {};
-        conf[path] = options;
+        var config = {};
+        config[path] = options;
         requirejs.config({
-            config:conf
+            config:config
         });
 
 	},
