@@ -1,20 +1,26 @@
 define(function(){
 
+    /**
+     * JavaScript Inheritance
+     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_Revisited
+     */
+
     return function() {
 
-        var req = typeof arguments[0] === 'string' ? requirejs : arguments[0];
+        // get child constructor
+        var Child = arguments[arguments.length-1],
+            first = arguments[0],req,path;
 
-        // get child
-        var Child = arguments[arguments.length-1];
-
-        var path = typeof arguments[0] === 'string' ? arguments[0] : arguments[1];
-
-        //console.log('PATH:',req.toUrl(path));
-
-        // set reference to super class path
-        // if index 0 is of type string this is a path, if not it is a require reference and path is (should be) located at index 1
-        //Child.__super = typeof arguments[0] === 'string' ? arguments[0] : arguments[0].toUrl(arguments[1]);
-        Child.__superUrl = typeof arguments[0] === 'string' ? arguments[0] : req.toUrl(path);
+        if (typeof first === 'string') {
+            req = requirejs;
+            path = first;
+            Child.__superUrl = first;
+        }
+        else {
+            req = first;
+            path = arguments[1];
+            Child.__superUrl = req.toUrl(path);
+        }
 
         // set super object reference
         Child.__super = req(path);
@@ -24,21 +30,6 @@ define(function(){
 
         // return the Child Class
         return Child;
-
-        /*
-        // get child
-        var Child = arguments[arguments.length-1];
-
-        // set reference to super class path
-        // if index 0 is of type string this is a path, if not it is a require reference and path is (should be) located at index 1
-        Child.__super = typeof arguments[0] === 'string' ? arguments[0] : arguments[0].toUrl(arguments[1]);
-
-        // require actual super module (should already have loaded before calling extend) and copy prototype to child
-        Child.prototype = Object.create(requirejs(Child.__super).prototype);
-
-        // return the Child Class
-        return Child;
-        */
 
     };
 

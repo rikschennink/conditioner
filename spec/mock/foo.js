@@ -7,7 +7,7 @@ define(['module'],function(module){
 
     //console.log(module.config().foo);
 
-    var exports = function(element,options) {
+    var exports = function Foo(element,options) {
 
         // foo
 

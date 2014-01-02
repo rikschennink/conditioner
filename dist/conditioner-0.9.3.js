@@ -2125,19 +2125,28 @@ define('conditioner/extendClass',[],function(){
 
     return function() {
 
-        var req = typeof arguments[0] === 'string' ? requirejs : arguments[0];
+        // get child constructor
+        var Child = arguments[arguments.length-1],
+            first = arguments[0],req,path;
 
-        // get child
-        var Child = arguments[arguments.length-1];
+        if (typeof first === 'string') {
+            req = requirejs;
+            path = first;
+            Child.__superUrl = first;
+        }
+        else {
+            req = first;
+            path = arguments[1];
+            Child.__superUrl = req.toUrl(path);
+        }
 
-        var path = typeof arguments[0] === 'string' ? arguments[0] : arguments[1];
-
-        //console.log('PATH:',req.toUrl(path));
+        // get reference to require
+        //req = typeof arguments[0] === 'string' ? requirejs : arguments[0];
+        //path = typeof arguments[0] === 'string' ? arguments[0] : arguments[1];
 
         // set reference to super class path
         // if index 0 is of type string this is a path, if not it is a require reference and path is (should be) located at index 1
-        //Child.__super = typeof arguments[0] === 'string' ? arguments[0] : arguments[0].toUrl(arguments[1]);
-        Child.__superUrl = typeof arguments[0] === 'string' ? arguments[0] : req.toUrl(path);
+        //Child.__superUrl = typeof arguments[0] === 'string' ? arguments[0] : req.toUrl(path);
 
         // set super object reference
         Child.__super = req(path);
@@ -2145,23 +2154,10 @@ define('conditioner/extendClass',[],function(){
         // require actual super module (should already have loaded before calling extend) and copy prototype to child
         Child.prototype = Object.create(Child.__super.prototype);
 
-        // return the Child Class
-        return Child;
-
-        /*
-        // get child
-        var Child = arguments[arguments.length-1];
-
-        // set reference to super class path
-        // if index 0 is of type string this is a path, if not it is a require reference and path is (should be) located at index 1
-        Child.__super = typeof arguments[0] === 'string' ? arguments[0] : arguments[0].toUrl(arguments[1]);
-
-        // require actual super module (should already have loaded before calling extend) and copy prototype to child
-        Child.prototype = Object.create(requirejs(Child.__super).prototype);
+        console.log(Child.constructor);
 
         // return the Child Class
         return Child;
-        */
 
     };
 
