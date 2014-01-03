@@ -11,7 +11,7 @@ var ConditionsManager = function(conditions,element) {
 	this._suitable = true;
 
 	// if no conditions, conditions will always be suitable
-	if (typeof conditions !== 'string') {
+	if (typeof conditions !== 'string' || !conditions.length) {
 		return;
 	}
 

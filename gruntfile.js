@@ -28,7 +28,7 @@ module.exports = function(grunt) {
                 '<%= path.conditioner %>/ModuleController.js',
                 '<%= path.conditioner %>/NodeController.js',
                 '<%= path.conditioner %>/SyncedControllerGroup.js',
-                '<%= path.conditioner %>/ModuleLoader.js',
+                '<%= path.conditioner %>/ModuleLoader.js'
             ],
 			options:{
                 keepRunner:true,

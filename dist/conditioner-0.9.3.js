@@ -897,7 +897,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		this._suitable = true;
 
 		// if no conditions, conditions will always be suitable
-		if (typeof conditions !== 'string') {
+		if (typeof conditions !== 'string' || !conditions.length) {
 			return;
 		}
 

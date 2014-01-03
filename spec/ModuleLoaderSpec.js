@@ -101,11 +101,9 @@
 
             // arrange
             var a = document.createElement('div');
-            a.id = 'a';
             a.setAttribute('data-module','../spec/mock/jasmine');
 
             var b = document.createElement('div');
-            b.id = 'b';
             b.setAttribute('data-module','[{"mock/jasmine"},{]');
 
             var group = document.createElement('div');
@@ -122,7 +120,27 @@
 
         });
 
+        it('will ignore an empty "data-conditions" attribute',function(){
 
+            // arrange
+            var a = document.createElement('div');
+            a.setAttribute('data-module','../spec/mock/jasmine');
+            a.setAttribute('data-conditions','');
+
+            var group = document.createElement('div');
+            group.appendChild(a);
+
+            // act
+            var loader = new ModuleLoader();
+            var results = loader.parse(group);
+
+            // assert
+            expect(results.length).toEqual(1);
+            //expect(function(){loader.parse(group);}).toThrow(
+            //    new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.')
+            //);
+
+        });
         it('will instantiate correct node on module when using aliases',function(){
 
             // arrange
