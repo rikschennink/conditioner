@@ -4,7 +4,6 @@ define(function(){
      * JavaScript Inheritance
      * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_Revisited
      */
-
     return function() {
 
         // get child constructor

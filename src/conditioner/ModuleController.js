@@ -29,6 +29,12 @@ var ModuleController = function(path,element,options) {
 	// module instance reference
 	this._module = null;
 
+    // not available at this moment
+    this._available = false;
+
+    // has not initialized yet
+    this._initialized = false;
+
 	// check if conditions specified
 	this._conditionsManager = new ConditionsManager(
 		this._options.conditions,
@@ -40,10 +46,9 @@ var ModuleController = function(path,element,options) {
 
 	// by default the module controller has not yet initialized and is not available
 	// unless the contained module is not conditioned or conditions are already suitable
-	this._initialized = !this.isModuleConditioned() || this._conditionsManager.getSuitability();
-
-	// not available at this moment
-	this._available = false;
+	if (this._conditionsManager.getSuitability()) {
+        this._onInitialized(true);
+    }
 };
 
 ModuleController.prototype = {
@@ -112,13 +117,12 @@ ModuleController.prototype = {
 		Observer.subscribe(this._conditionsManager,'change',this._onConditionsChange.bind(this));
 
 		// let others know we have initialized
-		Observer.publish(this,'init',this);
+		//Observer.publish(this,'init',this);
 
 		// are we available
 		if (suitable) {
 			this._onBecameAvailable();
 		}
-
 	},
 
 	/**
@@ -131,7 +135,8 @@ ModuleController.prototype = {
 		this._available = true;
 
 		// let other know we are available
-		Observer.publish(this,'available',this);
+        this._load();
+		//Observer.publish(this,'available',this);
 
 	},
 
@@ -144,7 +149,7 @@ ModuleController.prototype = {
 		var suitable = this._conditionsManager.getSuitability();
 
 		if (this._module && !suitable) {
-			this.unload();
+			this._unload();
 		}
 
 		if (!this._module && suitable) {
@@ -157,7 +162,7 @@ ModuleController.prototype = {
 	 * Load the module contained in this ModuleController
 	 * @public
 	 */
-	load:function() {
+	_load:function() {
 
 		// if module available no need to require it
 		if (this._Module) {
@@ -266,16 +271,7 @@ ModuleController.prototype = {
 			throw new Error('ModuleController.load(): could not initialize module, missing constructor or "load" method.');
 		}
 
-		// set initialized attribute to initialized module
-		this._element.setAttribute('data-initialized',this._path);
-
-		// watch for events on target
-		// this way it is possible to listen to events on the controller which is always there
-		Observer.inform(this._module,this);
-
-		// publish load event
-		Observer.publish(this,'load',this);
-
+        this._onAfterLoad();
 	},
 
 	/**
@@ -284,7 +280,7 @@ ModuleController.prototype = {
 	 * @return {Boolean}
 	 * @public
 	 */
-	unload:function() {
+	_unload:function() {
 
 		// module is now no longer ready to be loaded
 		this._available = false;
@@ -303,16 +299,42 @@ ModuleController.prototype = {
 		}
 
 		// remove initialized attribute
-		this._element.removeAttribute('data-initialized');
-
-		// reset property
-		this._module = null;
-
-		// publish unload event
-		Observer.publish(this,'unload',this);
+		this._onAfterUnload();
 
 		return true;
 	},
+
+    _onAfterLoad:function() {
+
+        // set initialized attribute to initialized module
+        var attr = this._element.getAttribute('data-initialized') || '',
+            modules = attr.length ? attr.split(',') : [];
+            modules.push(this._path);
+        this._element.setAttribute('data-initialized',modules.join(','));
+
+        // watch for events on target
+        // this way it is possible to listen to events on the controller which is always there
+        Observer.inform(this._module,this);
+
+        // publish load event
+        Observer.publish(this,'load',this);
+
+    },
+
+    _onAfterUnload:function() {
+
+        // set initialized attribute to initialized module
+        var modules = this._element.getAttribute('data-initialized').split(',');
+        modules.splice(modules.indexOf(this._path),1);
+        this._element.setAttribute('data-initialized',modules.join(','));
+
+        // reset property
+        this._module = null;
+
+        // publish unload event
+        Observer.publish(this,'unload',this);
+
+    },
 
 	/**
 	 * Executes a methods on the wrapped module

@@ -1398,10 +1398,10 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		this._moduleControllers = [];
 
 		// contains reference to currently active module controller
-		this._activeModuleController = null;
+		//this._activeModuleController = null;
 
 		// method to unbind
-		this._activeModuleUnloadBind = this._onActiveModuleUnload.bind(this);
+		//this._activeModuleUnloadBind = this._onActiveModuleUnload.bind(this);
 
 	};
 
@@ -1487,7 +1487,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		 * @public
 		 */
 		hasLoadedModule:function() {
-			return this._activeModuleController ? this._activeModuleController.isModuleActive() : false;
+	        return this._activeModuleController ? this._activeModuleController.isModuleActive() : false;
 		},
 
 		/**
@@ -1557,6 +1557,18 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		 */
 		execute:function(method,params) {
 
+	        // todo: execute on all active module controllers
+
+	        var i=0,l=this._moduleControllers.length,controller,results = [];
+	        for (;i<l;i++) {
+	            controller = this._moduleControllers[i];
+	            results.push({
+	                controller:controller,
+	                result:controller.execute(method,params)
+	            });
+	        }
+
+	        /*
 			// if active module controller defined
 			if (this._activeModuleController) {
 				return this._activeModuleController.execute(method,params);
@@ -1567,6 +1579,8 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 				'status':404,
 				'response':null
 			};
+			*/
+
 		},
 
 		/**
@@ -1594,26 +1608,31 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		_onModulesInitialized:function() {
 
 			// find suitable active module controller
+	        /*
 			var ModuleController = this._getSuitableActiveModuleController();
 			if (ModuleController) {
 				this._setActiveModuleController(ModuleController);
 			}
+			*/
 
 			// listen to available events on controllers
 			var i=0,l=this._moduleControllers.length;
 			for (;i<l;i++) {
-				Observer.subscribe(this._moduleControllers[i],'available',this._onModuleAvailable.bind(this));
+	            Observer.subscribe(this._moduleControllers[i],'available',this._onModuleAvailable.bind(this));
 			}
 
 		},
 
 		/**
 		 * Called when a module controller has indicated it is ready to be loaded
-		 * @param {ModuleController} ModuleController
+		 * @param {ModuleController} moduleController
 		 * @private
 		 */
-		_onModuleAvailable:function(ModuleController) {
+		_onModuleAvailable:function(moduleController) {
 
+	        moduleController.load();
+
+	        /*
 			// setup vars
 			var i=0,l=this._moduleControllers.length,mc;
 
@@ -1633,14 +1652,36 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 			// load supplied module controller as active module
 			this._setActiveModuleController(ModuleController);
+			*/
 
 		},
+
+	    _onModuleLoad:function(moduleController) {
+
+	        // listen to unload event so we can load another module if necessary
+	        Observer.subscribe(moduleController,'unload',this._activeModuleUnloadBind);
+
+	        // propagate events from the module controller to the node so people can subscribe to events on the node
+	        Observer.inform(moduleController,this);
+
+	    },
+
+	    _onModuleUnload:function(moduleController) {
+
+	        // stop listening to unload
+	        Observer.unsubscribe(moduleController,'unload',this._activeModuleUnloadBind);
+
+	        // conceal events from active module controller
+	        Observer.conceal(moduleController,this);
+
+	    }
 
 		/**
 		 * Sets the active module controller
 		 * @param {ModuleController} ModuleController
 		 * @private
 		 */
+	        /*
 		_setActiveModuleController:function(ModuleController) {
 
 			// if not already loaded
@@ -1664,11 +1705,13 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 			this._activeModuleController.load();
 
 		},
+		*/
 
 		/**
 		 * Removes the active module controller
 		 * @private
 		 */
+	        /*
 		_cleanActiveModuleController:function() {
 
 			// if no module controller defined do nothing
@@ -1688,11 +1731,13 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 			// remove reference
 			this._activeModuleController = null;
 		},
+		*/
 
 		/**
 		 * Called when active module unloaded
 		 * @private
-		 */
+	     */
+	        /*
 		_onActiveModuleUnload:function() {
 
 			// clean up active module controller reference
@@ -1707,12 +1752,15 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 			// set found module controller as new active module controller
 			this._setActiveModuleController(ModuleController);
 		},
+		*/
+
 
 		/**
 		 * Returns a suitable module controller
 		 * @returns {null|ModuleController}
 		 * @private
-		 */
+	     */
+	        /*
 		_getSuitableActiveModuleController:function() {
 
 			// test if other module is ready, if so load first module to be fitting
@@ -1731,6 +1779,9 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 			return null;
 		}
+		*/
+
+
 	};
 	/**
 	 *
@@ -2127,7 +2178,6 @@ define('conditioner/extendClass',[],function(){
      * JavaScript Inheritance
      * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_Revisited
      */
-
     return function() {
 
         // get child constructor

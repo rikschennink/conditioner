@@ -118,7 +118,7 @@ ModuleLoader.prototype = {
 		// initialize modules depending on assigned priority (in reverse, but priority is reversed as well so all is okay)
 		i = nodes.length;
 		while (--i >= 0) {
-			nodes[i].load(this._getModuleControllersByElement(nodes[i].getElement()));
+			nodes[i].load.apply(nodes[i],this._getModuleControllersByElement(nodes[i].getElement()));
 		}
 
 		// merge new nodes with currently active nodes list
