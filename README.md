@@ -42,7 +42,7 @@ conditioner.init();
 ```
 
 ## Documentation
-The documentation and a bunch of demos is located at [rikschennink.github.io/conditioner](http://rikschennink.github.io/conditioner/)
+The documentation and a bunch of demos is located at [conditionerjs.com](http://conditionerjs.com)
 
 ## Requirements
 Conditioner relies on the availability of [RequireJS](http://requirejs.org).
