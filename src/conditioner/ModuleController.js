@@ -23,7 +23,7 @@ var ModuleController = function(path,element,options) {
 	// options for module controller
 	this._options = options || {};
 
-	// module reference
+	// module definition reference
 	this._Module = null;
 
 	// module instance reference
@@ -52,6 +52,15 @@ var ModuleController = function(path,element,options) {
 };
 
 ModuleController.prototype = {
+
+    /**
+     * Returns the module path
+     * @returns {String}
+     * @public
+     */
+    getPath:function() {
+        return this._path;
+    },
 
 	/**
 	 * Returns true if the module is available for initialisation, this is true when conditions have been met.
@@ -117,7 +126,7 @@ ModuleController.prototype = {
 		Observer.subscribe(this._conditionsManager,'change',this._onConditionsChange.bind(this));
 
 		// let others know we have initialized
-		//Observer.publish(this,'init',this);
+		Observer.publish(this,'init',this);
 
 		// are we available
 		if (suitable) {
@@ -134,9 +143,11 @@ ModuleController.prototype = {
 		// module is now available
 		this._available = true;
 
+        // we are now available
+        Observer.publish(this,'available',this);
+
 		// let other know we are available
         this._load();
-		//Observer.publish(this,'available',this);
 
 	},
 
@@ -198,8 +209,7 @@ ModuleController.prototype = {
 
     _parseOptions:function(url,Module,overrides) {
 
-        var stack = [],options,i,pageOptions = {},moduleOptions = {};
-
+        var stack = [],pageOptions = {},moduleOptions = {},options,i;
         do {
 
             // get settings
@@ -306,12 +316,6 @@ ModuleController.prototype = {
 
     _onAfterLoad:function() {
 
-        // set initialized attribute to initialized module
-        var attr = this._element.getAttribute('data-initialized') || '',
-            modules = attr.length ? attr.split(',') : [];
-            modules.push(this._path);
-        this._element.setAttribute('data-initialized',modules.join(','));
-
         // watch for events on target
         // this way it is possible to listen to events on the controller which is always there
         Observer.inform(this._module,this);
@@ -322,11 +326,6 @@ ModuleController.prototype = {
     },
 
     _onAfterUnload:function() {
-
-        // set initialized attribute to initialized module
-        var modules = this._element.getAttribute('data-initialized').split(',');
-        modules.splice(modules.indexOf(this._path),1);
-        this._element.setAttribute('data-initialized',modules.join(','));
 
         // reset property
         this._module = null;

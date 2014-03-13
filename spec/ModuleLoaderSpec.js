@@ -23,10 +23,10 @@
 
 			// arrange
 			var a = document.createElement('div');
-			a.setAttribute('data-module','../spec/mock/jasmine');
+			a.setAttribute('data-module','../spec/mock/foo');
 
 			var b = document.createElement('div');
-			b.setAttribute('data-module','../spec/mock/jasmine');
+			b.setAttribute('data-module','../spec/mock/foo');
 
 			var group = document.createElement('div');
 			group.appendChild(a);
@@ -46,15 +46,15 @@
 
 			// arrange
 			var a = document.createElement('div');
-			a.setAttribute('data-module','../spec/mock/jasmine');
+			a.setAttribute('data-module','../spec/mock/foo');
 			a.setAttribute('data-priority','-1');
 
 			var b = document.createElement('div');
 			b.setAttribute('data-priority','1');
-			b.setAttribute('data-module','../spec/mock/jasmine');
+			b.setAttribute('data-module','../spec/mock/foo');
 
 			var c = document.createElement('div');
-			c.setAttribute('data-module','../spec/mock/jasmine');
+			c.setAttribute('data-module','../spec/mock/foo');
 
 			var group = document.createElement('div');
 			group.appendChild(a);
@@ -78,11 +78,11 @@
 			// arrange
 			var a = document.createElement('div');
 			a.id = 'a';
-			a.setAttribute('data-module','../spec/mock/jasmine');
+			a.setAttribute('data-module','../spec/mock/foo');
 
 			var b = document.createElement('div');
 			b.id = 'b';
-			b.setAttribute('data-module','../spec/mock/jasmine');
+			b.setAttribute('data-module','../spec/mock/foo');
 
 			var group = document.createElement('div');
 			group.appendChild(a);
@@ -101,10 +101,10 @@
 
             // arrange
             var a = document.createElement('div');
-            a.setAttribute('data-module','../spec/mock/jasmine');
+            a.setAttribute('data-module','../spec/mock/foo');
 
             var b = document.createElement('div');
-            b.setAttribute('data-module','[{"mock/jasmine"},{]');
+            b.setAttribute('data-module','[{"../spec/mock/foo"},{]');
 
             var group = document.createElement('div');
             group.appendChild(a);
@@ -124,7 +124,7 @@
 
             // arrange
             var a = document.createElement('div');
-            a.setAttribute('data-module','../spec/mock/jasmine');
+            a.setAttribute('data-module','../spec/mock/foo');
             a.setAttribute('data-conditions','');
 
             var group = document.createElement('div');
@@ -136,16 +136,13 @@
 
             // assert
             expect(results.length).toEqual(1);
-            //expect(function(){loader.parse(group);}).toThrow(
-            //    new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.')
-            //);
 
         });
         it('will instantiate correct node on module when using aliases',function(){
 
             // arrange
             var node = document.createElement('div');
-            node.setAttribute('data-module','IBaz');
+            node.setAttribute('data-module','IFoo');
 
             var group = document.createElement('div');
             group.appendChild(node);
@@ -154,7 +151,7 @@
             var loader = new ModuleLoader();
             loader.setOptions({
                 'modules':{
-                    'mock/baz':'IBaz'
+                    '../spec/mock/foo':'IFoo'
                 }
             });
             var results = loader.parse(group);
@@ -164,6 +161,24 @@
 
         });
 
+        it('will parse and return the correct node priority',function(){
+
+            // arrange, act
+            var node = document.createElement('div');
+            node.setAttribute('data-module','../spec/mock/foo');
+            node.setAttribute('data-priority','5');
+            var group = document.createElement('div');
+            group.appendChild(node);
+
+
+            // act
+            var loader = new ModuleLoader();
+            var results = loader.parse(group);
+
+            // assert
+            expect(results[0].getPriority()).toEqual(5);
+
+        });
 
 	});
 

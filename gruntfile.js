@@ -198,6 +198,6 @@ module.exports = function(grunt) {
 	grunt.registerTask('lib',['concat','copy','requirejs','clean','uglify']);
 
 	// build than test
-	grunt.registerTask('develop',['lib','test']);
+	grunt.registerTask('develop',['lib','test','watch']);
 
 };

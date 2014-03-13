@@ -84,6 +84,7 @@ ModuleLoader.prototype = {
 			l = elements.length,
 			i = 0,
 			nodes = [],
+            node,
 			element;
 
 		// if no elements do nothing
@@ -103,10 +104,10 @@ ModuleLoader.prototype = {
 			}
 
 			// create new node
-			nodes.push(new NodeController(element));
+			nodes.push(new NodeController(element,element.getAttribute('data-priority')));
 		}
 
-		// sort nodes by priority:
+        // sort nodes by priority:
 		// higher numbers go first,
 		// then 0 (a.k.a. no priority assigned),
 		// then negative numbers
@@ -118,7 +119,8 @@ ModuleLoader.prototype = {
 		// initialize modules depending on assigned priority (in reverse, but priority is reversed as well so all is okay)
 		i = nodes.length;
 		while (--i >= 0) {
-			nodes[i].load.apply(nodes[i],this._getModuleControllersByElement(nodes[i].getElement()));
+            node = nodes[i];
+			node.load.apply(node,this._getModuleControllersByElement(node.getElement()));
 		}
 
 		// merge new nodes with currently active nodes list

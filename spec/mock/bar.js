@@ -3,8 +3,6 @@
 
 define(['utils/extendClass','mock/foo'],function(_extend,_super){
 
-    //console.log('Module: BAR');
-
     var exports = _extend('mock/foo',function Bar(element,options){
 
         // bar

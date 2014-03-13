@@ -5,7 +5,7 @@
  * @param {Object} element
  * @param {Number} priority
  */
-var NodeController = function(element) {
+var NodeController = function(element,priority) {
 
 	if (!element) {
 		throw new Error('NodeController(element): "element" is a required parameter.');
@@ -18,17 +18,14 @@ var NodeController = function(element) {
 	this._element.setAttribute('data-processed','true');
 
 	// set priority
-    var prio = element.getAttribute('data-priority');
-	this._priority = !prio ? 0 : parseInt(prio,10);
+    this._priority = !priority ? 0 : parseInt(priority,10);
 
 	// contains references to all module controllers
 	this._moduleControllers = [];
 
-	// contains reference to currently active module controller
-	//this._activeModuleController = null;
-
-	// method to unbind
-	//this._activeModuleUnloadBind = this._onActiveModuleUnload.bind(this);
+    // binds
+    this._moduleLoadBind = this._onModuleLoad.bind(this);
+    this._moduleUnloadBind = this._onModuleUnload.bind(this);
 
 };
 
@@ -45,7 +42,7 @@ NodeController.prototype = {
 
 	/**
 	 * Loads the passed module controllers to the node
-     * @param {arguments}
+     * @param {...} arguments
 	 * @public
 	 */
 	load:function() {
@@ -55,23 +52,35 @@ NodeController.prototype = {
             throw new Error('NodeController.load(controllers): Expects an array of module controllers as parameters.');
         }
 
-		// parse element module attributes
+		// turn into array
         this._moduleControllers = Array.prototype.slice.call(arguments,0);
 
-		// initialize
-		var i=0,l=this._moduleControllers.length,mc;
-
-		// listen load events on module controllers
+        // listen to load events on module controllers
+		var i=0,l=this._moduleControllers.length;
 		for (;i<l;i++) {
-
-			mc = this._moduleControllers[i];
-
-            // listen to load and unload event
-			Observer.subscribe(mc,'load',this._onModuleLoad.bind(this));
-            Observer.subscribe(mc,'unload',this._onModuleUnload.bind(this));
-
+			Observer.subscribe(this._moduleControllers[i],'load',this._moduleLoadBind);
         }
+
 	},
+
+    /**
+     * Unload all attached modules and restore in original state
+     * @public
+     */
+    unload:function() {
+
+        var i=0,l=this._moduleControllers.length;
+        for (;i<l;i++) {
+            this._detach(this._moduleControllers[i]);
+        }
+
+        // reset array
+        this._moduleControllers = [];
+
+        // update initialized state
+        this._updateInitialized();
+
+    },
 
 	/**
 	 * Returns the set priority for this node
@@ -114,7 +123,7 @@ NodeController.prototype = {
     },
 
 	/**
-	 * Returns a reference to the currently active module controller
+	 * Returns an array containing all active module controllers
 	 * @return {Array}
 	 * @public
 	 */
@@ -154,12 +163,13 @@ NodeController.prototype = {
 	/**
 	 * Returns one or multiple ModuleControllers matching the supplied path
 	 * @param {String} [path] - Optional path to match the nodes to
-	 * @param {Boolean} [singleResult] - Optional boolean to only ask one result
+	 * @param {Boolean} [singleResult] - Optional boolean to only ask for one result
 	 * @returns {Array|ModuleController|null}
 	 * @private
 	 */
 	_getModuleControllers:function(path,singleResult) {
 
+        // if no path supplied return all module controllers (or one if single result mode)
 		if (typeof path === 'undefined') {
 			if (singleResult) {
 				return this._moduleControllers[0];
@@ -167,6 +177,7 @@ NodeController.prototype = {
 			return this._moduleControllers.concat();
 		}
 
+        // loop over module controllers matching the path, if single result is enabled, return on first hit, else collect
 		var i=0,l=this._moduleControllers.length,results=[],mc;
 		for (;i<l;i++) {
 			mc = this._moduleControllers[i];
@@ -181,7 +192,7 @@ NodeController.prototype = {
 	},
 
 	/**
-	 * Public method for safely executing methods on the loaded module
+	 * Public method for safely attempting method execution on modules
 	 * @param {String} method - method key
 	 * @param {Array} [params] - array containing the method parameters
 	 * @return [Array] returns object containing status code and possible response data
@@ -201,85 +212,16 @@ NodeController.prototype = {
 
 	},
 
-	/**
-	 * Called when a module has indicated it's initialization is done
-	 * @private
-	 */
-        /*
-	_onModuleInitialized:function() {
-
-		var i=this._moduleControllers.length;
-
-		// check if all modules have initialized, if so move on to the next init stage
-		while (--i >= 0) {
-			if (!this._moduleControllers[i].hasInitialized()) {
-				return;
-			}
-		}
-
-		this._onModulesInitialized();
-	},
-	*/
-
-	/**
-	 * Called when all modules have been initialized
-	 * @private
-	 */
-    /*
-     _onModulesInitialized:function() {
-
-		// find suitable active module controller
-        var ModuleController = this._getSuitableActiveModuleController();
-		if (ModuleController) {
-			this._setActiveModuleController(ModuleController);
-		}
-
-		// listen to available events on controllers
-		var i=0,l=this._moduleControllers.length;
-		for (;i<l;i++) {
-            Observer.subscribe(this._moduleControllers[i],'available',this._onModuleAvailable.bind(this));
-		}
-
-	},*/
-
-
     /**
-	 * Called when a module controller has indicated it is ready to be loaded
-	 * @param {ModuleController} moduleController
-	 * @private
-	 */
-        /*
-	_onModuleAvailable:function(moduleController) {
-
-        moduleController.load();
-
-		// setup vars
-		var i=0,l=this._moduleControllers.length,mc;
-
-		for (;i<l;i++) {
-
-			mc = this._moduleControllers[i];
-
-			if (mc !== ModuleController &&
-				mc.isModuleAvailable() &&
-				mc.isModuleConditioned()) {
-
-				// earlier or conditioned module is ready, therefor cannot load this module
-
-				return;
-			}
-		}
-
-		// load supplied module controller as active module
-		this._setActiveModuleController(ModuleController);
-
-	},
-    */
-
+     * Called when module has loaded
+     * @param moduleController
+     * @private
+     */
     _onModuleLoad:function(moduleController) {
 
         // listen to unload event so we can load another module if necessary
-        Observer.subscribe(moduleController,'unload',this._activeModuleUnloadBind);
+        Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
+        Observer.subscribe(moduleController,'unload',this._moduleUnloadBind);
 
         // propagate events from the module controller to the node so people can subscribe to events on the node
         Observer.inform(moduleController,this);
@@ -287,122 +229,57 @@ NodeController.prototype = {
         // publish event
         Observer.publish(this,'load',moduleController);
 
+        // update initialized attribute
+        this._updateInitialized();
     },
 
+    /**
+     * Called when module has unloaded
+     * @param moduleController
+     * @private
+     */
     _onModuleUnload:function(moduleController) {
 
         // stop listening to unload
-        Observer.unsubscribe(moduleController,'load',this._activeModuleUnloadBind);
+        Observer.subscribe(moduleController,'load',this._moduleLoadBind);
+        Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
 
         // conceal events from active module controller
         Observer.conceal(moduleController,this);
 
+        // update initialized attribute
+        this._updateInitialized();
+    },
+
+    /**
+     * Updates the initialized attribute which contains a list of initialized modules
+     * @private
+     */
+    _updateInitialized:function() {
+
+        var i=0,controllers = this.getActiveModuleControllers(),l=controllers.length,modules=[];
+        for(;i<l;i++) {
+            modules.push(controllers[i].getPath());
+        }
+
+        if (modules.length) {
+            this._element.setAttribute('data-initialized',modules.join(','));
+        }
+        else {
+            this._element.removeAttribute('data-initialized');
+        }
+
+    },
+
+    _detach:function(moduleController) {
+
+        // unsubscribe from module events
+        Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
+        Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
+
+        // conceal events from module controller
+        Observer.conceal(moduleController,this);
+
     }
-
-	/**
-	 * Sets the active module controller
-	 * @param {ModuleController} ModuleController
-	 * @private
-	 */
-        /*
-	_setActiveModuleController:function(ModuleController) {
-
-		// if not already loaded
-		if (ModuleController === this._activeModuleController) {
-			return;
-		}
-
-		// clean up active module controller reference
-		this._cleanActiveModuleController();
-
-		// set new active module controller
-		this._activeModuleController = ModuleController;
-
-		// listen to unload event so we can load another module if necessary
-		Observer.subscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
-
-		// propagate events from the module controller to the node so people can subscribe to events on the node
-		Observer.inform(this._activeModuleController,this);
-
-		// finally load the module controller
-		this._activeModuleController.load();
-
-	},
-	*/
-
-	/**
-	 * Removes the active module controller
-	 * @private
-	 */
-        /*
-	_cleanActiveModuleController:function() {
-
-		// if no module controller defined do nothing
-		if (!this._activeModuleController) {
-			return;
-		}
-
-		// stop listening to unload
-		Observer.unsubscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
-
-		// conceal events from active module controller
-		Observer.conceal(this._activeModuleController,this);
-
-		// unload controller
-		this._activeModuleController.unload();
-
-		// remove reference
-		this._activeModuleController = null;
-	},
-	*/
-
-	/**
-	 * Called when active module unloaded
-	 * @private
-     */
-        /*
-	_onActiveModuleUnload:function() {
-
-		// clean up active module controller reference
-		this._cleanActiveModuleController();
-
-		// active module was unloaded, find another active module
-		var ModuleController = this._getSuitableActiveModuleController();
-		if(!ModuleController) {
-			return;
-		}
-
-		// set found module controller as new active module controller
-		this._setActiveModuleController(ModuleController);
-	},
-	*/
-
-
-	/**
-	 * Returns a suitable module controller
-	 * @returns {null|ModuleController}
-	 * @private
-     */
-        /*
-	_getSuitableActiveModuleController:function() {
-
-		// test if other module is ready, if so load first module to be fitting
-		var i=0,l=this._moduleControllers.length,mc;
-		for (;i<l;i++) {
-
-			mc = this._moduleControllers[i];
-
-			// if not ready, skip to next controller
-			if (!mc.isModuleAvailable()) {
-				continue;
-			}
-
-			return mc;
-		}
-
-		return null;
-	}
-	*/
-
 
 };

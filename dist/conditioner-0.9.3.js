@@ -1045,11 +1045,17 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		// options for module controller
 		this._options = options || {};
 
-		// module reference
+		// module definition reference
 		this._Module = null;
 
 		// module instance reference
 		this._module = null;
+
+	    // not available at this moment
+	    this._available = false;
+
+	    // has not initialized yet
+	    this._initialized = false;
 
 		// check if conditions specified
 		this._conditionsManager = new ConditionsManager(
@@ -1062,13 +1068,21 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 		// by default the module controller has not yet initialized and is not available
 		// unless the contained module is not conditioned or conditions are already suitable
-		this._initialized = !this.isModuleConditioned() || this._conditionsManager.getSuitability();
-
-		// not available at this moment
-		this._available = false;
+		if (this._conditionsManager.getSuitability()) {
+	        this._onInitialized(true);
+	    }
 	};
 
 	ModuleController.prototype = {
+
+	    /**
+	     * Returns the module path
+	     * @returns {String}
+	     * @public
+	     */
+	    getPath:function() {
+	        return this._path;
+	    },
 
 		/**
 		 * Returns true if the module is available for initialisation, this is true when conditions have been met.
@@ -1140,7 +1154,6 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 			if (suitable) {
 				this._onBecameAvailable();
 			}
-
 		},
 
 		/**
@@ -1152,8 +1165,11 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 			// module is now available
 			this._available = true;
 
+	        // we are now available
+	        Observer.publish(this,'available',this);
+
 			// let other know we are available
-			Observer.publish(this,'available',this);
+	        this._load();
 
 		},
 
@@ -1166,7 +1182,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 			var suitable = this._conditionsManager.getSuitability();
 
 			if (this._module && !suitable) {
-				this.unload();
+				this._unload();
 			}
 
 			if (!this._module && suitable) {
@@ -1179,7 +1195,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		 * Load the module contained in this ModuleController
 		 * @public
 		 */
-		load:function() {
+		_load:function() {
 
 			// if module available no need to require it
 			if (this._Module) {
@@ -1215,8 +1231,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 	    _parseOptions:function(url,Module,overrides) {
 
-	        var stack = [],options,i,pageOptions = {},moduleOptions = {};
-
+	        var stack = [],pageOptions = {},moduleOptions = {},options,i;
 	        do {
 
 	            // get settings
@@ -1288,16 +1303,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 				throw new Error('ModuleController.load(): could not initialize module, missing constructor or "load" method.');
 			}
 
-			// set initialized attribute to initialized module
-			this._element.setAttribute('data-initialized',this._path);
-
-			// watch for events on target
-			// this way it is possible to listen to events on the controller which is always there
-			Observer.inform(this._module,this);
-
-			// publish load event
-			Observer.publish(this,'load',this);
-
+	        this._onAfterLoad();
 		},
 
 		/**
@@ -1306,7 +1312,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		 * @return {Boolean}
 		 * @public
 		 */
-		unload:function() {
+		_unload:function() {
 
 			// module is now no longer ready to be loaded
 			this._available = false;
@@ -1325,16 +1331,31 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 			}
 
 			// remove initialized attribute
-			this._element.removeAttribute('data-initialized');
-
-			// reset property
-			this._module = null;
-
-			// publish unload event
-			Observer.publish(this,'unload',this);
+			this._onAfterUnload();
 
 			return true;
 		},
+
+	    _onAfterLoad:function() {
+
+	        // watch for events on target
+	        // this way it is possible to listen to events on the controller which is always there
+	        Observer.inform(this._module,this);
+
+	        // publish load event
+	        Observer.publish(this,'load',this);
+
+	    },
+
+	    _onAfterUnload:function() {
+
+	        // reset property
+	        this._module = null;
+
+	        // publish unload event
+	        Observer.publish(this,'unload',this);
+
+	    },
 
 		/**
 		 * Executes a methods on the wrapped module
@@ -1377,8 +1398,9 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	 * @class
 	 * @constructor
 	 * @param {Object} element
+	 * @param {Number} priority
 	 */
-	var NodeController = function(element) {
+	var NodeController = function(element,priority) {
 
 		if (!element) {
 			throw new Error('NodeController(element): "element" is a required parameter.');
@@ -1391,17 +1413,14 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		this._element.setAttribute('data-processed','true');
 
 		// set priority
-		var prio = this._element.getAttribute('data-priority');
-		this._priority = !prio ? 0 : parseInt(prio,10);
+	    this._priority = !priority ? 0 : parseInt(priority,10);
 
 		// contains references to all module controllers
 		this._moduleControllers = [];
 
-		// contains reference to currently active module controller
-		//this._activeModuleController = null;
-
-		// method to unbind
-		//this._activeModuleUnloadBind = this._onActiveModuleUnload.bind(this);
+	    // binds
+	    this._moduleLoadBind = this._onModuleLoad.bind(this);
+	    this._moduleUnloadBind = this._onModuleUnload.bind(this);
 
 	};
 
@@ -1418,37 +1437,45 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 		/**
 		 * Loads the passed module controllers to the node
-	     * @param {Array} controllers
+	     * @param {...} arguments
 		 * @public
 		 */
-		load:function(controllers) {
+		load:function() {
 
 	        // if no module controllers found
-	        if (!controllers || !controllers.length) {
+	        if (!arguments || !arguments.length) {
 	            throw new Error('NodeController.load(controllers): Expects an array of module controllers as parameters.');
 	        }
 
-			// parse element module attributes
-	        this._moduleControllers = controllers;
+			// turn into array
+	        this._moduleControllers = Array.prototype.slice.call(arguments,0);
 
-			// initialize
-			var i=0,l=this._moduleControllers.length,mc;
-
-			// listen to init events on module controllers
+	        // listen to load events on module controllers
+			var i=0,l=this._moduleControllers.length;
 			for (;i<l;i++) {
+				Observer.subscribe(this._moduleControllers[i],'load',this._moduleLoadBind);
+	        }
 
-				mc = this._moduleControllers[i];
-
-				// if module already has initialized, jump to _onModuleInitialized method and don't bind listener
-				if (mc.hasInitialized()) {
-					this._onModuleInitialized();
-					continue;
-				}
-
-				// otherwise, listen to init event
-				Observer.subscribe(mc,'init',this._onModuleInitialized.bind(this));
-			}
 		},
+
+	    /**
+	     * Unload all attached modules and restore in original state
+	     * @public
+	     */
+	    unload:function() {
+
+	        var i=0,l=this._moduleControllers.length;
+	        for (;i<l;i++) {
+	            this._detach(this._moduleControllers[i]);
+	        }
+
+	        // reset array
+	        this._moduleControllers = [];
+
+	        // update initialized state
+	        this._updateInitialized();
+	        
+	    },
 
 		/**
 		 * Returns the set priority for this node
@@ -1483,21 +1510,30 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		},
 
 		/**
-		 * Returns true if any of the nodes modules are active
+		 * Returns true if all module controllers are active
 		 * @public
 		 */
-		hasLoadedModule:function() {
-	        return this._activeModuleController ? this._activeModuleController.isModuleActive() : false;
-		},
+	    areModulesActive:function() {
+	        return this.getActiveModuleControllers().length === this._moduleControllers.length;
+	    },
 
 		/**
-		 * Returns a reference to the currently active module controller
-		 * @return {ModuleController|null}
+		 * Returns an array containing all active module controllers
+		 * @return {Array}
 		 * @public
 		 */
-		getActiveModuleController:function() {
-			return this._activeModuleController;
-		},
+		getActiveModuleControllers:function() {
+
+	        var i=0,l=this._moduleControllers.length,controller,results = [];
+	        for (;i<l;i++) {
+	            controller = this._moduleControllers[i];
+	            if (controller.isModuleActive()) {
+	                results.push(controller);
+	            }
+	        }
+	        return results;
+
+	    },
 
 		/**
 		 * Returns the first ModuleController matching the given path
@@ -1522,12 +1558,13 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		/**
 		 * Returns one or multiple ModuleControllers matching the supplied path
 		 * @param {String} [path] - Optional path to match the nodes to
-		 * @param {Boolean} [singleResult] - Optional boolean to only ask one result
+		 * @param {Boolean} [singleResult] - Optional boolean to only ask for one result
 		 * @returns {Array|ModuleController|null}
 		 * @private
 		 */
 		_getModuleControllers:function(path,singleResult) {
 
+	        // if no path supplied return all module controllers (or one if single result mode)
 			if (typeof path === 'undefined') {
 				if (singleResult) {
 					return this._moduleControllers[0];
@@ -1535,6 +1572,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 				return this._moduleControllers.concat();
 			}
 
+	        // loop over module controllers matching the path, if single result is enabled, return on first hit, else collect
 			var i=0,l=this._moduleControllers.length,results=[],mc;
 			for (;i<l;i++) {
 				mc = this._moduleControllers[i];
@@ -1549,15 +1587,13 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		},
 
 		/**
-		 * Public method for safely executing methods on the loaded module
+		 * Public method for safely attempting method execution on modules
 		 * @param {String} method - method key
 		 * @param {Array} [params] - array containing the method parameters
-		 * @return {Object} returns object containing status code and possible response data
+		 * @return [Array] returns object containing status code and possible response data
 		 * @public
 		 */
 		execute:function(method,params) {
-
-	        // todo: execute on all active module controllers
 
 	        var i=0,l=this._moduleControllers.length,controller,results = [];
 	        for (;i<l;i++) {
@@ -1567,220 +1603,79 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	                result:controller.execute(method,params)
 	            });
 	        }
-
-	        /*
-			// if active module controller defined
-			if (this._activeModuleController) {
-				return this._activeModuleController.execute(method,params);
-			}
-
-			// no active module
-			return {
-				'status':404,
-				'response':null
-			};
-			*/
+	        return results;
 
 		},
 
-		/**
-		 * Called when a module has indicated it's initialization is done
-		 * @private
-		 */
-		_onModuleInitialized:function() {
-
-			var i=this._moduleControllers.length;
-
-			// check if all modules have initialized, if so move on to the next init stage
-			while (--i >= 0) {
-				if (!this._moduleControllers[i].hasInitialized()) {
-					return;
-				}
-			}
-
-			this._onModulesInitialized();
-		},
-
-		/**
-		 * Called when all modules have been initialized
-		 * @private
-		 */
-		_onModulesInitialized:function() {
-
-			// find suitable active module controller
-	        /*
-			var ModuleController = this._getSuitableActiveModuleController();
-			if (ModuleController) {
-				this._setActiveModuleController(ModuleController);
-			}
-			*/
-
-			// listen to available events on controllers
-			var i=0,l=this._moduleControllers.length;
-			for (;i<l;i++) {
-	            Observer.subscribe(this._moduleControllers[i],'available',this._onModuleAvailable.bind(this));
-			}
-
-		},
-
-		/**
-		 * Called when a module controller has indicated it is ready to be loaded
-		 * @param {ModuleController} moduleController
-		 * @private
-		 */
-		_onModuleAvailable:function(moduleController) {
-
-	        moduleController.load();
-
-	        /*
-			// setup vars
-			var i=0,l=this._moduleControllers.length,mc;
-
-			for (;i<l;i++) {
-
-				mc = this._moduleControllers[i];
-
-				if (mc !== ModuleController &&
-					mc.isModuleAvailable() &&
-					mc.isModuleConditioned()) {
-
-					// earlier or conditioned module is ready, therefor cannot load this module
-
-					return;
-				}
-			}
-
-			// load supplied module controller as active module
-			this._setActiveModuleController(ModuleController);
-			*/
-
-		},
-
+	    /**
+	     * Called when module has loaded
+	     * @param moduleController
+	     * @private
+	     */
 	    _onModuleLoad:function(moduleController) {
 
 	        // listen to unload event so we can load another module if necessary
-	        Observer.subscribe(moduleController,'unload',this._activeModuleUnloadBind);
+	        Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
+	        Observer.subscribe(moduleController,'unload',this._moduleUnloadBind);
 
 	        // propagate events from the module controller to the node so people can subscribe to events on the node
 	        Observer.inform(moduleController,this);
 
+	        // publish event
+	        Observer.publish(this,'load',moduleController);
+
+	        // update initialized attribute
+	        this._updateInitialized();
 	    },
 
+	    /**
+	     * Called when module has unloaded
+	     * @param moduleController
+	     * @private
+	     */
 	    _onModuleUnload:function(moduleController) {
 
 	        // stop listening to unload
-	        Observer.unsubscribe(moduleController,'unload',this._activeModuleUnloadBind);
+	        Observer.subscribe(moduleController,'load',this._moduleLoadBind);
+	        Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
 
 	        // conceal events from active module controller
 	        Observer.conceal(moduleController,this);
 
+	        // update initialized attribute
+	        this._updateInitialized();
+	    },
+
+	    /**
+	     * Updates the initialized attribute which contains a list of initialized modules
+	     * @private
+	     */
+	    _updateInitialized:function() {
+
+	        var i=0,controllers = this.getActiveModuleControllers(),l=controllers.length,modules=[];
+	        for(;i<l;i++) {
+	            modules.push(controllers[i].getPath());
+	        }
+
+	        if (modules.length) {
+	            this._element.setAttribute('data-initialized',modules.join(','));
+	        }
+	        else {
+	            this._element.removeAttribute('data-initialized');
+	        }
+
+	    },
+
+	    _detach:function(moduleController) {
+
+	        // unsubscribe from module events
+	        Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
+	        Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
+
+	        // conceal events from module controller
+	        Observer.conceal(moduleController,this);
+
 	    }
-
-		/**
-		 * Sets the active module controller
-		 * @param {ModuleController} ModuleController
-		 * @private
-		 */
-	        /*
-		_setActiveModuleController:function(ModuleController) {
-
-			// if not already loaded
-			if (ModuleController === this._activeModuleController) {
-				return;
-			}
-
-			// clean up active module controller reference
-			this._cleanActiveModuleController();
-
-			// set new active module controller
-			this._activeModuleController = ModuleController;
-
-			// listen to unload event so we can load another module if necessary
-			Observer.subscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
-
-			// propagate events from the module controller to the node so people can subscribe to events on the node
-			Observer.inform(this._activeModuleController,this);
-
-			// finally load the module controller
-			this._activeModuleController.load();
-
-		},
-		*/
-
-		/**
-		 * Removes the active module controller
-		 * @private
-		 */
-	        /*
-		_cleanActiveModuleController:function() {
-
-			// if no module controller defined do nothing
-			if (!this._activeModuleController) {
-				return;
-			}
-
-			// stop listening to unload
-			Observer.unsubscribe(this._activeModuleController,'unload',this._activeModuleUnloadBind);
-
-			// conceal events from active module controller
-			Observer.conceal(this._activeModuleController,this);
-
-			// unload controller
-			this._activeModuleController.unload();
-
-			// remove reference
-			this._activeModuleController = null;
-		},
-		*/
-
-		/**
-		 * Called when active module unloaded
-		 * @private
-	     */
-	        /*
-		_onActiveModuleUnload:function() {
-
-			// clean up active module controller reference
-			this._cleanActiveModuleController();
-
-			// active module was unloaded, find another active module
-			var ModuleController = this._getSuitableActiveModuleController();
-			if(!ModuleController) {
-				return;
-			}
-
-			// set found module controller as new active module controller
-			this._setActiveModuleController(ModuleController);
-		},
-		*/
-
-
-		/**
-		 * Returns a suitable module controller
-		 * @returns {null|ModuleController}
-		 * @private
-	     */
-	        /*
-		_getSuitableActiveModuleController:function() {
-
-			// test if other module is ready, if so load first module to be fitting
-			var i=0,l=this._moduleControllers.length,mc;
-			for (;i<l;i++) {
-
-				mc = this._moduleControllers[i];
-
-				// if not ready, skip to next controller
-				if (!mc.isModuleAvailable()) {
-					continue;
-				}
-
-				return mc;
-			}
-
-			return null;
-		}
-		*/
-
 
 	};
 	/**
@@ -1793,15 +1688,13 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 	    this._count = arguments.length;
 	    this._controllers = [];
+
 	    this._controllerLoadedBind = this._onLoad.bind(this);
 	    this._controllerUnloadedBind = this._onUnload.bind(this);
 
 	    var i=0,controller;
 	    for (;i<this._count;i++) {
 	        controller = arguments[i];
-
-	        // skip if method has loaded module not defined
-	        if (!controller.hasLoadedModule) {continue;}
 
 	        // listen to load and unload events so we can pass them on if appropriate
 	        Observer.subscribe(controller,'load',this._controllerLoadedBind);
@@ -1824,12 +1717,18 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	        this._unload();
 	    },
 
+	    _isActive:function(controller) {
+	        return ((controller.isModuleActive && controller.isModuleActive()) ||
+	                (controller.areModulesActive && !controller.areModulesActive()));
+	    },
+
 	    _test:function() {
 
-	        // loop over modules testing their active state
-	        var i=0;
+	        // loop over modules testing their active state, if one is inactive we stop immediately
+	        var i= 0,controller;
 	        for (;i<this._count;i++) {
-	            if (!this._controllers[i].hasLoadedModule()) {
+	            controller = this._controllers[i];
+	            if (!this._isActive(controller)) {
 	                return;
 	            }
 	        }
@@ -1939,6 +1838,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 				l = elements.length,
 				i = 0,
 				nodes = [],
+	            node,
 				element;
 
 			// if no elements do nothing
@@ -1958,10 +1858,10 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 				}
 
 				// create new node
-				nodes.push(new NodeController(element));
+				nodes.push(new NodeController(element,element.getAttribute('data-priority')));
 			}
 
-			// sort nodes by priority:
+	        // sort nodes by priority:
 			// higher numbers go first,
 			// then 0 (a.k.a. no priority assigned),
 			// then negative numbers
@@ -1973,7 +1873,8 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 			// initialize modules depending on assigned priority (in reverse, but priority is reversed as well so all is okay)
 			i = nodes.length;
 			while (--i >= 0) {
-				nodes[i].load(this._getModuleControllersByElement(nodes[i].getElement()));
+	            node = nodes[i];
+				node.load.apply(node,this._getModuleControllersByElement(node.getElement()));
 			}
 
 			// merge new nodes with currently active nodes list

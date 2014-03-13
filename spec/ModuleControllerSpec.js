@@ -17,7 +17,7 @@
 
 			// arrange
 			var element = document.createElement('div');
-			var path = '../spec/mock/jasmine';
+			var path = '../spec/mock/foo';
 
 			// act
 			var mc = new ModuleController(path,element);
@@ -31,7 +31,7 @@
 
 			// arrange
 			var element = document.createElement('div');
-			var path = '../spec/mock/jasmine';
+			var path = '../spec/mock/foo';
 
 			// act
 			var mc = new ModuleController(path,element);
@@ -45,7 +45,7 @@
 
 			// arrange
 			var element = document.createElement('div');
-			var path = '../spec/mock/jasmine';
+			var path = '../spec/mock/foo';
 
 			// act
 			var mc = new ModuleController(path,element);
@@ -59,30 +59,46 @@
 
 			// arrange
 			var element = document.createElement('div');
-			var path = '../spec/mock/jasmine';
+			var path = '../spec/mock/foo';
 
 			// act
 			var mc = new ModuleController(path,element);
 
 			// assert
-			expect(mc.matchesPath('../spec/mock/jasmine')).toBeTruthy();
+			expect(mc.matchesPath('../spec/mock/foo')).toBeTruthy();
 		});
 
-        /*
-		it ('will not contain an active module after unloading the module',function() {
+        it ('will return the correct path when requesting path',function() {
 
-			// arrange
-			var element = document.createElement('div');
-			var path = '../spec/mock/jasmine';
+            // arrange
+            var element = document.createElement('div');
+            var path = '../spec/mock/foo';
 
-			// act
-			var mc = new ModuleController(path,element);
-			mc.unload();
+            // act
+            var mc = new ModuleController(path,element);
 
-			// assert
-			expect(mc.isModuleActive()).toBeFalsy();
-		});
-		*/
+            // assert
+            expect(mc.getPath()).toEqual('../spec/mock/foo');
+        });
+
+        it ('will return the correct path when requesting path from aliased module',function() {
+
+            // arrange
+            var node = document.createElement('div');
+            node.setAttribute('data-module','IFoo');
+
+            // act
+            var loader = new ModuleLoader();
+            loader.setOptions({
+                'modules':{
+                    '../spec/mock/foo':'IFoo'
+                }
+            });
+            var mc = new ModuleController('IFoo',node);
+
+            // assert
+            expect(mc.getPath()).toEqual('../spec/mock/foo');
+        });
 
 	});
 
