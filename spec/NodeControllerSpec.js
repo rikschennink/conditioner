@@ -175,7 +175,6 @@
                 element = document.createElement('div');
                 node = new NodeController(element);
 
-                // we need to wait for load event
                 Observer.subscribe(node,'load',function(){
                     caught = true;
                 });
@@ -221,7 +220,9 @@
         /*
 
         - configuratie uit data-module="..." trekken, nu totaal onleesbaar
+
         - pass prio to module, modules will be initialized in order of array
+
 
          [
              {

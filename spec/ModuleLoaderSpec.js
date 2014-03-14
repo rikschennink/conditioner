@@ -163,13 +163,12 @@
 
         it('will parse and return the correct node priority',function(){
 
-            // arrange, act
+            // arrange
             var node = document.createElement('div');
             node.setAttribute('data-module','../spec/mock/foo');
             node.setAttribute('data-priority','5');
             var group = document.createElement('div');
             group.appendChild(node);
-
 
             // act
             var loader = new ModuleLoader();

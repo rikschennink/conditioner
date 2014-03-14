@@ -316,7 +316,7 @@ define('conditioner/mergeObjects',[],function(){
 
 	return exports;
 });
-// conditioner v0.9.3 - ConditionerJS - Frizz free, environment-aware, javascript modules.
+// conditioner v0.10.0 - ConditionerJS - Frizz free, environment-aware, javascript modules.
 // Copyright (c) 2014 Rik Schennink - http://conditionerjs.com
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 define(['require','conditioner/Observer','conditioner/contains','conditioner/matchesSelector','conditioner/mergeObjects'],function(require,Observer,contains,matchesSelector,mergeObjects) {

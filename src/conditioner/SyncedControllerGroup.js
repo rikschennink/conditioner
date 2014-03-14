@@ -4,24 +4,25 @@
  */
 var SyncedControllerGroup = function() {
 
-    this._hasLoaded = false;
+    // if no node controllers passed, no go
+    if (!arguments || !arguments.length) {
+        throw new Error('SyncedControllerGroup(controllers): Expects an array of node controllers as parameters.');
+    }
 
-    this._count = arguments.length;
-    this._controllers = [];
+    // by default modules are expected to not be in sync
+    this._inSync = false;
 
+    this._controllers = Array.prototype.slice.call(arguments,0);
     this._controllerLoadedBind = this._onLoad.bind(this);
     this._controllerUnloadedBind = this._onUnload.bind(this);
 
-    var i=0,controller;
-    for (;i<this._count;i++) {
-        controller = arguments[i];
+    var i=0,controller,l=this._controllers.length;
+    for (;i<l;i++) {
+        controller = this._controllers[i];
 
         // listen to load and unload events so we can pass them on if appropriate
         Observer.subscribe(controller,'load',this._controllerLoadedBind);
         Observer.subscribe(controller,'unload',this._controllerUnloadedBind);
-
-        // we need to collect all controllers so we can measure if they've all loaded
-        this._controllers.push(controller);
     }
 
     this._test();
@@ -45,30 +46,34 @@ SyncedControllerGroup.prototype = {
     _test:function() {
 
         // loop over modules testing their active state, if one is inactive we stop immediately
-        var i= 0,controller;
-        for (;i<this._count;i++) {
+        var i=0,l=this._controllers.length,controller;
+        for (;i<l;i++) {
             controller = this._controllers[i];
             if (!this._isActive(controller)) {
                 return;
             }
         }
 
-        // if all active fire load event
+        // if all modules loaded fire load event
         this._load();
     },
 
     _load:function() {
-        if (!this._hasLoaded) {
-            this._hasLoaded = true;
-            Observer.publishAsync(this,'load',this._controllers);
+        if (this._inSync) {
+            return;
         }
+
+        this._inSync = true;
+        Observer.publishAsync(this,'load',this._controllers);
     },
 
     _unload:function() {
-        if (this._hasLoaded) {
-            this._hasLoaded = false;
-            Observer.publish(this,'unload',this._controllers);
+        if (!this._inSync) {
+            return;
         }
+
+        this._inSync = false;
+        Observer.publish(this,'unload',this._controllers);
     }
 
 };

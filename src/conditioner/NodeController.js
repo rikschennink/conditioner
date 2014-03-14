@@ -244,7 +244,7 @@ NodeController.prototype = {
         Observer.subscribe(moduleController,'load',this._moduleLoadBind);
         Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
 
-        // conceal events from active module controller
+        // conceal events from module controller
         Observer.conceal(moduleController,this);
 
         // update initialized attribute
@@ -273,15 +273,15 @@ NodeController.prototype = {
 
     _unloadModuleController:function(moduleController) {
 
-        // unload the controller
-        moduleController.unload();
-
         // unsubscribe from module events
         Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
         Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
 
         // conceal events from module controller
         Observer.conceal(moduleController,this);
+
+        // unload the controller
+        moduleController.unload();
 
     }
 

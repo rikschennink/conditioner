@@ -8,50 +8,8 @@
 
 			// act, assert
 			expect(function(){new ModuleController();}).toThrow(
-				new Error('ModuleController(path,element,options): "path" and "element" are required parameters.')
+                new Error('ModuleController(path,element,agent,options): "path" and "element" are required parameters.')
 			);
-
-		});
-
-		it ('will return correct state when asked the module readiness',function(){
-
-			// arrange
-			var element = document.createElement('div');
-			var path = '../spec/mock/foo';
-
-			// act
-			var mc = new ModuleController(path,element);
-
-			// assert
-			expect(mc.hasInitialized()).toBeTruthy();
-
-		});
-
-		it ('will return correct state when asked if the module is conditioned',function(){
-
-			// arrange
-			var element = document.createElement('div');
-			var path = '../spec/mock/foo';
-
-			// act
-			var mc = new ModuleController(path,element);
-
-			// assert
-			expect(mc.isModuleConditioned()).toBeFalsy();
-
-		});
-
-		it ('will return correct state when asked if the wrapped module is available',function(){
-
-			// arrange
-			var element = document.createElement('div');
-			var path = '../spec/mock/foo';
-
-			// act
-			var mc = new ModuleController(path,element);
-
-			// assert
-			expect(mc.isModuleAvailable()).toBeTruthy();
 
 		});
 
@@ -65,7 +23,7 @@
 			var mc = new ModuleController(path,element);
 
 			// assert
-			expect(mc.matchesPath('../spec/mock/foo')).toBeTruthy();
+			expect(mc.wrapsModuleWithPath('../spec/mock/foo')).toBeTruthy();
 		});
 
         it ('will return the correct path when requesting path',function() {
@@ -99,6 +57,51 @@
             // assert
             expect(mc.getModulePath()).toEqual('../spec/mock/foo');
         });
+
+
+        /*
+         it ('will return correct state when asked the module readiness',function(){
+
+         // arrange
+         var element = document.createElement('div');
+         var path = '../spec/mock/foo';
+
+         // act
+         var mc = new ModuleController(path,element);
+
+         // assert
+         expect(mc.hasInitialized()).toBeTruthy();
+
+         });
+
+         it ('will return correct state when asked if the module is conditioned',function(){
+
+         // arrange
+         var element = document.createElement('div');
+         var path = '../spec/mock/foo';
+
+         // act
+         var mc = new ModuleController(path,element);
+
+         // assert
+         expect(mc.isModuleConditioned()).toBeFalsy();
+
+         });
+
+         it ('will return correct state when asked if the wrapped module is suitable',function(){
+
+         // arrange
+         var element = document.createElement('div');
+         var path = '../spec/mock/foo';
+
+         // act
+         var mc = new ModuleController(path,element);
+
+         // assert
+         expect(mc.isModuleAvailable()).toBeTruthy();
+
+         });
+         */
 
 	});
 

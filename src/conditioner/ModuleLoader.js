@@ -42,11 +42,12 @@ ModuleLoader.prototype = {
 			throw new Error('ModuleLoader.setOptions(options): "options" is a required parameter.');
 		}
 
+        var config,path,mod,alias;
+
 		// update options
 		this._options = mergeObjects(this._options,options);
 
 		// loop over modules
-		var config,path,mod,alias;
 		for (path in this._options.modules) {
 
 			if (!this._options.modules.hasOwnProperty(path)){continue;}
@@ -162,10 +163,7 @@ ModuleLoader.prototype = {
         for (;i<l;i++) {
             controller = controllers[i];
             moduleControllers.push(
-                new ModuleController(controller.path,element,{
-                    'conditions':controller.conditions,
-                    'options':controller.options
-                })
+                this._getModuleController(controller.path,element,controller.options,controller.conditions)
             );
         }
 
@@ -262,13 +260,13 @@ ModuleLoader.prototype = {
 
         var controllers = [],
             config = element.getAttribute('data-module') || '',
+            i= 0,
+            specs,spec,l,
 
         // test if first character is a '[', if so multiple modules have been defined
         multiple = config.charCodeAt(0) === 91;
 
         if (multiple) {
-
-            var specs;
 
             // add multiple module adapters
             try {
@@ -285,33 +283,32 @@ ModuleLoader.prototype = {
             }
 
             // setup vars
-            var l=specs.length,i=0,spec;
+            l=specs.length;
 
             // create specs
             for (;i<l;i++) {
-
                 spec = specs[i];
-
                 controllers.push(
-                    new ModuleController(spec.path,element,{
-                        'conditions':spec.conditions,
-                        'options':spec.options
-                    })
+                    this._getModuleController(spec.path,element,spec.options,spec.conditions)
                 );
             }
         }
         else if (config.length) {
-
             controllers.push(
-                new ModuleController(config,element,{
-                    'conditions':element.getAttribute('data-conditions'),
-                    'options':element.getAttribute('data-options')
-                })
+                this._getModuleController(config,element,element.getAttribute('data-options'),element.getAttribute('data-conditions'))
             );
-
         }
 
         return controllers;
+    },
+
+    _getModuleController:function(path,element,options,conditions) {
+        return new ModuleController(
+            path,
+            element,
+            conditions ? new ConditionModuleAgent(conditions,element) : StaticModuleAgent,
+            options
+        );
     }
 
 };
