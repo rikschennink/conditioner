@@ -78,7 +78,7 @@
             var mc = new ModuleController(path,element);
 
             // assert
-            expect(mc.getPath()).toEqual('../spec/mock/foo');
+            expect(mc.getModulePath()).toEqual('../spec/mock/foo');
         });
 
         it ('will return the correct path when requesting path from aliased module',function() {
@@ -97,7 +97,7 @@
             var mc = new ModuleController('IFoo',node);
 
             // assert
-            expect(mc.getPath()).toEqual('../spec/mock/foo');
+            expect(mc.getModulePath()).toEqual('../spec/mock/foo');
         });
 
 	});

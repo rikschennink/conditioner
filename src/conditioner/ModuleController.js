@@ -58,7 +58,7 @@ ModuleController.prototype = {
      * @returns {String}
      * @public
      */
-    getPath:function() {
+    getModulePath:function() {
         return this._path;
     },
 
@@ -113,6 +113,7 @@ ModuleController.prototype = {
 	},
 
 	/**
+     * Called when the module has first initialized
 	 * @private
 	 * @param {Boolean} suitable
 	 * @fires ready
@@ -128,13 +129,14 @@ ModuleController.prototype = {
 		// let others know we have initialized
 		Observer.publish(this,'init',this);
 
-		// are we available
+		// are we directly available
 		if (suitable) {
 			this._onBecameAvailable();
 		}
 	},
 
 	/**
+     * Called when the module became available, this is when it's suitable for load
 	 * @private
 	 * @fires available
 	 */
@@ -158,12 +160,10 @@ ModuleController.prototype = {
 	_onConditionsChange:function() {
 
 		var suitable = this._conditionsManager.getSuitability();
-
 		if (this._module && !suitable) {
-			this._unload();
+			this.unload();
 		}
-
-		if (!this._module && suitable) {
+		else if (!this._module && suitable) {
 			this._onBecameAvailable();
 		}
 
@@ -290,7 +290,7 @@ ModuleController.prototype = {
 	 * @return {Boolean}
 	 * @public
 	 */
-	_unload:function() {
+	unload:function() {
 
 		// module is now no longer ready to be loaded
 		this._available = false;

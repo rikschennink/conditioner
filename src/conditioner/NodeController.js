@@ -71,7 +71,7 @@ NodeController.prototype = {
 
         var i=0,l=this._moduleControllers.length;
         for (;i<l;i++) {
-            this._detach(this._moduleControllers[i]);
+            this._unloadModuleController(this._moduleControllers[i]);
         }
 
         // reset array
@@ -259,7 +259,7 @@ NodeController.prototype = {
 
         var i=0,controllers = this.getActiveModuleControllers(),l=controllers.length,modules=[];
         for(;i<l;i++) {
-            modules.push(controllers[i].getPath());
+            modules.push(controllers[i].getModulePath());
         }
 
         if (modules.length) {
@@ -271,7 +271,10 @@ NodeController.prototype = {
 
     },
 
-    _detach:function(moduleController) {
+    _unloadModuleController:function(moduleController) {
+
+        // unload the controller
+        moduleController.unload();
 
         // unsubscribe from module events
         Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
