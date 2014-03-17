@@ -2,6 +2,7 @@ define(function(){
 
     'use strict';
 
+    // adds leading zero's
     var _pad = function(n){return n<10 ? '0'+n : n;};
 
     // Clock Class
@@ -11,8 +12,9 @@ define(function(){
         this._element = element;
         this._options = options;
 
-        // backup content
-        this._inner = this._element.innerHTML;
+        // set time holder
+        this._time = document.createElement('p');
+        this._element.appendChild(this._time);
 
         // start ticking
         this._tick();
@@ -32,7 +34,7 @@ define(function(){
             time = _pad(now.getHours()) + ':' + _pad(now.getMinutes()) + ':' + _pad(now.getSeconds());
 
         // write inner html
-        this._element.innerHTML = date + (this._options.time ? ' - ' + time : '');
+        this._time.innerHTML = date + (this._options.time ? ' - ' + time : '');
 
         // if time is not enabled, don't start ticking
         if (!this._options.time) {
@@ -53,7 +55,8 @@ define(function(){
         clearTimeout(this._timer);
 
         // restore content
-        this._element.innerHTML = this._inner;
+        //this._element.innerHTML = this._inner;
+        this._time.parentNode.removeChild(this._time);
 
     };
 
