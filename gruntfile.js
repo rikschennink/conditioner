@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 
                     baseUrl:'js/',
                     paths:{
-                        'conditioner':'lib/rikschennink/conditioner-0.9.3.min'
+                        'conditioner':'lib/rikschennink/conditioner-0.10.0.min'
                     },
 
                     name:'lib/jrburke/require',
@@ -36,6 +36,7 @@ module.exports = function(grunt) {
 
                         // ui modules
                         'ui/Clock',
+                        'ui/Zoom',
                         'ui/StorageConsentSelect',
                         'ui/StarGazers',
                         'security/StorageConsentGuard'
@@ -82,9 +83,13 @@ module.exports = function(grunt) {
             }
         },
         watch: {
+            js:{
+                files:['./js/**/*'],
+                tasks:['jshint','requirejs','jekyll:build']
+            },
             css:{
                 files:['./sass/**/*'],
-                tasks:['sass']
+                tasks:['sass','jekyll:build']
             },
             html:{
                 files:['_includes/*','_layouts/*','index.html'],
@@ -93,7 +98,8 @@ module.exports = function(grunt) {
         }
     });
 
-    // if jekyll is giving you problems related to encoding on osx, run "export LC_ALL=en_US.UTF-8;"
+    // if jekyll is giving you problems related to encoding on osx,
+    // run "export LC_ALL=en_US.UTF-8;"
     // https://github.com/jekyll/jekyll/issues/960
 
     // tasks
@@ -109,6 +115,6 @@ module.exports = function(grunt) {
 
 
     // setup dev server
-    grunt.registerTask('develop',['build','jekyll:server'])
+    grunt.registerTask('dev',['build','jekyll:server'])
 
 };

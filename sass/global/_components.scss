@@ -266,10 +266,33 @@ p.note {
 	color:#6b6963;
 	background:#f3efe2;
 	font-size:.875em;
-}
 
-.component.alt {
-	width:50%;
+
+    p {
+        margin-bottom:0;
+        -webkit-transition:font-size .25s;
+        -moz-transition:font-size .25s;
+        -ms-transition:font-size .25s;
+        transition:font-size .25s;
+    }
+
+    &.alt {
+        width:50%;
+    }
+
+    button {
+        display:block;
+        padding:0 .75em;
+        line-height:1.75;
+        border:none;
+        background:#CDC7B9;
+        color:#4F4E49;
+        cursor:pointer;
+    }
+
+    p+button {
+        margin-top:.75em;
+    }
 }
 
 [data-module] {
@@ -278,6 +301,10 @@ p.note {
 	-moz-transition:color .5s;
 	-ms-transition:color .5s;
 	transition:color .5s;
+
+    &:empty:before {
+        content:'No modules active';
+    }
 }
 
 [data-initialized] {

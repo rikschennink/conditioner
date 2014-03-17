@@ -2,8 +2,10 @@
 if (window.addEventListener) {
 
     (function(){
+
         // monkeypatch unsupported addListener/removeListener with polling
-        if( !window.matchMedia( "" ).addListener ){
+        if (!window.matchMedia('(min-width:0)').addListener) {
+
             var oldMM = window.matchMedia;
 
             window.matchMedia = function( q ){

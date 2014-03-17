@@ -1,6 +1,6 @@
 {
   "name": "conditioner-pages",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Conditioner.js • Frizz free, environment-aware, javascript modules.",
   "homepage": "http://rikschennink.github.io/conditioner",
   "main": "index.js",
