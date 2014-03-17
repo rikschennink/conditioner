@@ -7,7 +7,7 @@
  * @param {Object} [agent] - module activation agent
  * @param {Object|null} [options] - options for this ModuleController
  */
-var ModuleController = function(path,element,agent,options) {
+var ModuleController = function(path,element,options,agent) {
 
 	// if no path supplied, throw error
 	if (!path || !element) {
@@ -263,7 +263,7 @@ ModuleController.prototype = {
 		}
 
         // parse and merge options for this module
-        var options = this._parseOptions(this._path,this._Module,this._options.options);
+        var options = this._parseOptions(this._path,this._Module,this._options);
 
 		// set reference
 		if (typeof this._Module === 'function') {

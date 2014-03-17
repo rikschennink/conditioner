@@ -137,7 +137,6 @@ NodeController.prototype = {
             }
         }
         return results;
-
     },
 
 	/**

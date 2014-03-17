@@ -260,7 +260,7 @@ define('conditioner/matchesSelector',[],function() {
 
 });
 define('conditioner/mergeObjects',[],function(){
-	var exports = function(target, src) {
+	var exports = function(target,src) {
 
 		var array = Array.isArray(src);
 		var dst = array && [] || {};
@@ -268,21 +268,8 @@ define('conditioner/mergeObjects',[],function(){
 		src = src || {};
 
 		if (array) {
-
-			target = target || [];
-			dst = dst.concat(target);
-
-			src.forEach(function(e, i) {
-
-				if (typeof e === 'object') {
-					dst[i] = exports(target[i], e);
-				}
-				else {
-					if (target.indexOf(e) === -1) {
-						dst.push(e);
-					}
-				}
-			});
+            // arrays are not merged
+            dst = src.concat();
 		}
 		else {
 
@@ -865,7 +852,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	 * @param {Object} [agent] - module activation agent
 	 * @param {Object|null} [options] - options for this ModuleController
 	 */
-	var ModuleController = function(path,element,agent,options) {
+	var ModuleController = function(path,element,options,agent) {
 
 		// if no path supplied, throw error
 		if (!path || !element) {
@@ -1121,7 +1108,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 			}
 
 	        // parse and merge options for this module
-	        var options = this._parseOptions(this._path,this._Module,this._options.options);
+	        var options = this._parseOptions(this._path,this._Module,this._options);
 
 			// set reference
 			if (typeof this._Module === 'function') {
@@ -1379,7 +1366,6 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	            }
 	        }
 	        return results;
-
 	    },
 
 		/**
@@ -2046,8 +2032,8 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	        return new ModuleController(
 	            path,
 	            element,
-	            conditions ? new ConditionModuleAgent(conditions,element) : StaticModuleAgent,
-	            options
+	            options,
+	            conditions ? new ConditionModuleAgent(conditions,element) : StaticModuleAgent
 	        );
 	    }
 

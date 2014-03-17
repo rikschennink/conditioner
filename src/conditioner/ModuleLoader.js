@@ -306,8 +306,8 @@ ModuleLoader.prototype = {
         return new ModuleController(
             path,
             element,
-            conditions ? new ConditionModuleAgent(conditions,element) : StaticModuleAgent,
-            options
+            options,
+            conditions ? new ConditionModuleAgent(conditions,element) : StaticModuleAgent
         );
     }
 

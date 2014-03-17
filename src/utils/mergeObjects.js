@@ -1,5 +1,5 @@
 define(function(){
-	var exports = function(target, src) {
+	var exports = function(target,src) {
 
 		var array = Array.isArray(src);
 		var dst = array && [] || {};
@@ -7,21 +7,8 @@ define(function(){
 		src = src || {};
 
 		if (array) {
-
-			target = target || [];
-			dst = dst.concat(target);
-
-			src.forEach(function(e, i) {
-
-				if (typeof e === 'object') {
-					dst[i] = exports(target[i], e);
-				}
-				else {
-					if (target.indexOf(e) === -1) {
-						dst.push(e);
-					}
-				}
-			});
+            // arrays are not merged
+            dst = src.concat();
 		}
 		else {
 
