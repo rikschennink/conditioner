@@ -11,6 +11,9 @@ var ConditionModuleAgent = function(conditions,element) {
     // set element reference
     this._element = element;
 
+    // remember tester references in this array for later removal
+    this._testers = [];
+
     // change event bind
     this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
 
@@ -34,6 +37,26 @@ ConditionModuleAgent.prototype = {
      */
     allowsActivation:function() {
         return this._suitable;
+    },
+
+    /**
+     * Cleans up event listeners and readies object for removal
+     */
+    destroy:function() {
+
+        var i=0,l=this._testers.length;
+        for (;i<l;i++) {
+
+            // no longer listen to change events on the tester
+            Observer.unsubscribe(this._testers[i],'change',this._onResultsChangedBind);
+
+            // further look into unloading the manufactured Test itself
+
+        }
+
+        this._testers = [];
+        this._suitable = false;
+
     },
 
     /**
@@ -80,19 +103,23 @@ ConditionModuleAgent.prototype = {
      */
     _loadTesterToExpression:function(config,expression) {
 
-        var self = this;
+        var self = this,tester;
 
         TestFactory.getTest(config.path,function(test) {
 
+            // create a new tester instance for this test
+            tester = new Tester(test,config.value,self._element);
+
+            // remember tester
+            self._testers.push(tester);
+
             // assign tester to expression
-            expression.assignTester(
-                new Tester(test,config.value,self._element)
-            );
+            expression.assignTester(tester);
 
             // listen to test result updates
             Observer.subscribe(test,'change',self._onResultsChangedBind);
 
-            // lower test count
+            // lower test count so we know when we're ready
             self._count--;
             if (self._count===0) {
                 self._onReady();

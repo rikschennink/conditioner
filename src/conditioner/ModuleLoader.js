@@ -67,7 +67,6 @@ ModuleLoader.prototype = {
 		}
 	},
 
-
 	/**
 	 * Loads all modules within the supplied dom tree
 	 * @param {Document|Element} context - Context to find modules in
@@ -302,6 +301,15 @@ ModuleLoader.prototype = {
         return controllers;
     },
 
+    /**
+     * Module Controller factory method, creates different ModuleControllers based on params
+     * @param path - path of module
+     * @param element - element to attach module to
+     * @param options - options for module
+     * @param conditions - conditions required for module to be loaded
+     * @returns {ModuleController}
+     * @private
+     */
     _getModuleController:function(path,element,options,conditions) {
         return new ModuleController(
             path,

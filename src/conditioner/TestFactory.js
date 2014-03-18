@@ -2,6 +2,13 @@ var TestFactory = {
 
 	_tests:{},
 
+    /**
+     * Creates a Test Class based on a given path and test configuration
+     * @param path
+     * @param config
+     * @returns {Test}
+     * @private
+     */
 	_createTest:function(path,config) {
 
 		if (!config.assert) {
@@ -13,7 +20,6 @@ var TestFactory = {
 
 		// setup static methods and properties
 		Test.supported = 'support' in config ? config.support() : true;
-
 		Test._callbacks = [];
 		Test._ready = false;
 
@@ -90,15 +96,32 @@ var TestFactory = {
 		return Test;
 	},
 
+    /**
+     * Searches in cache for a test with the supplied path
+     * @param path
+     * @returns {Test}
+     * @private
+     */
 	_findTest:function(path) {
 		return this._tests[path];
 	},
 
+    /**
+     * Remebers a test for the given path
+     * @param {String} path
+     * @param {Test} Test
+     * @private
+     */
 	_storeTest:function(path,Test) {
 		this._tests[path] = Test;
 	},
 
-	getTest:function(path,found) {
+    /**
+     * Loads the test with the geiven path
+     * @param {String} path - path to test
+     * @param {function} success - callback method, will be called when test found and instantiated
+     */
+	getTest:function(path,success) {
 
 		path = 'conditioner/tests/' + path;
 
@@ -114,7 +137,7 @@ var TestFactory = {
 				TestFactory._storeTest(path,Test);
 			}
 
-			found(new Test());
+            success(new Test());
 
 		});
 	}

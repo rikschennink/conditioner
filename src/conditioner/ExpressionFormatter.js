@@ -1,4 +1,3 @@
-
 var ExpressionFormatter = {
 
 	/**
@@ -77,7 +76,9 @@ var ExpressionFormatter = {
 				continue;
 
 			}
-			else if (c === 125) { // '}'
+
+            // else if is '}'
+			else if (c === 125) {
 
 				lastIndex = target.length-1;
 				index = lastIndex+1;
@@ -197,7 +198,6 @@ var ExpressionFormatter = {
 						target = parent;
 
 					}
-
 
 				}
 				while(i === l-1 && parent);

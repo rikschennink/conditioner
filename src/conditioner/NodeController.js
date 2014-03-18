@@ -64,14 +64,14 @@ NodeController.prototype = {
 	},
 
     /**
-     * Unload all attached modules and restore in original state
+     * Unload all attached modules and restore node in original state
      * @public
      */
-    unload:function() {
+    destroy:function() {
 
         var i=0,l=this._moduleControllers.length;
         for (;i<l;i++) {
-            this._unloadModuleController(this._moduleControllers[i]);
+            this._destroyModuleController(this._moduleControllers[i]);
         }
 
         // reset array
@@ -79,6 +79,30 @@ NodeController.prototype = {
 
         // update initialized state
         this._updateInitialized();
+
+        // reset processed state
+        this._element.removeAttribute('data-processed');
+
+        // reset element reference
+        this._element = null;
+    },
+
+    /**
+     * Call destroy method on module controller and clean up listeners
+     * @param moduleController
+     * @private
+     */
+    _destroyModuleController:function(moduleController) {
+
+        // unsubscribe from module events
+        Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
+        Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
+
+        // conceal events from module controller
+        Observer.conceal(moduleController,this);
+
+        // unload the controller
+        moduleController.destroy();
 
     },
 
@@ -256,7 +280,7 @@ NodeController.prototype = {
      */
     _updateInitialized:function() {
 
-        var i=0,controllers = this.getActiveModuleControllers(),l=controllers.length,modules=[];
+        var i=0,controllers=this.getActiveModuleControllers(),l=controllers.length,modules=[];
         for(;i<l;i++) {
             modules.push(controllers[i].getModulePath());
         }
@@ -267,20 +291,6 @@ NodeController.prototype = {
         else {
             this._element.removeAttribute('data-initialized');
         }
-
-    },
-
-    _unloadModuleController:function(moduleController) {
-
-        // unsubscribe from module events
-        Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
-        Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
-
-        // conceal events from module controller
-        Observer.conceal(moduleController,this);
-
-        // unload the controller
-        moduleController.unload();
 
     }
 

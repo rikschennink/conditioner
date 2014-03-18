@@ -33,13 +33,20 @@ var ModuleController = function(path,element,options,agent) {
     // module instance reference
     this._module = null;
 
+    // default init state
+    this._initialized = false;
+
+    // agent binds
+    this._onAgentReadyBind = this._onAgentReady.bind(this);
+    this._onAgentStateChangeBind = this._onAgentStateChange.bind(this);
+
     // let's see if the behavior allows immediate activation
     if (this._agent.allowsActivation()) {
         this._initialize();
     }
     // wait for ready state on behavior
     else {
-        Observer.subscribe(this._agent,'ready',this._onAgentReady.bind(this));
+        Observer.subscribe(this._agent,'ready',this._onAgentReadyBind);
     }
 
 };
@@ -47,41 +54,12 @@ var ModuleController = function(path,element,options,agent) {
 ModuleController.prototype = {
 
     /**
-     * Returns true if the module is available for initialisation, this is true when conditions have been met.
-     * This does not mean the module is active, it means the module is ready and suitable for activation.
-     * @return {Boolean}
-     * @public
-     isModuleAvailable:function() {
-
-        this._behavior.isAvailable();
-
-        if (this._conditionsManager) {
-            this._available = this._conditionsManager.getSuitability();
-        }
-
-		return this._available;
-	},
+     * returns true if the module controller has initialized
+     * @returns {Boolean}
      */
-
-    /**
-     * Returns true if the module requires certain conditions to be met
-     * @return {Boolean}
-     * @public
-     isModuleConditioned:function() {
-		return typeof this._options.conditions !== 'undefined';
-	},
-     */
-
-    /**
-     * Returns true if the module controller has finished the initialization process,
-     * this is true when conditions have been read for the first time (and have been deemed suitable)
-     * or no conditions have been set
-     * @return {Boolean}
-     * @public
-     hasInitialized:function() {
-		return this._initialized;
-	},
-     */
+    hasInitialized:function() {
+        return this._initialized;
+    },
 
     /**
      * Returns the module path
@@ -90,6 +68,15 @@ ModuleController.prototype = {
      */
     getModulePath:function() {
         return this._path;
+    },
+
+    /**
+     * Returns true if the module is currently waiting for load
+     * @returns {Boolean}
+     * @public
+     */
+    isModuleAvailable:function() {
+        return this._agent.allowsActivation() && this._module;
     },
 
 	/**
@@ -125,12 +112,15 @@ ModuleController.prototype = {
     /**
      * Called to initialize the module
      * @private
-     * @fires ready
+     * @fires init
      */
     _initialize:function() {
 
+        // now in initialized state
+        this._initialized = true;
+
         // listen to behavior changes
-        Observer.subscribe(this._agent,'change',this._onAgentStateChange.bind(this));
+        Observer.subscribe(this._agent,'change',this._onAgentStateChangeBind);
 
         // let others know we have initialized
         Observer.publish(this,'init',this);
@@ -139,6 +129,7 @@ ModuleController.prototype = {
         if (this._agent.allowsActivation()) {
             this._onBecameAvailable();
         }
+
     },
 
 	/**
@@ -201,7 +192,13 @@ ModuleController.prototype = {
 
 	},
 
-    _parseOptionOverrides:function(options) {
+    /**
+     * Turns possible options string into options object
+     * @param {String|Object} options
+     * @returns {Object}
+     * @private
+     */
+    _optionsToObject:function(options) {
         if (typeof options === 'string') {
             try {
                 return JSON.parse(options);
@@ -213,6 +210,14 @@ ModuleController.prototype = {
         return options;
     },
 
+    /**
+     * Parses options for given url and module also
+     * @param {String} url - url to module
+     * @param {Object} Module - Module definition
+     * @param {Object|String} overrides - page level options to override default options with
+     * @returns {Object}
+     * @private
+     */
     _parseOptions:function(url,Module,overrides) {
 
         var stack = [],pageOptions = {},moduleOptions = {},options,i;
@@ -244,7 +249,7 @@ ModuleController.prototype = {
 
         // apply overrides
         if (overrides) {
-            options = mergeObjects(options,this._parseOptionOverrides(overrides));
+            options = mergeObjects(options,this._optionsToObject(overrides));
         }
 
         return options;
@@ -334,15 +339,15 @@ ModuleController.prototype = {
      */
     destroy:function() {
 
-        // todo: implement destroy method
+        // unload module
+        this._unload();
 
-        // - unload module
+        // unbind events
+        Observer.unsubscribe(this._agent,'ready',this._onAgentReadyBind);
+        Observer.unsubscribe(this._agent,'change',this._onAgentStateChangeBind);
 
-        // - unbind events
-
-        // - remove events from module behavior
-
-        // - call destroy on module behavior
+        // call destroy on agent
+        this._agent.destroy();
 
     },
 
