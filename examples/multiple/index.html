@@ -10,23 +10,23 @@ title: Multiple Conditions &bull; Conditioner.js
 </nav>
 
 <h3>Binding multiple modules on a single element</h3>
-<p>Clock will be active as long as element has a maximum width of 150 pixels, if the element width gets above 250 pixels another Clock becomes active which also shows the time.</p>
+<p>Both the Clock and the Zoom module are active on the element below.</p>
 
 {% highlight html %}
-<div data-module='[{"path":"ui/Clock","conditions":"media:{(max-width:500px)}","options":{"time":false}},{"path":"ui/Clock","conditions":"media:{(min-width:700px)}"}]'> ... </div>
+<div data-module='[{"path":"ui/Clock"},{"path":"ui/Zoom"}]'> ... </div>
 {% endhighlight %}
 
 <div class="component alt">
-    <div data-module='[{"path":"ui/Clock","conditions":"media:{(max-width:500px)}","options":{"time":false}},{"path":"ui/Clock","conditions":"media:{(min-width:700px)}"}]'>Clock is inactive</div>
+    <div data-module='[{"path":"ui/Clock"},{"path":"ui/Zoom"}]'></div>
 </div>
 
-<h3>Binding both a conditioned and a wildcard module</h3>
-<p>Clock will be active as long as element has a maximum width of 200 pixels, if the element gets above 200 pixels the wildcard Clock element is loaded which shows the time.</p>
+<h3>Binding multiple conditioned modules on an element</h3>
+<p>The clock below will always be active and will be accompanied by a Zoom control on pages wider than 35ems.</p>
 
 {% highlight html %}
-<div data-module='[{"path":"ui/Clock","conditions":"element:{max-width:200}","options":{"time":false}},{"path":"ui/Clock"}]'> ... </div>
+<div data-module='[{"path":"ui/Clock","options":{"time":false}},{"path":"ui/Zoom","conditions":"media:{(min-width:35em)}"}]'> ... </div>
 {% endhighlight %}
 
 <div class="component alt">
-    <div data-module='[{"path":"ui/Clock","conditions":"element:{max-width:200}","options":{"time":false}},{"path":"ui/Clock"}]'>Clock is inactive</div>
+    <div data-module='[{"path":"ui/Clock","options":{"time":false}},{"path":"ui/Zoom","conditions":"media:{(min-width:35em)}"}]'></div>
 </div>
