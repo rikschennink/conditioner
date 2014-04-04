@@ -1,7 +1,6 @@
 /**
  * @class
  * @constructor
- * @augments ExpressionBase
  * @param {BinaryExpression|Tester|object} expression
  * @param {Boolean} negate
  */
@@ -14,8 +13,6 @@ var UnaryExpression = function(expression,negate) {
 	this._negate = typeof negate === 'undefined' ? false : negate;
 
 };
-
-UnaryExpression.prototype = Object.create(ExpressionBase);
 
 /**
  * Sets test reference

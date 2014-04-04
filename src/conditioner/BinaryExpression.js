@@ -1,7 +1,6 @@
 /**
  * @class
  * @constructor
- * @augments ExpressionBase
  * @param {UnaryExpression} a
  * @param {String} operator
  * @param {UnaryExpression} b
@@ -13,8 +12,6 @@ var BinaryExpression = function(a,operator,b) {
 	this._b = b;
 
 };
-
-BinaryExpression.prototype = Object.create(ExpressionBase);
 
 /**
  * Tests if valid expression

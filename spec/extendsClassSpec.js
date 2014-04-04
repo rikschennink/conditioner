@@ -42,11 +42,8 @@
                 // find modules
                 results = loader.parse(group);
 
-                // sync load event of modules
-                syncedGroup = loader.sync(results);
-
                 // wait for load
-                Observer.subscribe(syncedGroup,'load',function() {
+                Observer.subscribe(results[0],'load',function() {
                     synced = true;
                 });
 

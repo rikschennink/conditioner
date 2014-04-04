@@ -17,18 +17,18 @@ module.exports = function(grunt) {
 		},
 		jasmine:{
 			src:[
-                '<%= path.conditioner %>/ExpressionBase.js',
                 '<%= path.conditioner %>/UnaryExpression.js',
                 '<%= path.conditioner %>/BinaryExpression.js',
                 '<%= path.conditioner %>/ExpressionFormatter.js',
                 '<%= path.conditioner %>/TestFactory.js',
                 '<%= path.conditioner %>/Tester.js',
                 '<%= path.conditioner %>/ModuleRegistry.js',
-                '<%= path.conditioner %>/ConditionsManager.js',
                 '<%= path.conditioner %>/ModuleController.js',
                 '<%= path.conditioner %>/NodeController.js',
                 '<%= path.conditioner %>/SyncedControllerGroup.js',
-                '<%= path.conditioner %>/ModuleLoader.js',
+                '<%= path.conditioner %>/StaticModuleAgent.js',
+                '<%= path.conditioner %>/ConditionModuleAgent.js',
+                '<%= path.conditioner %>/ModuleLoader.js'
             ],
 			options:{
                 keepRunner:true,
@@ -94,17 +94,17 @@ module.exports = function(grunt) {
 				src:[
 					'<%= path.wrapper %>/intro.js',
 
-					'<%= path.conditioner %>/ExpressionBase.js',
 					'<%= path.conditioner %>/UnaryExpression.js',
 					'<%= path.conditioner %>/BinaryExpression.js',
 					'<%= path.conditioner %>/ExpressionFormatter.js',
 					'<%= path.conditioner %>/TestFactory.js',
 					'<%= path.conditioner %>/Tester.js',
                     '<%= path.conditioner %>/ModuleRegistry.js',
-					'<%= path.conditioner %>/ConditionsManager.js',
 					'<%= path.conditioner %>/ModuleController.js',
 					'<%= path.conditioner %>/NodeController.js',
                     '<%= path.conditioner %>/SyncedControllerGroup.js',
+                    '<%= path.conditioner %>/StaticModuleAgent.js',
+                    '<%= path.conditioner %>/ConditionModuleAgent.js',
 					'<%= path.conditioner %>/ModuleLoader.js',
 
 					'<%= path.wrapper %>/outro.js'
@@ -112,14 +112,14 @@ module.exports = function(grunt) {
 				dest:'dist/<%= pkg.name %>.js'
 			}
 		},
-		copy: {
-			tests: {
+		copy:{
+			tests:{
 				expand:true,
 				cwd:'<%= path.tests %>',
 				src:'*',
 				dest:'./dist/tests/'
 			},
-			utils: {
+			utils:{
 				expand:true,
 				cwd:'<%= path.utils %>',
 				src:'*',
@@ -198,6 +198,6 @@ module.exports = function(grunt) {
 	grunt.registerTask('lib',['concat','copy','requirejs','clean','uglify']);
 
 	// build than test
-	grunt.registerTask('develop',['lib','test']);
+	grunt.registerTask('dev',['lib','test','watch']);
 
 };

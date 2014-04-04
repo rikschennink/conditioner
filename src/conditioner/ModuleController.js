@@ -4,13 +4,14 @@
  * @constructor
  * @param {String} path - reference to module
  * @param {Element} element - reference to element
- * @param {Object} [options] - options for this ModuleController
+ * @param {Object} [agent] - module activation agent
+ * @param {Object|null} [options] - options for this ModuleController
  */
-var ModuleController = function(path,element,options) {
+var ModuleController = function(path,element,options,agent) {
 
 	// if no path supplied, throw error
 	if (!path || !element) {
-		throw new Error('ModuleController(path,element,options): "path" and "element" are required parameters.');
+		throw new Error('ModuleController(path,element,agent,options): "path" and "element" are required parameters.');
 	}
 
 	// path to module
@@ -23,41 +24,60 @@ var ModuleController = function(path,element,options) {
 	// options for module controller
 	this._options = options || {};
 
-	// module reference
-	this._Module = null;
+    // set loader
+    this._agent = agent || StaticModuleAgent;
 
-	// module instance reference
-	this._module = null;
+    // module definition reference
+    this._Module = null;
 
-	// check if conditions specified
-	this._conditionsManager = new ConditionsManager(
-		this._options.conditions,
-		this._element
-	);
+    // module instance reference
+    this._module = null;
 
-	// listen to ready event on condition manager
-	Observer.subscribe(this._conditionsManager,'ready',this._onInitialized.bind(this));
+    // default init state
+    this._initialized = false;
 
-	// by default the module controller has not yet initialized and is not available
-	// unless the contained module is not conditioned or conditions are already suitable
-	this._initialized = !this.isModuleConditioned() || this._conditionsManager.getSuitability();
+    // agent binds
+    this._onAgentReadyBind = this._onAgentReady.bind(this);
+    this._onAgentStateChangeBind = this._onAgentStateChange.bind(this);
 
-	// not available at this moment
-	this._available = false;
+    // let's see if the behavior allows immediate activation
+    if (this._agent.allowsActivation()) {
+        this._initialize();
+    }
+    // wait for ready state on behavior
+    else {
+        Observer.subscribe(this._agent,'ready',this._onAgentReadyBind);
+    }
+
 };
 
 ModuleController.prototype = {
 
-	/**
-	 * Returns true if the module is available for initialisation, this is true when conditions have been met.
-	 * This does not mean the module is active, it means the module is ready and suitable for activation.
-	 * @return {Boolean}
-	 * @public
-	 */
-	isModuleAvailable:function() {
-		this._available = this._conditionsManager.getSuitability();
-		return this._available;
-	},
+    /**
+     * returns true if the module controller has initialized
+     * @returns {Boolean}
+     */
+    hasInitialized:function() {
+        return this._initialized;
+    },
+
+    /**
+     * Returns the module path
+     * @returns {String}
+     * @public
+     */
+    getModulePath:function() {
+        return this._path;
+    },
+
+    /**
+     * Returns true if the module is currently waiting for load
+     * @returns {Boolean}
+     * @public
+     */
+    isModuleAvailable:function() {
+        return this._agent.allowsActivation() && this._module;
+    },
 
 	/**
 	 * Returns true if module is currently active and loaded
@@ -68,86 +88,79 @@ ModuleController.prototype = {
 		return this._module !== null;
 	},
 
-	/**
-	 * Returns true if the module requires certain conditions to be met
-	 * @return {Boolean}
-	 * @public
-	 */
-	isModuleConditioned:function() {
-		return typeof this._options.conditions !== 'undefined';
-	},
+    /**
+     * Checks if it wraps a module with the supplied path
+     * @param {String} path - path of module to test for
+     * @return {Boolean}
+     * @public
+     */
+    wrapsModuleWithPath:function(path) {
+        return this._path === path || this._alias === path;
+    },
 
 	/**
-	 * Returns true if the module controller has finished the initialization process,
-	 * this is true when conditions have been read for the first time (and have been deemed suitable)
-	 * or no conditions have been set
-	 * @return {Boolean}
-	 * @public
-	 */
-	hasInitialized:function() {
-		return this._initialized;
-	},
-
-	/**
-	 * Checks if the module matches the supplied path
-	 * @param {String} path - path of module to test for
-	 * @return {Boolean}
-	 * @public
-	 */
-	matchesPath:function(path) {
-		return this._path === path || this._alias === path;
-	},
-
-	/**
+     * Called when the module behavior has initialized
 	 * @private
-	 * @param {Boolean} suitable
-	 * @fires ready
 	 */
-	_onInitialized:function(suitable) {
+	_onAgentReady:function() {
 
 		// module has now completed the initialization process (this does not mean it's available)
-		this._initialized = true;
-
-		// listen to changes in conditions
-		Observer.subscribe(this._conditionsManager,'change',this._onConditionsChange.bind(this));
-
-		// let others know we have initialized
-		Observer.publish(this,'init',this);
-
-		// are we available
-		if (suitable) {
-			this._onBecameAvailable();
-		}
+        this._initialize();
 
 	},
 
+    /**
+     * Called to initialize the module
+     * @private
+     * @fires init
+     */
+    _initialize:function() {
+
+        // now in initialized state
+        this._initialized = true;
+
+        // listen to behavior changes
+        Observer.subscribe(this._agent,'change',this._onAgentStateChangeBind);
+
+        // let others know we have initialized
+        Observer.publish(this,'init',this);
+
+        // if activation is allowed, we are directly available
+        if (this._agent.allowsActivation()) {
+            this._onBecameAvailable();
+        }
+
+    },
+
 	/**
+     * Called when the module became available, this is when it's suitable for load
 	 * @private
 	 * @fires available
 	 */
 	_onBecameAvailable:function() {
 
-		// module is now available
-		this._available = true;
+        // we are now available
+        Observer.publish(this,'available',this);
 
-		// let other know we are available
-		Observer.publish(this,'available',this);
+		// let's load the module
+        this._load();
 
 	},
 
 	/**
-	 * Called when the conditions change
+	 * Called when the agent state changes
 	 * @private
 	 */
-	_onConditionsChange:function() {
+    _onAgentStateChange:function() {
 
-		var suitable = this._conditionsManager.getSuitability();
+        // check if module is available
+        var shouldLoadModule = this._agent.allowsActivation();
 
-		if (this._module && !suitable) {
-			this.unload();
+        // determine what action to take basted on availability of module
+		if (this._module && !shouldLoadModule) {
+			this._unload();
 		}
-
-		if (!this._module && suitable) {
+		else if (!this._module && shouldLoadModule) {
 			this._onBecameAvailable();
 		}
 
@@ -157,7 +170,7 @@ ModuleController.prototype = {
 	 * Load the module contained in this ModuleController
 	 * @public
 	 */
-	load:function() {
+	_load:function() {
 
 		// if module available no need to require it
 		if (this._Module) {
@@ -179,7 +192,13 @@ ModuleController.prototype = {
 
 	},
 
-    _parseOptionOverrides:function(options) {
+    /**
+     * Turns possible options string into options object
+     * @param {String|Object} options
+     * @returns {Object}
+     * @private
+     */
+    _optionsToObject:function(options) {
         if (typeof options === 'string') {
             try {
                 return JSON.parse(options);
@@ -191,10 +210,17 @@ ModuleController.prototype = {
         return options;
     },
 
+    /**
+     * Parses options for given url and module also
+     * @param {String} url - url to module
+     * @param {Object} Module - Module definition
+     * @param {Object|String} overrides - page level options to override default options with
+     * @returns {Object}
+     * @private
+     */
     _parseOptions:function(url,Module,overrides) {
 
-        var stack = [],options,i,pageOptions = {},moduleOptions = {};
-
+        var stack = [],pageOptions = {},moduleOptions = {},options,i;
         do {
 
             // get settings
@@ -223,7 +249,7 @@ ModuleController.prototype = {
 
         // apply overrides
         if (overrides) {
-            options = mergeObjects(options,this._parseOptionOverrides(overrides));
+            options = mergeObjects(options,this._optionsToObject(overrides));
         }
 
         return options;
@@ -236,13 +262,13 @@ ModuleController.prototype = {
 	 */
 	_onLoad:function() {
 
-		// if no longer available for loading stop here
-		if (!this.isModuleAvailable()) {
+		// if activation is no longer allowed, stop here
+        if (!this._agent.allowsActivation()) {
 			return;
 		}
 
         // parse and merge options for this module
-        var options = this._parseOptions(this._path,this._Module,this._options.options);
+        var options = this._parseOptions(this._path,this._Module,this._options);
 
 		// set reference
 		if (typeof this._Module === 'function') {
@@ -255,7 +281,7 @@ ModuleController.prototype = {
 			// is of other type so expect load method to be defined
 			this._module = this._Module.load ? this._Module.load(this._element,options) : null;
 
-			// if module not defined we are probably dealing with a static class
+			// if module not defined we could be dealing with a static class
 			if (typeof this._module === 'undefined') {
 				this._module = this._Module;
 			}
@@ -266,25 +292,21 @@ ModuleController.prototype = {
 			throw new Error('ModuleController.load(): could not initialize module, missing constructor or "load" method.');
 		}
 
-		// set initialized attribute to initialized module
-		this._element.setAttribute('data-initialized',this._path);
+        // watch for events on target
+        // this way it is possible to listen to events on the controller which is always there
+        Observer.inform(this._module,this);
 
-		// watch for events on target
-		// this way it is possible to listen to events on the controller which is always there
-		Observer.inform(this._module,this);
-
-		// publish load event
-		Observer.publish(this,'load',this);
-
+        // publish load event
+        Observer.publish(this,'load',this);
 	},
+
 
 	/**
 	 * Unloads the wrapped module
 	 * @fires unload
 	 * @return {Boolean}
-	 * @public
 	 */
-	unload:function() {
+	_unload:function() {
 
 		// module is now no longer ready to be loaded
 		this._available = false;
@@ -302,17 +324,32 @@ ModuleController.prototype = {
 			this._module.unload();
 		}
 
-		// remove initialized attribute
-		this._element.removeAttribute('data-initialized');
+        // reset property
+        this._module = null;
 
-		// reset property
-		this._module = null;
-
-		// publish unload event
-		Observer.publish(this,'unload',this);
+        // publish unload event
+        Observer.publish(this,'unload',this);
 
 		return true;
 	},
+
+    /**
+     * Cleans up the module and module controller and all bound events
+     * @public
+     */
+    destroy:function() {
+
+        // unload module
+        this._unload();
+
+        // unbind events
+        Observer.unsubscribe(this._agent,'ready',this._onAgentReadyBind);
+        Observer.unsubscribe(this._agent,'change',this._onAgentStateChangeBind);
+
+        // call destroy on agent
+        this._agent.destroy();
+
+    },
 
 	/**
 	 * Executes a methods on the wrapped module

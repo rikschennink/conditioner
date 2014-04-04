@@ -3,8 +3,6 @@
 
 define(['require','utils/extendClass','./bar'],function(require,_extend,_super){
 
-    //console.log('Module: BAZ');
-
     var exports = _extend(require,'./bar',function Baz(element,options){
 
         // baz

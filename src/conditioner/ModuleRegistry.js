@@ -12,14 +12,14 @@ var ModuleRegistry = {
 	 */
 	registerModule:function(path,options,alias) {
 
-        var uri = requirejs.toUrl(path);
+        var uri = requirejs.toUrl(path),config;
         this._options[uri] = options;
 
         if (alias) {
             this._redirects[alias] = path;
         }
 
-        var config = {};
+        config = {};
         config[path] = options;
         requirejs.config({
             config:config

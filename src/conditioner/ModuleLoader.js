@@ -42,11 +42,12 @@ ModuleLoader.prototype = {
 			throw new Error('ModuleLoader.setOptions(options): "options" is a required parameter.');
 		}
 
+        var config,path,mod,alias;
+
 		// update options
 		this._options = mergeObjects(this._options,options);
 
 		// loop over modules
-		var config,path,mod,alias;
 		for (path in this._options.modules) {
 
 			if (!this._options.modules.hasOwnProperty(path)){continue;}
@@ -66,7 +67,6 @@ ModuleLoader.prototype = {
 		}
 	},
 
-
 	/**
 	 * Loads all modules within the supplied dom tree
 	 * @param {Document|Element} context - Context to find modules in
@@ -84,6 +84,7 @@ ModuleLoader.prototype = {
 			l = elements.length,
 			i = 0,
 			nodes = [],
+            node,
 			element;
 
 		// if no elements do nothing
@@ -103,10 +104,10 @@ ModuleLoader.prototype = {
 			}
 
 			// create new node
-			nodes.push(new NodeController(element));
+			nodes.push(new NodeController(element,element.getAttribute('data-priority')));
 		}
 
-		// sort nodes by priority:
+        // sort nodes by priority:
 		// higher numbers go first,
 		// then 0 (a.k.a. no priority assigned),
 		// then negative numbers
@@ -118,7 +119,8 @@ ModuleLoader.prototype = {
 		// initialize modules depending on assigned priority (in reverse, but priority is reversed as well so all is okay)
 		i = nodes.length;
 		while (--i >= 0) {
-			nodes[i].load(this._getModuleControllersByElement(nodes[i].getElement()));
+            node = nodes[i];
+			node.load.apply(node,this._getModuleControllersByElement(node.getElement()));
 		}
 
 		// merge new nodes with currently active nodes list
@@ -160,10 +162,7 @@ ModuleLoader.prototype = {
         for (;i<l;i++) {
             controller = controllers[i];
             moduleControllers.push(
-                new ModuleController(controller.path,element,{
-                    'conditions':controller.conditions,
-                    'options':controller.options
-                })
+                this._getModuleController(controller.path,element,controller.options,controller.conditions)
             );
         }
 
@@ -260,13 +259,13 @@ ModuleLoader.prototype = {
 
         var controllers = [],
             config = element.getAttribute('data-module') || '',
+            i= 0,
+            specs,spec,l,
 
         // test if first character is a '[', if so multiple modules have been defined
         multiple = config.charCodeAt(0) === 91;
 
         if (multiple) {
-
-            var specs;
 
             // add multiple module adapters
             try {
@@ -283,33 +282,41 @@ ModuleLoader.prototype = {
             }
 
             // setup vars
-            var l=specs.length,i=0,spec;
+            l=specs.length;
 
             // create specs
             for (;i<l;i++) {
-
                 spec = specs[i];
-
                 controllers.push(
-                    new ModuleController(spec.path,element,{
-                        'conditions':spec.conditions,
-                        'options':spec.options
-                    })
+                    this._getModuleController(spec.path,element,spec.options,spec.conditions)
                 );
             }
         }
         else if (config.length) {
-
             controllers.push(
-                new ModuleController(config,element,{
-                    'conditions':element.getAttribute('data-conditions'),
-                    'options':element.getAttribute('data-options')
-                })
+                this._getModuleController(config,element,element.getAttribute('data-options'),element.getAttribute('data-conditions'))
             );
-
         }
 
         return controllers;
+    },
+
+    /**
+     * Module Controller factory method, creates different ModuleControllers based on params
+     * @param path - path of module
+     * @param element - element to attach module to
+     * @param options - options for module
+     * @param conditions - conditions required for module to be loaded
+     * @returns {ModuleController}
+     * @private
+     */
+    _getModuleController:function(path,element,options,conditions) {
+        return new ModuleController(
+            path,
+            element,
+            options,
+            conditions ? new ConditionModuleAgent(conditions,element) : StaticModuleAgent
+        );
     }
 
 };

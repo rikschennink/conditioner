@@ -260,7 +260,7 @@ define('conditioner/matchesSelector',[],function() {
 
 });
 define('conditioner/mergeObjects',[],function(){
-	var exports = function(target, src) {
+	var exports = function(target,src) {
 
 		var array = Array.isArray(src);
 		var dst = array && [] || {};
@@ -268,21 +268,8 @@ define('conditioner/mergeObjects',[],function(){
 		src = src || {};
 
 		if (array) {
-
-			target = target || [];
-			dst = dst.concat(target);
-
-			src.forEach(function(e, i) {
-
-				if (typeof e === 'object') {
-					dst[i] = exports(target[i], e);
-				}
-				else {
-					if (target.indexOf(e) === -1) {
-						dst.push(e);
-					}
-				}
-			});
+            // arrays are not merged
+            dst = src.concat();
 		}
 		else {
 
@@ -316,7 +303,7 @@ define('conditioner/mergeObjects',[],function(){
 
 	return exports;
 });
-// conditioner v0.9.3 - ConditionerJS - Frizz free, environment-aware, javascript modules.
+// conditioner v0.10.0 - ConditionerJS - Frizz free, environment-aware, javascript modules.
 // Copyright (c) 2014 Rik Schennink - http://conditionerjs.com
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
 define(['require','conditioner/Observer','conditioner/contains','conditioner/matchesSelector','conditioner/mergeObjects'],function(require,Observer,contains,matchesSelector,mergeObjects) {
@@ -423,7 +410,6 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		return [this._a.getConfig(),this._b.getConfig()];
 
 	};
-	
 	var ExpressionFormatter = {
 
 		/**
@@ -502,7 +488,9 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 					continue;
 
 				}
-				else if (c === 125) { // '}'
+
+	            // else if is '}'
+				else if (c === 125) {
 
 					lastIndex = target.length-1;
 					index = lastIndex+1;
@@ -623,7 +611,6 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 						}
 
-
 					}
 					while(i === l-1 && parent);
 
@@ -642,6 +629,13 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 		_tests:{},
 
+	    /**
+	     * Creates a Test Class based on a given path and test configuration
+	     * @param path
+	     * @param config
+	     * @returns {Test}
+	     * @private
+	     */
 		_createTest:function(path,config) {
 
 			if (!config.assert) {
@@ -653,7 +647,6 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 			// setup static methods and properties
 			Test.supported = 'support' in config ? config.support() : true;
-
 			Test._callbacks = [];
 			Test._ready = false;
 
@@ -730,15 +723,32 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 			return Test;
 		},
 
+	    /**
+	     * Searches in cache for a test with the supplied path
+	     * @param path
+	     * @returns {Test}
+	     * @private
+	     */
 		_findTest:function(path) {
 			return this._tests[path];
 		},
 
+	    /**
+	     * Remebers a test for the given path
+	     * @param {String} path
+	     * @param {Test} Test
+	     * @private
+	     */
 		_storeTest:function(path,Test) {
 			this._tests[path] = Test;
 		},
 
-		getTest:function(path,found) {
+	    /**
+	     * Loads the test with the geiven path
+	     * @param {String} path - path to test
+	     * @param {function} success - callback method, will be called when test found and instantiated
+	     */
+		getTest:function(path,success) {
 
 			path = 'conditioner/tests/' + path;
 
@@ -754,7 +764,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 					TestFactory._storeTest(path,Test);
 				}
 
-				found(new Test());
+	            success(new Test());
 
 			});
 		}
@@ -777,28 +787,46 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		this._changed = true;
 
 		// listen to changes on test
-		var self = this;
-		Observer.subscribe(this._test,'change',function(){
-			self._changed = true;
-		});
+	    this._onChangeBind = this._onChange.bind(this);
+		Observer.subscribe(this._test,'change',this._onChangeBind);
 
 		// arrange test
 		this._test.arrange(this._expected,this._element);
 
 	};
 
-	/**
-	 * Returns true if test assertion successful
-	 * @returns {Boolean}
-	 */
-	Tester.prototype.succeeds = function() {
+	Tester.prototype = {
 
-		if (this._changed) {
-			this._changed = false;
-			this._result = this._test.assert(this._expected,this._element);
-		}
+	    /**
+	     * Called when the test has changed it's state
+	     * @private
+	     */
+	    _onChange:function() {
+	        this._changed = true;
+	    },
 
-		return this._result;
+	    /**
+	     * Returns true if test assertion successful
+	     * @returns {Boolean}
+	     */
+	    succeeds:function() {
+
+	        if (this._changed) {
+	            this._changed = false;
+	            this._result = this._test.assert(this._expected,this._element);
+	        }
+
+	        return this._result;
+
+	    },
+
+	    /**
+	     * Cleans up object events
+	     */
+	    destroy:function() {
+	        Observer.unsubscribe(this._test,'change',this._onChangeBind);
+	    }
+
 	};
 	var ModuleRegistry = {
 
@@ -865,7 +893,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	 * @param {Object} [agent] - module activation agent
 	 * @param {Object|null} [options] - options for this ModuleController
 	 */
-	var ModuleController = function(path,element,agent,options) {
+	var ModuleController = function(path,element,options,agent) {
 
 		// if no path supplied, throw error
 		if (!path || !element) {
@@ -891,13 +919,20 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	    // module instance reference
 	    this._module = null;
 
+	    // default init state
+	    this._initialized = false;
+
+	    // agent binds
+	    this._onAgentReadyBind = this._onAgentReady.bind(this);
+	    this._onAgentStateChangeBind = this._onAgentStateChange.bind(this);
+
 	    // let's see if the behavior allows immediate activation
 	    if (this._agent.allowsActivation()) {
 	        this._initialize();
 	    }
 	    // wait for ready state on behavior
 	    else {
-	        Observer.subscribe(this._agent,'ready',this._onAgentReady.bind(this));
+	        Observer.subscribe(this._agent,'ready',this._onAgentReadyBind);
 	    }
 
 	};
@@ -905,41 +940,12 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	ModuleController.prototype = {
 
 	    /**
-	     * Returns true if the module is available for initialisation, this is true when conditions have been met.
-	     * This does not mean the module is active, it means the module is ready and suitable for activation.
-	     * @return {Boolean}
-	     * @public
-	     isModuleAvailable:function() {
-
-	        this._behavior.isAvailable();
-
-	        if (this._conditionsManager) {
-	            this._available = this._conditionsManager.getSuitability();
-	        }
-
-			return this._available;
-		},
+	     * returns true if the module controller has initialized
+	     * @returns {Boolean}
 	     */
-
-	    /**
-	     * Returns true if the module requires certain conditions to be met
-	     * @return {Boolean}
-	     * @public
-	     isModuleConditioned:function() {
-			return typeof this._options.conditions !== 'undefined';
-		},
-	     */
-
-	    /**
-	     * Returns true if the module controller has finished the initialization process,
-	     * this is true when conditions have been read for the first time (and have been deemed suitable)
-	     * or no conditions have been set
-	     * @return {Boolean}
-	     * @public
-	     hasInitialized:function() {
-			return this._initialized;
-		},
-	     */
+	    hasInitialized:function() {
+	        return this._initialized;
+	    },
 
 	    /**
 	     * Returns the module path
@@ -948,6 +954,15 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	     */
 	    getModulePath:function() {
 	        return this._path;
+	    },
+
+	    /**
+	     * Returns true if the module is currently waiting for load
+	     * @returns {Boolean}
+	     * @public
+	     */
+	    isModuleAvailable:function() {
+	        return this._agent.allowsActivation() && this._module;
 	    },
 
 		/**
@@ -983,12 +998,15 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	    /**
 	     * Called to initialize the module
 	     * @private
-	     * @fires ready
+	     * @fires init
 	     */
 	    _initialize:function() {
 
+	        // now in initialized state
+	        this._initialized = true;
+
 	        // listen to behavior changes
-	        Observer.subscribe(this._agent,'change',this._onAgentStateChange.bind(this));
+	        Observer.subscribe(this._agent,'change',this._onAgentStateChangeBind);
 
 	        // let others know we have initialized
 	        Observer.publish(this,'init',this);
@@ -997,6 +1015,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	        if (this._agent.allowsActivation()) {
 	            this._onBecameAvailable();
 	        }
+
 	    },
 
 		/**
@@ -1059,7 +1078,13 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 		},
 
-	    _parseOptionOverrides:function(options) {
+	    /**
+	     * Turns possible options string into options object
+	     * @param {String|Object} options
+	     * @returns {Object}
+	     * @private
+	     */
+	    _optionsToObject:function(options) {
 	        if (typeof options === 'string') {
 	            try {
 	                return JSON.parse(options);
@@ -1071,6 +1096,14 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	        return options;
 	    },
 
+	    /**
+	     * Parses options for given url and module also
+	     * @param {String} url - url to module
+	     * @param {Object} Module - Module definition
+	     * @param {Object|String} overrides - page level options to override default options with
+	     * @returns {Object}
+	     * @private
+	     */
 	    _parseOptions:function(url,Module,overrides) {
 
 	        var stack = [],pageOptions = {},moduleOptions = {},options,i;
@@ -1102,7 +1135,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 	        // apply overrides
 	        if (overrides) {
-	            options = mergeObjects(options,this._parseOptionOverrides(overrides));
+	            options = mergeObjects(options,this._optionsToObject(overrides));
 	        }
 
 	        return options;
@@ -1121,7 +1154,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 			}
 
 	        // parse and merge options for this module
-	        var options = this._parseOptions(this._path,this._Module,this._options.options);
+	        var options = this._parseOptions(this._path,this._Module,this._options);
 
 			// set reference
 			if (typeof this._Module === 'function') {
@@ -1192,15 +1225,15 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	     */
 	    destroy:function() {
 
-	        // todo: implement destroy method
+	        // unload module
+	        this._unload();
 
-	        // - unload module
+	        // unbind events
+	        Observer.unsubscribe(this._agent,'ready',this._onAgentReadyBind);
+	        Observer.unsubscribe(this._agent,'change',this._onAgentStateChangeBind);
 
-	        // - unbind events
-
-	        // - remove events from module behavior
-
-	        // - call destroy on module behavior
+	        // call destroy on agent
+	        this._agent.destroy();
 
 	    },
 
@@ -1306,14 +1339,14 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 		},
 
 	    /**
-	     * Unload all attached modules and restore in original state
+	     * Unload all attached modules and restore node in original state
 	     * @public
 	     */
-	    unload:function() {
+	    destroy:function() {
 
 	        var i=0,l=this._moduleControllers.length;
 	        for (;i<l;i++) {
-	            this._unloadModuleController(this._moduleControllers[i]);
+	            this._destroyModuleController(this._moduleControllers[i]);
 	        }
 
 	        // reset array
@@ -1321,6 +1354,30 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 	        // update initialized state
 	        this._updateInitialized();
+
+	        // reset processed state
+	        this._element.removeAttribute('data-processed');
+
+	        // reset element reference
+	        this._element = null;
+	    },
+
+	    /**
+	     * Call destroy method on module controller and clean up listeners
+	     * @param moduleController
+	     * @private
+	     */
+	    _destroyModuleController:function(moduleController) {
+
+	        // unsubscribe from module events
+	        Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
+	        Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
+
+	        // conceal events from module controller
+	        Observer.conceal(moduleController,this);
+
+	        // unload the controller
+	        moduleController.destroy();
 
 	    },
 
@@ -1379,7 +1436,6 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	            }
 	        }
 	        return results;
-
 	    },
 
 		/**
@@ -1499,7 +1555,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	     */
 	    _updateInitialized:function() {
 
-	        var i=0,controllers = this.getActiveModuleControllers(),l=controllers.length,modules=[];
+	        var i=0,controllers=this.getActiveModuleControllers(),l=controllers.length,modules=[];
 	        for(;i<l;i++) {
 	            modules.push(controllers[i].getModulePath());
 	        }
@@ -1511,25 +1567,11 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	            this._element.removeAttribute('data-initialized');
 	        }
 
-	    },
-
-	    _unloadModuleController:function(moduleController) {
-
-	        // unsubscribe from module events
-	        Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
-	        Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
-
-	        // conceal events from module controller
-	        Observer.conceal(moduleController,this);
-
-	        // unload the controller
-	        moduleController.unload();
-
 	    }
 
 	};
 	/**
-	 *
+	 * Creates a controller group to sync controllers
 	 * @constructor
 	 */
 	var SyncedControllerGroup = function() {
@@ -1542,6 +1584,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	    // by default modules are expected to not be in sync
 	    this._inSync = false;
 
+	    // turn arguments into an array
 	    this._controllers = Array.prototype.slice.call(arguments,0);
 	    this._controllerLoadedBind = this._onLoad.bind(this);
 	    this._controllerUnloadedBind = this._onUnload.bind(this);
@@ -1555,61 +1598,122 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	        Observer.subscribe(controller,'unload',this._controllerUnloadedBind);
 	    }
 
+	    // test now to see if modules might already be in sync
 	    this._test();
 	};
 
 	SyncedControllerGroup.prototype = {
 
+	    /**
+	     * Destroy sync group, stops listening and cleans up
+	     */
+	    destroy:function() {
+
+	        // unsubscribe
+	        var i=0,controller,l=this._controllers.length;
+	        for (;i<l;i++) {
+	            controller = this._controllers[i];
+
+	            // listen to load and unload events so we can pass them on if appropriate
+	            Observer.unsubscribe(controller,'load',this._controllerLoadedBind);
+	            Observer.unsubscribe(controller,'unload',this._controllerUnloadedBind);
+	        }
+
+	        // reset array
+	        this._controllers = [];
+
+	    },
+
+	    /**
+	     * Called when a module loads
+	     * @private
+	     */
 	    _onLoad:function() {
 	        this._test();
 	    },
 
+	    /**
+	     * Called when a module unloads
+	     * @private
+	     */
 	    _onUnload:function() {
 	        this._unload();
 	    },
 
-	    _isActive:function(controller) {
+	    /**
+	     * Tests if the node or module controller has loaded their modules
+	     * @param controller
+	     * @returns {Boolean}
+	     * @private
+	     */
+	    _isActiveController:function(controller) {
 	        return ((controller.isModuleActive && controller.isModuleActive()) ||
-	                (controller.areModulesActive && !controller.areModulesActive()));
+	                (controller.areModulesActive && controller.areModulesActive()));
 	    },
 
+	    /**
+	     * Tests if all controllers have loaded, if so calls the _load method
+	     * @private
+	     */
 	    _test:function() {
 
 	        // loop over modules testing their active state, if one is inactive we stop immediately
 	        var i=0,l=this._controllers.length,controller;
 	        for (;i<l;i++) {
 	            controller = this._controllers[i];
-	            if (!this._isActive(controller)) {
+	            if (!this._isActiveController(controller)) {
 	                return;
 	            }
 	        }
 
 	        // if all modules loaded fire load event
 	        this._load();
+
 	    },
 
+	    /**
+	     * Fires a load event when all controllers have indicated they have loaded and we have not loaded yet
+	     * @fires load
+	     * @private
+	     */
 	    _load:function() {
-	        if (this._inSync) {
-	            return;
-	        }
-
+	        if (this._inSync) {return;}
 	        this._inSync = true;
 	        Observer.publishAsync(this,'load',this._controllers);
 	    },
 
+	    /**
+	     * Fires an unload event once we are in loaded state and one of the controllers unloads
+	     * @fires unload
+	     * @private
+	     */
 	    _unload:function() {
-	        if (!this._inSync) {
-	            return;
-	        }
-
+	        if (!this._inSync) {return;}
 	        this._inSync = false;
 	        Observer.publish(this,'unload',this._controllers);
 	    }
 
 	};
+	/**
+	 * Static Module Agent, will always load the module
+	 * @type {Object}
+	 */
 	var StaticModuleAgent = {
+
+	    /**
+	     * Is activation currently allowed, will always return true for static module agent
+	     * @returns {boolean}
+	     */
 	    allowsActivation:function() {
 	        return true;
+	    },
+
+	    /**
+	     * Clean up
+	     * As we have not attached any event listeners there's nothing to clean
+	     */
+	    destroy:function() {
+	        // nothing to clean up
 	    }
 	};
 	var ConditionModuleAgent = function(conditions,element) {
@@ -1624,6 +1728,9 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 	    // set element reference
 	    this._element = element;
+
+	    // remember tester references in this array for later removal
+	    this._testers = [];
 
 	    // change event bind
 	    this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
@@ -1648,6 +1755,26 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	     */
 	    allowsActivation:function() {
 	        return this._suitable;
+	    },
+
+	    /**
+	     * Cleans up event listeners and readies object for removal
+	     */
+	    destroy:function() {
+
+	        var i=0,l=this._testers.length;
+	        for (;i<l;i++) {
+
+	            // no longer listen to change events on the tester
+	            Observer.unsubscribe(this._testers[i],'change',this._onResultsChangedBind);
+
+	            // further look into unloading the manufactured Test itself
+
+	        }
+
+	        this._testers = [];
+	        this._suitable = false;
+
 	    },
 
 	    /**
@@ -1694,19 +1821,23 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	     */
 	    _loadTesterToExpression:function(config,expression) {
 
-	        var self = this;
+	        var self = this,tester;
 
 	        TestFactory.getTest(config.path,function(test) {
 
+	            // create a new tester instance for this test
+	            tester = new Tester(test,config.value,self._element);
+
+	            // remember tester
+	            self._testers.push(tester);
+
 	            // assign tester to expression
-	            expression.assignTester(
-	                new Tester(test,config.value,self._element)
-	            );
+	            expression.assignTester(tester);
 
 	            // listen to test result updates
 	            Observer.subscribe(test,'change',self._onResultsChangedBind);
 
-	            // lower test count
+	            // lower test count so we know when we're ready
 	            self._count--;
 	            if (self._count===0) {
 	                self._onReady();
@@ -1806,7 +1937,6 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 			}
 		},
-
 
 		/**
 		 * Loads all modules within the supplied dom tree
@@ -2042,12 +2172,21 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	        return controllers;
 	    },
 
+	    /**
+	     * Module Controller factory method, creates different ModuleControllers based on params
+	     * @param path - path of module
+	     * @param element - element to attach module to
+	     * @param options - options for module
+	     * @param conditions - conditions required for module to be loaded
+	     * @returns {ModuleController}
+	     * @private
+	     */
 	    _getModuleController:function(path,element,options,conditions) {
 	        return new ModuleController(
 	            path,
 	            element,
-	            conditions ? new ConditionModuleAgent(conditions,element) : StaticModuleAgent,
-	            options
+	            options,
+	            conditions ? new ConditionModuleAgent(conditions,element) : StaticModuleAgent
 	        );
 	    }
 
@@ -2082,7 +2221,7 @@ define('conditioner/extendClass',[],function(){
         // set super object reference
         Child.__super = req(path);
 
-        // require actual super module (should already have loaded before calling extend) and copy prototype to child
+        // copy prototype to child
         Child.prototype = Object.create(Child.__super.prototype);
 
         // return the Child Class

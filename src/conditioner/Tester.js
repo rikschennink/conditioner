@@ -16,26 +16,44 @@ var Tester = function(test,expected,element) {
 	this._changed = true;
 
 	// listen to changes on test
-	var self = this;
-	Observer.subscribe(this._test,'change',function(){
-		self._changed = true;
-	});
+    this._onChangeBind = this._onChange.bind(this);
+	Observer.subscribe(this._test,'change',this._onChangeBind);
 
 	// arrange test
 	this._test.arrange(this._expected,this._element);
 
 };
 
-/**
- * Returns true if test assertion successful
- * @returns {Boolean}
- */
-Tester.prototype.succeeds = function() {
+Tester.prototype = {
 
-	if (this._changed) {
-		this._changed = false;
-		this._result = this._test.assert(this._expected,this._element);
-	}
+    /**
+     * Called when the test has changed it's state
+     * @private
+     */
+    _onChange:function() {
+        this._changed = true;
+    },
 
-	return this._result;
+    /**
+     * Returns true if test assertion successful
+     * @returns {Boolean}
+     */
+    succeeds:function() {
+
+        if (this._changed) {
+            this._changed = false;
+            this._result = this._test.assert(this._expected,this._element);
+        }
+
+        return this._result;
+
+    },
+
+    /**
+     * Cleans up object events
+     */
+    destroy:function() {
+        Observer.unsubscribe(this._test,'change',this._onChangeBind);
+    }
+
 };

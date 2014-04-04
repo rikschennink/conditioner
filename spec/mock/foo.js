@@ -1,15 +1,9 @@
 
 // no dependencies
 
-define(['module'],function(module){
-
-    //console.log('Module: FOO');
-
-    //console.log(module.config().foo);
+define(['conditioner/Observer'],function(Observer){
 
     var exports = function Foo(element,options) {
-
-        // foo
 
         this._element = element;
         this._options = options;
@@ -23,9 +17,15 @@ define(['module'],function(module){
     };
 
     exports.prototype = {
+
         foo:function() {
             console.log('foo function');
+        },
+
+        ping:function() {
+            Observer.publish(this,'ping');
         }
+
     };
 
     return exports;

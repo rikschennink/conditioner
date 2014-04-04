@@ -33,10 +33,9 @@
 
 			// arrange
 			var element = document.createElement('div');
-			element.setAttribute('data-priority','5');
 
-			// act
-			var node = new NodeController(element);
+            // act
+            var node = new NodeController(element,5);
 
 			// assert
 			expect(node.getPriority()).toEqual(5);
@@ -63,7 +62,7 @@
             // arrange
             var element = document.createElement('div');
             var node = new NodeController(element);
-            node.load([new ModuleController('../spec/mock/jasmine',element)]);
+            node.load(new ModuleController('../spec/mock/foo',element));
 
             // act
             var mc = node.getModuleController();
@@ -78,10 +77,10 @@
             // arrange
             var element = document.createElement('div');
             var node = new NodeController(element);
-            node.load([
-                new ModuleController('../spec/mock/jasmine',element),
-                new ModuleController('../spec/mock/jasmine',element)
-            ]);
+            node.load(
+                new ModuleController('../spec/mock/foo',element),
+                new ModuleController('../spec/mock/foo',element)
+            );
 
             // act
             var mcs = node.getModuleControllers();
@@ -92,25 +91,47 @@
 
         });
 
-        it('will load the first module when multiple non conditioned module controllers are passed to the load method',function(){
+        it('will load all module controllers when multiple module controllers are passed to the load method',function(){
 
-            // arrange
-            var element = document.createElement('div');
-            var a = new ModuleController('../spec/mock/jasmine',element),
-                b = new ModuleController('../spec/mock/jasmine',element),
-                c = new ModuleController('../spec/mock/jasmine',element);
-            var node = new NodeController(element);
-            node.load([a,b,c]);
+            var caught = false,node,element;
 
-            // act
-            var mc = node.getActiveModuleController();
+            runs(function(){
+
+                // arrange
+                var element = document.createElement('div');
+                var a = new ModuleController('../spec/mock/foo',element),
+                    b = new ModuleController('../spec/mock/bar',element),
+                    c = new ModuleController('../spec/mock/baz',element);
+
+                node = new NodeController(element);
+                node.load(a,b,c);
+
+                setTimeout(function(){
+                    caught = true;
+                },50);
+
+            });
+
+            waitsFor(function(){
+
+                return caught;
+
+            },'modules should load',100);
 
             // assert
-            expect(mc).toBe(a);
+            runs(function(){
+
+                var mcs = node.getActiveModuleControllers();
+
+                // assert
+                expect(mcs).toBeDefined();
+                expect(mcs.length).toEqual(3);
+
+            });
 
         });
 
-        it('will receive load event fired by the active module controller',function(){
+        it('will receive load event fired by an active module controller',function(){
 
             // arrange
             var caught = false,node,element;
@@ -126,16 +147,16 @@
                 });
 
                 // act
-                node.load([
-                    new ModuleController('../spec/mock/jasmine',element)
-                ]);
+                node.load(
+                    new ModuleController('../spec/mock/foo',element)
+                );
 
             });
 
             // act
             waitsFor(function(){
                 return caught;
-            },'event should have been caught',50);
+            },'event should have been caught',500);
 
             // assert
             runs(function(){
@@ -144,8 +165,90 @@
 
         });
 
+        it ('will load multiple modules simultaneously',function(){
+
+            // arrange
+            var caught = false,node,element;
+
+            runs(function(){
+
+                element = document.createElement('div');
+                node = new NodeController(element);
+
+                Observer.subscribe(node,'load',function(){
+                    caught = true;
+                });
+
+                // act
+                node.load(
+                    new ModuleController('../spec/mock/foo',element),
+                    new ModuleController('../spec/mock/bar',element),
+                    new ModuleController('../spec/mock/baz',element)
+                );
+
+            });
+
+            // act
+            waitsFor(function(){
+                return caught;
+            },'event should have been caught',500);
+
+            // assert
+            runs(function(){
+                expect(element.getAttribute('data-initialized')).toEqual('../spec/mock/foo,../spec/mock/bar,../spec/mock/baz');
+            });
+
+        });
+
+        /*
+         it ('will not contain an active module after unloading the module',function() {
+
+         // arrange
+         var element = document.createElement('div');
+         var path = '../spec/mock/foo';
+
+         // act
+         var mc = new ModuleController(path,element);
+         mc.unload();
+
+         // assert
+         expect(mc.isModuleActive()).toBeFalsy();
+         });
+         */
 
 
+        /*
+
+        - configuratie uit data-module="..." trekken, nu totaal onleesbaar
+
+        - pass prio to module, modules will be initialized in order of array
+
+
+         [
+             {
+                "path":"ui/Clock"
+             },
+             {
+                "path":"ui/Clock"
+             }
+         ]
+
+
+
+
+         [
+            {
+                "path":"ui/Clock",
+                "conditions":"element:{max-width:200}",
+                "options":{"time":false}
+            },
+            {
+                "conditions":"element:{min-width:201}",
+                "path":"ui/Clock"
+            }
+        ]
+
+        */
 
 
 	});

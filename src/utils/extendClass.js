@@ -4,7 +4,6 @@ define(function(){
      * JavaScript Inheritance
      * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_Revisited
      */
-
     return function() {
 
         // get child constructor
@@ -25,7 +24,7 @@ define(function(){
         // set super object reference
         Child.__super = req(path);
 
-        // require actual super module (should already have loaded before calling extend) and copy prototype to child
+        // copy prototype to child
         Child.prototype = Object.create(Child.__super.prototype);
 
         // return the Child Class
