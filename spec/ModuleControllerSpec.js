@@ -8,7 +8,7 @@
 
 			// act, assert
 			expect(function(){new ModuleController();}).toThrow(
-                new Error('ModuleController(path,element,agent,options): "path" and "element" are required parameters.')
+                new Error('ModuleController(path,element,options,agent): "path" and "element" are required parameters.')
 			);
 
 		});

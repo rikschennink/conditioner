@@ -4,14 +4,14 @@
  * @constructor
  * @param {String} path - reference to module
  * @param {Element} element - reference to element
- * @param {Object} [agent] - module activation agent
  * @param {Object|null} [options] - options for this ModuleController
+ * @param {Object} [agent] - module activation agent
  */
 var ModuleController = function(path,element,options,agent) {
 
 	// if no path supplied, throw error
 	if (!path || !element) {
-		throw new Error('ModuleController(path,element,agent,options): "path" and "element" are required parameters.');
+		throw new Error('ModuleController(path,element,options,agent): "path" and "element" are required parameters.');
 	}
 
 	// path to module
@@ -104,7 +104,8 @@ ModuleController.prototype = {
 	 */
 	_onAgentReady:function() {
 
-		// module has now completed the initialization process (this does not mean it's available)
+		// module has now completed the initialization process
+		// (!) this does not mean it's available
         this._initialize();
 
 	},
@@ -181,6 +182,11 @@ ModuleController.prototype = {
 		// load module, and remember reference
 		var self = this;
 		require([this._path],function(Module) {
+
+            // if module does not export a module quit here
+            if (!Module) {
+                throw new Error('ModuleController: A module needs to export an object.');
+            }
 
 			// set reference to Module
 			self._Module = Module;
