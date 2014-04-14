@@ -1,4 +1,4 @@
-define(['require','conditioner/Observer','conditioner/contains','conditioner/matchesSelector','conditioner/mergeObjects'],function(require,Observer,contains,matchesSelector,mergeObjects) {
+define(['require','./utils/Observer','./utils/contains','./utils/matchesSelector','./utils/mergeObjects'],function(require,Observer,contains,matchesSelector,mergeObjects) {
 
 	'use strict';
 
