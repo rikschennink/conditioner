@@ -657,7 +657,7 @@ define(['require','./utils/Observer','./utils/contains','./utils/matchesSelector
 	     * @public
 	     */
 	    isModuleAvailable:function() {
-	        return this._agent.allowsActivation();
+	        return this._agent.allowsActivation() && !this._module;
 	    },
 
 		/**
@@ -1082,6 +1082,7 @@ define(['require','./utils/Observer','./utils/contains','./utils/matchesSelector
 	        _destroyModuleController:function(moduleController) {
 
 	            // unsubscribe from module events
+	            Observer.unsubscribe(moduleController,'available',this._moduleAvailableBind);
 	            Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
 	            Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
 
@@ -1127,7 +1128,7 @@ define(['require','./utils/Observer','./utils/contains','./utils/matchesSelector
 	         * Returns true if all module controllers are active
 	         * @public
 	         */
-	        areModulesActive:function() {
+	        areAllModulesActive:function() {
 	            return this.getActiveModuleControllers().length === this._moduleControllers.length;
 	        },
 
