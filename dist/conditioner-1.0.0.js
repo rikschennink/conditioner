@@ -1,314 +1,9 @@
-
-define('conditioner/Observer',[],function(){
-
-    var _uid = 1, // start at 1 because !uid returns false when uid===0
-        _db = {};
-
-    return {
-
-        _setEntry:function(obj,prop) {
-
-            var uid = obj.__pubSubUID;
-            if (!uid) {
-                uid = _uid++;
-                obj.__pubSubUID = uid;
-                _db[uid] = {
-                    'obj':obj
-                };
-            }
-
-            if (!_db[uid][prop]) {
-                _db[uid][prop] = [];
-            }
-
-            return _db[uid];
-        },
-
-        _getEntryProp:function(obj,prop) {
-            var entry = _db[obj.__pubSubUID];
-            return entry ? _db[obj.__pubSubUID][prop] : null;
-        },
-
-        /**
-         * Subscribe to an event
-         * @memberof Observer
-         * @param {Object} obj - Object to subscribe to
-         * @param {String} type - Event type to listen for
-         * @param {Function} fn - Function to call when event fires
-         * @static
-         */
-        subscribe:function(obj,type,fn) {
-
-            var entry = this._setEntry(obj,'subscriptions');
-
-            // check if already added
-            var sub,i=0,subs=entry.subscriptions,l=subs.length;
-            for (; i<l; i++) {
-                sub = subs[i];
-                if (sub.type === type && sub.fn === fn) {
-                    return;
-                }
-            }
-
-            // add event
-            subs.push({'type':type,'fn':fn});
-        },
-
-        /**
-         * Unsubscribe from further notifications
-         * @memberof Observer
-         * @param {Object} obj - Object to unsubscribe from
-         * @param {String} type - Event type to match
-         * @param {Function} fn - Function to match
-         * @static
-         */
-        unsubscribe:function(obj,type,fn) {
-
-            var subs = this._getEntryProp(obj,'subscriptions');
-            if (!subs) {return;}
-
-            // find and remove
-            var sub,i=subs.length;
-            while (--i >= 0) {
-                sub = subs[i];
-                if (sub.type === type && (sub.fn === fn || !fn)) {
-                    subs.splice(i,1);
-                }
-            }
-        },
-
-        /**
-         * Publishes an event async
-         * http://ejohn.org/blog/how-javascript-timers-work/
-         * @param {Object} obj - Object to fire the event on
-         * @param {String} type - Event type to fire
-         * @param {Object} [data] - optional data carrier
-         * @static
-         */
-        publishAsync:function(obj,type,data) {
-            var self = this;
-            setTimeout(function(){
-                self.publish(obj,type,data);
-            },0);
-        },
-
-        /**
-         * Publish an event
-         * @memberof Observer
-         * @param {Object} obj - Object to fire the event on
-         * @param {String} type - Event type to fire
-         * @param {Object} [data] - optional data carrier
-         * @static
-         */
-        publish:function(obj,type,data) {
-
-            var entry = this._setEntry(obj,'subscriptions');
-
-            // find and execute callback
-            var matches=[],i=0,subs=entry.subscriptions,l=subs.length,receivers = entry.receivers,sub;
-            for (;i<l;i++) {
-                sub = subs[i];
-                if (sub.type === type) {
-                    matches.push(sub);
-                }
-            }
-
-            // execute matched callbacks
-            l = matches.length;
-            for (i=0;i<l;i++) {
-                matches[i].fn(data);
-            }
-
-            // see if any receivers should be informed
-            if (!receivers) {
-                return;
-            }
-
-            l = receivers.length;
-            for (i=0;i<l;i++) {
-                this.publish(receivers[i],type,data);
-            }
-        },
-
-        /**
-         * Setup propagation target for events so they can bubble up the object tree
-         * @memberof Observer
-         * @param {Object} informant - Object to set as origin
-         * @param {Object} receiver - Object to set as target
-         * @return {Boolean} if setup was successful
-         * @static
-         */
-        inform:function(informant,receiver) {
-
-            if (!informant || !receiver) {
-                return false;
-            }
-
-            var entry = this._setEntry(informant,'receivers');
-            entry.receivers.push(receiver);
-
-            return true;
-        },
-
-        /**
-         * Remove propagation target
-         * @memberof Observer
-         * @param {Object} informant - Object set as origin
-         * @param {Object} receiver - Object set as target
-         * @return {Boolean} if removal was successful
-         * @static
-         */
-        conceal:function(informant,receiver) {
-
-            if (!informant || !receiver) {
-                return false;
-            }
-
-            var receivers = this._getEntryProp(informant,'receivers');
-            if (!receivers) {
-                return false;
-            }
-
-            // find and remove
-            var i=receivers.length,item;
-            while (--i >= 0) {
-                item = receivers[i];
-                if (item === receiver) {
-                    receivers.splice(i,1);
-                    return true;
-                }
-            }
-
-            return false;
-        }
-    }
-
-});
-define('conditioner/contains',[],function() {
-
-	// define contains method based on browser capabilities
-	var el = document ? document.body : null;
-	if (el && el.compareDocumentPosition) {
-		return function(parent,child) {
-			/* jshint -W016 */
-			return !!(parent.compareDocumentPosition(child) & 16);
-		};
-	}
-	else if (el && el.contains) {
-		return function(parent,child) {
-			return parent != child && parent.contains(child);
-		};
-	}
-	else {
-		return function(parent,child) {
-			var node = child.parentNode;
-			while (node) {
-				if (node === parent) {
-					return true;
-				}
-				node = node.parentNode;
-			}
-			return false;
-		};
-	}
-
-});
-define('conditioner/matchesSelector',[],function() {
-
-	// define method used for matchesSelector
-	var _matchesSelector = null,_method = null,el = document ? document.body : null;
-	if (!el || el.matches) {
-		_method = 'matches';
-	}
-	else if (el.webkitMatchesSelector) {
-		_method = 'webkitMatchesSelector';
-	}
-	else if (el.mozMatchesSelector) {
-		_method = 'mozMatchesSelector';
-	}
-	else if (el.msMatchesSelector) {
-		_method = 'msMatchesSelector';
-	}
-	else if (el.oMatchesSelector) {
-		_method = 'oMatchesSelector';
-	}
-
-	// if method found use native matchesSelector
-	if (_method) {
-		return function(element,selector) {
-			return element[_method](selector);
-		};
-	}
-
-	// check if an element matches a CSS selector
-	// https://gist.github.com/louisremi/2851541
-	return function(element,selector) {
-
-		// We'll use querySelectorAll to find all element matching the selector,
-		// then check if the given element is included in that list.
-		// Executing the query on the parentNode reduces the resulting nodeList,
-		// document doesn't have a parentNode, though.
-		var nodeList = (element.parentNode || document).querySelectorAll(selector) || [],
-			i = nodeList.length;
-
-		// loop through nodeList
-		while (i--) {
-			if (nodeList[i] == element) {return true;}
-		}
-		return false;
-	};
-
-});
-define('conditioner/mergeObjects',[],function(){
-	var exports = function(target,src) {
-
-		var array = Array.isArray(src);
-		var dst = array && [] || {};
-
-		src = src || {};
-
-		if (array) {
-            // arrays are not merged
-            dst = src.concat();
-		}
-		else {
-
-			if (target && typeof target === 'object') {
-
-				Object.keys(target).forEach(function (key) {
-					dst[key] = target[key];
-				});
-
-			}
-
-			Object.keys(src).forEach(function (key) {
-
-				if (typeof src[key] !== 'object' || !src[key]) {
-					dst[key] = src[key];
-				}
-				else {
-					if (!target[key]) {
-						dst[key] = src[key];
-					}
-					else {
-						dst[key] = exports(target[key], src[key]);
-					}
-				}
-
-			});
-		}
-
-		return dst;
-	};
-
-	return exports;
-});
 // conditioner v1.0.0 - ConditionerJS - Frizz free, environment-aware, javascript modules.
 // Copyright (c) 2014 Rik Schennink - http://conditionerjs.com
 // License: MIT (http://www.opensource.org/licenses/mit-license.php)
-define(['require','conditioner/Observer','conditioner/contains','conditioner/matchesSelector','conditioner/mergeObjects'],function(require,Observer,contains,matchesSelector,mergeObjects) {
+define(['require','./utils/Observer','./utils/contains','./utils/matchesSelector','./utils/mergeObjects'],function(require,Observer,contains,matchesSelector,mergeObjects) {
 
-	
+	'use strict';
 
 	/**
 	 * @module conditioner
@@ -750,7 +445,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	     */
 		getTest:function(path,success) {
 
-			path = 'conditioner/tests/' + path;
+			path = './tests/' + path;
 
 			require([path],function(config){
 
@@ -1067,7 +762,9 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 			// load module, and remember reference
 			var self = this;
-			require([this._path],function(Module) {
+
+	        // use 'requirejs' instead of 'require' as 'require' would be relative to conditioner in this context
+			requirejs([this._path],function(Module) {
 
 	            // if module does not export a module quit here
 	            if (!Module) {
@@ -1127,6 +824,7 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	            // fetch super path
 	            url = Module.__superUrl;
 
+	            // jshint -W084
 	        } while (Module = Module.__super);
 
 	        // reverse loop over stack and merge options
@@ -2062,13 +1760,9 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 
 	        var group = Object.create(SyncedControllerGroup.prototype);
 
-	        // test if user passed an array instead of separate arguments
-	        if (arguments.length == 1 && !arguments.slice) {
-	            arguments = arguments[0];
-	        }
-
 	        // create synced controller group using passed arguments
-	        SyncedControllerGroup.apply(group, arguments);
+	        // test if user passed an array instead of separate arguments
+	        SyncedControllerGroup.apply(group,arguments.length === 1 && !arguments.slice ? arguments[0] : arguments);
 
 	        return group;
 	    },
@@ -2199,40 +1893,5 @@ define(['require','conditioner/Observer','conditioner/contains','conditioner/mat
 	};
 
 	return new ModuleLoader();
-
-});
-define('conditioner/extendClass',[],function(){
-
-    /**
-     * JavaScript Inheritance
-     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_Revisited
-     */
-    return function() {
-
-        // get child constructor
-        var Child = arguments[arguments.length-1],
-            first = arguments[0],req,path;
-
-        if (typeof first === 'string') {
-            req = requirejs;
-            path = first;
-            Child.__superUrl = first;
-        }
-        else {
-            req = first;
-            path = arguments[1];
-            Child.__superUrl = req.toUrl(path);
-        }
-
-        // set super object reference
-        Child.__super = req(path);
-
-        // copy prototype to child
-        Child.prototype = Object.create(Child.__super.prototype);
-
-        // return the Child Class
-        return Child;
-
-    };
 
 });

@@ -181,7 +181,9 @@ ModuleController.prototype = {
 
 		// load module, and remember reference
 		var self = this;
-		require([this._path],function(Module) {
+
+        // use 'requirejs' instead of 'require' as 'require' would be relative to conditioner in this context
+		requirejs([this._path],function(Module) {
 
             // if module does not export a module quit here
             if (!Module) {
@@ -241,6 +243,7 @@ ModuleController.prototype = {
             // fetch super path
             url = Module.__superUrl;
 
+            // jshint -W084
         } while (Module = Module.__super);
 
         // reverse loop over stack and merge options

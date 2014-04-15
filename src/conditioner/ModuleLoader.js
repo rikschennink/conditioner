@@ -185,13 +185,9 @@ ModuleLoader.prototype = {
 
         var group = Object.create(SyncedControllerGroup.prototype);
 
-        // test if user passed an array instead of separate arguments
-        if (arguments.length == 1 && !arguments.slice) {
-            arguments = arguments[0];
-        }
-
         // create synced controller group using passed arguments
-        SyncedControllerGroup.apply(group, arguments);
+        // test if user passed an array instead of separate arguments
+        SyncedControllerGroup.apply(group,arguments.length === 1 && !arguments.slice ? arguments[0] : arguments);
 
         return group;
     },

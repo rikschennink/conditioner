@@ -45,9 +45,9 @@ module.exports = function(grunt) {
                         },
                         map:{
                             '*':{
-                                'conditioner/extendClass':'../src/utils/extendClass',
-                                'conditioner/mergeObjects':'../src/utils/mergeObjects',
-                                'conditioner/Observer':'../src/utils/observer'
+                                'utils/extendClass':'../src/utils/extendClass',
+                                'utils/mergeObjects':'../src/utils/mergeObjects',
+                                'utils/Observer':'../src/utils/observer'
                             }
                         },
 						baseUrl:'./spec/',
@@ -109,7 +109,7 @@ module.exports = function(grunt) {
 
 					'<%= path.wrapper %>/outro.js'
 				],
-				dest:'dist/<%= pkg.name %>.js'
+				dest:'dist/<%= pkg.name %>-<%= pkg.version %>.js'
 			}
 		},
 		copy:{
@@ -123,46 +123,30 @@ module.exports = function(grunt) {
 				expand:true,
 				cwd:'<%= path.utils %>',
 				src:'*',
-				dest:'./dist/conditioner/'
+				dest:'./dist/utils/'
 			}
 		},
-		requirejs:{
-			compile:{
-				options:{
-					optimize:'none',
-					baseUrl:'./dist',
-					name:'<%= pkg.name %>',
-					out:'./dist/conditioner-<%= pkg.version %>.js',
-					preserveLicenseComments:false,
-					useSourceUrl:false,
-					include:[
-						'conditioner/Observer',
-						'conditioner/contains',
-						'conditioner/matchesSelector',
-						'conditioner/mergeObjects',
-                        'conditioner/extendClass'
-					]
-				}
-			}
-		},
-		clean:[
-			'./dist/conditioner',
-			'./dist/conditioner.js'
-		],
-		uglify: {
-			tests: {
-				expand: true,
+		uglify:{
+			tests:{
+				expand:true,
 				src:'*',
-				dest:'./dist/tests.min/',
-				cwd:'<%= copy.tests.dest %>'
+                cwd:'<%= copy.tests.dest %>',
+				dest:'./dist/tests.min/'
 			},
-			lib: {
-				options: {
+            utils:{
+                expand:true,
+                src:'*',
+                cwd:'<%= copy.utils.dest %>',
+                dest:'./dist/utils.min/'
+            },
+			lib:{
+				options:{
 					banner:'<%= meta.banner %>',
 					report:'gzip'
 				},
-				src:'<%= requirejs.compile.options.out %>',
-				dest:'./dist/<%= pkg.name %>-<%= pkg.version %>.min.js'
+                files: {
+                    './dist/<%= pkg.name %>-<%= pkg.version %>.min.js':['<%= concat.dist.dest %>']
+                }
 			}
 		},
 		jshint:{
@@ -170,8 +154,9 @@ module.exports = function(grunt) {
 				jshintrc:'.jshintrc'
 			},
 			all:[
-				'<%=concat.dist.dest %>',
-				'<%=path.src %>/tests/*.js'
+				'<%= concat.dist.dest %>',
+                '<%= path.src %>/utils/*.js',
+				'<%= path.src %>/tests/*.js'
 			]
 		},
 		watch: {
@@ -195,7 +180,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('test',['jshint','jasmine']);
 
 	// build
-	grunt.registerTask('lib',['concat','copy','requirejs','clean','uglify']);
+	grunt.registerTask('lib',['concat','copy','uglify']);
 
 	// build than test
 	grunt.registerTask('dev',['lib','test','watch']);
