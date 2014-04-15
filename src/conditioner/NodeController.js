@@ -149,7 +149,7 @@ var NodeController = (function(){
          * Returns true if all module controllers are active
          * @public
          */
-        areModulesActive:function() {
+        areAllModulesActive:function() {
             return this.getActiveModuleControllers().length === this._moduleControllers.length;
         },
 
