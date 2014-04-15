@@ -76,7 +76,7 @@ ModuleController.prototype = {
      * @public
      */
     isModuleAvailable:function() {
-        return this._agent.allowsActivation() && this._module;
+        return this._agent.allowsActivation() && !this._module;
     },
 
 	/**
@@ -124,7 +124,7 @@ ModuleController.prototype = {
         Observer.subscribe(this._agent,'change',this._onAgentStateChangeBind);
 
         // let others know we have initialized
-        Observer.publish(this,'init',this);
+        Observer.publishAsync(this,'init',this);
 
         // if activation is allowed, we are directly available
         if (this._agent.allowsActivation()) {
@@ -141,7 +141,7 @@ ModuleController.prototype = {
 	_onBecameAvailable:function() {
 
         // we are now available
-        Observer.publish(this,'available',this);
+        Observer.publishAsync(this,'available',this);
 
 		// let's load the module
         this._load();
@@ -306,7 +306,7 @@ ModuleController.prototype = {
         Observer.inform(this._module,this);
 
         // publish load event
-        Observer.publish(this,'load',this);
+        Observer.publishAsync(this,'load',this);
 	},
 
 
@@ -337,7 +337,7 @@ ModuleController.prototype = {
         this._module = null;
 
         // publish unload event
-        Observer.publish(this,'unload',this);
+        Observer.publishAsync(this,'unload',this);
 
 		return true;
 	},

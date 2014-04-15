@@ -200,56 +200,6 @@
 
         });
 
-        /*
-         it ('will not contain an active module after unloading the module',function() {
-
-         // arrange
-         var element = document.createElement('div');
-         var path = '../spec/mock/foo';
-
-         // act
-         var mc = new ModuleController(path,element);
-         mc.unload();
-
-         // assert
-         expect(mc.isModuleActive()).toBeFalsy();
-         });
-         */
-
-
-        /*
-
-        - configuratie uit data-module="..." trekken, nu totaal onleesbaar
-
-        - pass prio to module, modules will be initialized in order of array
-
-
-         [
-             {
-                "path":"ui/Clock"
-             },
-             {
-                "path":"ui/Clock"
-             }
-         ]
-
-
-
-
-         [
-            {
-                "path":"ui/Clock",
-                "conditions":"element:{max-width:200}",
-                "options":{"time":false}
-            },
-            {
-                "conditions":"element:{min-width:201}",
-                "path":"ui/Clock"
-            }
-        ]
-
-        */
-
 
 	});
 
