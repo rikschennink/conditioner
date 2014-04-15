@@ -109,7 +109,7 @@ module.exports = function(grunt) {
 
 					'<%= path.wrapper %>/outro.js'
 				],
-				dest:'dist/<%= pkg.name %>.js'
+				dest:'dist/<%= pkg.name %>-<%= pkg.version %>.js'
 			}
 		},
 		copy:{
@@ -126,9 +126,6 @@ module.exports = function(grunt) {
 				dest:'./dist/utils/'
 			}
 		},
-		clean:[
-			'./dist/conditioner.js'
-		],
 		uglify:{
 			tests:{
 				expand:true,
@@ -183,7 +180,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('test',['jshint','jasmine']);
 
 	// build
-	grunt.registerTask('lib',['concat','copy','uglify','clean']);
+	grunt.registerTask('lib',['concat','copy','uglify']);
 
 	// build than test
 	grunt.registerTask('dev',['lib','test','watch']);

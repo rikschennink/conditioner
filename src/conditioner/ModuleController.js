@@ -243,6 +243,7 @@ ModuleController.prototype = {
             // fetch super path
             url = Module.__superUrl;
 
+            // jshint -W084
         } while (Module = Module.__super);
 
         // reverse loop over stack and merge options
