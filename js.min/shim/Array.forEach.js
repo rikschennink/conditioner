@@ -1,0 +1,1 @@
+Array.prototype.forEach||(Array.prototype.forEach=function(t,e){for(var n=0,i=this.length;i>n;++n)t.call(e,this[n],n,this)});

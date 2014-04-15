@@ -1,0 +1,1 @@
+define([],function(){var t=document?document.body:null;return t&&t.compareDocumentPosition?function(t,e){return!!(16&t.compareDocumentPosition(e))}:t&&t.contains?function(t,e){return t!=e&&t.contains(e)}:function(t,e){for(var n=e.parentNode;n;){if(n===t)return!0;n=n.parentNode}return!1}});

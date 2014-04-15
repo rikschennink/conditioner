@@ -13,11 +13,54 @@ module.exports = function(grunt) {
                     findNestedDependencies:true,
                     optimize:'uglify2',
 
-                    baseUrl:'js/',
-                    paths:{
-                        'conditioner':'lib/rikschennink/conditioner-0.10.0.min'
+                    // Location of app source (src)
+                    appDir:'./js',
+
+                    // Target location of app (dest), copy all files under appDir to this location
+                    dir:'./js.min',
+
+                    // get configuration
+                    mainConfigFile:'./js/main.js',
+
+                    // Override base url in main.js
+                    baseUrl:'.',
+
+                    // set main path
+                    paths: {
+                        'tests':'lib/rikschennink/tests',
+                        'utils':'lib/rikschennink/utils'
                     },
 
+                    // Core modules to merge
+                    modules:[
+                        {
+                            name:'main',
+                            include:[
+
+                                // custom test
+                                'tests/cookies',
+
+                                // default tests
+                                'tests/connection',
+                                'tests/element',
+                                'tests/media',
+                                'tests/pointer',
+                                'tests/window',
+
+                                // ui modules
+                                'ui/Clock',
+                                'ui/Zoom',
+                                'ui/StorageConsentSelect',
+                                'ui/StarGazers',
+                                'security/StorageConsentGuard'
+
+                                // 'ui/Map' not included to test conditional loading
+
+                            ]
+                        }
+                    ]
+
+                    /*
                     name:'lib/jrburke/require',
                     out:'js.min/built.js',
                     include:[
@@ -25,14 +68,14 @@ module.exports = function(grunt) {
                         'conditioner',
 
                         // custom test
-                        'tests/cookies',
+                        'conditioner/tests/cookies',
 
                         // default tests
-                        'tests/connection',
-                        'tests/element',
-                        'tests/media',
-                        'tests/pointer',
-                        'tests/window',
+                        'conditioner/tests/connection',
+                        'conditioner/tests/element',
+                        'conditioner/tests/media',
+                        'conditioner/tests/pointer',
+                        'conditioner/tests/window',
 
                         // ui modules
                         'ui/Clock',
@@ -44,6 +87,8 @@ module.exports = function(grunt) {
                         // 'ui/Map' not included to test conditional loading
 
                     ]
+                    */
+
                 }
             }
         },
@@ -52,8 +97,7 @@ module.exports = function(grunt) {
                 jshintrc:'.jshintrc'
             },
             all:[
-                '<%=path.js %>/ui/*.js',
-                '<%=path.js %>/tests/*.js'
+                '<%=path.js %>/ui/*.js'
             ]
         },
         sass:{

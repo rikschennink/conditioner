@@ -1,4 +1,4 @@
-define(['conditioner/Observer','conditioner/mergeObjects','module'],function(Observer,mergeObjects,module){
+define(['utils/Observer','utils/mergeObjects','module'],function(Observer,mergeObjects,module){
 
     'use strict';
 

@@ -1,0 +1,1 @@
+define([],function(){var t=function(e,n){var i=Array.isArray(n),o=i&&[]||{};return n=n||{},i?o=n.concat():(e&&"object"==typeof e&&Object.keys(e).forEach(function(t){o[t]=e[t]}),Object.keys(n).forEach(function(i){o[i]="object"==typeof n[i]&&n[i]?e[i]?t(e[i],n[i]):n[i]:n[i]})),o};return t});

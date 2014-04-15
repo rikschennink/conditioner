@@ -1,0 +1,1 @@
+define([],function(){return{support:function(){return"onLine"in navigator},setup:function(t){window.addEventListener("online",t,!1),window.addEventListener("offline",t,!1)},assert:function(t){return"any"===t&&navigator.onLine}}});
