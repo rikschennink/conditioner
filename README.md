@@ -50,6 +50,11 @@ Conditioner relies on the availability of [RequireJS](http://requirejs.org).
 * RequireJS
 * Modern browser, IE8 supported but without the media queries.
 
+
+## Travis Build Status
+
+Develop [![Build Status](https://travis-ci.org/conditioner/conditioner.png?branch=develop)](https://travis-ci.org/moment/moment)
+
 ## Feedback, Comments, Critique
 [Contact me on Twitter](http://twitter.com/rikschennink)
 
