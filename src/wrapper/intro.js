@@ -1,7 +1,6 @@
-define(['require','./utils/Observer','./utils/contains','./utils/matchesSelector','./utils/mergeObjects'],function(require,Observer,contains,matchesSelector,mergeObjects) {
+(function(undefined){
 
-	'use strict';
+    'use strict';
 
-	/**
-	 * @module conditioner
-	 */
+    // returns conditioner API
+    var factory = function(require,Observer,contains,matchesSelector,mergeObjects) {

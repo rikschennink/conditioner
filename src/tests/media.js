@@ -3,11 +3,11 @@
  * Tests if a media query is matched or not and listens to changes
  * @module tests/media
  */
-define(function(){
+(function(win,undefined){
 
 	'use strict';
 
-	return {
+	var test = {
 
 		/**
 		 * Does this browser support matchMedia
@@ -30,7 +30,7 @@ define(function(){
 
 			// if is media query
 			var self = this;
-			this._mql = window.matchMedia(expected);
+			this._mql = win.matchMedia(expected);
 			this._mql.addListener(function(){
 				self.onchange();
 			});
@@ -60,4 +60,14 @@ define(function(){
 
 	};
 
-});
+    // https://github.com/umdjs/umd
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = test;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function(){return test;});
+    }
+
+}(window));

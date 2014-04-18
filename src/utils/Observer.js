@@ -1,11 +1,11 @@
-define(function() {
+(function(win,undefined){
 
     'use strict';
 
     var _uid = 1, // start at 1 because !uid returns false when uid===0
         _db = {};
 
-    return {
+    var util = {
 
         _setEntry:function(obj,prop) {
 
@@ -184,4 +184,19 @@ define(function() {
         }
     };
 
-});
+    // expose
+    // https://github.com/umdjs/umd
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = util;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function(){return util;});
+    }
+    // Browser globals
+    else {
+        win.Observer = util;
+    }
+
+}(window));

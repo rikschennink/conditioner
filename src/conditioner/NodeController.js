@@ -20,7 +20,7 @@ var NodeController = (function(){
         this._element = element;
 
         // has been processed
-        this._element.setAttribute('data-processed','true');
+        this._element.setAttribute(_options.attr.processed,'true');
 
         // set priority
         this._priority = !priority ? 0 : parseInt(priority,10);
@@ -41,7 +41,7 @@ var NodeController = (function(){
      * @static
      */
     exports.hasProcessed = function(element) {
-        return element.getAttribute('data-processed') === 'true';
+        return element.getAttribute(_options.attr.processed) === 'true';
     };
 
     exports.prototype = {
@@ -86,10 +86,10 @@ var NodeController = (function(){
             this._moduleControllers = [];
 
             // update initialized state
-            this._updateAttribute('initialized',this._moduleControllers);
+            this._updateAttribute(_options.attr.initialized,this._moduleControllers);
 
             // reset processed state
-            this._element.removeAttribute('data-processed');
+            this._element.removeAttribute(_options.attr.processed);
 
             // reset element reference
             this._element = null;
@@ -241,7 +241,7 @@ var NodeController = (function(){
             Observer.inform(moduleController,this);
 
             // update loading attribute with currently loading module controllers list
-            this._updateAttribute('loading',this._moduleControllers.filter(_filterIsAvailableModule));
+            this._updateAttribute(_options.attr.loading,this._moduleControllers.filter(_filterIsAvailableModule));
         },
 
         /**
@@ -256,10 +256,10 @@ var NodeController = (function(){
             Observer.subscribe(moduleController,'unload',this._moduleUnloadBind);
 
             // update loading attribute with currently loading module controllers list
-            this._updateAttribute('loading',this._moduleControllers.filter(_filterIsAvailableModule));
+            this._updateAttribute(_options.attr.loading,this._moduleControllers.filter(_filterIsAvailableModule));
 
             // update initialized attribute with currently active module controllers list
-            this._updateAttribute('initialized',this.getActiveModuleControllers());
+            this._updateAttribute(_options.attr.initialized,this.getActiveModuleControllers());
         },
 
         /**
@@ -277,7 +277,7 @@ var NodeController = (function(){
             Observer.conceal(moduleController,this);
 
             // update initialized attribute with now active module controllers list
-            this._updateAttribute('initialized',this.getActiveModuleControllers());
+            this._updateAttribute(_options.attr.initialized,this.getActiveModuleControllers());
         },
 
         /**
@@ -287,10 +287,10 @@ var NodeController = (function(){
         _updateAttribute:function(attr,controllers) {
             var modules = controllers.map(_mapModuleToPath);
             if (modules.length) {
-                this._element.setAttribute('data-' + attr,modules.join(','));
+                this._element.setAttribute(attr,modules.join(','));
             }
             else {
-                this._element.removeAttribute('data-' + attr);
+                this._element.removeAttribute(attr);
             }
         }
 

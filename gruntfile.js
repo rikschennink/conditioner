@@ -5,6 +5,7 @@ module.exports = function(grunt) {
 		path:{
 			src:'./src',
 			spec:'./spec',
+            dist:'./dist',
 			conditioner:'<%= path.src %>/conditioner',
 			wrapper:'<%= path.src %>/wrapper',
 			tests:'<%= path.src %>/tests',
@@ -16,55 +17,26 @@ module.exports = function(grunt) {
 				   '// License: <%= _.map(pkg.licenses, function(x) {return x.type + " (" + x.url + ")";}).join(", ") %>\n'
 		},
 		jasmine:{
-			src:[
-                '<%= path.conditioner %>/UnaryExpression.js',
-                '<%= path.conditioner %>/BinaryExpression.js',
-                '<%= path.conditioner %>/ExpressionFormatter.js',
-                '<%= path.conditioner %>/TestFactory.js',
-                '<%= path.conditioner %>/Tester.js',
-                '<%= path.conditioner %>/ModuleRegistry.js',
-                '<%= path.conditioner %>/ModuleController.js',
-                '<%= path.conditioner %>/NodeController.js',
-                '<%= path.conditioner %>/SyncedControllerGroup.js',
-                '<%= path.conditioner %>/StaticModuleAgent.js',
-                '<%= path.conditioner %>/ConditionModuleAgent.js',
-                '<%= path.conditioner %>/ModuleLoader.js'
-            ],
+			src:[],
 			options:{
                 keepRunner:true,
-				specs:'<%= path.spec %>/*.js',
+				specs:'<%= path.spec %>/ConditionerSpec.js',
 				helpers:[
 					'<%= path.spec %>/shim/Function.bind.js'
 				],
 				template:require('grunt-template-jasmine-requirejs'),
 				templateOptions:{
 					requireConfig:{
-                        paths:{
-                            'src/conditioner':'../src/conditioner',
-                            'utils':'../src/utils'
-                        },
+                        waitSeconds:1,
                         map:{
                             '*':{
-                                'utils/extendClass':'../src/utils/extendClass',
-                                'utils/mergeObjects':'../src/utils/mergeObjects',
-                                'utils/Observer':'../src/utils/observer'
+                                'conditioner':'lib/<%= pkg.name %>-<%= pkg.version %>'
                             }
                         },
-						baseUrl:'./spec/',
-						callback: function() {
-							require(
-                                    ['utils/Observer',
-                                     'utils/contains',
-                                     'utils/matchesSelector',
-                                     'utils/mergeObjects',
-                                     'utils/extendClass'],function(Observer,contains,matchesSelector,mergeObjects,extendClass) {
-								window['Observer'] = Observer;
-								window['contains'] = contains;
-								window['matchesSelector'] = matchesSelector;
-								window['mergeObjects'] = mergeObjects;
-                                window['extendClass'] = extendClass;
-							});
-						}
+                        paths:{
+                            'Observer':'../spec/lib/utils/Observer'
+                        },
+						baseUrl:'./spec'
 					}
 				}
 			}
@@ -109,7 +81,7 @@ module.exports = function(grunt) {
 
 					'<%= path.wrapper %>/outro.js'
 				],
-				dest:'dist/<%= pkg.name %>-<%= pkg.version %>.js'
+				dest:'<%= path.dist %>/<%= pkg.name %>-<%= pkg.version %>.js'
 			}
 		},
 		copy:{
@@ -124,7 +96,25 @@ module.exports = function(grunt) {
 				cwd:'<%= path.utils %>',
 				src:'*',
 				dest:'./dist/utils/'
-			}
+			},
+            specUtils:{
+                expand:true,
+                cwd:'<%= copy.utils.dest %>',
+                src:'*',
+                dest:'./spec/lib/utils'
+            },
+            specTests:{
+                expand:true,
+                cwd:'<%= copy.tests.dest %>',
+                src:'*',
+                dest:'./spec/lib/tests'
+            },
+            specLib:{
+                expand:true,
+                cwd:'<%= path.dist %>/',
+                src:'<%= pkg.name %>-<%= pkg.version %>.js',
+                dest:'./spec/lib/'
+            }
 		},
 		uglify:{
 			tests:{

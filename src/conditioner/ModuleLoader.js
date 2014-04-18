@@ -5,67 +5,12 @@
  */
 var ModuleLoader = function() {
 
-	// options for ModuleLoader
-	this._options = {
-		'modules':{}
-	};
-
 	// array of all parsed nodes
 	this._nodes = [];
+
 };
 
 ModuleLoader.prototype = {
-
-    /**
-     * Initialises the conditioner and parses the document for modules
-     * @param {Object} [options] - optional options to override
-     * @public
-     */
-    init:function(options) {
-
-        if (options) {
-            this.setOptions(options);
-        }
-
-        this.parse(document);
-
-    },
-
-	/**
-	 * Set custom options
-	 * @param {Object} options - options to override
-	 * @public
-	 */
-	setOptions:function(options) {
-
-		if (!options) {
-			throw new Error('ModuleLoader.setOptions(options): "options" is a required parameter.');
-		}
-
-        var config,path,mod,alias;
-
-		// update options
-		this._options = mergeObjects(this._options,options);
-
-		// loop over modules
-		for (path in this._options.modules) {
-
-			if (!this._options.modules.hasOwnProperty(path)){continue;}
-
-			// get module reference
-			mod = this._options.modules[path];
-
-			// get alias
-			alias = typeof mod === 'string' ? mod : mod.alias;
-
-			// get config
-			config = typeof mod === 'string' ? null : mod.options || {};
-
-			// register this module
-			ModuleRegistry.registerModule(path,config,alias);
-
-		}
-	},
 
 	/**
 	 * Loads all modules within the supplied dom tree
@@ -104,7 +49,7 @@ ModuleLoader.prototype = {
 			}
 
 			// create new node
-			nodes.push(new NodeController(element,element.getAttribute('data-priority')));
+			nodes.push(new NodeController(element,element.getAttribute(_options.attr.priority)));
 		}
 
         // sort nodes by priority:
@@ -176,42 +121,6 @@ ModuleLoader.prototype = {
         return node;
     },
 
-    /**
-     * Returns a synced controller group which fires a load event once all modules have loaded
-     * {ModuleController|NodeController} [arguments] - list of module controllers or node controllers to synchronize
-     * @return SyncedControllerGroup.prototype
-     */
-    sync:function() {
-
-        var group = Object.create(SyncedControllerGroup.prototype);
-
-        // create synced controller group using passed arguments
-        // test if user passed an array instead of separate arguments
-        SyncedControllerGroup.apply(group,arguments.length === 1 && !arguments.slice ? arguments[0] : arguments);
-
-        return group;
-    },
-
-    /**
-	 * Returns the first Node matching the selector
-	 * @param {String} [selector] - Selector to match the nodes to
-	 * @param {Document|Element} [context] - Context to search in
-	 * @return {Node|null} First matched node or null
-	 */
-	getNode:function(selector,context) {
-		return this._getNodes(selector,context,true);
-	},
-
-	/**
-	 * Returns all nodes matching the selector
-	 * @param {String} [selector] - Optional selector to match the nodes to
-	 * @param {Document|Element} [context] - Context to search in
-	 * @return {Array} Array containing matched nodes or empty Array
-	 */
-	getNodes:function(selector,context) {
-		return this._getNodes(selector,context);
-	},
-
 	/**
 	 * Returns one or multiple nodes matching the selector
 	 * @param {String} [selector] - Optional selector to match the nodes to
@@ -220,7 +129,7 @@ ModuleLoader.prototype = {
 	 * @returns {Array|Node|null}
 	 * @private
 	 */
-	_getNodes:function(selector,context,singleResult) {
+	getNodes:function(selector,context,singleResult) {
 
 		// if no query supplied return all nodes
 		if (typeof selector === 'undefined' && typeof context === 'undefined') {
@@ -254,7 +163,7 @@ ModuleLoader.prototype = {
     _getModuleControllersByElement:function(element) {
 
         var controllers = [],
-            config = element.getAttribute('data-module') || '',
+            config = element.getAttribute(_options.attr.module) || '',
             i= 0,
             specs,spec,l,
 
@@ -290,7 +199,7 @@ ModuleLoader.prototype = {
         }
         else if (config.length) {
             controllers.push(
-                this._getModuleController(config,element,element.getAttribute('data-options'),element.getAttribute('data-conditions'))
+                this._getModuleController(config,element,element.getAttribute(_options.attr.options),element.getAttribute(_options.attr.conditions))
             );
         }
 
