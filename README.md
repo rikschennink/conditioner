@@ -53,7 +53,7 @@ Conditioner relies on the availability of [RequireJS](http://requirejs.org).
 
 ## Travis Build Status
 
-Develop [![Build Status](https://travis-ci.org/conditioner/conditioner.png?branch=develop)](https://travis-ci.org/moment/moment)
+Develop [![Build Status](https://travis-ci.org/rikschennink/conditioner.png?branch=develop)](https://travis-ci.org/moment/moment)
 
 ## Feedback, Comments, Critique
 [Contact me on Twitter](http://twitter.com/rikschennink)
