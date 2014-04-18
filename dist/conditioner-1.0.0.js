@@ -8,1797 +8,1797 @@
     // returns conditioner API
     var factory = function(require,Observer,contains,matchesSelector,mergeObjects) {
 
+/**
+ * @class
+ * @constructor
+ * @param {BinaryExpression|Tester|object} expression
+ * @param {Boolean} negate
+ */
+var UnaryExpression = function(expression,negate) {
+
+	this._expression = expression instanceof BinaryExpression || expression instanceof UnaryExpression ? expression : null;
+
+	this._config = this._expression ? null : expression;
+
+	this._negate = typeof negate === 'undefined' ? false : negate;
+
+};
+
+/**
+ * Sets test reference
+ * @param {Tester} tester
+ */
+UnaryExpression.prototype.assignTester = function(tester) {
+
+	this._expression = tester;
+
+};
+
+UnaryExpression.prototype.getConfig = function() {
+
+	return this._config ? [{'expression':this,'config':this._config}] : this._expression.getConfig();
+
+};
+
+/**
+ * Tests if valid expression
+ * @returns {Boolean}
+ */
+UnaryExpression.prototype.succeeds = function() {
+
+	if (!this._expression.succeeds) {
+		return false;
+	}
+
+	return this._expression.succeeds() !== this._negate;
+
+};
+
+UnaryExpression.prototype.toString = function() {
+	return (this._negate ? 'not ' : '') + (this._expression ? this._expression.toString() : this._config.path + ':{' + this._config.value + '}');
+};
+/**
+ * @class
+ * @constructor
+ * @param {UnaryExpression} a
+ * @param {String} operator
+ * @param {UnaryExpression} b
+ */
+var BinaryExpression = function(a,operator,b) {
+
+	this._a = a;
+	this._operator = operator;
+	this._b = b;
+
+};
+
+/**
+ * Tests if valid expression
+ * @returns {Boolean}
+ */
+BinaryExpression.prototype.succeeds = function() {
+
+	return this._operator === 'and' ?
+
+		// is 'and' operator
+		this._a.succeeds() && this._b.succeeds() :
+
+		// is 'or' operator
+		this._a.succeeds() || this._b.succeeds();
+
+};
+
+/**
+ * Outputs the expression as a string
+ * @returns {String}
+ */
+BinaryExpression.prototype.toString = function() {
+	return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
+};
+
+/**
+ * Returns the configuration of this expression
+ * @returns {Array}
+ */
+BinaryExpression.prototype.getConfig = function() {
+
+	return [this._a.getConfig(),this._b.getConfig()];
+
+};
+var ExpressionFormatter = {
+
 	/**
-	 * @class
-	 * @constructor
-	 * @param {BinaryExpression|Tester|object} expression
-	 * @param {Boolean} negate
+	 * Returns the amount of sub expressions contained in the supplied expression
+	 * @memberof ExpressionFormatter
+	 * @param {String} expression
+	 * @returns {Number}
+	 * @public
 	 */
-	var UnaryExpression = function(expression,negate) {
-
-		this._expression = expression instanceof BinaryExpression || expression instanceof UnaryExpression ? expression : null;
-
-		this._config = this._expression ? null : expression;
-
-		this._negate = typeof negate === 'undefined' ? false : negate;
-
-	};
+	getExpressionsCount:function(expression) {
+		return expression.match(/(:\{)/g).length;
+	},
 
 	/**
-	 * Sets test reference
-	 * @param {Tester} tester
+	 * Parses an expression in string format and returns the same expression formatted as an expression tree
+	 * @memberof ExpressionFormatter
+	 * @param {String} expression
+	 * @returns {Array}
+	 * @public
 	 */
-	UnaryExpression.prototype.assignTester = function(tester) {
+	fromString:function(expression) {
 
-		this._expression = tester;
+		var i=0,
+			path = '',
+			tree = [],
+			value = '',
+			negate = false,
+			isValue = false,
+			target = null,
+			parent = null,
+			parents = [],
+			l=expression.length,
+			lastIndex,
+			index,
+			operator,
+			j,
+			c,
+			k,
+			n,
+			op,
+			ol,
+			tl;
 
-	};
-
-	UnaryExpression.prototype.getConfig = function() {
-
-		return this._config ? [{'expression':this,'config':this._config}] : this._expression.getConfig();
-
-	};
-
-	/**
-	 * Tests if valid expression
-	 * @returns {Boolean}
-	 */
-	UnaryExpression.prototype.succeeds = function() {
-
-		if (!this._expression.succeeds) {
-			return false;
+		if (!target) {
+			target = tree;
 		}
 
-		return this._expression.succeeds() !== this._negate;
+		// read explicit expressions
+		for (;i<l;i++) {
 
-	};
+			c = expression.charCodeAt(i);
 
-	UnaryExpression.prototype.toString = function() {
-		return (this._negate ? 'not ' : '') + (this._expression ? this._expression.toString() : this._config.path + ':{' + this._config.value + '}');
-	};
-	/**
-	 * @class
-	 * @constructor
-	 * @param {UnaryExpression} a
-	 * @param {String} operator
-	 * @param {UnaryExpression} b
-	 */
-	var BinaryExpression = function(a,operator,b) {
+			// check if an expression, test for '{'
+			if (c === 123) {
 
-		this._a = a;
-		this._operator = operator;
-		this._b = b;
+				// now reading the expression
+				isValue = true;
 
-	};
+				// reset path var
+				path = '';
 
-	/**
-	 * Tests if valid expression
-	 * @returns {Boolean}
-	 */
-	BinaryExpression.prototype.succeeds = function() {
+				// fetch path
+				k = i-2;
+				while(k>=0) {
+					n = expression.charCodeAt(k);
 
-		return this._operator === 'and' ?
+                    // test for ' ' or '('
+					if (n === 32 || n === 40) {
+						break;
+					}
+					path = expression.charAt(k) + path;
+					k--;
+				}
 
-			// is 'and' operator
-			this._a.succeeds() && this._b.succeeds() :
+				// on to the next character
+				continue;
 
-			// is 'or' operator
-			this._a.succeeds() || this._b.succeeds();
-
-	};
-
-	/**
-	 * Outputs the expression as a string
-	 * @returns {String}
-	 */
-	BinaryExpression.prototype.toString = function() {
-		return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
-	};
-
-	/**
-	 * Returns the configuration of this expression
-	 * @returns {Array}
-	 */
-	BinaryExpression.prototype.getConfig = function() {
-
-		return [this._a.getConfig(),this._b.getConfig()];
-
-	};
-	var ExpressionFormatter = {
-
-		/**
-		 * Returns the amount of sub expressions contained in the supplied expression
-		 * @memberof ExpressionFormatter
-		 * @param {String} expression
-		 * @returns {Number}
-		 * @public
-		 */
-		getExpressionsCount:function(expression) {
-			return expression.match(/(:\{)/g).length;
-		},
-
-		/**
-		 * Parses an expression in string format and returns the same expression formatted as an expression tree
-		 * @memberof ExpressionFormatter
-		 * @param {String} expression
-		 * @returns {Array}
-		 * @public
-		 */
-		fromString:function(expression) {
-
-			var i=0,
-				path = '',
-				tree = [],
-				value = '',
-				negate = false,
-				isValue = false,
-				target = null,
-				parent = null,
-				parents = [],
-				l=expression.length,
-				lastIndex,
-				index,
-				operator,
-				j,
-				c,
-				k,
-				n,
-				op,
-				ol,
-				tl;
-
-			if (!target) {
-				target = tree;
 			}
 
-			// read explicit expressions
-			for (;i<l;i++) {
+            // else if is '}'
+			else if (c === 125) {
 
-				c = expression.charCodeAt(i);
+				lastIndex = target.length-1;
+				index = lastIndex+1;
 
-				// check if an expression, test for '{'
-				if (c === 123) {
+				// negate if last index contains not operator
+				negate = target[lastIndex] === 'not';
 
-					// now reading the expression
-					isValue = true;
+				// if negate overwrite not operator location in array
+				index = negate ? lastIndex : lastIndex+1;
 
-					// reset path var
-					path = '';
+				// add expression
+				target[index] = new UnaryExpression({'path':path,'value':value},negate);
 
-					// fetch path
-					k = i-2;
-					while(k>=0) {
-						n = expression.charCodeAt(k);
+				// reset vars
+				path = '';
+				value = '';
 
-	                    // test for ' ' or '('
-						if (n === 32 || n === 40) {
-							break;
-						}
-						path = expression.charAt(k) + path;
-						k--;
-					}
+				negate = false;
 
-					// on to the next character
-					continue;
+				// no longer a value
+				isValue = false;
+			}
 
-				}
+			// if we are reading an expression add characters to expression
+			if (isValue) {
+				value += expression.charAt(i);
+				continue;
+			}
 
-	            // else if is '}'
-				else if (c === 125) {
+			// if not in expression
+			// check if goes up a level, test for '('
+			if (c === 40) {
 
-					lastIndex = target.length-1;
-					index = lastIndex+1;
+				// create new empty array in target
+				target.push([]);
 
-					// negate if last index contains not operator
-					negate = target[lastIndex] === 'not';
+				// remember current target (is parent)
+				parents.push(target);
 
-					// if negate overwrite not operator location in array
-					index = negate ? lastIndex : lastIndex+1;
+				// set new child slot as new target
+				target = target[target.length-1];
 
-					// add expression
-					target[index] = new UnaryExpression({'path':path,'value':value},negate);
+			}
 
-					// reset vars
-					path = '';
-					value = '';
+			// find out if next set of characters is a logical operator. Testing for ' ' or '('
+			if (c === 32 || i === 0 || c === 40) {
 
-					negate = false;
-
-					// no longer a value
-					isValue = false;
-				}
-
-				// if we are reading an expression add characters to expression
-				if (isValue) {
-					value += expression.charAt(i);
+				operator = expression.substr(i,5).match(/and |or |not /g);
+				if (!operator) {
 					continue;
 				}
 
-				// if not in expression
-				// check if goes up a level, test for '('
-				if (c === 40) {
+				// get reference and calculate length
+				op = operator[0];
+				ol = op.length-1;
 
-					// create new empty array in target
-					target.push([]);
+				// add operator
+				target.push(op.substring(0,ol));
 
-					// remember current target (is parent)
-					parents.push(target);
+				// skip over operator
+				i+=ol;
+			}
 
-					// set new child slot as new target
-					target = target[target.length-1];
+			// expression or level finished, time to clean up. Testing for ')'
+			if (c === 41 || i === l-1) {
 
-				}
+				do {
 
-				// find out if next set of characters is a logical operator. Testing for ' ' or '('
-				if (c === 32 || i === 0 || c === 40) {
+					// get parent reference
+					parent = parents.pop();
 
-					operator = expression.substr(i,5).match(/and |or |not /g);
-					if (!operator) {
+					// if contains zero elements = ()
+					if (target.length === 0) {
+
+						// zero elements added revert to parent
+						target = parent;
+
 						continue;
 					}
 
-					// get reference and calculate length
-					op = operator[0];
-					ol = op.length-1;
+					// if more elements start the grouping process
+					j=0;
+					tl=target.length;
 
-					// add operator
-					target.push(op.substring(0,ol));
+					for (;j<tl;j++) {
 
-					// skip over operator
-					i+=ol;
-				}
-
-				// expression or level finished, time to clean up. Testing for ')'
-				if (c === 41 || i === l-1) {
-
-					do {
-
-						// get parent reference
-						parent = parents.pop();
-
-						// if contains zero elements = ()
-						if (target.length === 0) {
-
-							// zero elements added revert to parent
-							target = parent;
-
+						if (typeof target[j] !== 'string') {
 							continue;
 						}
 
-						// if more elements start the grouping process
-						j=0;
-						tl=target.length;
+						// handle not expressions first
+						if (target[j] === 'not') {
+							target.splice(j,2,new UnaryExpression(target[j+1],true));
 
-						for (;j<tl;j++) {
-
-							if (typeof target[j] !== 'string') {
-								continue;
-							}
-
-							// handle not expressions first
-							if (target[j] === 'not') {
-								target.splice(j,2,new UnaryExpression(target[j+1],true));
-
-								// rewind
-								j = -1;
-								tl = target.length;
-							}
-							// handle binary expression
-							else if (target[j+1] !== 'not') {
-								target.splice(j-1,3,new BinaryExpression(target[j-1],target[j],target[j+1]));
-
-								// rewind
-								j = -1;
-								tl = target.length;
-							}
-
+							// rewind
+							j = -1;
+							tl = target.length;
 						}
+						// handle binary expression
+						else if (target[j+1] !== 'not') {
+							target.splice(j-1,3,new BinaryExpression(target[j-1],target[j],target[j+1]));
 
-						// if contains only one element
-						if (target.length === 1 && parent) {
-
-							// overwrite target index with target content
-							parent[parent.length-1] = target[0];
-
-							// set target to parent array
-							target = parent;
-
+							// rewind
+							j = -1;
+							tl = target.length;
 						}
 
 					}
-					while(i === l-1 && parent);
 
-				}
-				// end of ')' character or last index
+					// if contains only one element
+					if (target.length === 1 && parent) {
 
-			}
+						// overwrite target index with target content
+						parent[parent.length-1] = target[0];
 
-			// return final expression tree
-			return tree.length === 1 ? tree[0] : tree;
+						// set target to parent array
+						target = parent;
 
-		}
-
-	};
-	var TestFactory = {
-
-		_tests:{},
-
-	    /**
-	     * Creates a Test Class based on a given path and test configuration
-	     * @param path
-	     * @param config
-	     * @returns {Test}
-	     * @private
-	     */
-		_createTest:function(path,config) {
-
-			if (!config.assert) {
-				throw new Error('TestRegister._addTest(path,config): "config.assert" is a required parameter.');
-			}
-
-			// create Test Class
-			var Test = function(){};
-
-			// setup static methods and properties
-			Test.supported = 'support' in config ? config.support() : true;
-			Test._callbacks = [];
-			Test._ready = false;
-
-			Test._setup = function(test) {
-
-				// if test is not supported stop here
-				if (!Test.supported){return;}
-
-				// push reference to test act method
-				Test._callbacks.push(test.onchange.bind(test));
-
-				// if setup done
-				if (Test._ready) {return;}
-
-				// Test is about to be setup
-				Test._ready = true;
-
-				// call test setup method
-				config.setup.call(Test,Test._measure);
-
-			};
-
-			Test._measure = function(e) {
-
-				// call change method if defined
-				var changed = 'measure' in config ? config.measure.call(Test._measure,e) : true;
-
-				// if result of measurement was a change
-				if (changed) {
-					var i=0,l=Test._callbacks.length;
-					for (;i<l;i++) {
-						Test._callbacks[i](e);
 					}
+
 				}
+				while(i === l-1 && parent);
 
-			};
-
-			// setup instance methods
-			Test.prototype.supported = function() {
-				return Test.supported;
-			};
-
-			// set change publisher
-			Test.prototype.onchange = function() {
-				Observer.publish(this,'change');
-			};
-
-			// set custom or default arrange method
-			if (config.arrange) {
-				Test.prototype.arrange = function(expected,element) {
-
-					// if no support, don't arrange
-					if (!Test.supported) {return;}
-
-					// arrange this test using the supplied arrange method
-					config.arrange.call(this,expected,element);
-				};
 			}
-			else {
-				Test.prototype.arrange = function() {
-					Test._setup(this);
-				};
-			}
+			// end of ')' character or last index
 
-			// override act method if necessary
-			if (config.measure) {
-				Test.prototype.measure = config.measure;
-			}
-
-			// set assert method
-			Test.prototype.assert = config.assert;
-
-			// return reference
-			return Test;
-		},
-
-	    /**
-	     * Searches in cache for a test with the supplied path
-	     * @param path
-	     * @returns {Test}
-	     * @private
-	     */
-		_findTest:function(path) {
-			return this._tests[path];
-		},
-
-	    /**
-	     * Remebers a test for the given path
-	     * @param {String} path
-	     * @param {Test} Test
-	     * @private
-	     */
-		_storeTest:function(path,Test) {
-			this._tests[path] = Test;
-		},
-
-	    /**
-	     * Loads the test with the geiven path
-	     * @param {String} path - path to test
-	     * @param {function} success - callback method, will be called when test found and instantiated
-	     */
-		getTest:function(path,success) {
-
-			path = './tests/' + path;
-
-	        _options.loader([path],function(config){
-
-				var Test = TestFactory._findTest(path);
-				if (!Test) {
-
-					// create the test
-					Test = TestFactory._createTest(path,config);
-
-					// remember this test
-					TestFactory._storeTest(path,Test);
-				}
-
-	            success(new Test());
-
-			});
 		}
-	};
+
+		// return final expression tree
+		return tree.length === 1 ? tree[0] : tree;
+
+	}
+
+};
+var TestFactory = {
+
+	_tests:{},
+
+    /**
+     * Creates a Test Class based on a given path and test configuration
+     * @param path
+     * @param config
+     * @returns {Test}
+     * @private
+     */
+	_createTest:function(path,config) {
+
+		if (!config.assert) {
+			throw new Error('TestRegister._addTest(path,config): "config.assert" is a required parameter.');
+		}
+
+		// create Test Class
+		var Test = function(){};
+
+		// setup static methods and properties
+		Test.supported = 'support' in config ? config.support() : true;
+		Test._callbacks = [];
+		Test._ready = false;
+
+		Test._setup = function(test) {
+
+			// if test is not supported stop here
+			if (!Test.supported){return;}
+
+			// push reference to test act method
+			Test._callbacks.push(test.onchange.bind(test));
+
+			// if setup done
+			if (Test._ready) {return;}
+
+			// Test is about to be setup
+			Test._ready = true;
+
+			// call test setup method
+			config.setup.call(Test,Test._measure);
+
+		};
+
+		Test._measure = function(e) {
+
+			// call change method if defined
+			var changed = 'measure' in config ? config.measure.call(Test._measure,e) : true;
+
+			// if result of measurement was a change
+			if (changed) {
+				var i=0,l=Test._callbacks.length;
+				for (;i<l;i++) {
+					Test._callbacks[i](e);
+				}
+			}
+
+		};
+
+		// setup instance methods
+		Test.prototype.supported = function() {
+			return Test.supported;
+		};
+
+		// set change publisher
+		Test.prototype.onchange = function() {
+			Observer.publish(this,'change');
+		};
+
+		// set custom or default arrange method
+		if (config.arrange) {
+			Test.prototype.arrange = function(expected,element) {
+
+				// if no support, don't arrange
+				if (!Test.supported) {return;}
+
+				// arrange this test using the supplied arrange method
+				config.arrange.call(this,expected,element);
+			};
+		}
+		else {
+			Test.prototype.arrange = function() {
+				Test._setup(this);
+			};
+		}
+
+		// override act method if necessary
+		if (config.measure) {
+			Test.prototype.measure = config.measure;
+		}
+
+		// set assert method
+		Test.prototype.assert = config.assert;
+
+		// return reference
+		return Test;
+	},
+
+    /**
+     * Searches in cache for a test with the supplied path
+     * @param path
+     * @returns {Test}
+     * @private
+     */
+	_findTest:function(path) {
+		return this._tests[path];
+	},
+
+    /**
+     * Remebers a test for the given path
+     * @param {String} path
+     * @param {Test} Test
+     * @private
+     */
+	_storeTest:function(path,Test) {
+		this._tests[path] = Test;
+	},
+
+    /**
+     * Loads the test with the geiven path
+     * @param {String} path - path to test
+     * @param {function} success - callback method, will be called when test found and instantiated
+     */
+	getTest:function(path,success) {
+
+		path = './tests/' + path;
+
+        _options.loader([path],function(config){
+
+			var Test = TestFactory._findTest(path);
+			if (!Test) {
+
+				// create the test
+				Test = TestFactory._createTest(path,config);
+
+				// remember this test
+				TestFactory._storeTest(path,Test);
+			}
+
+            success(new Test());
+
+		});
+	}
+};
+/**
+ * @param {function} test
+ * @param {String} expected
+ * @param {Element} element
+ * @constructor
+ */
+var Tester = function(test,expected,element) {
+
+	// test and data references
+	this._test = test;
+	this._expected = expected;
+	this._element = element;
+
+	// cache result
+	this._result = false;
+	this._changed = true;
+
+	// listen to changes on test
+    this._onChangeBind = this._onChange.bind(this);
+	Observer.subscribe(this._test,'change',this._onChangeBind);
+
+	// arrange test
+	this._test.arrange(this._expected,this._element);
+
+};
+
+Tester.prototype = {
+
+    /**
+     * Called when the test has changed it's state
+     * @private
+     */
+    _onChange:function() {
+        this._changed = true;
+    },
+
+    /**
+     * Returns true if test assertion successful
+     * @returns {Boolean}
+     */
+    succeeds:function() {
+
+        if (this._changed) {
+            this._changed = false;
+            this._result = this._test.assert(this._expected,this._element);
+        }
+
+        return this._result;
+
+    },
+
+    /**
+     * Cleans up object events
+     */
+    destroy:function() {
+        Observer.unsubscribe(this._test,'change',this._onChangeBind);
+    }
+
+};
+var ModuleRegistry = {
+
+    _options:{},
+    _redirects:{},
+
 	/**
-	 * @param {function} test
-	 * @param {String} expected
-	 * @param {Element} element
-	 * @constructor
+	 * Register a module
+	 * @param {String} path - path to module
+	 * @param {Object} options - configuration to setup for module
+	 * @param {String} alias - alias name for module
+	 * @static
 	 */
-	var Tester = function(test,expected,element) {
+	registerModule:function(path,options,alias) {
 
-		// test and data references
-		this._test = test;
-		this._expected = expected;
-		this._element = element;
+        // remember options for absolute path
+        this._options[_options.loader.toUrl(path)] = options;
 
-		// cache result
-		this._result = false;
-		this._changed = true;
+        // setup redirect from alias
+        if (alias) {
+            this._redirects[alias] = path;
+        }
 
-		// listen to changes on test
-	    this._onChangeBind = this._onChange.bind(this);
-		Observer.subscribe(this._test,'change',this._onChangeBind);
+        // pass configuration to loader
+        _options.loader.config(path,options);
+	},
 
-		// arrange test
-		this._test.arrange(this._expected,this._element);
+    /**
+     * Returns the actual path if the path turns out to be a redirect
+     * @param path
+     * @returns {*}
+     */
+    getRedirect:function(path) {
+        return this._redirects[path] || path;
+    },
 
-	};
-
-	Tester.prototype = {
-
-	    /**
-	     * Called when the test has changed it's state
-	     * @private
-	     */
-	    _onChange:function() {
-	        this._changed = true;
-	    },
-
-	    /**
-	     * Returns true if test assertion successful
-	     * @returns {Boolean}
-	     */
-	    succeeds:function() {
-
-	        if (this._changed) {
-	            this._changed = false;
-	            this._result = this._test.assert(this._expected,this._element);
-	        }
-
-	        return this._result;
-
-	    },
-
-	    /**
-	     * Cleans up object events
-	     */
-	    destroy:function() {
-	        Observer.unsubscribe(this._test,'change',this._onChangeBind);
-	    }
-
-	};
-	var ModuleRegistry = {
-
-	    _options:{},
-	    _redirects:{},
-
-		/**
-		 * Register a module
-		 * @param {String} path - path to module
-		 * @param {Object} options - configuration to setup for module
-		 * @param {String} alias - alias name for module
-		 * @static
-		 */
-		registerModule:function(path,options,alias) {
-
-	        // remember options for absolute path
-	        this._options[_options.loader.toUrl(path)] = options;
-
-	        // setup redirect from alias
-	        if (alias) {
-	            this._redirects[alias] = path;
-	        }
-
-	        // pass configuration to loader
-	        _options.loader.config(path,options);
-		},
-
-	    /**
-	     * Returns the actual path if the path turns out to be a redirect
-	     * @param path
-	     * @returns {*}
-	     */
-	    getRedirect:function(path) {
-	        return this._redirects[path] || path;
-	    },
-
-		/**
-		 * Get a registered module by path
-		 * @param {String} path - path to module
-		 * @return {Object} - module specification object
-		 * @static
-		 */
-		getModule:function(path) {
-
-			// if no id supplied throw error
-			if (!path) {
-				throw new Error('ModuleRegistry.getModule(path): "path" is a required parameter.');
-			}
-
-	        return this._options[path] || this._options[_options.loader.toUrl(path)];
-
-		}
-
-	};
 	/**
-	 * @exports ModuleController
-	 * @class
-	 * @constructor
-	 * @param {String} path - reference to module
-	 * @param {Element} element - reference to element
-	 * @param {Object|null} [options] - options for this ModuleController
-	 * @param {Object} [agent] - module activation agent
+	 * Get a registered module by path
+	 * @param {String} path - path to module
+	 * @return {Object} - module specification object
+	 * @static
 	 */
-	var ModuleController = function(path,element,options,agent) {
+	getModule:function(path) {
 
-		// if no path supplied, throw error
-		if (!path || !element) {
-			throw new Error('ModuleController(path,element,options,agent): "path" and "element" are required parameters.');
+		// if no id supplied throw error
+		if (!path) {
+			throw new Error('ModuleRegistry.getModule(path): "path" is a required parameter.');
 		}
 
-		// path to module
-		this._path = ModuleRegistry.getRedirect(path);
-	    this._alias = path;
+        return this._options[path] || this._options[_options.loader.toUrl(path)];
 
-		// reference to element
-		this._element = element;
+	}
 
-		// options for module controller
-		this._options = options || {};
+};
+/**
+ * @exports ModuleController
+ * @class
+ * @constructor
+ * @param {String} path - reference to module
+ * @param {Element} element - reference to element
+ * @param {Object|null} [options] - options for this ModuleController
+ * @param {Object} [agent] - module activation agent
+ */
+var ModuleController = function(path,element,options,agent) {
 
-	    // set loader
-	    this._agent = agent || StaticModuleAgent;
+	// if no path supplied, throw error
+	if (!path || !element) {
+		throw new Error('ModuleController(path,element,options,agent): "path" and "element" are required parameters.');
+	}
 
-	    // module definition reference
-	    this._Module = null;
+	// path to module
+	this._path = ModuleRegistry.getRedirect(path);
+    this._alias = path;
 
-	    // module instance reference
-	    this._module = null;
+	// reference to element
+	this._element = element;
 
-	    // default init state
-	    this._initialized = false;
+	// options for module controller
+	this._options = options || {};
 
-	    // agent binds
-	    this._onAgentReadyBind = this._onAgentReady.bind(this);
-	    this._onAgentStateChangeBind = this._onAgentStateChange.bind(this);
+    // set loader
+    this._agent = agent || StaticModuleAgent;
 
-	    // let's see if the behavior allows immediate activation
-	    if (this._agent.allowsActivation()) {
-	        this._initialize();
-	    }
-	    // wait for ready state on behavior
-	    else {
-	        Observer.subscribe(this._agent,'ready',this._onAgentReadyBind);
-	    }
+    // module definition reference
+    this._Module = null;
 
-	};
+    // module instance reference
+    this._module = null;
 
-	ModuleController.prototype = {
+    // default init state
+    this._initialized = false;
 
-	    /**
-	     * returns true if the module controller has initialized
-	     * @returns {Boolean}
-	     */
-	    hasInitialized:function() {
-	        return this._initialized;
-	    },
+    // agent binds
+    this._onAgentReadyBind = this._onAgentReady.bind(this);
+    this._onAgentStateChangeBind = this._onAgentStateChange.bind(this);
 
-	    /**
-	     * Returns the module path
-	     * @returns {String}
-	     * @public
-	     */
-	    getModulePath:function() {
-	        return this._path;
-	    },
+    // let's see if the behavior allows immediate activation
+    if (this._agent.allowsActivation()) {
+        this._initialize();
+    }
+    // wait for ready state on behavior
+    else {
+        Observer.subscribe(this._agent,'ready',this._onAgentReadyBind);
+    }
 
-	    /**
-	     * Returns true if the module is currently waiting for load
-	     * @returns {Boolean}
-	     * @public
-	     */
-	    isModuleAvailable:function() {
-	        return this._agent.allowsActivation() && !this._module;
-	    },
+};
 
-		/**
-		 * Returns true if module is currently active and loaded
-		 * @returns {Boolean}
-		 * @public
-		 */
-		isModuleActive:function() {
-			return this._module !== null;
-		},
+ModuleController.prototype = {
 
-	    /**
-	     * Checks if it wraps a module with the supplied path
-	     * @param {String} path - path of module to test for
-	     * @return {Boolean}
-	     * @public
-	     */
-	    wrapsModuleWithPath:function(path) {
-	        return this._path === path || this._alias === path;
-	    },
+    /**
+     * returns true if the module controller has initialized
+     * @returns {Boolean}
+     */
+    hasInitialized:function() {
+        return this._initialized;
+    },
 
-		/**
-	     * Called when the module behavior has initialized
-		 * @private
-		 */
-		_onAgentReady:function() {
+    /**
+     * Returns the module path
+     * @returns {String}
+     * @public
+     */
+    getModulePath:function() {
+        return this._path;
+    },
 
-			// module has now completed the initialization process
-			// (!) this does not mean it's available
-	        this._initialize();
+    /**
+     * Returns true if the module is currently waiting for load
+     * @returns {Boolean}
+     * @public
+     */
+    isModuleAvailable:function() {
+        return this._agent.allowsActivation() && !this._module;
+    },
 
-		},
+	/**
+	 * Returns true if module is currently active and loaded
+	 * @returns {Boolean}
+	 * @public
+	 */
+	isModuleActive:function() {
+		return this._module !== null;
+	},
 
-	    /**
-	     * Called to initialize the module
-	     * @private
-	     * @fires init
-	     */
-	    _initialize:function() {
+    /**
+     * Checks if it wraps a module with the supplied path
+     * @param {String} path - path of module to test for
+     * @return {Boolean}
+     * @public
+     */
+    wrapsModuleWithPath:function(path) {
+        return this._path === path || this._alias === path;
+    },
 
-	        // now in initialized state
-	        this._initialized = true;
+	/**
+     * Called when the module behavior has initialized
+	 * @private
+	 */
+	_onAgentReady:function() {
 
-	        // listen to behavior changes
-	        Observer.subscribe(this._agent,'change',this._onAgentStateChangeBind);
+		// module has now completed the initialization process
+		// (!) this does not mean it's available
+        this._initialize();
 
-	        // let others know we have initialized
-	        Observer.publishAsync(this,'init',this);
+	},
 
-	        // if activation is allowed, we are directly available
-	        if (this._agent.allowsActivation()) {
-	            this._onBecameAvailable();
-	        }
+    /**
+     * Called to initialize the module
+     * @private
+     * @fires init
+     */
+    _initialize:function() {
 
-	    },
+        // now in initialized state
+        this._initialized = true;
 
-		/**
-	     * Called when the module became available, this is when it's suitable for load
-		 * @private
-		 * @fires available
-		 */
-		_onBecameAvailable:function() {
+        // listen to behavior changes
+        Observer.subscribe(this._agent,'change',this._onAgentStateChangeBind);
 
-	        // we are now available
-	        Observer.publishAsync(this,'available',this);
+        // let others know we have initialized
+        Observer.publishAsync(this,'init',this);
 
-			// let's load the module
-	        this._load();
+        // if activation is allowed, we are directly available
+        if (this._agent.allowsActivation()) {
+            this._onBecameAvailable();
+        }
 
-		},
+    },
 
-		/**
-		 * Called when the agent state changes
-		 * @private
-		 */
-	    _onAgentStateChange:function() {
+	/**
+     * Called when the module became available, this is when it's suitable for load
+	 * @private
+	 * @fires available
+	 */
+	_onBecameAvailable:function() {
 
-	        // check if module is available
-	        var shouldLoadModule = this._agent.allowsActivation();
+        // we are now available
+        Observer.publishAsync(this,'available',this);
 
-	        // determine what action to take basted on availability of module
-			if (this._module && !shouldLoadModule) {
-				this._unload();
+		// let's load the module
+        this._load();
+
+	},
+
+	/**
+	 * Called when the agent state changes
+	 * @private
+	 */
+    _onAgentStateChange:function() {
+
+        // check if module is available
+        var shouldLoadModule = this._agent.allowsActivation();
+
+        // determine what action to take basted on availability of module
+		if (this._module && !shouldLoadModule) {
+			this._unload();
+		}
+		else if (!this._module && shouldLoadModule) {
+			this._onBecameAvailable();
+		}
+
+	},
+
+	/**
+	 * Load the module contained in this ModuleController
+	 * @public
+	 */
+	_load:function() {
+
+		// if module available no need to require it
+		if (this._Module) {
+			this._onLoad();
+			return;
+		}
+
+		// load module, and remember reference
+		var self = this;
+        _options.loader.load([this._path],function(Module) {
+
+            // if module does not export a module quit here
+            if (!Module) {
+                throw new Error('ModuleController: A module needs to export an object.');
+            }
+
+			// set reference to Module
+			self._Module = Module;
+
+			// module is now ready to be loaded
+			self._onLoad();
+
+		});
+
+	},
+
+    /**
+     * Turns possible options string into options object
+     * @param {String|Object} options
+     * @returns {Object}
+     * @private
+     */
+    _optionsToObject:function(options) {
+        if (typeof options === 'string') {
+            try {
+                return JSON.parse(options);
+            }
+            catch(e) {
+                throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
+            }
+        }
+        return options;
+    },
+
+    /**
+     * Parses options for given url and module also
+     * @param {String} url - url to module
+     * @param {Object} Module - Module definition
+     * @param {Object|String} overrides - page level options to override default options with
+     * @returns {Object}
+     * @private
+     */
+    _parseOptions:function(url,Module,overrides) {
+
+        var stack = [],pageOptions = {},moduleOptions = {},options,i;
+        do {
+
+            // get settings
+            options = ModuleRegistry.getModule(url);
+
+            // stack the options
+            stack.push({
+                'page':options,
+                'module':Module.options
+            });
+
+            // fetch super path
+            url = Module.__superUrl;
+
+            // jshint -W084
+        } while (Module = Module.__super);
+
+        // reverse loop over stack and merge options
+        i = stack.length;
+        while (i--) {
+            pageOptions = mergeObjects(pageOptions,stack[i].page);
+            moduleOptions = mergeObjects(moduleOptions,stack[i].module);
+        }
+
+        // merge page and module options
+        options = mergeObjects(moduleOptions,pageOptions);
+
+        // apply overrides
+        if (overrides) {
+            options = mergeObjects(options,this._optionsToObject(overrides));
+        }
+
+        return options;
+    },
+
+	/**
+	 * Method called when module loaded
+	 * @fires load
+	 * @private
+	 */
+	_onLoad:function() {
+
+		// if activation is no longer allowed, stop here
+        if (!this._agent.allowsActivation()) {
+			return;
+		}
+
+        // parse and merge options for this module
+        var options = this._parseOptions(this._path,this._Module,this._options);
+
+		// set reference
+		if (typeof this._Module === 'function') {
+
+			// is of function type so try to create instance
+			this._module = new this._Module(this._element,options);
+		}
+		else {
+
+			// is of other type so expect load method to be defined
+			this._module = this._Module.load ? this._Module.load(this._element,options) : null;
+
+			// if module not defined we could be dealing with a static class
+			if (typeof this._module === 'undefined') {
+				this._module = this._Module;
 			}
-			else if (!this._module && shouldLoadModule) {
-				this._onBecameAvailable();
-			}
+		}
 
-		},
+		// if no module defined throw error
+		if (!this._module) {
+			throw new Error('ModuleController.load(): could not initialize module, missing constructor or "load" method.');
+		}
 
-		/**
-		 * Load the module contained in this ModuleController
-		 * @public
-		 */
-		_load:function() {
+        // watch for events on target
+        // this way it is possible to listen to events on the controller which is always there
+        Observer.inform(this._module,this);
 
-			// if module available no need to require it
-			if (this._Module) {
-				this._onLoad();
-				return;
-			}
-
-			// load module, and remember reference
-			var self = this;
-	        _options.loader.load([this._path],function(Module) {
-
-	            // if module does not export a module quit here
-	            if (!Module) {
-	                throw new Error('ModuleController: A module needs to export an object.');
-	            }
-
-				// set reference to Module
-				self._Module = Module;
-
-				// module is now ready to be loaded
-				self._onLoad();
-
-			});
-
-		},
-
-	    /**
-	     * Turns possible options string into options object
-	     * @param {String|Object} options
-	     * @returns {Object}
-	     * @private
-	     */
-	    _optionsToObject:function(options) {
-	        if (typeof options === 'string') {
-	            try {
-	                return JSON.parse(options);
-	            }
-	            catch(e) {
-	                throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
-	            }
-	        }
-	        return options;
-	    },
-
-	    /**
-	     * Parses options for given url and module also
-	     * @param {String} url - url to module
-	     * @param {Object} Module - Module definition
-	     * @param {Object|String} overrides - page level options to override default options with
-	     * @returns {Object}
-	     * @private
-	     */
-	    _parseOptions:function(url,Module,overrides) {
-
-	        var stack = [],pageOptions = {},moduleOptions = {},options,i;
-	        do {
-
-	            // get settings
-	            options = ModuleRegistry.getModule(url);
-
-	            // stack the options
-	            stack.push({
-	                'page':options,
-	                'module':Module.options
-	            });
-
-	            // fetch super path
-	            url = Module.__superUrl;
-
-	            // jshint -W084
-	        } while (Module = Module.__super);
-
-	        // reverse loop over stack and merge options
-	        i = stack.length;
-	        while (i--) {
-	            pageOptions = mergeObjects(pageOptions,stack[i].page);
-	            moduleOptions = mergeObjects(moduleOptions,stack[i].module);
-	        }
-
-	        // merge page and module options
-	        options = mergeObjects(moduleOptions,pageOptions);
-
-	        // apply overrides
-	        if (overrides) {
-	            options = mergeObjects(options,this._optionsToObject(overrides));
-	        }
-
-	        return options;
-	    },
-
-		/**
-		 * Method called when module loaded
-		 * @fires load
-		 * @private
-		 */
-		_onLoad:function() {
-
-			// if activation is no longer allowed, stop here
-	        if (!this._agent.allowsActivation()) {
-				return;
-			}
-
-	        // parse and merge options for this module
-	        var options = this._parseOptions(this._path,this._Module,this._options);
-
-			// set reference
-			if (typeof this._Module === 'function') {
-
-				// is of function type so try to create instance
-				this._module = new this._Module(this._element,options);
-			}
-			else {
-
-				// is of other type so expect load method to be defined
-				this._module = this._Module.load ? this._Module.load(this._element,options) : null;
-
-				// if module not defined we could be dealing with a static class
-				if (typeof this._module === 'undefined') {
-					this._module = this._Module;
-				}
-			}
-
-			// if no module defined throw error
-			if (!this._module) {
-				throw new Error('ModuleController.load(): could not initialize module, missing constructor or "load" method.');
-			}
-
-	        // watch for events on target
-	        // this way it is possible to listen to events on the controller which is always there
-	        Observer.inform(this._module,this);
-
-	        // publish load event
-	        Observer.publishAsync(this,'load',this);
-		},
+        // publish load event
+        Observer.publishAsync(this,'load',this);
+	},
 
 
-		/**
-		 * Unloads the wrapped module
-		 * @fires unload
-		 * @return {Boolean}
-		 */
-		_unload:function() {
+	/**
+	 * Unloads the wrapped module
+	 * @fires unload
+	 * @return {Boolean}
+	 */
+	_unload:function() {
 
-			// module is now no longer ready to be loaded
-			this._available = false;
+		// module is now no longer ready to be loaded
+		this._available = false;
 
-			// if no module, module has already been unloaded or was never loaded
-			if (!this._module) {
-				return false;
-			}
+		// if no module, module has already been unloaded or was never loaded
+		if (!this._module) {
+			return false;
+		}
 
-			// stop watching target
-			Observer.conceal(this._module,this);
+		// stop watching target
+		Observer.conceal(this._module,this);
 
-			// unload module if possible
-			if (this._module.unload) {
-				this._module.unload();
-			}
+		// unload module if possible
+		if (this._module.unload) {
+			this._module.unload();
+		}
 
-	        // reset property
-	        this._module = null;
+        // reset property
+        this._module = null;
 
-	        // publish unload event
-	        Observer.publishAsync(this,'unload',this);
+        // publish unload event
+        Observer.publishAsync(this,'unload',this);
 
-			return true;
-		},
+		return true;
+	},
 
-	    /**
-	     * Cleans up the module and module controller and all bound events
-	     * @public
-	     */
-	    destroy:function() {
+    /**
+     * Cleans up the module and module controller and all bound events
+     * @public
+     */
+    destroy:function() {
 
-	        // unload module
-	        this._unload();
+        // unload module
+        this._unload();
 
-	        // unbind events
-	        Observer.unsubscribe(this._agent,'ready',this._onAgentReadyBind);
-	        Observer.unsubscribe(this._agent,'change',this._onAgentStateChangeBind);
+        // unbind events
+        Observer.unsubscribe(this._agent,'ready',this._onAgentReadyBind);
+        Observer.unsubscribe(this._agent,'change',this._onAgentStateChangeBind);
 
-	        // call destroy on agent
-	        this._agent.destroy();
+        // call destroy on agent
+        this._agent.destroy();
 
-	    },
+    },
 
-		/**
-		 * Executes a methods on the wrapped module
-		 * @param {String} method - method key
-		 * @param {Array} [params] - optional array containing the method parameters
-		 * @return {Object} containing response of executed method and a status code
-		 * @public
-		 */
-		execute:function(method,params) {
+	/**
+	 * Executes a methods on the wrapped module
+	 * @param {String} method - method key
+	 * @param {Array} [params] - optional array containing the method parameters
+	 * @return {Object} containing response of executed method and a status code
+	 * @public
+	 */
+	execute:function(method,params) {
 
-			// if module not loaded
-			if (!this._module) {
-				return {
-					'status':404,
-					'response':null
-				};
-			}
-
-			// get function reference
-			var F = this._module[method];
-			if (!F) {
-				throw new Error('ModuleController.execute(method,params): function specified in "method" not found on module.');
-			}
-
-			// if no params supplied set to empty array,
-			// ie8 falls on it's knees when it gets an undefined parameter object in the apply method
-			params = params || [];
-
-			// once loaded call method and pass parameters
+		// if module not loaded
+		if (!this._module) {
 			return {
-				'status':200,
-				'response':F.apply(this._module,params)
+				'status':404,
+				'response':null
 			};
-
 		}
 
-	};
-	var NodeController = (function(){
+		// get function reference
+		var F = this._module[method];
+		if (!F) {
+			throw new Error('ModuleController.execute(method,params): function specified in "method" not found on module.');
+		}
 
-	    var _filterIsActiveModule = function(item){return item.isModuleActive();};
-	    var _filterIsAvailableModule = function(item){return item.isModuleAvailable();};
-	    var _mapModuleToPath = function(item){return item.getModulePath();};
+		// if no params supplied set to empty array,
+		// ie8 falls on it's knees when it gets an undefined parameter object in the apply method
+		params = params || [];
 
-	    /**
-	     * @class
-	     * @constructor
-	     * @param {Object} element
-	     * @param {Number} priority
-	     */
-	    var exports = function NodeController(element,priority) {
+		// once loaded call method and pass parameters
+		return {
+			'status':200,
+			'response':F.apply(this._module,params)
+		};
 
-	        if (!element) {
-	            throw new Error('NodeController(element): "element" is a required parameter.');
-	        }
+	}
 
-	        // set element reference
-	        this._element = element;
+};
+var NodeController = (function(){
 
-	        // has been processed
-	        this._element.setAttribute(_options.attr.processed,'true');
+    var _filterIsActiveModule = function(item){return item.isModuleActive();};
+    var _filterIsAvailableModule = function(item){return item.isModuleAvailable();};
+    var _mapModuleToPath = function(item){return item.getModulePath();};
 
-	        // set priority
-	        this._priority = !priority ? 0 : parseInt(priority,10);
+    /**
+     * @class
+     * @constructor
+     * @param {Object} element
+     * @param {Number} priority
+     */
+    var exports = function NodeController(element,priority) {
 
-	        // contains references to all module controllers
-	        this._moduleControllers = [];
+        if (!element) {
+            throw new Error('NodeController(element): "element" is a required parameter.');
+        }
 
-	        // binds
-	        this._moduleAvailableBind = this._onModuleAvailable.bind(this);
-	        this._moduleLoadBind = this._onModuleLoad.bind(this);
-	        this._moduleUnloadBind = this._onModuleUnload.bind(this);
+        // set element reference
+        this._element = element;
 
-	    };
+        // has been processed
+        this._element.setAttribute(_options.attr.processed,'true');
 
-	    /**
-	     * Static method testing if the current element has been processed already
-	     * @param {Element} element
-	     * @static
-	     */
-	    exports.hasProcessed = function(element) {
-	        return element.getAttribute(_options.attr.processed) === 'true';
-	    };
+        // set priority
+        this._priority = !priority ? 0 : parseInt(priority,10);
 
-	    exports.prototype = {
+        // contains references to all module controllers
+        this._moduleControllers = [];
 
-	        /**
-	         * Loads the passed module controllers to the node
-	         * @param {...} arguments
-	         * @public
-	         */
-	        load:function() {
+        // binds
+        this._moduleAvailableBind = this._onModuleAvailable.bind(this);
+        this._moduleLoadBind = this._onModuleLoad.bind(this);
+        this._moduleUnloadBind = this._onModuleUnload.bind(this);
 
-	            // if no module controllers found
-	            if (!arguments || !arguments.length) {
-	                throw new Error('NodeController.load(controllers): Expects an array of module controllers as parameters.');
-	            }
+    };
 
-	            // turn into array
-	            this._moduleControllers = Array.prototype.slice.call(arguments,0);
+    /**
+     * Static method testing if the current element has been processed already
+     * @param {Element} element
+     * @static
+     */
+    exports.hasProcessed = function(element) {
+        return element.getAttribute(_options.attr.processed) === 'true';
+    };
 
-	            // listen to load events on module controllers
-	            var i=0,l=this._moduleControllers.length,mc;
-	            for (;i<l;i++) {
-	                mc = this._moduleControllers[i];
-	                Observer.subscribe(mc,'available',this._moduleAvailableBind);
-	                Observer.subscribe(mc,'load',this._moduleLoadBind);
-	            }
+    exports.prototype = {
 
-	        },
+        /**
+         * Loads the passed module controllers to the node
+         * @param {...} arguments
+         * @public
+         */
+        load:function() {
 
-	        /**
-	         * Unload all attached modules and restore node in original state
-	         * @public
-	         */
-	        destroy:function() {
+            // if no module controllers found
+            if (!arguments || !arguments.length) {
+                throw new Error('NodeController.load(controllers): Expects an array of module controllers as parameters.');
+            }
 
-	            var i=0,l=this._moduleControllers.length;
-	            for (;i<l;i++) {
-	                this._destroyModuleController(this._moduleControllers[i]);
-	            }
+            // turn into array
+            this._moduleControllers = Array.prototype.slice.call(arguments,0);
 
-	            // reset array
-	            this._moduleControllers = [];
+            // listen to load events on module controllers
+            var i=0,l=this._moduleControllers.length,mc;
+            for (;i<l;i++) {
+                mc = this._moduleControllers[i];
+                Observer.subscribe(mc,'available',this._moduleAvailableBind);
+                Observer.subscribe(mc,'load',this._moduleLoadBind);
+            }
 
-	            // update initialized state
-	            this._updateAttribute(_options.attr.initialized,this._moduleControllers);
+        },
 
-	            // reset processed state
-	            this._element.removeAttribute(_options.attr.processed);
+        /**
+         * Unload all attached modules and restore node in original state
+         * @public
+         */
+        destroy:function() {
 
-	            // reset element reference
-	            this._element = null;
-	        },
+            var i=0,l=this._moduleControllers.length;
+            for (;i<l;i++) {
+                this._destroyModuleController(this._moduleControllers[i]);
+            }
 
-	        /**
-	         * Call destroy method on module controller and clean up listeners
-	         * @param moduleController
-	         * @private
-	         */
-	        _destroyModuleController:function(moduleController) {
+            // reset array
+            this._moduleControllers = [];
 
-	            // unsubscribe from module events
-	            Observer.unsubscribe(moduleController,'available',this._moduleAvailableBind);
-	            Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
-	            Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
+            // update initialized state
+            this._updateAttribute(_options.attr.initialized,this._moduleControllers);
 
-	            // conceal events from module controller
-	            Observer.conceal(moduleController,this);
+            // reset processed state
+            this._element.removeAttribute(_options.attr.processed);
 
-	            // unload the controller
-	            moduleController.destroy();
+            // reset element reference
+            this._element = null;
+        },
 
-	        },
+        /**
+         * Call destroy method on module controller and clean up listeners
+         * @param moduleController
+         * @private
+         */
+        _destroyModuleController:function(moduleController) {
 
-	        /**
-	         * Returns the set priority for this node
-	         * @public
-	         */
-	        getPriority:function() {
-	            return this._priority;
-	        },
+            // unsubscribe from module events
+            Observer.unsubscribe(moduleController,'available',this._moduleAvailableBind);
+            Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
+            Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
 
-	        /**
-	         * Returns the element linked to this node
-	         * @public
-	         */
-	        getElement:function() {
-	            return this._element;
-	        },
+            // conceal events from module controller
+            Observer.conceal(moduleController,this);
 
-	        /**
-	         * Public method to check if the module matches the given query
-	         * @param {String} selector - CSS selector to match module to
-	         * @param {Document|Element} [context] - Context to search in
-	         * @return {Boolean}
-	         * @public
-	         */
-	        matchesSelector:function(selector,context) {
-	            if (context && !contains(context,this._element)) {
-	                return false;
-	            }
-	            return matchesSelector(this._element,selector,context);
-	        },
+            // unload the controller
+            moduleController.destroy();
 
-	        /**
-	         * Returns true if all module controllers are active
-	         * @public
-	         */
-	        areAllModulesActive:function() {
-	            return this.getActiveModuleControllers().length === this._moduleControllers.length;
-	        },
+        },
 
-	        /**
-	         * Returns an array containing all active module controllers
-	         * @return {Array}
-	         * @public
-	         */
-	        getActiveModuleControllers:function() {
-	            return this._moduleControllers.filter(_filterIsActiveModule);
-	        },
+        /**
+         * Returns the set priority for this node
+         * @public
+         */
+        getPriority:function() {
+            return this._priority;
+        },
 
-	        /**
-	         * Returns the first ModuleController matching the given path
-	         * @param {String} [path] to module
-	         * @return {ModuleController|null}
-	         * @public
-	         */
-	        getModuleController:function(path) {
-	            return this._getModuleControllers(path,true);
-	        },
+        /**
+         * Returns the element linked to this node
+         * @public
+         */
+        getElement:function() {
+            return this._element;
+        },
 
-	        /**
-	         * Returns an array of ModuleControllers matching the given path
-	         * @param {String} [path] to module
-	         * @return {Array}
-	         * @public
-	         */
-	        getModuleControllers:function(path) {
-	            return this._getModuleControllers(path);
-	        },
+        /**
+         * Public method to check if the module matches the given query
+         * @param {String} selector - CSS selector to match module to
+         * @param {Document|Element} [context] - Context to search in
+         * @return {Boolean}
+         * @public
+         */
+        matchesSelector:function(selector,context) {
+            if (context && !contains(context,this._element)) {
+                return false;
+            }
+            return matchesSelector(this._element,selector,context);
+        },
 
-	        /**
-	         * Returns one or multiple ModuleControllers matching the supplied path
-	         * @param {String} [path] - Optional path to match the nodes to
-	         * @param {Boolean} [singleResult] - Optional boolean to only ask for one result
-	         * @returns {Array|ModuleController|null}
-	         * @private
-	         */
-	        _getModuleControllers:function(path,singleResult) {
+        /**
+         * Returns true if all module controllers are active
+         * @public
+         */
+        areAllModulesActive:function() {
+            return this.getActiveModuleControllers().length === this._moduleControllers.length;
+        },
 
-	            // if no path supplied return all module controllers (or one if single result mode)
-	            if (typeof path === 'undefined') {
-	                if (singleResult) {
-	                    return this._moduleControllers[0];
-	                }
-	                return this._moduleControllers.concat();
-	            }
+        /**
+         * Returns an array containing all active module controllers
+         * @return {Array}
+         * @public
+         */
+        getActiveModuleControllers:function() {
+            return this._moduleControllers.filter(_filterIsActiveModule);
+        },
 
-	            // loop over module controllers matching the path, if single result is enabled, return on first hit, else collect
-	            var i=0,l=this._moduleControllers.length,results=[],mc;
-	            for (;i<l;i++) {
-	                mc = this._moduleControllers[i];
-	                if (!mc.matchesPath(path)) {
-	                    continue;
-	                }
-	                if (singleResult) {
-	                    return mc;
-	                }
-	                results.push(mc);
-	            }
-	            return singleResult ? null : results;
-	        },
+        /**
+         * Returns the first ModuleController matching the given path
+         * @param {String} [path] to module
+         * @return {ModuleController|null}
+         * @public
+         */
+        getModuleController:function(path) {
+            return this._getModuleControllers(path,true);
+        },
 
-	        /**
-	         * Public method for safely attempting method execution on modules
-	         * @param {String} method - method key
-	         * @param {Array} [params] - array containing the method parameters
-	         * @return [Array] returns object containing status code and possible response data
-	         * @public
-	         */
-	        execute:function(method,params) {
-	            return this._moduleControllers.map(function(item){
-	                return {
-	                    controller:item,
-	                    result:item.execute(method,params)
-	                };
-	            });
-	        },
+        /**
+         * Returns an array of ModuleControllers matching the given path
+         * @param {String} [path] to module
+         * @return {Array}
+         * @public
+         */
+        getModuleControllers:function(path) {
+            return this._getModuleControllers(path);
+        },
 
-	        /**
-	         * Called when a module becomes available for load
-	         * @param moduleController
-	         * @private
-	         */
-	        _onModuleAvailable:function(moduleController) {
+        /**
+         * Returns one or multiple ModuleControllers matching the supplied path
+         * @param {String} [path] - Optional path to match the nodes to
+         * @param {Boolean} [singleResult] - Optional boolean to only ask for one result
+         * @returns {Array|ModuleController|null}
+         * @private
+         */
+        _getModuleControllers:function(path,singleResult) {
 
-	            // propagate events from the module controller to the node so people can subscribe to events on the node
-	            Observer.inform(moduleController,this);
+            // if no path supplied return all module controllers (or one if single result mode)
+            if (typeof path === 'undefined') {
+                if (singleResult) {
+                    return this._moduleControllers[0];
+                }
+                return this._moduleControllers.concat();
+            }
 
-	            // update loading attribute with currently loading module controllers list
-	            this._updateAttribute(_options.attr.loading,this._moduleControllers.filter(_filterIsAvailableModule));
-	        },
+            // loop over module controllers matching the path, if single result is enabled, return on first hit, else collect
+            var i=0,l=this._moduleControllers.length,results=[],mc;
+            for (;i<l;i++) {
+                mc = this._moduleControllers[i];
+                if (!mc.matchesPath(path)) {
+                    continue;
+                }
+                if (singleResult) {
+                    return mc;
+                }
+                results.push(mc);
+            }
+            return singleResult ? null : results;
+        },
 
-	        /**
-	         * Called when module has loaded
-	         * @param moduleController
-	         * @private
-	         */
-	        _onModuleLoad:function(moduleController) {
+        /**
+         * Public method for safely attempting method execution on modules
+         * @param {String} method - method key
+         * @param {Array} [params] - array containing the method parameters
+         * @return [Array] returns object containing status code and possible response data
+         * @public
+         */
+        execute:function(method,params) {
+            return this._moduleControllers.map(function(item){
+                return {
+                    controller:item,
+                    result:item.execute(method,params)
+                };
+            });
+        },
 
-	            // listen to unload event
-	            Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
-	            Observer.subscribe(moduleController,'unload',this._moduleUnloadBind);
+        /**
+         * Called when a module becomes available for load
+         * @param moduleController
+         * @private
+         */
+        _onModuleAvailable:function(moduleController) {
 
-	            // update loading attribute with currently loading module controllers list
-	            this._updateAttribute(_options.attr.loading,this._moduleControllers.filter(_filterIsAvailableModule));
+            // propagate events from the module controller to the node so people can subscribe to events on the node
+            Observer.inform(moduleController,this);
 
-	            // update initialized attribute with currently active module controllers list
-	            this._updateAttribute(_options.attr.initialized,this.getActiveModuleControllers());
-	        },
+            // update loading attribute with currently loading module controllers list
+            this._updateAttribute(_options.attr.loading,this._moduleControllers.filter(_filterIsAvailableModule));
+        },
 
-	        /**
-	         * Called when module has unloaded
-	         * @param moduleController
-	         * @private
-	         */
-	        _onModuleUnload:function(moduleController) {
+        /**
+         * Called when module has loaded
+         * @param moduleController
+         * @private
+         */
+        _onModuleLoad:function(moduleController) {
 
-	            // stop listening to unload
-	            Observer.subscribe(moduleController,'load',this._moduleLoadBind);
-	            Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
+            // listen to unload event
+            Observer.unsubscribe(moduleController,'load',this._moduleLoadBind);
+            Observer.subscribe(moduleController,'unload',this._moduleUnloadBind);
 
-	            // conceal events from module controller
-	            Observer.conceal(moduleController,this);
+            // update loading attribute with currently loading module controllers list
+            this._updateAttribute(_options.attr.loading,this._moduleControllers.filter(_filterIsAvailableModule));
 
-	            // update initialized attribute with now active module controllers list
-	            this._updateAttribute(_options.attr.initialized,this.getActiveModuleControllers());
-	        },
+            // update initialized attribute with currently active module controllers list
+            this._updateAttribute(_options.attr.initialized,this.getActiveModuleControllers());
+        },
 
-	        /**
-	         * Updates the given attribute with paths of the supplied controllers
-	         * @private
-	         */
-	        _updateAttribute:function(attr,controllers) {
-	            var modules = controllers.map(_mapModuleToPath);
-	            if (modules.length) {
-	                this._element.setAttribute(attr,modules.join(','));
-	            }
-	            else {
-	                this._element.removeAttribute(attr);
-	            }
-	        }
+        /**
+         * Called when module has unloaded
+         * @param moduleController
+         * @private
+         */
+        _onModuleUnload:function(moduleController) {
 
-	    };
+            // stop listening to unload
+            Observer.subscribe(moduleController,'load',this._moduleLoadBind);
+            Observer.unsubscribe(moduleController,'unload',this._moduleUnloadBind);
 
-	    return exports;
+            // conceal events from module controller
+            Observer.conceal(moduleController,this);
 
-	}());
+            // update initialized attribute with now active module controllers list
+            this._updateAttribute(_options.attr.initialized,this.getActiveModuleControllers());
+        },
+
+        /**
+         * Updates the given attribute with paths of the supplied controllers
+         * @private
+         */
+        _updateAttribute:function(attr,controllers) {
+            var modules = controllers.map(_mapModuleToPath);
+            if (modules.length) {
+                this._element.setAttribute(attr,modules.join(','));
+            }
+            else {
+                this._element.removeAttribute(attr);
+            }
+        }
+
+    };
+
+    return exports;
+
+}());
+/**
+ * Creates a controller group to sync controllers
+ * @constructor
+ */
+var SyncedControllerGroup = function() {
+
+    // if no node controllers passed, no go
+    if (!arguments || !arguments.length) {
+        throw new Error('SyncedControllerGroup(controllers): Expects an array of node controllers as parameters.');
+    }
+
+    // by default modules are expected to not be in sync
+    this._inSync = false;
+
+    // turn arguments into an array
+    this._controllers = Array.prototype.slice.call(arguments,0);
+    this._controllerLoadedBind = this._onLoad.bind(this);
+    this._controllerUnloadedBind = this._onUnload.bind(this);
+
+    var i=0,controller,l=this._controllers.length;
+    for (;i<l;i++) {
+        controller = this._controllers[i];
+
+        // listen to load and unload events so we can pass them on if appropriate
+        Observer.subscribe(controller,'load',this._controllerLoadedBind);
+        Observer.subscribe(controller,'unload',this._controllerUnloadedBind);
+    }
+
+    // test now to see if modules might already be in sync
+    this._test();
+};
+
+SyncedControllerGroup.prototype = {
+
+    /**
+     * Destroy sync group, stops listening and cleans up
+     */
+    destroy:function() {
+
+        // unsubscribe
+        var i=0,controller,l=this._controllers.length;
+        for (;i<l;i++) {
+            controller = this._controllers[i];
+
+            // listen to load and unload events so we can pass them on if appropriate
+            Observer.unsubscribe(controller,'load',this._controllerLoadedBind);
+            Observer.unsubscribe(controller,'unload',this._controllerUnloadedBind);
+        }
+
+        // reset array
+        this._controllers = [];
+
+    },
+
+    /**
+     * Called when a module loads
+     * @private
+     */
+    _onLoad:function() {
+        this._test();
+    },
+
+    /**
+     * Called when a module unloads
+     * @private
+     */
+    _onUnload:function() {
+        this._unload();
+    },
+
+    /**
+     * Tests if the node or module controller has loaded their modules
+     * @param controller
+     * @returns {Boolean}
+     * @private
+     */
+    _isActiveController:function(controller) {
+        return ((controller.isModuleActive && controller.isModuleActive()) ||
+                (controller.areModulesActive && controller.areModulesActive()));
+    },
+
+    /**
+     * Tests if all controllers have loaded, if so calls the _load method
+     * @private
+     */
+    _test:function() {
+
+        // loop over modules testing their active state, if one is inactive we stop immediately
+        var i=0,l=this._controllers.length,controller;
+        for (;i<l;i++) {
+            controller = this._controllers[i];
+            if (!this._isActiveController(controller)) {
+                return;
+            }
+        }
+
+        // if all modules loaded fire load event
+        this._load();
+
+    },
+
+    /**
+     * Fires a load event when all controllers have indicated they have loaded and we have not loaded yet
+     * @fires load
+     * @private
+     */
+    _load:function() {
+        if (this._inSync) {return;}
+        this._inSync = true;
+        Observer.publishAsync(this,'load',this._controllers);
+    },
+
+    /**
+     * Fires an unload event once we are in loaded state and one of the controllers unloads
+     * @fires unload
+     * @private
+     */
+    _unload:function() {
+        if (!this._inSync) {return;}
+        this._inSync = false;
+        Observer.publish(this,'unload',this._controllers);
+    }
+
+};
+/**
+ * Static Module Agent, will always load the module
+ * @type {Object}
+ */
+var StaticModuleAgent = {
+
+    /**
+     * Is activation currently allowed, will always return true for static module agent
+     * @returns {boolean}
+     */
+    allowsActivation:function() {
+        return true;
+    },
+
+    /**
+     * Clean up
+     * As we have not attached any event listeners there's nothing to clean
+     */
+    destroy:function() {
+        // nothing to clean up
+    }
+};
+var ConditionModuleAgent = function(conditions,element) {
+
+    // if no conditions, conditions will always be suitable
+    if (typeof conditions !== 'string' || !conditions.length) {
+        return;
+    }
+
+    // conditions supplied, conditions are now unsuitable by default
+    this._suitable = false;
+
+    // set element reference
+    this._element = element;
+
+    // remember tester references in this array for later removal
+    this._testers = [];
+
+    // change event bind
+    this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
+
+    // returns the amount of expressions in this expression
+    this._count = ExpressionFormatter.getExpressionsCount(conditions);
+
+    // load to expression tree
+    this._expression = ExpressionFormatter.fromString(conditions);
+
+    // load tests to expression tree
+    this._loadExpressionTests(this._expression.getConfig());
+
+};
+
+ConditionModuleAgent.prototype = {
+
+    /**
+     * Returns true if the current conditions allow module activation
+     * @return {Boolean}
+     * @public
+     */
+    allowsActivation:function() {
+        return this._suitable;
+    },
+
+    /**
+     * Cleans up event listeners and readies object for removal
+     */
+    destroy:function() {
+
+        var i=0,l=this._testers.length;
+        for (;i<l;i++) {
+
+            // no longer listen to change events on the tester
+            Observer.unsubscribe(this._testers[i],'change',this._onResultsChangedBind);
+
+            // further look into unloading the manufactured Test itself
+
+        }
+
+        this._testers = [];
+        this._suitable = false;
+
+    },
+
+    /**
+     * Tests if conditions are suitable
+     * @fires change
+     */
+    _test:function() {
+
+        // test expression success state
+        var suitable = this._expression.succeeds();
+
+        // fire changed event if environment suitability changed
+        if (suitable != this._suitable) {
+            this._suitable = suitable;
+            Observer.publish(this,'change');
+        }
+    },
+
+    /**
+     * Loads test configurations contained in expressions
+     * @param {Array} configuration
+     * @private
+     */
+    _loadExpressionTests:function(configuration) {
+
+        var i=0,l=configuration.length;
+
+        for (;i<l;i++) {
+
+            if (Array.isArray(configuration[i])) {
+                this._loadExpressionTests(configuration[i]);
+                continue;
+            }
+
+            this._loadTesterToExpression(configuration[i].config,configuration[i].expression);
+        }
+    },
+
+    /**
+     * Loads a tester to supplied expression
+     * @param {Object} config
+     * @param {UnaryExpression} expression
+     * @private
+     */
+    _loadTesterToExpression:function(config,expression) {
+
+        var self = this,tester;
+
+        TestFactory.getTest(config.path,function(test) {
+
+            // create a new tester instance for this test
+            tester = new Tester(test,config.value,self._element);
+
+            // remember tester
+            self._testers.push(tester);
+
+            // assign tester to expression
+            expression.assignTester(tester);
+
+            // listen to test result updates
+            Observer.subscribe(test,'change',self._onResultsChangedBind);
+
+            // lower test count so we know when we're ready
+            self._count--;
+            if (self._count===0) {
+                self._onReady();
+            }
+
+        });
+    },
+
+    /**
+     * Called when all tests are ready
+     * @fires ready
+     * @private
+     */
+    _onReady:function() {
+
+        // test current state
+        this._test();
+
+        // we are now ready to start testing
+        Observer.publish(this,'ready');
+    },
+
+    /**
+     * Called when a condition has changed
+     * @private
+     */
+    _onTestResultsChanged:function() {
+        this._test();
+    }
+
+};
+/**
+ * @exports ModuleLoader
+ * @class
+ * @constructor
+ */
+var ModuleLoader = function() {
+
+	// array of all parsed nodes
+	this._nodes = [];
+
+};
+
+ModuleLoader.prototype = {
+
 	/**
-	 * Creates a controller group to sync controllers
-	 * @constructor
+	 * Loads all modules within the supplied dom tree
+	 * @param {Document|Element} context - Context to find modules in
+	 * @return {Array} - Array of found Nodes
 	 */
-	var SyncedControllerGroup = function() {
+	parse:function(context) {
 
-	    // if no node controllers passed, no go
-	    if (!arguments || !arguments.length) {
-	        throw new Error('SyncedControllerGroup(controllers): Expects an array of node controllers as parameters.');
-	    }
+		// if no context supplied, throw error
+		if (!context) {
+			throw new Error('ModuleLoader.loadModules(context): "context" is a required parameter.');
+		}
 
-	    // by default modules are expected to not be in sync
-	    this._inSync = false;
+		// register vars and get elements
+		var elements = context.querySelectorAll('[data-module]'),
+			l = elements.length,
+			i = 0,
+			nodes = [],
+            node,
+			element;
 
-	    // turn arguments into an array
-	    this._controllers = Array.prototype.slice.call(arguments,0);
-	    this._controllerLoadedBind = this._onLoad.bind(this);
-	    this._controllerUnloadedBind = this._onUnload.bind(this);
+		// if no elements do nothing
+		if (!elements) {
+			return [];
+		}
 
-	    var i=0,controller,l=this._controllers.length;
-	    for (;i<l;i++) {
-	        controller = this._controllers[i];
+		// process elements
+		for (; i<l; i++) {
 
-	        // listen to load and unload events so we can pass them on if appropriate
-	        Observer.subscribe(controller,'load',this._controllerLoadedBind);
-	        Observer.subscribe(controller,'unload',this._controllerUnloadedBind);
-	    }
+			// set element reference
+			element = elements[i];
 
-	    // test now to see if modules might already be in sync
-	    this._test();
-	};
+			// test if already processed
+			if (NodeController.hasProcessed(element)) {
+				continue;
+			}
 
-	SyncedControllerGroup.prototype = {
+			// create new node
+			nodes.push(new NodeController(element,element.getAttribute(_options.attr.priority)));
+		}
 
-	    /**
-	     * Destroy sync group, stops listening and cleans up
-	     */
-	    destroy:function() {
+        // sort nodes by priority:
+		// higher numbers go first,
+		// then 0 (a.k.a. no priority assigned),
+		// then negative numbers
+		// note: it's actually the other way around but that's because of the reversed while loop coming next
+		nodes.sort(function(a,b){
+			return a.getPriority() - b.getPriority();
+		});
 
-	        // unsubscribe
-	        var i=0,controller,l=this._controllers.length;
-	        for (;i<l;i++) {
-	            controller = this._controllers[i];
+		// initialize modules depending on assigned priority (in reverse, but priority is reversed as well so all is okay)
+		i = nodes.length;
+		while (--i >= 0) {
+            node = nodes[i];
+			node.load.apply(node,this._getModuleControllersByElement(node.getElement()));
+		}
 
-	            // listen to load and unload events so we can pass them on if appropriate
-	            Observer.unsubscribe(controller,'load',this._controllerLoadedBind);
-	            Observer.unsubscribe(controller,'unload',this._controllerUnloadedBind);
-	        }
+		// merge new nodes with currently active nodes list
+		this._nodes = this._nodes.concat(nodes);
 
-	        // reset array
-	        this._controllers = [];
+		// returns nodes so it is possible to later unload nodes manually if necessary
+		return nodes;
+	},
 
-	    },
+    /**
+     * Setup the given element with the passed module controller(s)
+     * @param {Element} element - Element to bind the controllers to
+     * @param {Array|ModuleController} controllers - module controller configurations
+     * [
+     *     {
+     *         path: 'path/to/module',
+     *         conditions: 'config',
+     *         options: {
+     *             foo: 'bar'
+     *         }
+     *     }
+     * ]
+     * @return {NodeController|null} - The newly created node or null if something went wrong
+     */
+    load:function(element,controllers) {
 
-	    /**
-	     * Called when a module loads
-	     * @private
-	     */
-	    _onLoad:function() {
-	        this._test();
-	    },
+        if (!controllers) {return null;}
 
-	    /**
-	     * Called when a module unloads
-	     * @private
-	     */
-	    _onUnload:function() {
-	        this._unload();
-	    },
+        // if controllers is object put in array
+        controllers = controllers.length ? controllers : [controllers];
 
-	    /**
-	     * Tests if the node or module controller has loaded their modules
-	     * @param controller
-	     * @returns {Boolean}
-	     * @private
-	     */
-	    _isActiveController:function(controller) {
-	        return ((controller.isModuleActive && controller.isModuleActive()) ||
-	                (controller.areModulesActive && controller.areModulesActive()));
-	    },
+        // vars
+        var node,i=0,l=controllers.length,moduleControllers=[],controller;
 
-	    /**
-	     * Tests if all controllers have loaded, if so calls the _load method
-	     * @private
-	     */
-	    _test:function() {
+        // create node
+        node = new NodeController(element);
 
-	        // loop over modules testing their active state, if one is inactive we stop immediately
-	        var i=0,l=this._controllers.length,controller;
-	        for (;i<l;i++) {
-	            controller = this._controllers[i];
-	            if (!this._isActiveController(controller)) {
-	                return;
-	            }
-	        }
+        // create controllers
+        for (;i<l;i++) {
+            controller = controllers[i];
+            moduleControllers.push(
+                this._getModuleController(controller.path,element,controller.options,controller.conditions)
+            );
+        }
 
-	        // if all modules loaded fire load event
-	        this._load();
+        // create initialize
+        node.load(moduleControllers);
 
-	    },
+        // remember so can later be retrieved through getNode methodes
+        this._nodes.push(node);
 
-	    /**
-	     * Fires a load event when all controllers have indicated they have loaded and we have not loaded yet
-	     * @fires load
-	     * @private
-	     */
-	    _load:function() {
-	        if (this._inSync) {return;}
-	        this._inSync = true;
-	        Observer.publishAsync(this,'load',this._controllers);
-	    },
+        // return the loaded Node
+        return node;
+    },
 
-	    /**
-	     * Fires an unload event once we are in loaded state and one of the controllers unloads
-	     * @fires unload
-	     * @private
-	     */
-	    _unload:function() {
-	        if (!this._inSync) {return;}
-	        this._inSync = false;
-	        Observer.publish(this,'unload',this._controllers);
-	    }
-
-	};
 	/**
-	 * Static Module Agent, will always load the module
-	 * @type {Object}
+	 * Returns one or multiple nodes matching the selector
+	 * @param {String} [selector] - Optional selector to match the nodes to
+	 * @param {Document|Element} [context] - Context to search in
+	 * @param {Boolean} [singleResult] - Optional boolean to only ask one result
+	 * @returns {Array|Node|null}
+	 * @private
 	 */
-	var StaticModuleAgent = {
+	getNodes:function(selector,context,singleResult) {
 
-	    /**
-	     * Is activation currently allowed, will always return true for static module agent
-	     * @returns {boolean}
-	     */
-	    allowsActivation:function() {
-	        return true;
-	    },
-
-	    /**
-	     * Clean up
-	     * As we have not attached any event listeners there's nothing to clean
-	     */
-	    destroy:function() {
-	        // nothing to clean up
-	    }
-	};
-	var ConditionModuleAgent = function(conditions,element) {
-
-	    // if no conditions, conditions will always be suitable
-	    if (typeof conditions !== 'string' || !conditions.length) {
-	        return;
-	    }
-
-	    // conditions supplied, conditions are now unsuitable by default
-	    this._suitable = false;
-
-	    // set element reference
-	    this._element = element;
-
-	    // remember tester references in this array for later removal
-	    this._testers = [];
-
-	    // change event bind
-	    this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
-
-	    // returns the amount of expressions in this expression
-	    this._count = ExpressionFormatter.getExpressionsCount(conditions);
-
-	    // load to expression tree
-	    this._expression = ExpressionFormatter.fromString(conditions);
-
-	    // load tests to expression tree
-	    this._loadExpressionTests(this._expression.getConfig());
-
-	};
-
-	ConditionModuleAgent.prototype = {
-
-	    /**
-	     * Returns true if the current conditions allow module activation
-	     * @return {Boolean}
-	     * @public
-	     */
-	    allowsActivation:function() {
-	        return this._suitable;
-	    },
-
-	    /**
-	     * Cleans up event listeners and readies object for removal
-	     */
-	    destroy:function() {
-
-	        var i=0,l=this._testers.length;
-	        for (;i<l;i++) {
-
-	            // no longer listen to change events on the tester
-	            Observer.unsubscribe(this._testers[i],'change',this._onResultsChangedBind);
-
-	            // further look into unloading the manufactured Test itself
-
-	        }
-
-	        this._testers = [];
-	        this._suitable = false;
-
-	    },
-
-	    /**
-	     * Tests if conditions are suitable
-	     * @fires change
-	     */
-	    _test:function() {
-
-	        // test expression success state
-	        var suitable = this._expression.succeeds();
-
-	        // fire changed event if environment suitability changed
-	        if (suitable != this._suitable) {
-	            this._suitable = suitable;
-	            Observer.publish(this,'change');
-	        }
-	    },
-
-	    /**
-	     * Loads test configurations contained in expressions
-	     * @param {Array} configuration
-	     * @private
-	     */
-	    _loadExpressionTests:function(configuration) {
-
-	        var i=0,l=configuration.length;
-
-	        for (;i<l;i++) {
-
-	            if (Array.isArray(configuration[i])) {
-	                this._loadExpressionTests(configuration[i]);
-	                continue;
-	            }
-
-	            this._loadTesterToExpression(configuration[i].config,configuration[i].expression);
-	        }
-	    },
-
-	    /**
-	     * Loads a tester to supplied expression
-	     * @param {Object} config
-	     * @param {UnaryExpression} expression
-	     * @private
-	     */
-	    _loadTesterToExpression:function(config,expression) {
-
-	        var self = this,tester;
-
-	        TestFactory.getTest(config.path,function(test) {
-
-	            // create a new tester instance for this test
-	            tester = new Tester(test,config.value,self._element);
-
-	            // remember tester
-	            self._testers.push(tester);
-
-	            // assign tester to expression
-	            expression.assignTester(tester);
-
-	            // listen to test result updates
-	            Observer.subscribe(test,'change',self._onResultsChangedBind);
-
-	            // lower test count so we know when we're ready
-	            self._count--;
-	            if (self._count===0) {
-	                self._onReady();
-	            }
-
-	        });
-	    },
-
-	    /**
-	     * Called when all tests are ready
-	     * @fires ready
-	     * @private
-	     */
-	    _onReady:function() {
-
-	        // test current state
-	        this._test();
-
-	        // we are now ready to start testing
-	        Observer.publish(this,'ready');
-	    },
-
-	    /**
-	     * Called when a condition has changed
-	     * @private
-	     */
-	    _onTestResultsChanged:function() {
-	        this._test();
-	    }
-
-	};
-	/**
-	 * @exports ModuleLoader
-	 * @class
-	 * @constructor
-	 */
-	var ModuleLoader = function() {
-
-		// array of all parsed nodes
-		this._nodes = [];
-
-	};
-
-	ModuleLoader.prototype = {
-
-		/**
-		 * Loads all modules within the supplied dom tree
-		 * @param {Document|Element} context - Context to find modules in
-		 * @return {Array} - Array of found Nodes
-		 */
-		parse:function(context) {
-
-			// if no context supplied, throw error
-			if (!context) {
-				throw new Error('ModuleLoader.loadModules(context): "context" is a required parameter.');
+		// if no query supplied return all nodes
+		if (typeof selector === 'undefined' && typeof context === 'undefined') {
+			if (singleResult) {
+				return this._nodes[0];
 			}
+			return this._nodes.concat();
+		}
 
-			// register vars and get elements
-			var elements = context.querySelectorAll('[data-module]'),
-				l = elements.length,
-				i = 0,
-				nodes = [],
-	            node,
-				element;
-
-			// if no elements do nothing
-			if (!elements) {
-				return [];
-			}
-
-			// process elements
-			for (; i<l; i++) {
-
-				// set element reference
-				element = elements[i];
-
-				// test if already processed
-				if (NodeController.hasProcessed(element)) {
-					continue;
-				}
-
-				// create new node
-				nodes.push(new NodeController(element,element.getAttribute(_options.attr.priority)));
-			}
-
-	        // sort nodes by priority:
-			// higher numbers go first,
-			// then 0 (a.k.a. no priority assigned),
-			// then negative numbers
-			// note: it's actually the other way around but that's because of the reversed while loop coming next
-			nodes.sort(function(a,b){
-				return a.getPriority() - b.getPriority();
-			});
-
-			// initialize modules depending on assigned priority (in reverse, but priority is reversed as well so all is okay)
-			i = nodes.length;
-			while (--i >= 0) {
-	            node = nodes[i];
-				node.load.apply(node,this._getModuleControllersByElement(node.getElement()));
-			}
-
-			// merge new nodes with currently active nodes list
-			this._nodes = this._nodes.concat(nodes);
-
-			// returns nodes so it is possible to later unload nodes manually if necessary
-			return nodes;
-		},
-
-	    /**
-	     * Setup the given element with the passed module controller(s)
-	     * @param {Element} element - Element to bind the controllers to
-	     * @param {Array|ModuleController} controllers - module controller configurations
-	     * [
-	     *     {
-	     *         path: 'path/to/module',
-	     *         conditions: 'config',
-	     *         options: {
-	     *             foo: 'bar'
-	     *         }
-	     *     }
-	     * ]
-	     * @return {NodeController|null} - The newly created node or null if something went wrong
-	     */
-	    load:function(element,controllers) {
-
-	        if (!controllers) {return null;}
-
-	        // if controllers is object put in array
-	        controllers = controllers.length ? controllers : [controllers];
-
-	        // vars
-	        var node,i=0,l=controllers.length,moduleControllers=[],controller;
-
-	        // create node
-	        node = new NodeController(element);
-
-	        // create controllers
-	        for (;i<l;i++) {
-	            controller = controllers[i];
-	            moduleControllers.push(
-	                this._getModuleController(controller.path,element,controller.options,controller.conditions)
-	            );
-	        }
-
-	        // create initialize
-	        node.load(moduleControllers);
-
-	        // remember so can later be retrieved through getNode methodes
-	        this._nodes.push(node);
-
-	        // return the loaded Node
-	        return node;
-	    },
-
-		/**
-		 * Returns one or multiple nodes matching the selector
-		 * @param {String} [selector] - Optional selector to match the nodes to
-		 * @param {Document|Element} [context] - Context to search in
-		 * @param {Boolean} [singleResult] - Optional boolean to only ask one result
-		 * @returns {Array|Node|null}
-		 * @private
-		 */
-		getNodes:function(selector,context,singleResult) {
-
-			// if no query supplied return all nodes
-			if (typeof selector === 'undefined' && typeof context === 'undefined') {
+		// find matches (done by querying the node for a match)
+		var i=0,l=this._nodes.length,results=[],node;
+		for (;i<l;i++) {
+			node = this._nodes[i];
+			if (node.matchesSelector(selector,context)) {
 				if (singleResult) {
-					return this._nodes[0];
+					return node;
 				}
-				return this._nodes.concat();
+				results.push(node);
 			}
+		}
 
-			// find matches (done by querying the node for a match)
-			var i=0,l=this._nodes.length,results=[],node;
-			for (;i<l;i++) {
-				node = this._nodes[i];
-				if (node.matchesSelector(selector,context)) {
-					if (singleResult) {
-						return node;
-					}
-					results.push(node);
-				}
-			}
+		return singleResult ? null : results;
+	},
 
-			return singleResult ? null : results;
-		},
+    /**
+     * Parses module controller configuration on element and returns array of module controllers
+     * @param {Element} element
+     * @returns {Array}
+     * @private
+     */
+    _getModuleControllersByElement:function(element) {
 
-	    /**
-	     * Parses module controller configuration on element and returns array of module controllers
-	     * @param {Element} element
-	     * @returns {Array}
-	     * @private
-	     */
-	    _getModuleControllersByElement:function(element) {
+        var controllers = [],
+            config = element.getAttribute(_options.attr.module) || '',
+            i= 0,
+            specs,spec,l,
 
-	        var controllers = [],
-	            config = element.getAttribute(_options.attr.module) || '',
-	            i= 0,
-	            specs,spec,l,
+        // test if first character is a '[', if so multiple modules have been defined
+        multiple = config.charCodeAt(0) === 91;
 
-	        // test if first character is a '[', if so multiple modules have been defined
-	        multiple = config.charCodeAt(0) === 91;
+        if (multiple) {
 
-	        if (multiple) {
+            // add multiple module adapters
+            try {
+                specs = JSON.parse(config);
+            }
+            catch(e) {
+                // failed parsing spec
+                throw new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.');
+            }
 
-	            // add multiple module adapters
-	            try {
-	                specs = JSON.parse(config);
-	            }
-	            catch(e) {
-	                // failed parsing spec
-	                throw new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.');
-	            }
+            // no specification found or specification parsing failed
+            if (!specs) {
+                return [];
+            }
 
-	            // no specification found or specification parsing failed
-	            if (!specs) {
-	                return [];
-	            }
+            // setup vars
+            l=specs.length;
 
-	            // setup vars
-	            l=specs.length;
+            // create specs
+            for (;i<l;i++) {
+                spec = specs[i];
+                controllers.push(
+                    this._getModuleController(spec.path,element,spec.options,spec.conditions)
+                );
+            }
+        }
+        else if (config.length) {
+            controllers.push(
+                this._getModuleController(config,element,element.getAttribute(_options.attr.options),element.getAttribute(_options.attr.conditions))
+            );
+        }
 
-	            // create specs
-	            for (;i<l;i++) {
-	                spec = specs[i];
-	                controllers.push(
-	                    this._getModuleController(spec.path,element,spec.options,spec.conditions)
-	                );
-	            }
-	        }
-	        else if (config.length) {
-	            controllers.push(
-	                this._getModuleController(config,element,element.getAttribute(_options.attr.options),element.getAttribute(_options.attr.conditions))
-	            );
-	        }
+        return controllers;
+    },
 
-	        return controllers;
-	    },
+    /**
+     * Module Controller factory method, creates different ModuleControllers based on params
+     * @param path - path of module
+     * @param element - element to attach module to
+     * @param options - options for module
+     * @param conditions - conditions required for module to be loaded
+     * @returns {ModuleController}
+     * @private
+     */
+    _getModuleController:function(path,element,options,conditions) {
+        return new ModuleController(
+            path,
+            element,
+            options,
+            conditions ? new ConditionModuleAgent(conditions,element) : StaticModuleAgent
+        );
+    }
 
-	    /**
-	     * Module Controller factory method, creates different ModuleControllers based on params
-	     * @param path - path of module
-	     * @param element - element to attach module to
-	     * @param options - options for module
-	     * @param conditions - conditions required for module to be loaded
-	     * @returns {ModuleController}
-	     * @private
-	     */
-	    _getModuleController:function(path,element,options,conditions) {
-	        return new ModuleController(
-	            path,
-	            element,
-	            options,
-	            conditions ? new ConditionModuleAgent(conditions,element) : StaticModuleAgent
-	        );
-	    }
-
-	};
+};
 
         // conditioner options object
         var _options = {

@@ -27,24 +27,7 @@ module.exports = function(grunt) {
 		concat:{
 			dist:{
 				options: {
-					banner:'<%= meta.banner %>',
-					process:function(src,path){
-
-						// the following code could probably be improved
-						if (path.indexOf('wrapper/') === -1) {
-
-							// add tab on first line
-							src = '\t' + src;
-
-							// add tabs on other lines
-							src = src.replace(/(\n)+/g,function(match) {
-								return match + '\t';
-							});
-
-						}
-						return src;
-					}
-
+					banner:'<%= meta.banner %>'
 				},
 				src:[
 					'<%= path.wrapper %>/intro.js',
@@ -146,9 +129,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-clean');
-
     grunt.loadNpmTasks('grunt-mocha');
-
 
 	// test
 	grunt.registerTask('test',['lib','jshint','mocha']);
