@@ -1,4 +1,4 @@
-(function(){
+define(['conditioner','Observer'],function(conditioner,Observer){
 
     'use strict';
 
@@ -6,7 +6,7 @@
 
         it('will inherit parent page level options',function() {
 
-            var node,group,loader,results,syncedGroup,synced = false;
+            var node,group,results,synced = false;
 
             // arrange
             runs(function(){
@@ -18,8 +18,7 @@
                 group.appendChild(node);
 
                 // act
-                loader = new ModuleLoader();
-                loader.setOptions({
+                conditioner.setOptions({
                     'modules':{
                         'mock/foo':{
                             'options':{
@@ -40,7 +39,7 @@
                 });
 
                 // find modules
-                results = loader.parse(group);
+                results = conditioner.parse(group);
 
                 // wait for load
                 Observer.subscribe(results[0],'load',function() {
@@ -52,14 +51,14 @@
             // act
             waitsFor(function() {
                 return synced;
-            },'module group sync',100);
+            },'module group sync',1000);
 
             // assert
             runs(function(){
 
-                expect(node.getAttribute('data-foo')).toBe('2');
-                expect(node.getAttribute('data-bar')).toBe('2');
-                expect(node.getAttribute('data-baz')).toBe('2');
+                expect(node.getAttribute('data-foo')).to.equal('2');
+                expect(node.getAttribute('data-bar')).to.equal('2');
+                expect(node.getAttribute('data-baz')).to.equal('2');
 
             });
 
@@ -67,4 +66,4 @@
 
     });
 
-}());
+});

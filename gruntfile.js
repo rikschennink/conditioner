@@ -16,31 +16,14 @@ module.exports = function(grunt) {
 				   '// Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> - <%= pkg.homepage %>\n' +
 				   '// License: <%= _.map(pkg.licenses, function(x) {return x.type + " (" + x.url + ")";}).join(", ") %>\n'
 		},
-		jasmine:{
-			src:[],
-			options:{
-                keepRunner:true,
-				specs:'<%= path.spec %>/ConditionerSpec.js',
-				helpers:[
-					'<%= path.spec %>/shim/Function.bind.js'
-				],
-				template:require('grunt-template-jasmine-requirejs'),
-				templateOptions:{
-					requireConfig:{
-                        waitSeconds:1,
-                        map:{
-                            '*':{
-                                'conditioner':'lib/<%= pkg.name %>-<%= pkg.version %>'
-                            }
-                        },
-                        paths:{
-                            'Observer':'../spec/lib/utils/Observer'
-                        },
-						baseUrl:'./spec'
-					}
-				}
-			}
-		},
+        mocha:{
+            test:{
+                src:['./spec/runner.html'],
+                options:{
+                    run:false
+                }
+            }
+        },
 		concat:{
 			dist:{
 				options: {
@@ -158,16 +141,17 @@ module.exports = function(grunt) {
 
 	// load tasks
 	grunt.loadNpmTasks('grunt-contrib-jshint');
-	grunt.loadNpmTasks('grunt-contrib-jasmine');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-requirejs');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 
+    grunt.loadNpmTasks('grunt-mocha');
+
+
 	// test
-	grunt.registerTask('test',['jshint','jasmine']);
+	grunt.registerTask('test',['lib','jshint','mocha']);
 
 	// build
 	grunt.registerTask('lib',['concat','copy','uglify']);

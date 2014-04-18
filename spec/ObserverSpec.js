@@ -1,7 +1,8 @@
-(function(){
+define(['Observer'],function(Observer){
 
     'use strict';
 
+    // setup mock object
     var Mock = function(async){
         if (async) {
             Observer.publishAsync(this,'load');
@@ -20,124 +21,120 @@
 
     describe('Observer',function(){
 
-        it('will catch events',function(){
+        describe('subscribe(object,event,callback)',function(){
 
-            // arrange
-            var caught = false;
-            var mock = new Mock();
-            Observer.subscribe(mock,'ping',function(){
-                caught = true;
+            it('will attach events',function(){
+
+                // arrange
+                var caught = false;
+                var mock = new Mock();
+                Observer.subscribe(mock,'ping',function(){
+                    caught = true;
+                });
+
+                // act
+                mock.ping();
+
+                // assert
+                expect(caught).to.equal(true);
             });
 
-            // act
-            mock.ping();
+            it('will miss sync events',function(){
 
-            // assert
-            expect(caught).toBe(true);
-        });
+                // arrange
+                var caught = false;
+                var mock = new Mock();
 
-        it('will not catch events after having unsubscribed',function(){
-
-            // arrange
-            var caught = false;
-            var mock = new Mock();
-            Observer.subscribe(mock,'ping',function(){
-                caught = true;
-            });
-
-            // act
-            Observer.unsubscribe(mock,'ping');
-            mock.ping();
-
-            // assert
-            expect(caught).toBe(false);
-        });
-
-        it('will allow catching events on secondary objects when using inform',function(){
-
-            // arrange
-            var caught = false;
-            var mock = new Mock();
-            Observer.subscribe(mock,'ping',function(){
-                caught = true;
-            });
-
-            var superMock = new Mock();
-            Observer.inform(superMock,mock);
-
-            // act
-            superMock.ping();
-
-            // assert
-            expect(caught).toBe(true);
-
-        });
-
-        it('will allow concealing of events when used inform',function(){
-
-            // arrange
-            var caught = false;
-            var mock = new Mock();
-            Observer.subscribe(mock,'ping',function(){
-                caught = true;
-            });
-
-            var superMock = new Mock();
-            Observer.inform(superMock,mock);
-
-            // act
-            Observer.conceal(superMock,mock);
-            superMock.ping();
-
-            // assert
-            expect(caught).toBe(false);
-
-        });
-
-
-        it('will not catch sync events published in constructor',function(){
-
-            // arrange
-            var caught = false;
-            var mock = new Mock();
-
-            // act
-            Observer.subscribe(mock,'load',function(){
-                caught = true;
-            });
-
-            // assert
-            expect(caught).toBe(false);
-        });
-
-        it('will catch async events published in constructor',function(){
-
-            // arrange
-            var caught = false;
-
-            runs(function(){
-
-                var mock = new Mock(true);
+                // act
                 Observer.subscribe(mock,'load',function(){
                     caught = true;
                 });
 
+                // assert
+                expect(caught).to.equal(false);
             });
 
-            // act
-            waitsFor(function(){
-                return caught;
-            },'event should have been caught',50);
+            it('will catch async events',function(done){
 
-            // assert
-            runs(function(){
-                expect(caught).toBe(true);
+                var mock = new Mock(true);
+                Observer.subscribe(mock,'load',function(){
+                    done();
+                });
+
             });
+
         });
 
+        describe('unsubscribe(object,event)',function(){
 
+            it('will detach events',function(){
 
+                // arrange
+                var caught = false;
+                var mock = new Mock();
+                Observer.subscribe(mock,'ping',function(){
+                    caught = true;
+                });
+
+                // act
+                Observer.unsubscribe(mock,'ping');
+                mock.ping();
+
+                // assert
+                expect(caught).to.equal(false);
+            });
+
+        });
+
+        describe('inform(informer,receiver)',function(){
+
+            it('will pass events to receiver',function(){
+
+                // arrange
+                var caught = false;
+                var mock = new Mock();
+                Observer.subscribe(mock,'ping',function(){
+                    caught = true;
+                });
+
+                var superMock = new Mock();
+                Observer.inform(superMock,mock);
+
+                // act
+                superMock.ping();
+
+                // assert
+                expect(caught).to.equal(true);
+
+            });
+
+        });
+
+        describe('conceal(informer,receiver)',function(){
+
+            it('will stop events from being passed to receiver',function(){
+
+                // arrange
+                var caught = false;
+                var mock = new Mock();
+                Observer.subscribe(mock,'ping',function(){
+                    caught = true;
+                });
+
+                var superMock = new Mock();
+                Observer.inform(superMock,mock);
+
+                // act
+                Observer.conceal(superMock,mock);
+                superMock.ping();
+
+                // assert
+                expect(caught).to.equal(false);
+
+            });
+
+        });
 
     });
 
-}());
+});

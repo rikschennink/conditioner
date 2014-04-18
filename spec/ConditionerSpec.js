@@ -2,20 +2,71 @@ define(['conditioner'],function(conditioner){
 
     'use strict';
 
-    describe('Conditioner',function(){
+    describe('Conditioner',function() {
 
-        it('will cause a processed element to have a "data-processed"',function(){
+        describe('init([options])', function () {
 
-            // arrange
-            var element = document.createElement('div');
-            element.setAttribute('data-module','mock/foo');
-            document.body.appendChild(element);
+            it('will process elements attached to the DOM', function () {
 
-            // act
-            conditioner.init();
+                // arrange
+                var element = document.createElement('div');
+                element.setAttribute('data-module', 'mock/foo');
+                document.body.appendChild(element);
 
-            // assert
-            expect(element.getAttribute('data-processed')).toEqual('true');
+                // act
+                conditioner.init();
+
+                // assert
+                expect(element.getAttribute('data-processed')).to.equal('true');
+
+            });
+
+            it('will set options when passing an options object', function () {
+
+                // arrange
+                var element = document.createElement('div');
+                element.setAttribute('data-module', 'IFoo');
+                document.body.appendChild(element);
+
+                // act
+                conditioner.init({
+                    'modules': {
+                        'mock/foo': {
+                            'alias': 'IFoo'
+                        }
+                    }
+                });
+
+                // assert
+                expect(element.getAttribute('data-processed')).to.equal('true');
+
+            });
+
+        });
+
+        describe('setOptions(options)', function () {
+
+            it('will set options when passing an options object', function () {
+
+                // arrange
+                var element = document.createElement('div');
+                element.setAttribute('data-module', 'IFoo');
+                document.body.appendChild(element);
+
+                // act
+                conditioner.setOptions({
+                    'modules': {
+                        'mock/foo': {
+                            'alias': 'IFoo'
+                        }
+                    }
+                });
+                conditioner.init();
+
+                // assert
+                expect(element.getAttribute('data-processed')).to.equal('true');
+
+            });
 
         });
 

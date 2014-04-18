@@ -168,7 +168,7 @@
     }
     // Browser globals
     else {
-        throw new Error('Conditioner: To use ConditionerJS you need to setup a module loader.');
+        throw new Error('To use ConditionerJS you need to setup a module loader like RequireJS.');
     }
 
 }());

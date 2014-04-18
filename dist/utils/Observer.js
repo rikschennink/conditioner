@@ -184,8 +184,6 @@
         }
     };
 
-    // expose
-    // https://github.com/umdjs/umd
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = util;
