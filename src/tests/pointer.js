@@ -2,14 +2,14 @@
  * Tests if the user is using a pointer device
  * @module tests/pointer
  */
-define(function(){
+(function(doc,undefined){
 
 	'use strict';
 
 	var _moves = 0;
 	var _movesRequired = 2;
 
-	return {
+	var test = {
 
 		/**
 		 * Setup events, detach events if no activity for 30 seconds
@@ -18,13 +18,13 @@ define(function(){
 		setup:function(measure){
 
 			// start listening to mousemoves to deduce the availability of a pointer device
-			document.addEventListener('mousemove',measure,false);
-			document.addEventListener('mousedown',measure,false);
+			doc.addEventListener('mousemove',measure,false);
+			doc.addEventListener('mousedown',measure,false);
 
 			// start timer, stop testing after 30 seconds
 			setTimeout(function(){
-				document.removeEventListener('mousemove',measure,false);
-				document.removeEventListener('mousedown',measure,false);
+				doc.removeEventListener('mousemove',measure,false);
+				doc.removeEventListener('mousedown',measure,false);
 			},30000);
 
 		},
@@ -43,8 +43,8 @@ define(function(){
 				if (_moves >= _movesRequired) {
 
 					// stop listening to events
-					document.removeEventListener('mousemove',this,false);
-					document.removeEventListener('mousedown',this,false);
+					doc.removeEventListener('mousemove',this,false);
+					doc.removeEventListener('mousedown',this,false);
 
 					return true;
 				}
@@ -66,4 +66,13 @@ define(function(){
 		}
 	};
 
-});
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = test;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function(){return test;});
+    }
+
+}(document));

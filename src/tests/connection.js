@@ -3,18 +3,18 @@
  * Tests if an active network connection is available and monitors this connection
  * @module tests/connection
  */
-define(function(){
+(function(nav,win,undefined){
 
 	'use strict';
 
-	return {
+	var test = {
 
 		/**
 		 * Does this browser support the onLine property
 		 * @returns {Boolean}
 		 */
 		support:function() {
-			return 'onLine' in navigator;
+			return 'onLine' in nav;
 		},
 
 		/**
@@ -22,8 +22,8 @@ define(function(){
 		 * @param {Function} measure
 		 */
 		setup:function(measure) {
-			window.addEventListener('online',measure,false);
-			window.addEventListener('offline',measure,false);
+			win.addEventListener('online',measure,false);
+			win.addEventListener('offline',measure,false);
 		},
 
 		/**
@@ -32,8 +32,17 @@ define(function(){
 		 * @returns {Boolean}
 		 */
 		assert:function(expected) {
-			return expected === 'any' && navigator.onLine;
+			return expected === 'any' && nav.onLine;
 		}
 	};
 
-});
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = test;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function(){return test;});
+    }
+
+}(navigator,window));

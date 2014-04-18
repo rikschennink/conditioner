@@ -12,19 +12,16 @@ var ModuleRegistry = {
 	 */
 	registerModule:function(path,options,alias) {
 
-        var uri = requirejs.toUrl(path),config;
-        this._options[uri] = options;
+        // remember options for absolute path
+        this._options[_options.loader.toUrl(path)] = options;
 
+        // setup redirect from alias
         if (alias) {
             this._redirects[alias] = path;
         }
 
-        config = {};
-        config[path] = options;
-        requirejs.config({
-            config:config
-        });
-
+        // pass configuration to loader
+        _options.loader.config(path,options);
 	},
 
     /**
@@ -49,7 +46,7 @@ var ModuleRegistry = {
 			throw new Error('ModuleRegistry.getModule(path): "path" is a required parameter.');
 		}
 
-        return this._options[path] || this._options[requirejs.toUrl(path)];
+        return this._options[path] || this._options[_options.loader.toUrl(path)];
 
 	}
 

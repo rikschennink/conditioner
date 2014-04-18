@@ -181,9 +181,7 @@ ModuleController.prototype = {
 
 		// load module, and remember reference
 		var self = this;
-
-        // use 'requirejs' instead of 'require' as 'require' would be relative to conditioner in this context
-		requirejs([this._path],function(Module) {
+        _options.loader.load([this._path],function(Module) {
 
             // if module does not export a module quit here
             if (!Module) {

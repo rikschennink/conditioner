@@ -125,7 +125,7 @@ var TestFactory = {
 
 		path = './tests/' + path;
 
-		require([path],function(config){
+        _options.loader([path],function(config){
 
 			var Test = TestFactory._findTest(path);
 			if (!Test) {

@@ -5,6 +5,7 @@ module.exports = function(grunt) {
 		path:{
 			src:'./src',
 			spec:'./spec',
+            dist:'./dist',
 			conditioner:'<%= path.src %>/conditioner',
 			wrapper:'<%= path.src %>/wrapper',
 			tests:'<%= path.src %>/tests',
@@ -15,81 +16,18 @@ module.exports = function(grunt) {
 				   '// Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> - <%= pkg.homepage %>\n' +
 				   '// License: <%= _.map(pkg.licenses, function(x) {return x.type + " (" + x.url + ")";}).join(", ") %>\n'
 		},
-		jasmine:{
-			src:[
-                '<%= path.conditioner %>/UnaryExpression.js',
-                '<%= path.conditioner %>/BinaryExpression.js',
-                '<%= path.conditioner %>/ExpressionFormatter.js',
-                '<%= path.conditioner %>/TestFactory.js',
-                '<%= path.conditioner %>/Tester.js',
-                '<%= path.conditioner %>/ModuleRegistry.js',
-                '<%= path.conditioner %>/ModuleController.js',
-                '<%= path.conditioner %>/NodeController.js',
-                '<%= path.conditioner %>/SyncedControllerGroup.js',
-                '<%= path.conditioner %>/StaticModuleAgent.js',
-                '<%= path.conditioner %>/ConditionModuleAgent.js',
-                '<%= path.conditioner %>/ModuleLoader.js'
-            ],
-			options:{
-                keepRunner:true,
-				specs:'<%= path.spec %>/*.js',
-				helpers:[
-					'<%= path.spec %>/shim/Function.bind.js'
-				],
-				template:require('grunt-template-jasmine-requirejs'),
-				templateOptions:{
-					requireConfig:{
-                        paths:{
-                            'src/conditioner':'../src/conditioner',
-                            'utils':'../src/utils'
-                        },
-                        map:{
-                            '*':{
-                                'utils/extendClass':'../src/utils/extendClass',
-                                'utils/mergeObjects':'../src/utils/mergeObjects',
-                                'utils/Observer':'../src/utils/observer'
-                            }
-                        },
-						baseUrl:'./spec/',
-						callback: function() {
-							require(
-                                    ['utils/Observer',
-                                     'utils/contains',
-                                     'utils/matchesSelector',
-                                     'utils/mergeObjects',
-                                     'utils/extendClass'],function(Observer,contains,matchesSelector,mergeObjects,extendClass) {
-								window['Observer'] = Observer;
-								window['contains'] = contains;
-								window['matchesSelector'] = matchesSelector;
-								window['mergeObjects'] = mergeObjects;
-                                window['extendClass'] = extendClass;
-							});
-						}
-					}
-				}
-			}
-		},
+        mocha:{
+            test:{
+                src:['./spec/runner.html'],
+                options:{
+                    run:false
+                }
+            }
+        },
 		concat:{
 			dist:{
 				options: {
-					banner:'<%= meta.banner %>',
-					process:function(src,path){
-
-						// the following code could probably be improved
-						if (path.indexOf('wrapper/') === -1) {
-
-							// add tab on first line
-							src = '\t' + src;
-
-							// add tabs on other lines
-							src = src.replace(/(\n)+/g,function(match) {
-								return match + '\t';
-							});
-
-						}
-						return src;
-					}
-
+					banner:'<%= meta.banner %>'
 				},
 				src:[
 					'<%= path.wrapper %>/intro.js',
@@ -109,7 +47,7 @@ module.exports = function(grunt) {
 
 					'<%= path.wrapper %>/outro.js'
 				],
-				dest:'dist/<%= pkg.name %>-<%= pkg.version %>.js'
+				dest:'<%= path.dist %>/<%= pkg.name %>-<%= pkg.version %>.js'
 			}
 		},
 		copy:{
@@ -124,7 +62,25 @@ module.exports = function(grunt) {
 				cwd:'<%= path.utils %>',
 				src:'*',
 				dest:'./dist/utils/'
-			}
+			},
+            specUtils:{
+                expand:true,
+                cwd:'<%= copy.utils.dest %>',
+                src:'*',
+                dest:'./spec/lib/utils'
+            },
+            specTests:{
+                expand:true,
+                cwd:'<%= copy.tests.dest %>',
+                src:'*',
+                dest:'./spec/lib/tests'
+            },
+            specLib:{
+                expand:true,
+                cwd:'<%= path.dist %>/',
+                src:'<%= pkg.name %>-<%= pkg.version %>.js',
+                dest:'./spec/lib/'
+            }
 		},
 		uglify:{
 			tests:{
@@ -168,16 +124,15 @@ module.exports = function(grunt) {
 
 	// load tasks
 	grunt.loadNpmTasks('grunt-contrib-jshint');
-	grunt.loadNpmTasks('grunt-contrib-jasmine');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-requirejs');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-mocha');
 
 	// test
-	grunt.registerTask('test',['jshint','jasmine']);
+	grunt.registerTask('test',['lib','jshint','mocha']);
 
 	// build
 	grunt.registerTask('lib',['concat','copy','uglify']);

@@ -2,20 +2,20 @@
  * Tests if the window dimensions match certain expectations
  * @module tests/window
  */
-define(function() {
+(function(win,doc,undefined) {
 
 	'use strict';
 
 	var _width = 0;
 
-	return {
+	var test = {
 
 		/**
 		 * Listen to resize event to measure new window width
 		 * @param {Function} measure
 		 */
 		setup:function(measure) {
-			window.addEventListener('resize',measure,false);
+			win.addEventListener('resize',measure,false);
 		},
 
 		/**
@@ -24,7 +24,7 @@ define(function() {
 		 */
 		measure:function() {
 
-			_width = window.innerWidth || document.documentElement.clientWidth;
+			_width = win.innerWidth || doc.documentElement.clientWidth;
 
 			return true;
 		},
@@ -52,4 +52,13 @@ define(function() {
 		}
 	};
 
-});
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = test;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function(){return test;});
+    }
+
+}(window,document));

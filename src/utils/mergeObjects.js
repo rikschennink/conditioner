@@ -1,8 +1,8 @@
-define(function(){
+(function(win,undefined){
 
     'use strict';
 
-	var exports = function(target,src) {
+	var util = function(target,src) {
 
 		var array = Array.isArray(src);
 		var dst = array && [] || {};
@@ -33,7 +33,7 @@ define(function(){
 						dst[key] = src[key];
 					}
 					else {
-						dst[key] = exports(target[key], src[key]);
+						dst[key] = util(target[key], src[key]);
 					}
 				}
 
@@ -43,5 +43,17 @@ define(function(){
 		return dst;
 	};
 
-	return exports;
-});
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = util;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function(){return util;});
+    }
+    // Browser globals
+    else {
+        win.mergeObjects = util;
+    }
+
+}(window));

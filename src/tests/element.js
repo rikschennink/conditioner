@@ -2,25 +2,25 @@
  * Tests if an elements dimensions match certain expectations
  * @module tests/element
  */
-define(function(){
+(function(win,undefined){
 
 	'use strict';
 
 	var _isVisible = function(element) {
-		var viewHeight = window.innerHeight,
+		var viewHeight = win.innerHeight,
 		bounds = element.getBoundingClientRect();
 		return (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
 	};
 
-	return {
+	var test = {
 
 		/**
 		 * Setup events that trigger reassertion of element
 		 * @param {Function} measure
 		 */
 		setup:function(measure) {
-			window.addEventListener('resize',measure,false);
-			window.addEventListener('scroll',measure,false);
+			win.addEventListener('resize',measure,false);
+			win.addEventListener('scroll',measure,false);
 		},
 
 		/**
@@ -62,4 +62,13 @@ define(function(){
 		}
 	};
 
-});
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = test;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function(){return test;});
+    }
+
+}());

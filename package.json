@@ -5,7 +5,7 @@
   "homepage": "http://conditionerjs.com",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt test"
   },
   "repository": {
     "type": "git",
@@ -39,11 +39,11 @@
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-copy": "^0.5.0",
-    "grunt-contrib-jasmine": "~0.5.3",
     "grunt-contrib-jshint": "~0.10.0",
-    "grunt-contrib-requirejs": "~0.4.3",
     "grunt-contrib-uglify": "^0.4.0",
     "grunt-contrib-watch": "~0.4.3",
-    "grunt-template-jasmine-requirejs": "~0.1.6"
+    "grunt-mocha": "^0.4.10",
+    "chai": "^1.9.1",
+    "requirejs": "^2.1.11"
   }
 }

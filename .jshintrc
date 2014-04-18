@@ -58,5 +58,5 @@
     "onevar"        : false,
     "passfail"      : false,
     "white"         : false,
-    "predef"        : ["require","define","requirejs"]
+    "predef"        : ["module","require","define","requirejs"]
 }

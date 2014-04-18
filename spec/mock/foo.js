@@ -1,7 +1,5 @@
 
-// no dependencies
-
-define(['utils/Observer'],function(Observer){
+define(['Observer'],function(Observer){
 
     var exports = function Foo(element,options) {
 
