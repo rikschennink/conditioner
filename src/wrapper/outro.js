@@ -154,7 +154,6 @@
 
     };
 
-    // https://github.com/umdjs/umd
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
         var Observer = require('./utils/Observer');
@@ -169,7 +168,7 @@
     }
     // Browser globals
     else {
-        throw new Error('Conditioner: To use conditioner you need to setup a module loader.');
+        throw new Error('Conditioner: To use ConditionerJS you need to setup a module loader.');
     }
 
 }());
