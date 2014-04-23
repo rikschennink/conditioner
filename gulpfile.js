@@ -11,6 +11,7 @@ var jshint = require('gulp-jshint');
 var reporter = require('jshint-stylish');
 var wrap = require('gulp-wrap');
 var beautify = require('gulp-beautify');
+var replace = require('gulp-replace');
 
 /**
  * Package data
@@ -33,11 +34,12 @@ var dist = './dist/' + pkg.name + '-' + pkg.version;
 
 var paths = {
     src:'./src/',
+    spec:'./spec/',
     dist:{
         dev:dist + '/',
-        prod:dist + '.min/'
-    },
-    spec:'./spec/'
+        prod:dist + '.min/',
+        spec:'./spec/lib/'
+    }
 };
 
 var files = {
@@ -65,8 +67,9 @@ var copySupportFilesInFolder = function(folder) {
         .src(paths.src + folder + '*')
         .pipe(beautify(beauty))
         .pipe(gulp.dest(paths.dist.dev + folder))
+        .pipe(gulp.dest(paths.dist.spec + folder))
         .pipe(uglify())
-        .pipe(gulp.dest(paths.dist.prod + folder));
+        .pipe(gulp.dest(paths.dist.prod + folder))
 };
 
 gulp.task('_lib',function(){
@@ -74,10 +77,12 @@ gulp.task('_lib',function(){
     return gulp
         .src(files.lib)
         .pipe(concat(pkg.name + '.js'))
-        .pipe(wrap({ src: paths.src + 'factory.ejs'}))
+        .pipe(wrap({ src: paths.src + 'factory.js'}))
+        .pipe(replace('// FACTORY ',''))
         .pipe(header(banner,{pkg:pkg}))
         .pipe(beautify(beauty))
         .pipe(gulp.dest(paths.dist.dev))
+        .pipe(gulp.dest(paths.dist.spec))
         .pipe(uglify())
         .pipe(size())
         .pipe(gulp.dest(paths.dist.prod));
@@ -101,7 +106,7 @@ gulp.task('test',['build'],function(){
     // do mocha tests, but wait for build
     return gulp
         .src(paths.spec + 'runner.html')
-        .pipe(mocha());
+        .pipe(mocha({reporter:'spec'}))
 
 });
 

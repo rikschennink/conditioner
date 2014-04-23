@@ -1080,7 +1080,7 @@
                     // reset processed state
                     this._element.removeAttribute(_options.attr.processed);
 
-                    // reset element reference
+                    // clear reference
                     this._element = null;
                 },
 
@@ -1195,7 +1195,7 @@
                         mc;
                     for (; i < l; i++) {
                         mc = this._moduleControllers[i];
-                        if (!mc.matchesPath(path)) {
+                        if (!mc.wrapsModuleWithPath(path)) {
                             continue;
                         }
                         if (singleResult) {
@@ -1497,7 +1497,7 @@
                     // no longer listen to change events on the tester
                     Observer.unsubscribe(this._testers[i], 'change', this._onResultsChangedBind);
 
-                    // further look into unloading the manufactured Test itself
+                    // todo: further look into unloading the manufactured Test itself
                 }
 
                 this._testers = [];
@@ -1726,6 +1726,25 @@
             },
 
             /**
+             * Destroy the passed node reference
+             * @param node {NodeController}
+             * @return {Boolean}
+             * @public
+             */
+            destroyNode: function (node) {
+                var i = this._nodes.length;
+                while (i--) {
+                    if (this._nodes[i] !== node) {
+                        continue;
+                    }
+                    this._nodes.splice(i, 1);
+                    node.destroy();
+                    return true;
+                }
+                return false;
+            },
+
+            /**
              * Returns one or multiple nodes matching the selector
              * @param {String} [selector] - Optional selector to match the nodes to
              * @param {Document|Element} [context] - Context to search in
@@ -1865,6 +1884,7 @@
             /**
              * Initialises the conditioner and parses the document for modules
              * @param {Object} [options] - optional options to override
+             * @return {Array} of initialized nodes
              * @public
              */
             init: function (options) {
@@ -1873,7 +1893,7 @@
                     this.setOptions(options);
                 }
 
-                _loader.parse(document);
+                return _loader.parse(document);
 
             },
 
@@ -1885,7 +1905,7 @@
             setOptions: function (options) {
 
                 if (!options) {
-                    throw new Error('ModuleLoader.setOptions(options): "options" is a required parameter.');
+                    throw new Error('Conditioner.setOptions(options): "options" is a required parameter.');
                 }
 
                 var config, path, mod, alias;
@@ -1978,6 +1998,16 @@
              */
             getNodes: function (selector, context) {
                 return _loader.getNodes(selector, context, false);
+            },
+
+            /**
+             * Destroy the passed node reference
+             * @param node {NodeController}
+             * @return {Boolean}
+             * @public
+             */
+            destroyNode: function (node) {
+                return _loader.destroyNode(node);
             }
 
         };

@@ -50,7 +50,7 @@ ConditionModuleAgent.prototype = {
             // no longer listen to change events on the tester
             Observer.unsubscribe(this._testers[i],'change',this._onResultsChangedBind);
 
-            // further look into unloading the manufactured Test itself
+            // todo: further look into unloading the manufactured Test itself
 
         }
 

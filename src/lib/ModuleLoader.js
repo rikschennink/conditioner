@@ -121,6 +121,23 @@ ModuleLoader.prototype = {
         return node;
     },
 
+    /**
+     * Destroy the passed node reference
+     * @param node {NodeController}
+     * @return {Boolean}
+     * @public
+     */
+    destroyNode:function(node){
+        var i=this._nodes.length;
+        while(i--) {
+            if (this._nodes[i]!==node) {continue;}
+            this._nodes.splice(i,1);
+            node.destroy();
+            return true;
+        }
+        return false;
+    },
+
 	/**
 	 * Returns one or multiple nodes matching the selector
 	 * @param {String} [selector] - Optional selector to match the nodes to

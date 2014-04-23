@@ -91,7 +91,7 @@ var NodeController = (function(){
             // reset processed state
             this._element.removeAttribute(_options.attr.processed);
 
-            // reset element reference
+            // clear reference
             this._element = null;
         },
 
@@ -203,7 +203,7 @@ var NodeController = (function(){
             var i=0,l=this._moduleControllers.length,results=[],mc;
             for (;i<l;i++) {
                 mc = this._moduleControllers[i];
-                if (!mc.matchesPath(path)) {
+                if (!mc.wrapsModuleWithPath(path)) {
                     continue;
                 }
                 if (singleResult) {

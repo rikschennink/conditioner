@@ -5,7 +5,7 @@
     // returns conditioner API
     var factory = function(require,Observer,contains,matchesSelector,mergeObjects) {
 
-        <%= contents %>
+        // FACTORY <%= contents %>
 
         // conditioner options object
         var _options = {
@@ -45,6 +45,7 @@
             /**
              * Initialises the conditioner and parses the document for modules
              * @param {Object} [options] - optional options to override
+             * @return {Array} of initialized nodes
              * @public
              */
             init:function(options){
@@ -53,7 +54,7 @@
                     this.setOptions(options);
                 }
 
-                _loader.parse(document);
+                return _loader.parse(document);
 
             },
 
@@ -65,7 +66,7 @@
             setOptions:function(options){
 
                 if (!options) {
-                    throw new Error('ModuleLoader.setOptions(options): "options" is a required parameter.');
+                    throw new Error('Conditioner.setOptions(options): "options" is a required parameter.');
                 }
 
                 var config,path,mod,alias;
@@ -156,6 +157,16 @@
              */
             getNodes:function(selector,context) {
                 return _loader.getNodes(selector,context,false);
+            },
+
+            /**
+             * Destroy the passed node reference
+             * @param node {NodeController}
+             * @return {Boolean}
+             * @public
+             */
+            destroyNode:function(node) {
+                return _loader.destroyNode(node);
             }
 
         };

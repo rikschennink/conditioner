@@ -3,9 +3,9 @@ require.config({
 });
 
 require([
-    'ObserverSpec',
-    'ConditionerSpec',
-    'extendsClassSpec'
+    'UtilsSpec',
+    'APISpec',
+    'ObjectSpec'
 ],function(){
     (window.mochaPhantomJS ? window.mochaPhantomJS : mocha).run();
 });
