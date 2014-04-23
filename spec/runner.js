@@ -1,9 +1,5 @@
 require.config({
-    urlArgs:'bust=' + (new Date()).getTime()//,
-
-    //paths:{
-    //    //'Observer':'lib/utils/Observer'
-   // }
+    urlArgs:'bust=' + (new Date()).getTime()
 });
 
 require([
