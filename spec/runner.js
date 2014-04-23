@@ -1,12 +1,10 @@
 require.config({
     map:{
         '*':{
-            'conditioner':'lib/conditioner-1.0.0.js'
+            'conditioner':'../dist/conditioner-1.0.0/conditioner.js',
+            'Observer':'../dist/conditioner-1.0.0/utils/Observer.js',
+            'extendClass':'../dist/conditioner-1.0.0/utils/extendClass'
         }
-    },
-    paths:{
-        'extendClass':'../spec/lib/utils/extendClass',
-        'Observer':'../spec/lib/utils/Observer'
     },
     urlArgs:'bust=' + (new Date()).getTime()
 });
@@ -14,4 +12,6 @@ require.config({
 require([
     'ObserverSpec',
     'ConditionerSpec'
-],mocha.run);
+],function(){
+    (window.mochaPhantomJS ? window.mochaPhantomJS : mocha).run();
+});
