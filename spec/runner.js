@@ -1,17 +1,15 @@
 require.config({
-    map:{
-        '*':{
-            'conditioner':'../dist/conditioner-1.0.0/conditioner.js',
-            'Observer':'../dist/conditioner-1.0.0/utils/Observer.js',
-            'extendClass':'../dist/conditioner-1.0.0/utils/extendClass'
-        }
-    },
-    urlArgs:'bust=' + (new Date()).getTime()
+    urlArgs:'bust=' + (new Date()).getTime()//,
+
+    //paths:{
+    //    //'Observer':'lib/utils/Observer'
+   // }
 });
 
 require([
     'ObserverSpec',
-    'ConditionerSpec'
+    'ConditionerSpec',
+    'extendsClassSpec'
 ],function(){
     (window.mochaPhantomJS ? window.mochaPhantomJS : mocha).run();
 });

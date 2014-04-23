@@ -1,4 +1,4 @@
-define(['conditioner'],function(conditioner){
+define(['lib/conditioner'],function(conditioner){
 
     'use strict';
 

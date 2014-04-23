@@ -8,6 +8,7 @@ var header = require('gulp-header');
 var mocha = require('gulp-mocha-phantomjs');
 var size = require('gulp-size');
 var jshint = require('gulp-jshint');
+var reporter = require('jshint-stylish');
 var wrap = require('gulp-wrap');
 var beautify = require('gulp-beautify');
 
@@ -56,6 +57,9 @@ var files = {
     ]
 };
 
+/**
+ * 'Private' tasks
+ */
 var copySupportFilesInFolder = function(folder) {
     return gulp
         .src(paths.src + folder + '*')
@@ -64,17 +68,6 @@ var copySupportFilesInFolder = function(folder) {
         .pipe(uglify())
         .pipe(gulp.dest(paths.dist.prod + folder));
 };
-
-/**
- * 'Private' tasks
- */
-gulp.task('_hint',['build'],function() {
-
-    return gulp
-        .src(paths.dist.dev + pkg.name + '.js')
-        .pipe(jshint())
-        .pipe(jshint.reporter('default'));
-});
 
 gulp.task('_lib',function(){
 
@@ -103,22 +96,28 @@ gulp.task('_plugins',function() {
 /**
  * 'Public' tasks
  */
-gulp.task('test',['build','_hint'],function(){
+gulp.task('test',['build'],function(){
 
+    // do mocha tests, but wait for build
     return gulp
         .src(paths.spec + 'runner.html')
         .pipe(mocha());
 
 });
 
-gulp.task('build',['_lib','_utils','_plugins'],function(ready) {
+gulp.task('build',['_lib','_utils','_plugins'],function() {
 
-    ready();
+    // hint build results, but wait for lib to build
+    return gulp
+        .src(paths.dist.dev + pkg.name + '.js')
+        .pipe(jshint())
+        .pipe(jshint.reporter(reporter));
 
 });
 
-gulp.task('dev',['test'],function(){
+gulp.task('dev',['test'],function() {
 
+    // watch but first test current
     gulp.watch([paths.src + '**/*',paths.spec + '*.js'],['test']);
 
 });
