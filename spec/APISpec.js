@@ -327,6 +327,22 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
         });
 
+        describe('test(expression)',function(){
+
+            it('will return a promise',function(done){
+
+                conditioner.test('media:{(min-width:40em)}').then(function(result){
+
+                    expect(result).to.be.ok;
+
+                    done();
+
+                });
+
+            });
+
+        });
+
     });
 
 });
