@@ -150,6 +150,14 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
         describe('parse(context)',function(){
 
+            it('will throw an error when no context supplied',function(){
+
+                // act, assert
+                var attemptToParseNodes = function(){conditioner.parse()};
+                expect(attemptToParseNodes).to.throw(Error);
+
+            });
+
             it('will throw an error on malformed "data-module" attributes',function(){
 
                 // arrange
@@ -295,6 +303,20 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
             });
 
+
+
+
+
+            it('will parse an expression like "{expression:here}"',function(){
+
+
+
+
+
+            });
+
+
+
         });
 
         describe('Node Queries',function() {
@@ -381,6 +403,101 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
                     // assert
                     expect(conditioner.getNodes('.beta',d).length).to.equal(2);
+
+                });
+
+            });
+
+
+        });
+
+        describe('sync([Array])',function(){
+
+            var a, b, c, group, results, syncGroup;
+
+            beforeEach(function(){
+
+                // if syncGroup already defined, kill it now
+                if (syncGroup) {
+                    syncGroup.destroy();
+                }
+
+                // arrange
+                a = document.createElement('div');
+                a.id = 'a';
+                a.className = 'alpha';
+                a.setAttribute('data-module','mock/foo');
+
+                b = document.createElement('div');
+                b.id = 'b';
+                b.className = 'beta';
+                b.setAttribute('data-module','mock/foo');
+
+                c = document.createElement('div');
+                c.id = 'c';
+                c.className = 'beta';
+                c.setAttribute('data-module','mock/foo');
+
+                group = document.createElement('div');
+                group.appendChild(a);
+                group.appendChild(b);
+                group.appendChild(c);
+
+                // act
+                results = conditioner.parse(group);
+                syncGroup = conditioner.sync(results);
+
+            });
+
+            it('will return a sync group object',function(){
+
+                expect(syncGroup).to.be.an('object');
+
+            });
+
+            it('will fire a \'load\' event once all modules in the group have loaded',function(done){
+
+                Observer.subscribe(syncGroup,'load',function(){
+                    done();
+                });
+
+            });
+
+            it('will fire an \'unload\' event once a module in the group unloads',function(done){
+
+                Observer.subscribe(syncGroup,'load',function(){
+
+                    Observer.subscribe(syncGroup,'unload',function(){
+                        done();
+                    });
+
+                    // publish fake unload event
+                    Observer.publish(results[0],'unload');
+
+                });
+
+
+            });
+
+            it('will clean up after calling the destroy method',function(done){
+
+                Observer.subscribe(syncGroup,'load',function(){
+
+                    var block = false;
+                    Observer.subscribe(syncGroup,'unload',function(){
+                        block = true;
+                    });
+
+                    // destroy group
+                    syncGroup.destroy();
+
+                    // publish fake unload event
+                    Observer.publish(results[0],'unload');
+
+                    // should reach this point
+                    if (!block) {
+                        done();
+                    }
 
                 });
 

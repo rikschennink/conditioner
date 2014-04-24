@@ -106,7 +106,7 @@ gulp.task('test',['build'],function(){
     // do mocha tests, but wait for build
     return gulp
         .src(paths.spec + 'runner.html')
-        .pipe(mocha({reporter:'spec'}))
+        .pipe(mocha({reporter:'spec'}));
 
 });
 

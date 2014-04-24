@@ -206,32 +206,7 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
         });
 
-        describe('SyncedControllerGroup',function(){
-
-            // 'load', 'unload'
-
-            // destroy
-
-        });
-
         describe('ModuleController',function(){
-
-            // 'init', 'available', 'load', 'unload'
-
-            // hasInitialized
-
-            // getModulePath
-
-            // isModuleAvailable
-
-            // isModuleActive
-
-            // wrapsModuleWithPath
-
-            // execute
-
-            // destroy
-
 
             var mc;
 

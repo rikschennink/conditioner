@@ -101,6 +101,12 @@
              * @return {Array} - Array of found Nodes
              */
             parse:function(context) {
+
+                // if no context supplied, throw error
+                if (!context) {
+                    throw new Error('Conditioner.parse(context): "context" is a required parameter.');
+                }
+
                 return _loader.parse(context);
             },
 

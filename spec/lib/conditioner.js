@@ -1370,7 +1370,7 @@
              * @private
              */
             _isActiveController: function (controller) {
-                return ((controller.isModuleActive && controller.isModuleActive()) || (controller.areModulesActive && controller.areModulesActive()));
+                return ((controller.isModuleActive && controller.isModuleActive()) || (controller.areAllModulesActive && controller.areAllModulesActive()));
             },
 
             /**
@@ -1942,6 +1942,12 @@
              * @return {Array} - Array of found Nodes
              */
             parse: function (context) {
+
+                // if no context supplied, throw error
+                if (!context) {
+                    throw new Error('Conditioner.parse(context): "context" is a required parameter.');
+                }
+
                 return _loader.parse(context);
             },
 

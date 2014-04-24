@@ -76,7 +76,7 @@ SyncedControllerGroup.prototype = {
      */
     _isActiveController:function(controller) {
         return ((controller.isModuleActive && controller.isModuleActive()) ||
-                (controller.areModulesActive && controller.areModulesActive()));
+                (controller.areAllModulesActive && controller.areAllModulesActive()));
     },
 
     /**

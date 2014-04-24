@@ -1,4 +1,4 @@
-(function(){
+define(function(){
 
 	'use strict';
 
@@ -13,7 +13,7 @@
 			var result = ExpressionFormatter.getExpressionsCount(expression);
 
 			// assert
-			expect(result).toBe(3);
+			expect(result).to.equal(3);
 
 		});
 
@@ -73,7 +73,7 @@
 					result = parse(key).toString();
 
 					// assert
-					expect(result).toBe(expressions[key]);
+					expect(result).to.equal(expressions[key]);
 
 				});
 
@@ -81,7 +81,6 @@
 
 		}
 
-
 	});
 
-}());
+});
