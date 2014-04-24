@@ -145,9 +145,64 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
             });
 
-            // execute
+            describe('execute(method,[params])',function(){
 
-            // destroy
+                it('will return an array with a response for each module controller',function(){
+
+                    var results = node.execute('ping');
+                    expect(results).to.be.an('array');
+
+                });
+
+                it('will return a result object for each module controller in the array',function(){
+
+                    var results = node.execute('ping');
+
+                    expect(results[0].result).to.be.an('object');
+
+                });
+
+                it('will return 404 status when a module is not available',function(){
+
+                    var results = node.execute('ping');
+
+                    expect(results[0].result.status).to.equal(404);
+
+                });
+
+                it('will return 200 status when a module is available',function(done){
+
+                    var counter=0;
+
+                    Observer.subscribe(node,'load',function() {
+
+                        if (++counter<2){return;}
+
+                        var results = node.execute('ping');
+                        expect(results[0].result.status).to.equal(200);
+
+                        done();
+                    });
+
+                });
+
+                it('will return the executed method\'s response when the module is available',function(done){
+
+                    var counter=0;
+
+                    Observer.subscribe(node,'load',function() {
+
+                        if (++counter<2){return;}
+
+                        var results = node.execute('ping');
+                        expect(results[0].result.response).to.be.ok;
+
+                        done();
+                    });
+
+                });
+
+            });
 
         });
 
@@ -176,8 +231,6 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
             // execute
 
             // destroy
-
-
 
 
             var mc;

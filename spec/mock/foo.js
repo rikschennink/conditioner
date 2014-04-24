@@ -22,6 +22,7 @@ define(['lib/utils/Observer'],function(Observer){
 
         ping:function() {
             Observer.publish(this,'ping');
+            return true;
         }
 
     };
