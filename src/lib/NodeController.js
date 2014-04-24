@@ -79,7 +79,7 @@ var NodeController = (function(){
 
             var i=0,l=this._moduleControllers.length;
             for (;i<l;i++) {
-                this._destroyModuleController(this._moduleControllers[i]);
+                this._destroyModule(this._moduleControllers[i]);
             }
 
             // reset array
@@ -100,7 +100,7 @@ var NodeController = (function(){
          * @param moduleController
          * @private
          */
-        _destroyModuleController:function(moduleController) {
+        _destroyModule:function(moduleController) {
 
             // unsubscribe from module events
             Observer.unsubscribe(moduleController,'available',this._moduleAvailableBind);
@@ -150,7 +150,7 @@ var NodeController = (function(){
          * @public
          */
         areAllModulesActive:function() {
-            return this.getActiveModuleControllers().length === this._moduleControllers.length;
+            return this.getActiveModules().length === this._moduleControllers.length;
         },
 
         /**
@@ -158,18 +158,18 @@ var NodeController = (function(){
          * @return {Array}
          * @public
          */
-        getActiveModuleControllers:function() {
+        getActiveModules:function() {
             return this._moduleControllers.filter(_filterIsActiveModule);
         },
 
         /**
          * Returns the first ModuleController matching the given path
-         * @param {String} [path] to module
+         * @param {String} [path] - module id
          * @return {ModuleController|null}
          * @public
          */
-        getModuleController:function(path) {
-            return this._getModuleControllers(path,true);
+        getModule:function(path) {
+            return this._getModules(path,true);
         },
 
         /**
@@ -178,8 +178,8 @@ var NodeController = (function(){
          * @return {Array}
          * @public
          */
-        getModuleControllers:function(path) {
-            return this._getModuleControllers(path);
+        getModules:function(path) {
+            return this._getModules(path);
         },
 
         /**
@@ -189,7 +189,7 @@ var NodeController = (function(){
          * @returns {Array|ModuleController|null}
          * @private
          */
-        _getModuleControllers:function(path,singleResult) {
+        _getModules:function(path,singleResult) {
 
             // if no path supplied return all module controllers (or one if single result mode)
             if (typeof path === 'undefined') {
@@ -259,7 +259,7 @@ var NodeController = (function(){
             this._updateAttribute(_options.attr.loading,this._moduleControllers.filter(_filterIsAvailableModule));
 
             // update initialized attribute with currently active module controllers list
-            this._updateAttribute(_options.attr.initialized,this.getActiveModuleControllers());
+            this._updateAttribute(_options.attr.initialized,this.getActiveModules());
         },
 
         /**
@@ -277,7 +277,7 @@ var NodeController = (function(){
             Observer.conceal(moduleController,this);
 
             // update initialized attribute with now active module controllers list
-            this._updateAttribute(_options.attr.initialized,this.getActiveModuleControllers());
+            this._updateAttribute(_options.attr.initialized,this.getActiveModules());
         },
 
         /**

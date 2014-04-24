@@ -63,50 +63,50 @@ define(function() {
 
         });
 
-        describe('.getModuleController([path])',function(){
+        describe('.getModule([path])',function(){
 
             it('will return the first module controller if no path supplied',function(){
 
-                var mc = nc.getModuleController();
+                var mc = nc.getModule();
                 expect(mc).to.be.defined;
 
             });
 
             it('will return the first matched module controller when a path is supplied',function(){
 
-                var mc = nc.getModuleController('mock/foo');
+                var mc = nc.getModule('mock/foo');
                 expect(mc).to.be.defined;
 
             });
 
             it('will return null if no matches found',function(){
 
-                var mc = nc.getModuleController('mock/trololo');
+                var mc = nc.getModule('mock/trololo');
                 expect(mc).to.not.be.defined;
 
             });
 
         });
 
-        describe('.getModuleControllers([path])',function(){
+        describe('.getModules([path])',function(){
 
             it('will always return an array',function(){
 
-                var mcs = nc.getModuleControllers();
+                var mcs = nc.getModules();
                 expect(mcs).to.be.an('array');
 
             });
 
             it('will return the all module controllers if no path supplied',function(){
 
-                var mcs = nc.getModuleControllers();
+                var mcs = nc.getModules();
                 expect(mcs.length).to.equal(3);
 
             });
 
             it('will return the matched module controllers when a path is supplied',function(){
 
-                var mcs = nc.getModuleControllers('mock/bar');
+                var mcs = nc.getModules('mock/bar');
                 expect(mcs[0].getModulePath()).to.equal('mock/bar');
 
             });
@@ -193,7 +193,7 @@ define(function() {
                         done();
                     });
 
-                    Observer.publish(nc.getModuleController(),'unload',this);
+                    Observer.publish(nc.getModule(),'unload',this);
                 });
 
             });

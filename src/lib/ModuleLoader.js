@@ -144,7 +144,7 @@ ModuleLoader.prototype = {
 	 * @param {Document|Element} [context] - Context to search in
 	 * @param {Boolean} [singleResult] - Optional boolean to only ask one result
 	 * @returns {Array|Node|null}
-	 * @private
+	 * @public
 	 */
 	getNodes:function(selector,context,singleResult) {
 

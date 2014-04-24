@@ -1068,7 +1068,7 @@
                     var i = 0,
                         l = this._moduleControllers.length;
                     for (; i < l; i++) {
-                        this._destroyModuleController(this._moduleControllers[i]);
+                        this._destroyModule(this._moduleControllers[i]);
                     }
 
                     // reset array
@@ -1089,7 +1089,7 @@
                  * @param moduleController
                  * @private
                  */
-                _destroyModuleController: function (moduleController) {
+                _destroyModule: function (moduleController) {
 
                     // unsubscribe from module events
                     Observer.unsubscribe(moduleController, 'available', this._moduleAvailableBind);
@@ -1139,7 +1139,7 @@
                  * @public
                  */
                 areAllModulesActive: function () {
-                    return this.getActiveModuleControllers().length === this._moduleControllers.length;
+                    return this.getActiveModules().length === this._moduleControllers.length;
                 },
 
                 /**
@@ -1147,18 +1147,18 @@
                  * @return {Array}
                  * @public
                  */
-                getActiveModuleControllers: function () {
+                getActiveModules: function () {
                     return this._moduleControllers.filter(_filterIsActiveModule);
                 },
 
                 /**
                  * Returns the first ModuleController matching the given path
-                 * @param {String} [path] to module
+                 * @param {String} [path] - module id
                  * @return {ModuleController|null}
                  * @public
                  */
-                getModuleController: function (path) {
-                    return this._getModuleControllers(path, true);
+                getModule: function (path) {
+                    return this._getModules(path, true);
                 },
 
                 /**
@@ -1167,8 +1167,8 @@
                  * @return {Array}
                  * @public
                  */
-                getModuleControllers: function (path) {
-                    return this._getModuleControllers(path);
+                getModules: function (path) {
+                    return this._getModules(path);
                 },
 
                 /**
@@ -1178,7 +1178,7 @@
                  * @returns {Array|ModuleController|null}
                  * @private
                  */
-                _getModuleControllers: function (path, singleResult) {
+                _getModules: function (path, singleResult) {
 
                     // if no path supplied return all module controllers (or one if single result mode)
                     if (typeof path === 'undefined') {
@@ -1251,7 +1251,7 @@
                     this._updateAttribute(_options.attr.loading, this._moduleControllers.filter(_filterIsAvailableModule));
 
                     // update initialized attribute with currently active module controllers list
-                    this._updateAttribute(_options.attr.initialized, this.getActiveModuleControllers());
+                    this._updateAttribute(_options.attr.initialized, this.getActiveModules());
                 },
 
                 /**
@@ -1269,7 +1269,7 @@
                     Observer.conceal(moduleController, this);
 
                     // update initialized attribute with now active module controllers list
-                    this._updateAttribute(_options.attr.initialized, this.getActiveModuleControllers());
+                    this._updateAttribute(_options.attr.initialized, this.getActiveModules());
                 },
 
                 /**
@@ -1766,7 +1766,7 @@
              * @param {Document|Element} [context] - Context to search in
              * @param {Boolean} [singleResult] - Optional boolean to only ask one result
              * @returns {Array|Node|null}
-             * @private
+             * @public
              */
             getNodes: function (selector, context, singleResult) {
 
@@ -1959,12 +1959,12 @@
              */
             parse: function (context) {
 
-                // if no context supplied, throw error
                 if (!context) {
                     throw new Error('Conditioner.parse(context): "context" is a required parameter.');
                 }
 
                 return _loader.parse(context);
+
             },
 
             /**
@@ -1983,7 +1983,9 @@
              * @return {NodeController|null} - The newly created node or null if something went wrong
              */
             load: function (element, controllers) {
+
                 return _loader.load(element, controllers);
+
             },
 
             /**
@@ -2000,6 +2002,7 @@
                 SyncedControllerGroup.apply(group, arguments.length === 1 && !arguments.slice ? arguments[0] : arguments);
 
                 return group;
+
             },
 
             /**
@@ -2009,7 +2012,9 @@
              * @return {Node|null} First matched node or null
              */
             getNode: function (selector, context) {
+
                 return _loader.getNodes(selector, context, true);
+
             },
 
             /**
@@ -2019,7 +2024,9 @@
              * @return {Array} Array containing matched nodes or empty Array
              */
             getNodes: function (selector, context) {
+
                 return _loader.getNodes(selector, context, false);
+
             },
 
             /**
@@ -2029,7 +2036,57 @@
              * @public
              */
             destroyNode: function (node) {
+
                 return _loader.destroyNode(node);
+
+            },
+
+            /**
+             * Returns the first Module matching the selector
+             * @param {String} path - Optional path to match the modules to
+             * @param {String} selector - Optional selector to match the nodes to
+             * @param {Document|Element} [context] - Context to search in
+             * @public
+             */
+            getModule: function (path, selector, context) {
+
+                var i = 0,
+                    results = this.getNodes(selector, context),
+                    l = results.length,
+                    module;
+                for (; i < l; i++) {
+                    module = results[i].getModule(path);
+                    if (module) {
+                        return module;
+                    }
+                }
+                return null;
+
+            },
+
+            /**
+             * Returns multiple modules matching the given path
+             * @param {String} path - Optional path to match the modules to
+             * @param {String} selector - Optional selector to match the nodes to
+             * @param {Document|Element} [context] - Context to search in
+             * @returns {Array|Node|null}
+             * @public
+             */
+            getModules: function (path, selector, context) {
+
+                var i = 0,
+                    results = this.getNodes(selector, context),
+                    l = results.length,
+                    filtered = [],
+                    modules;
+                for (; i < l; i++) {
+                    modules = results[i].getModules(path);
+                    if (modules.length) {
+                        filtered = filtered.concat(modules);
+                    }
+                }
+                return filtered;
+
             }
 
         };
@@ -2038,11 +2095,7 @@
 
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
-        var Observer = require('./utils/Observer');
-        var contains = require('./utils/contains');
-        var matchesSelector = require('./utils/matchesSelector');
-        var mergeObjects = require('./utils/mergeObjects');
-        module.exports = factory(require, Observer, contains, matchesSelector, mergeObjects);
+        module.exports = factory(require, require('./utils/Observer'), require('./utils/contains'), require('./utils/matchesSelector'), require('./utils/mergeObjects'));
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {

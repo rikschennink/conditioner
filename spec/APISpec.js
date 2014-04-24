@@ -175,12 +175,12 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
                 b = document.createElement('div');
                 b.id = 'b';
                 b.className = 'beta';
-                b.setAttribute('data-module','mock/foo');
+                b.setAttribute('data-module','mock/bar');
 
                 c = document.createElement('div');
                 c.id = 'c';
                 c.className = 'beta';
-                c.setAttribute('data-module','mock/foo');
+                c.setAttribute('data-module','mock/baz');
 
                 group = document.createElement('div');
                 group.appendChild(a);
@@ -217,6 +217,115 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
         });
 
+        describe('getModule(path,selector,context)',function(){
+
+            var a, b, c, group, results;
+
+            beforeEach(function(){
+
+                // arrange
+                a = document.createElement('div');
+                a.id = 'a';
+                a.className = 'alpha';
+                a.setAttribute('data-module','mock/foo');
+
+                b = document.createElement('div');
+                b.id = 'b';
+                b.className = 'beta';
+                b.setAttribute('data-module','mock/bar');
+
+                c = document.createElement('div');
+                c.id = 'c';
+                c.className = 'beta';
+                c.setAttribute('data-module','mock/baz');
+
+                group = document.createElement('div');
+                group.appendChild(a);
+                group.appendChild(b);
+                group.appendChild(c);
+
+                // act
+                results = conditioner.parse(group);
+
+            });
+
+            it('will return the first module controller if no path supplied',function(){
+
+                var mc = conditioner.getModule();
+                expect(mc.getModulePath()).to.equal(a.getAttribute('data-module'));
+
+            });
+
+            it('will return the first matched module controller when a path is supplied',function(){
+
+                var mc = conditioner.getModule('mock/bar');
+                expect(mc.getModulePath()).to.equal(b.getAttribute('data-module'));
+
+            });
+
+            it('will return null if no matches found',function(){
+
+                var mc = conditioner.getModule('mock/trololo');
+                expect(mc).to.not.be.defined;
+
+            });
+
+        });
+
+        describe('getModules(path,selector,context)',function(){
+
+            var a, b, c, group, results;
+
+            beforeEach(function(){
+
+                // arrange
+                a = document.createElement('div');
+                a.id = 'a';
+                a.className = 'alpha';
+                a.setAttribute('data-module','mock/foo');
+
+                b = document.createElement('div');
+                b.id = 'b';
+                b.className = 'beta';
+                b.setAttribute('data-module','mock/foo');
+
+                c = document.createElement('div');
+                c.id = 'c';
+                c.className = 'beta';
+                c.setAttribute('data-module','mock/baz');
+
+                group = document.createElement('div');
+                group.appendChild(a);
+                group.appendChild(b);
+                group.appendChild(c);
+
+                // act
+                results = conditioner.parse(group);
+
+            });
+
+            it('will return all module controllers if no path supplied',function(){
+
+                var mcs = conditioner.getModules();
+                expect(mcs.length).to.equal(results.length);
+
+            });
+
+            it('will return the first matched module controller when a path is supplied',function(){
+
+                var mcs = conditioner.getModules('mock/foo','.beta');
+                expect(mcs.length).to.equal(1);
+
+            });
+
+            it('will return empty array if no matches found',function(){
+
+                var mcs = conditioner.getModules('mock/trololo');
+                expect(mcs.length).to.equal(0);
+
+            });
+
+        });
 
     });
 
