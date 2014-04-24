@@ -5,7 +5,7 @@
   "homepage": "http://conditionerjs.com",
   "main": "index.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
@@ -35,15 +35,18 @@
   "readmeFilename": "README.md",
   "dependencies": {},
   "devDependencies": {
-    "grunt": "~0.4.4",
-    "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-copy": "^0.5.0",
-    "grunt-contrib-jshint": "~0.10.0",
-    "grunt-contrib-uglify": "^0.4.0",
-    "grunt-contrib-watch": "~0.4.3",
-    "grunt-mocha": "^0.4.10",
     "chai": "^1.9.1",
+    "gulp": "^3.6.1",
+    "gulp-beautify": "^1.0.3",
+    "gulp-concat": "^2.2.0",
+    "gulp-header": "^1.0.2",
+    "gulp-jshint": "^1.5.3",
+    "gulp-mocha-phantomjs": "^0.1.4",
+    "gulp-replace": "^0.2.0",
+    "gulp-size": "^0.3.0",
+    "gulp-uglify": "^0.2.1",
+    "gulp-wrap": "^0.3.0",
+    "jshint-stylish": "^0.1.5",
     "requirejs": "^2.1.11"
   }
 }

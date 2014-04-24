@@ -1,5 +1,5 @@
 
-define(['Observer'],function(Observer){
+define(['lib/utils/Observer'],function(Observer){
 
     var exports = function Foo(element,options) {
 
@@ -22,6 +22,7 @@ define(['Observer'],function(Observer){
 
         ping:function() {
             Observer.publish(this,'ping');
+            return true;
         }
 
     };

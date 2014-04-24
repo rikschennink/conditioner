@@ -1,184 +1,188 @@
-(function(){
+define(function() {
 
-	'use strict';
+    'use strict';
 
-	describe('ModuleLoader',function(){
+    describe('ModuleLoader', function() {
 
-		it('will throw error when passing no value to setOptions()',function(){
+        describe('.parse(context)',function(){
 
-			// arrange, oops forgot to set options
-			// var options = {}
+            var a, b, c,results;
 
-			// act
-			var loader = new ModuleLoader();
+            beforeEach(function(){
 
-			// assert
-			expect(function(){loader.setOptions();}).toThrow(
-				new Error('ModuleLoader.setOptions(options): "options" is a required parameter.')
-			);
+                // arrange
+                a = document.createElement('div');
+                a.setAttribute('data-module','mock/foo');
+                a.setAttribute('data-priority','-1');
 
-		});
+                b = document.createElement('div');
+                b.setAttribute('data-priority','1');
+                b.setAttribute('data-module','mock/foo');
 
-		it('will return exactly two nodes when asked to parse a certain part of the DOM',function(){
+                c = document.createElement('div');
+                c.setAttribute('data-module','mock/foo');
 
-			// arrange
-			var a = document.createElement('div');
-			a.setAttribute('data-module','../spec/mock/foo');
+                var group = document.createElement('div');
+                group.appendChild(a);
+                group.appendChild(b);
+                group.appendChild(c);
 
-			var b = document.createElement('div');
-			b.setAttribute('data-module','../spec/mock/foo');
+                // act
+                var moduleLoader = new ModuleLoader();
+                results = moduleLoader.parse(group);
 
-			var group = document.createElement('div');
-			group.appendChild(a);
-			group.appendChild(b);
-
-			// act
-			var loader = new ModuleLoader();
-			var results = loader.parse(group);
-
-			// assert
-			expect(function(){return typeof results !== 'undefined'}).toBeTruthy();
-			expect(results.length).toEqual(2);
-
-		});
-
-		it('will return the right order of nodes when using the data-priority attribute',function(){
-
-			// arrange
-			var a = document.createElement('div');
-			a.setAttribute('data-module','../spec/mock/foo');
-			a.setAttribute('data-priority','-1');
-
-			var b = document.createElement('div');
-			b.setAttribute('data-priority','1');
-			b.setAttribute('data-module','../spec/mock/foo');
-
-			var c = document.createElement('div');
-			c.setAttribute('data-module','../spec/mock/foo');
-
-			var group = document.createElement('div');
-			group.appendChild(a);
-			group.appendChild(b);
-			group.appendChild(c);
-
-			// act
-			var loader = new ModuleLoader();
-			var results = loader.parse(group);
-
-			// assert
-			expect(function(){return typeof results !== 'undefined'}).toBeTruthy();
-			expect(results[2].getPriority()).toEqual(1);
-			expect(results[1].getPriority()).toEqual(0);
-			expect(results[0].getPriority()).toEqual(-1);
-
-		});
-
-		it('will return the correct node when calling "getNode()"',function(){
-
-			// arrange
-			var a = document.createElement('div');
-			a.id = 'a';
-			a.setAttribute('data-module','../spec/mock/foo');
-
-			var b = document.createElement('div');
-			b.id = 'b';
-			b.setAttribute('data-module','../spec/mock/foo');
-
-			var group = document.createElement('div');
-			group.appendChild(a);
-			group.appendChild(b);
-
-			// act
-			var loader = new ModuleLoader();
-			loader.parse(group);
-
-			// assert
-			expect(loader.getNode('#b')).toBeDefined();
-
-		});
-
-        it('will throw an error on malformed "data-module" attributes',function(){
-
-            // arrange
-            var a = document.createElement('div');
-            a.setAttribute('data-module','../spec/mock/foo');
-
-            var b = document.createElement('div');
-            b.setAttribute('data-module','[{"../spec/mock/foo"},{]');
-
-            var group = document.createElement('div');
-            group.appendChild(a);
-            group.appendChild(b);
-
-            // act
-            var loader = new ModuleLoader();
-
-            // assert
-            expect(function(){loader.parse(group);}).toThrow(
-                new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.')
-            );
-
-        });
-
-        it('will ignore an empty "data-conditions" attribute',function(){
-
-            // arrange
-            var a = document.createElement('div');
-            a.setAttribute('data-module','../spec/mock/foo');
-            a.setAttribute('data-conditions','');
-
-            var group = document.createElement('div');
-            group.appendChild(a);
-
-            // act
-            var loader = new ModuleLoader();
-            var results = loader.parse(group);
-
-            // assert
-            expect(results.length).toEqual(1);
-
-        });
-        it('will instantiate correct node on module when using aliases',function(){
-
-            // arrange
-            var node = document.createElement('div');
-            node.setAttribute('data-module','IFoo');
-
-            var group = document.createElement('div');
-            group.appendChild(node);
-
-            // act
-            var loader = new ModuleLoader();
-            loader.setOptions({
-                'modules':{
-                    '../spec/mock/foo':'IFoo'
-                }
             });
-            var results = loader.parse(group);
 
-            // assert
-            expect(results.length).toEqual(1);
+            it('will throw an error on malformed "data-module" attributes',function(){
+
+                // arrange
+                var a = document.createElement('div');
+                a.setAttribute('data-module','[{"mock/foo"},{]');
+
+                var group = document.createElement('div');
+                group.appendChild(a);
+
+                // act, assert
+                var attemptToParseNodes = function(){
+                    var moduleLoader = new ModuleLoader();
+                    moduleLoader.parse(group);
+                };
+                expect(attemptToParseNodes).to.throw(Error);
+
+            });
+
+            it('will always return an array',function(){
+
+                // assert
+                expect(results).to.be.an('array');
+            });
+
+            it('will return the right amount of node controllers',function(){
+
+                // assert
+                expect(results.length).to.equal(3);
+
+            });
+
+            it('will return the right order of nodes when using the "data-priority" attribute',function(){
+
+                // assert
+                expect(results[2].getPriority()).to.equal(1);
+                expect(results[1].getPriority()).to.equal(0);
+                expect(results[0].getPriority()).to.equal(-1);
+
+            });
+
+            it('will ignore an empty "data-conditions" attribute',function(){
+
+                // arrange
+                var a = document.createElement('div');
+                a.setAttribute('data-module','mock/foo');
+                a.setAttribute('data-conditions','');
+
+                var group = document.createElement('div');
+                group.appendChild(a);
+
+                // act
+                var moduleLoader = new ModuleLoader();
+                var results = moduleLoader.parse(group);
+
+                // assert
+                expect(results.length).to.equal(1);
+
+            });
+
 
         });
 
-        it('will parse and return the correct node priority',function(){
+        describe('.getNodes([selector,[context,[single]]])',function() {
 
-            // arrange
-            var node = document.createElement('div');
-            node.setAttribute('data-module','../spec/mock/foo');
-            node.setAttribute('data-priority','5');
-            var group = document.createElement('div');
-            group.appendChild(node);
+            var a, b, c, d, group, results, moduleLoader;
 
-            // act
-            var loader = new ModuleLoader();
-            var results = loader.parse(group);
+            beforeEach(function(){
 
-            // assert
-            expect(results[0].getPriority()).toEqual(5);
+                // arrange
+                a = document.createElement('div');
+                a.id = 'a';
+                a.className = 'alpha';
+                a.setAttribute('data-module','mock/foo');
+
+                b = document.createElement('div');
+                b.id = 'b';
+                b.className = 'beta';
+                b.setAttribute('data-module','mock/foo');
+
+                c = document.createElement('div');
+                c.id = 'c';
+                c.className = 'beta';
+                c.setAttribute('data-module','mock/foo');
+
+                d = document.createElement('div');
+                d.id = 'd';
+                d.className = 'beta';
+                d.setAttribute('data-module','mock/foo');
+
+                d.appendChild(b);
+                d.appendChild(c);
+
+                group = document.createElement('div');
+                group.appendChild(a);
+                group.appendChild(d);
+
+                // act
+                moduleLoader = new ModuleLoader();
+                results = moduleLoader.parse(group);
+
+            });
+
+            it('will return first node when given no parameters',function(){
+
+                // assert
+                expect(moduleLoader.getNodes(undefined,undefined,true).getElement().id).to.equal(a.id);
+
+            });
+
+            it('will return the correct node when passing selector',function(){
+
+                // assert
+                expect(moduleLoader.getNodes('.beta',undefined,true).getElement().id).to.equal(d.id);
+
+            });
+
+            it('will return the correct node when passing a selector within a context',function(){
+
+                // assert
+                expect(moduleLoader.getNodes('.beta',d,true).getElement().id).to.equal(b.id);
+
+            });
+
+            it('will return all nodes when given no parameters', function () {
+
+                // assert
+                expect(moduleLoader.getNodes(undefined,undefined,false).length).to.equal(4);
+
+            });
+
+            it('will return specific nodes when matches on selector', function () {
+
+                // assert
+                expect(moduleLoader.getNodes('.beta',undefined,false).length).to.equal(3);
+
+            });
+
+            it('will return specific nodes when matches on selector within a context', function () {
+
+                // assert
+                expect(moduleLoader.getNodes('.beta',d,false).length).to.equal(2);
+
+            });
 
         });
 
-	});
 
-}());
+
+    });
+
+
+
+});

@@ -3,29 +3,29 @@
 <head>
     <meta charset="utf-8">
     <title>Tests</title>
-    <link rel="stylesheet" href="../node_modules/grunt-mocha/node_modules/mocha/mocha.css"/>
+    <link rel="stylesheet" href="../node_modules/gulp-mocha/node_modules/mocha/mocha.css"/>
 </head>
 <body>
 
-<div id="mocha"></div>
+    <div id="mocha"></div>
 
-<!-- shim -->
-<script src="shim/Function.bind.js"></script>
+    <!-- shim -->
+    <script src="shim/Function.bind.js"></script>
 
-<!-- load mocha -->
-<script src="../node_modules/grunt-mocha/node_modules/mocha/mocha.js"></script>
-<script>
-    mocha.setup('bdd');
-</script>
+    <!-- load mocha -->
+    <script src="../node_modules/gulp-mocha/node_modules/mocha/mocha.js"></script>
+    <script>
+        mocha.setup('bdd');
+    </script>
 
-<!-- load chai -->
-<script src="../node_modules/chai/chai.js"></script>
-<script>
-    var expect = chai.expect;
-</script>
+    <!-- load chai -->
+    <script src="../node_modules/chai/chai.js"></script>
+    <script>
+        var expect = chai.expect;
+    </script>
 
-<!-- go requirejs -->
-<script data-main="runner" src="../node_modules/requirejs/require.js"></script>
+    <!-- go requirejs -->
+    <script data-main="runner" src="../node_modules/requirejs/require.js"></script>
 
 </body>
 </html>

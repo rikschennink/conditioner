@@ -1,27 +1,27 @@
-define(['Observer'],function(Observer){
+define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer) {
 
     'use strict';
 
     // setup mock object
-    var Mock = function(async){
+    var Mock = function (async) {
         if (async) {
-            Observer.publishAsync(this,'load');
+            Observer.publishAsync(this, 'load');
         }
         else {
-            Observer.publish(this,'load')
+            Observer.publish(this, 'load')
         }
     };
 
     Mock.prototype = {
-        ping:function() {
-            Observer.publish(this,'ping');
+        ping: function () {
+            Observer.publish(this, 'ping');
         }
     };
 
 
     describe('Observer',function(){
 
-        describe('subscribe(object,event,callback)',function(){
+        describe('.subscribe(object,event,callback)',function(){
 
             it('will attach events',function(){
 
@@ -65,7 +65,7 @@ define(['Observer'],function(Observer){
 
         });
 
-        describe('unsubscribe(object,event)',function(){
+        describe('.unsubscribe(object,event)',function(){
 
             it('will detach events',function(){
 
@@ -86,7 +86,7 @@ define(['Observer'],function(Observer){
 
         });
 
-        describe('inform(informer,receiver)',function(){
+        describe('.inform(informer,receiver)',function(){
 
             it('will pass events to receiver',function(){
 
@@ -110,7 +110,7 @@ define(['Observer'],function(Observer){
 
         });
 
-        describe('conceal(informer,receiver)',function(){
+        describe('.conceal(informer,receiver)',function(){
 
             it('will stop events from being passed to receiver',function(){
 
