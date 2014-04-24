@@ -13,7 +13,7 @@ var SyncedControllerGroup = function() {
     this._inSync = false;
 
     // turn arguments into an array
-    this._controllers = Array.prototype.slice.call(arguments,0);
+    this._controllers = arguments.length === 1 ? arguments[0] : Array.prototype.slice.call(arguments,0);
     this._controllerLoadedBind = this._onLoad.bind(this);
     this._controllerUnloadedBind = this._onUnload.bind(this);
 

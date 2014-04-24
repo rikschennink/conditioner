@@ -1,1 +1,0 @@
-!function(a,b){"use strict";var c={support:function(){return"onLine"in a},setup:function(a){b.addEventListener("online",a,!1),b.addEventListener("offline",a,!1)},assert:function(b){return"any"===b&&a.onLine}};"undefined"!=typeof module&&module.exports?module.exports=c:"function"==typeof define&&define.amd&&define(function(){return c})}(navigator,window);
