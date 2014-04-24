@@ -192,16 +192,25 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
             });
 
-            it('will return a sync group object when passing Array',function(){
+            it('will throw an error when passing undefined',function(){
 
-                var syncGroup = conditioner.sync(results);
-                expect(syncGroup).to.be.an('object');
+                var syncIt = function(){
+                    conditioner.sync(results[0],undefined,results[1],results[2]);
+                };
+                expect(syncIt).to.throw(Error);
 
             });
 
             it('will return a sync group object when passing Arguments',function(){
 
                 var syncGroup = conditioner.sync(results[0],results[1],results[2]);
+                expect(syncGroup).to.be.an('object');
+
+            });
+
+            it('will return a sync group object when passing Array',function(){
+
+                var syncGroup = conditioner.sync(results);
                 expect(syncGroup).to.be.an('object');
 
             });

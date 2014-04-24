@@ -21,6 +21,11 @@ var SyncedControllerGroup = function() {
     for (;i<l;i++) {
         controller = this._controllers[i];
 
+        // if controller is undefined
+        if (!controller) {
+            throw new Error('SyncedControllerGroup(controllers): Stumbled upon an undefined controller is undefined.');
+        }
+
         // listen to load and unload events so we can pass them on if appropriate
         Observer.subscribe(controller,'load',this._controllerLoadedBind);
         Observer.subscribe(controller,'unload',this._controllerUnloadedBind);
