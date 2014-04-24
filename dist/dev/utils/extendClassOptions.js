@@ -47,7 +47,7 @@
     }
     // Browser globals
     else {
-        win.extendClassWithOptions = util;
+        win.extendClassOptions = util;
     }
 
 }(window));

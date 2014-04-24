@@ -30,14 +30,12 @@ var beauty = {
     indentChar:'\t'
 };
 
-var dist = './dist/' + pkg.name + '-' + pkg.version;
-
 var paths = {
     src:'./src/',
     spec:'./spec/',
     dist:{
-        dev:dist + '/',
-        prod:dist + '.min/',
+        dev:'./dist/dev/',
+        prod:'./dist/min/',
         spec:'./spec/lib/'
     }
 };

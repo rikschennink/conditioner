@@ -64,6 +64,21 @@ define(['lib/utils/Observer'],function(Observer){
 
         });
 
+        describe('areAllModulesActive()',function(){
+
+            it('will return true if all modules are in sync',function(done){
+
+                Observer.subscribe(syncGroup,'load',function(){
+
+                    expect(syncGroup.areAllModulesActive()).to.be.ok;
+                    done();
+
+                });
+
+            });
+
+        });
+
         describe('"events"',function(){
 
             it('will fire a \'load\' event once all modules in the group have loaded',function(done){

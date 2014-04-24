@@ -1348,6 +1348,23 @@
             },
 
             /**
+             * Returns true if all modules have loaded
+             * @returns {Boolean}
+             */
+            areAllModulesActive: function () {
+                var i = 0,
+                    l = this._controllers.length,
+                    controller;
+                for (; i < l; i++) {
+                    controller = this._controllers[i];
+                    if (!this._isActiveController(controller)) {
+                        return false;
+                    }
+                }
+                return true;
+            },
+
+            /**
              * Called when a module loads
              * @private
              */
@@ -1380,14 +1397,8 @@
             _test: function () {
 
                 // loop over modules testing their active state, if one is inactive we stop immediately
-                var i = 0,
-                    l = this._controllers.length,
-                    controller;
-                for (; i < l; i++) {
-                    controller = this._controllers[i];
-                    if (!this._isActiveController(controller)) {
-                        return;
-                    }
+                if (!this.areAllModulesActive()) {
+                    return;
                 }
 
                 // if all modules loaded fire load event

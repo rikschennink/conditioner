@@ -1,4 +1,4 @@
-(function (win, undefined) {
+(function(win,undefined){
 
     'use strict';
 
@@ -6,12 +6,11 @@
      * JavaScript Inheritance
      * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_Revisited
      */
-    var util = function () {
+    var util = function() {
 
         // get child constructor
-        var Child = arguments[arguments.length - 1],
-            first = arguments[0],
-            req, path;
+        var Child = arguments[arguments.length-1],
+            first = arguments[0],req,path;
 
         if (typeof first === 'string') {
             req = requirejs;
@@ -41,13 +40,11 @@
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
-        define(function () {
-            return util;
-        });
+        define(function(){return util;});
     }
     // Browser globals
     else {
-        win.extendClassWithOptions = util;
+        win.extendClassOptions = util;
     }
 
 }(window));
