@@ -2,72 +2,8 @@
 
     'use strict';
 
-    // Promise
-    // https://gist.github.com/814052/690a6b41dc8445479676b347f1ed49f4fd0b1637
-    function Promise () {
-        this._thens = [];
-    }
-
-    // jshint ignore:start
-    Promise.prototype = {
-
-        /* This is the "front end" API. */
-
-        // then(onResolve, onReject): Code waiting for this promise uses the
-        // then() method to be notified when the promise is complete. There
-        // are two completion callbacks: onReject and onResolve. A more
-        // robust promise implementation will also have an onProgress handler.
-        then: function (onResolve, onReject) {
-            // capture calls to then()
-            this._thens.push({ resolve: onResolve, reject: onReject });
-        },
-
-        // Some promise implementations also have a cancel() front end API that
-        // calls all of the onReject() callbacks (aka a "cancelable promise").
-        // cancel: function (reason) {},
-
-        /* This is the "back end" API. */
-
-        // resolve(resolvedValue): The resolve() method is called when a promise
-        // is resolved (duh). The resolved value (if any) is passed by the resolver
-        // to this method. All waiting onResolve callbacks are called
-        // and any future ones are, too, each being passed the resolved value.
-        resolve: function (val) { this._complete('resolve', val); },
-
-        // reject(exception): The reject() method is called when a promise cannot
-        // be resolved. Typically, you'd pass an exception as the single parameter,
-        // but any other argument, including none at all, is acceptable.
-        // All waiting and all future onReject callbacks are called when reject()
-        // is called and are passed the exception parameter.
-        reject: function (ex) { this._complete('reject', ex); },
-
-        // Some promises may have a progress handler. The back end API to signal a
-        // progress "event" has a single parameter. The contents of this parameter
-        // could be just about anything and is specific to your implementation.
-        // progress: function (data) {},
-
-        /* "Private" methods. */
-
-        _complete: function (which, arg) {
-            // switch over to sync then()
-
-            this.then = which === 'resolve' ?
-                function (resolve, reject) { resolve(arg); } :
-                function (resolve, reject) { reject(arg); };
-            // disallow multiple calls to resolve or reject
-            this.resolve = this.reject =
-                function () { throw new Error('Promise already completed.'); };
-            // complete all waiting (async) then()s
-            var aThen, i = 0;
-            while (aThen = this._thens[i++]) { aThen[which] && aThen[which](arg); }
-            delete this._thens;
-        }
-
-    };
-    // jshint ignore:end
-
     // returns conditioner API
-    var factory = function(require,Observer,contains,matchesSelector,mergeObjects) {
+    var factory = function(require,Observer,Promise,contains,matchesSelector,mergeObjects) {
 
         // FACTORY <%= contents %>
 
@@ -291,18 +227,25 @@
 
             /**
              * Manual run an expression
-             * @param {String} expression - Expression to test
+             * @param {String} conditions - Expression to test
+             * @param {Element} [element] - Optional element to run the test on
              * @returns {Promise}
              */
-            test:function(expression) {
+            test:function(conditions,element) {
 
+                if (!conditions) {
+                    throw new Error('Conditioner.test(conditions): "conditions" is a required parameter.');
+                }
+
+                // run test and resolve with first received state
                 var p = new Promise();
+                WebContext.test(conditions,element,function(valid){
 
-                setTimeout(function(){
+                    console.log(conditions,valid);
 
-                    p.resolve(expression ? true : false);
+                    p[valid ? 'resolve' : 'reject']();
 
-                },500);
+                });
 
                 return p;
 
@@ -316,6 +259,7 @@
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = factory(require,
             require('./utils/Observer'),
+            require('./utils/Promise'),
             require('./utils/contains'),
             require('./utils/matchesSelector'),
             require('./utils/mergeObjects')
@@ -323,7 +267,7 @@
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
-        define(['require','./utils/Observer','./utils/contains','./utils/matchesSelector','./utils/mergeObjects'], factory);
+        define(['require','./utils/Observer','./utils/Promise','./utils/contains','./utils/matchesSelector','./utils/mergeObjects'], factory);
     }
     // Browser globals
     else {

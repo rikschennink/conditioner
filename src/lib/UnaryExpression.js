@@ -1,32 +1,13 @@
 /**
  * @class
  * @constructor
- * @param {BinaryExpression|Tester|object} expression
+ * @param {UnaryExpression|BinaryExpression|Test} expression
  * @param {Boolean} negate
  */
 var UnaryExpression = function(expression,negate) {
 
-	this._expression = expression instanceof BinaryExpression || expression instanceof UnaryExpression ? expression : null;
-
-	this._config = this._expression ? null : expression;
-
+	this._expression = expression;
 	this._negate = typeof negate === 'undefined' ? false : negate;
-
-};
-
-/**
- * Sets test reference
- * @param {Tester} tester
- */
-UnaryExpression.prototype.assignTester = function(tester) {
-
-	this._expression = tester;
-
-};
-
-UnaryExpression.prototype.getConfig = function() {
-
-	return this._config ? [{'expression':this,'config':this._config}] : this._expression.getConfig();
 
 };
 
@@ -34,16 +15,22 @@ UnaryExpression.prototype.getConfig = function() {
  * Tests if valid expression
  * @returns {Boolean}
  */
-UnaryExpression.prototype.succeeds = function() {
-
-	if (!this._expression.succeeds) {
-		return false;
-	}
-
-	return this._expression.succeeds() !== this._negate;
-
+UnaryExpression.prototype.isTrue = function() {
+	return this._expression.isTrue() !== this._negate;
 };
 
+/**
+ * Returns tests contained in this expression
+ * @returns Array
+ */
+UnaryExpression.prototype.getTests = function() {
+    return this._expression instanceof Test ? [this._expression] : this._expression.getTests();
+};
+
+/**
+ * Cast to string
+ * @returns {string}
+ */
 UnaryExpression.prototype.toString = function() {
-	return (this._negate ? 'not ' : '') + (this._expression ? this._expression.toString() : this._config.path + ':{' + this._config.value + '}');
+	return (this._negate ? 'not ' : '') + this._expression.toString();
 };

@@ -17,16 +17,24 @@ var BinaryExpression = function(a,operator,b) {
  * Tests if valid expression
  * @returns {Boolean}
  */
-BinaryExpression.prototype.succeeds = function() {
+BinaryExpression.prototype.isTrue = function() {
 
 	return this._operator === 'and' ?
 
 		// is 'and' operator
-		this._a.succeeds() && this._b.succeeds() :
+		this._a.isTrue() && this._b.isTrue() :
 
 		// is 'or' operator
-		this._a.succeeds() || this._b.succeeds();
+		this._a.isTrue() || this._b.isTrue();
 
+};
+
+/**
+ * Returns tests contained in this expression
+ * @returns Array
+ */
+BinaryExpression.prototype.getTests = function() {
+    return this._a.getTests().concat(this._b.getTests());
 };
 
 /**
@@ -35,14 +43,4 @@ BinaryExpression.prototype.succeeds = function() {
  */
 BinaryExpression.prototype.toString = function() {
 	return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
-};
-
-/**
- * Returns the configuration of this expression
- * @returns {Array}
- */
-BinaryExpression.prototype.getConfig = function() {
-
-	return [this._a.getConfig(),this._b.getConfig()];
-
 };

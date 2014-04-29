@@ -1,24 +1,13 @@
-var ExpressionFormatter = {
-
-	/**
-	 * Returns the amount of sub expressions contained in the supplied expression
-	 * @memberof ExpressionFormatter
-	 * @param {String} expression
-	 * @returns {Number}
-	 * @public
-	 */
-	getExpressionsCount:function(expression) {
-		return expression.match(/(:\{)/g).length;
-	},
+var ExpressionParser = {
 
 	/**
 	 * Parses an expression in string format and returns the same expression formatted as an expression tree
 	 * @memberof ExpressionFormatter
 	 * @param {String} expression
-	 * @returns {Array}
+	 * @returns {Object}
 	 * @public
 	 */
-	fromString:function(expression) {
+	parse:function(expression) {
 
 		var i=0,
 			path = '',
@@ -33,6 +22,7 @@ var ExpressionFormatter = {
 			lastIndex,
 			index,
 			operator,
+            test,
 			j,
 			c,
 			k,
@@ -89,8 +79,14 @@ var ExpressionFormatter = {
 				// if negate overwrite not operator location in array
 				index = negate ? lastIndex : lastIndex+1;
 
-				// add expression
-				target[index] = new UnaryExpression({'path':path,'value':value},negate);
+                // setup test
+                test = new Test(path,value);
+
+                // add expression
+				target[index] = new UnaryExpression(
+                    test,
+                    negate
+                );
 
 				// reset vars
 				path = '';
@@ -208,7 +204,10 @@ var ExpressionFormatter = {
 		}
 
 		// return final expression tree
-		return tree.length === 1 ? tree[0] : tree;
+        //return {
+        return tree.length === 1 ? tree[0] : tree;
+        //     tests:test
+        //};
 
 	}
 

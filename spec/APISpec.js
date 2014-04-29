@@ -327,17 +327,46 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
         });
 
-        describe('test(expression)',function(){
+        describe('test(conditions)',function(){
 
-            it('will return a promise',function(done){
+            it('will throw an error when no test passed',function(){
 
-                conditioner.test('media:{(min-width:40em)}').then(function(result){
+                var testIt = function(){conditioner.test();};
+                expect(testIt).to.throw(Error);
 
-                    expect(result).to.be.ok;
+            });
 
-                    done();
+            /*
+            it('will return a promise',function(){
 
-                });
+                expect(conditioner.test('bool:{true}').then).to.be.defined;
+
+            });
+            */
+
+            it('will call resolve method on test assertion success',function(done){
+
+                conditioner.test('bool:{true}').then(
+                    function(){ // true
+                        done();
+                    },
+                    function() { // false
+
+                    }
+                );
+
+            });
+
+            it('will call reject method on test assertion failure',function(done){
+
+                conditioner.test('bool:{false}').then(
+                    function(){ // true
+
+                    },
+                    function() { // false
+                        done();
+                    }
+                );
 
             });
 

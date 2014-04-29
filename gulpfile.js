@@ -42,11 +42,16 @@ var paths = {
 
 var files = {
     lib:[
+
+        './src/lib/Test.js',
+        './src/lib/Condition.js',
+        './src/lib/WebContext.js',
+        './src/lib/MonitorFactory.js',
+
         './src/lib/UnaryExpression.js',
         './src/lib/BinaryExpression.js',
-        './src/lib/ExpressionFormatter.js',
-        './src/lib/TestFactory.js',
-        './src/lib/Tester.js',
+        './src/lib/ExpressionParser.js',
+
         './src/lib/ModuleRegistry.js',
         './src/lib/ModuleController.js',
         './src/lib/NodeController.js',
@@ -92,7 +97,7 @@ gulp.task('_utils',function(){
 });
 
 gulp.task('_plugins',function() {
-    return copySupportFilesInFolder('tests/');
+    return copySupportFilesInFolder('monitors/');
 });
 
 

@@ -23,6 +23,8 @@
         setup: function (measure) {
             win.addEventListener('online', measure, false);
             win.addEventListener('offline', measure, false);
+
+            return this;
         },
 
         /**

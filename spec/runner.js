@@ -7,11 +7,16 @@ require.config({
     },
     shim:{
         'lib/conditioner':[
+
+            'src/lib/MonitorFactory.js',
+            'src/lib/Test.js',
+            'src/lib/Condition.js',
+            'src/lib/WebContext.js',
+
             'src/lib/UnaryExpression.js',
             'src/lib/BinaryExpression.js',
-            'src/lib/ExpressionFormatter.js',
-            'src/lib/TestFactory.js',
-            'src/lib/Tester.js',
+            'src/lib/ExpressionParser.js',
+
             'src/lib/ModuleRegistry.js',
             'src/lib/ModuleController.js',
             'src/lib/NodeController.js',
@@ -26,25 +31,29 @@ require.config({
 require([
 
     // globals
-    'lib/utils/Observer','lib/utils/contains','lib/utils/matchesSelector','lib/utils/mergeObjects',
+    'lib/utils/Observer','lib/utils/Promise','lib/utils/contains','lib/utils/matchesSelector','lib/utils/mergeObjects',
 
+    /*
     // utils
     'ObserverSpec.js',
     'extendClassOptionsSpec.js',
 
     // inner
-    'ExpressionFormatterSpec',
+    'ExpressionParserSpec',
+    'MonitorSpec',
+    'TesterSpec',
 
     // exposed
     'ModuleControllerSpec',
     'NodeControllerSpec',
     'ModuleLoaderSpec',
     'SyncedControllerGroupSpec',
+    */
 
     // API
     'APISpec'
 
-],function(Observer,contains,matchesSelector,mergeObjects){
+],function(Observer,Promise,contains,matchesSelector,mergeObjects){
 
     // setup base options
     window._options = {
@@ -77,6 +86,7 @@ require([
 
     // globals required for inner library workings
     window.Observer = Observer;
+    window.Promise = Promise;
     window.contains = contains;
     window.matchesSelector = matchesSelector;
     window.mergeObjects = mergeObjects;

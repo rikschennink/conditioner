@@ -5,11 +5,45 @@ var ConditionModuleAgent = function(conditions,element) {
         return;
     }
 
+    var self = this;
+    this._state = false;
+
+    WebContext.test(conditions,element,function(state){
+
+        // something changed
+        self._state = state;
+
+        // notify others of this state change
+        Observer.publish(self,'change');
+
+    });
+
+
+    // register
+    /*
+    TestPanel.test(conditions,element,function(state){
+
+        // something changed
+
+    });
+
+    // tester
+    this._tester = new Tester();
+    this._tester.assign(conditions,element).next(
+
+        // ready for testing
+        function(){},
+
+        // something went horribly wrong
+        function(){}
+    );
+    */
+
+
+    /*
+
     // conditions supplied, conditions are now unsuitable by default
     this._suitable = false;
-
-    // set element reference
-    this._element = element;
 
     // remember tester references in this array for later removal
     this._testers = [];
@@ -26,6 +60,10 @@ var ConditionModuleAgent = function(conditions,element) {
     // load tests to expression tree
     this._loadExpressionTests(this._expression.getConfig());
 
+    */
+
+
+
 };
 
 ConditionModuleAgent.prototype = {
@@ -36,7 +74,7 @@ ConditionModuleAgent.prototype = {
      * @public
      */
     allowsActivation:function() {
-        return this._suitable;
+        return this._state;
     },
 
     /**
@@ -44,25 +82,12 @@ ConditionModuleAgent.prototype = {
      */
     destroy:function() {
 
-        var i=0,l=this._testers.length;
-        for (;i<l;i++) {
-
-            // no longer listen to change events on the tester
-            Observer.unsubscribe(this._testers[i],'change',this._onResultsChangedBind);
-
-            // todo: further look into unloading the manufactured Test itself
-
-        }
-
-        this._testers = [];
-        this._suitable = false;
-
-    },
+    }
 
     /**
      * Tests if conditions are suitable
      * @fires change
-     */
+
     _test:function() {
 
         // test expression success state
@@ -74,12 +99,13 @@ ConditionModuleAgent.prototype = {
             Observer.publish(this,'change');
         }
     },
+     */
 
     /**
      * Loads test configurations contained in expressions
      * @param {Array} configuration
      * @private
-     */
+
     _loadExpressionTests:function(configuration) {
 
         var i=0,l=configuration.length;
@@ -94,13 +120,13 @@ ConditionModuleAgent.prototype = {
             this._loadTesterToExpression(configuration[i].config,configuration[i].expression);
         }
     },
+     */
 
     /**
      * Loads a tester to supplied expression
      * @param {Object} config
      * @param {UnaryExpression} expression
      * @private
-     */
     _loadTesterToExpression:function(config,expression) {
 
         var self = this,tester;
@@ -127,12 +153,12 @@ ConditionModuleAgent.prototype = {
 
         });
     },
+     */
 
     /**
      * Called when all tests are ready
      * @fires ready
      * @private
-     */
     _onReady:function() {
 
         // test current state
@@ -141,13 +167,14 @@ ConditionModuleAgent.prototype = {
         // we are now ready to start testing
         Observer.publish(this,'ready');
     },
+     */
 
     /**
      * Called when a condition has changed
      * @private
-     */
     _onTestResultsChanged:function() {
         this._test();
     }
+     */
 
 };

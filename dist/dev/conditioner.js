@@ -5,118 +5,345 @@
 
     'use strict';
 
-    // Promise
-    // https://gist.github.com/814052/690a6b41dc8445479676b347f1ed49f4fd0b1637
-
-
-    function Promise() {
-        this._thens = [];
-    }
-
-    // jshint ignore:start
-    Promise.prototype = {
-
-        /* This is the "front end" API. */
-
-        // then(onResolve, onReject): Code waiting for this promise uses the
-        // then() method to be notified when the promise is complete. There
-        // are two completion callbacks: onReject and onResolve. A more
-        // robust promise implementation will also have an onProgress handler.
-        then: function (onResolve, onReject) {
-            // capture calls to then()
-            this._thens.push({
-                resolve: onResolve,
-                reject: onReject
-            });
-        },
-
-        // Some promise implementations also have a cancel() front end API that
-        // calls all of the onReject() callbacks (aka a "cancelable promise").
-        // cancel: function (reason) {},
-        /* This is the "back end" API. */
-
-        // resolve(resolvedValue): The resolve() method is called when a promise
-        // is resolved (duh). The resolved value (if any) is passed by the resolver
-        // to this method. All waiting onResolve callbacks are called
-        // and any future ones are, too, each being passed the resolved value.
-        resolve: function (val) {
-            this._complete('resolve', val);
-        },
-
-        // reject(exception): The reject() method is called when a promise cannot
-        // be resolved. Typically, you'd pass an exception as the single parameter,
-        // but any other argument, including none at all, is acceptable.
-        // All waiting and all future onReject callbacks are called when reject()
-        // is called and are passed the exception parameter.
-        reject: function (ex) {
-            this._complete('reject', ex);
-        },
-
-        // Some promises may have a progress handler. The back end API to signal a
-        // progress "event" has a single parameter. The contents of this parameter
-        // could be just about anything and is specific to your implementation.
-        // progress: function (data) {},
-        /* "Private" methods. */
-
-        _complete: function (which, arg) {
-            // switch over to sync then()
-            this.then = which === 'resolve' ?
-            function (resolve, reject) {
-                resolve(arg);
-            } : function (resolve, reject) {
-                reject(arg);
-            };
-            // disallow multiple calls to resolve or reject
-            this.resolve = this.reject =
-
-            function () {
-                throw new Error('Promise already completed.');
-            };
-            // complete all waiting (async) then()s
-            var aThen, i = 0;
-            while (aThen = this._thens[i++]) {
-                aThen[which] && aThen[which](arg);
-            }
-            delete this._thens;
-        }
-
-    };
-    // jshint ignore:end
     // returns conditioner API
-    var factory = function (require, Observer, contains, matchesSelector, mergeObjects) {
+    var factory = function (require, Observer, Promise, contains, matchesSelector, mergeObjects) {
 
+        /**
+         * Test
+         * @param {String} path to monitor
+         * @param {String} expected value
+         * @constructor
+         */
+        var Test = function (path, expected) {
+
+            this._path = path;
+            this._expected = expected;
+            this._watches = [];
+            this._count = 0;
+
+        };
+
+        Test.prototype = {
+
+            /**
+             * Returns a path to the required monitor
+             * @returns {String}
+             */
+            getPath: function () {
+                return this._path;
+            },
+
+            /**
+             * Returns the expected value
+             * @returns {String}
+             */
+            getExpected: function () {
+                return this._expected;
+            },
+
+            /**
+             * Returns true if monitor currently returns true state
+             * @returns {Boolean}
+             */
+            isTrue: function () {
+                var i = 0,
+                    l = this._count;
+                for (; i < l; i++) {
+                    if (!this._watches[i].valid) {
+                        return false;
+                    }
+                }
+                return true;
+            },
+
+            /**
+             * Assigns a new watch for this test
+             * @param watches
+             */
+            assignWatches: function (watches) {
+                this._watches = watches;
+                this._count = this._watches.length;
+            },
+
+            /**
+             * Returns test in path
+             * @returns {String}
+             */
+            toString: function () {
+                return this._path + ':{' + this._expected + '}';
+            }
+
+        };
+        var Condition = function (expression, callback) {
+
+            // get expression
+            this._expression = expression;
+
+            // on detect change callback
+            this._change = callback;
+
+            // default state is false
+            this._currentState = false;
+
+        };
+
+        Condition.prototype = {
+
+            evaluate: function () {
+
+                var state = this._expression.isTrue();
+                if (state != this._currentState) {
+                    this._currentState = state;
+                    this._change(state);
+                }
+
+            }
+
+        };
+        var WebContext = {
+
+            test: function (query, element, change) {
+
+                var expression, condition, i, tests, l;
+
+                // convert query to expression
+                expression = ExpressionParser.parse(query);
+
+                // condition to evaluate on detect changes
+                condition = new Condition(expression, change);
+
+                // get found test setups from expression and register
+                i = 0;
+                tests = expression.getTests();
+                l = tests.length;
+                for (; i < l; i++) {
+                    this._setupMonitor(
+
+                    // test
+                    tests[i],
+
+                    // related element
+                    element,
+
+                    // re-evaluate this condition on change
+                    condition
+
+                    );
+                }
+
+            },
+
+            _setupMonitor: function (test, element, condition) {
+
+                var i = 0,
+                    l;
+                MonitorFactory.getInstance().create(test, element).then(function (watches) {
+
+                    console.log('create->then', new Date().getTime());
+
+                    // add value watches
+                    l = watches.length;
+                    for (; i < l; i++) {
+
+                        // multiple watches
+                        test.assignWatches(watches[i]);
+
+                        // listen to change event on the watchers
+                        // jshint -W083
+                        Observer.subscribe(watches[i], 'change', function () {
+                            condition.evaluate();
+                        });
+
+                    }
+
+                    // do initial evaluation
+                    condition.evaluate();
+
+                });
+
+            }
+
+        };
+        var MonitorFactory = (function (undefined) {
+
+            var MonitorFactory = function () {
+                this._monitors = [];
+                this._expressions = [];
+            };
+
+            MonitorFactory.prototype = {
+
+                /**
+                 * Parse expression to deduct test names and expected values
+                 * @param expression
+                 * @returns {Array}
+                 */
+                parse: function (expression) {
+
+                    // if earlier parse action found return that one
+                    if (this._expressions[expression]) {
+                        return this._expressions[expression];
+                    }
+
+                    // parse expression
+                    var i = 0,
+                        expressions = expression.split(','),
+                        l = expressions.length,
+                        result = [],
+                        parts;
+                    for (; i < l; i++) {
+                        parts = expressions[i].split(':');
+                        result.push({
+
+                            // test name
+                            test: parts[0],
+
+                            // expected custom value or expect true by default
+                            value: typeof parts[1] === 'undefined' ? true : parts[1]
+
+                        });
+                    }
+
+                    // remember the resulting array
+                    this._expressions[expression] = result;
+                    return result;
+                },
+
+                /**
+                 * Create a new Monitor based on passed configuration
+                 * @param {Test} test
+                 * @param {Element} element
+                 * @returns {Promise}
+                 */
+                create: function (test, element) {
+
+                    // setup promise
+                    var p = new Promise();
+
+                    // path to monitor
+                    var path = test.getPath();
+
+                    // expected value
+                    var expected = test.getExpected();
+
+                    // load monitor configuration
+                    var self = this;
+                    _options.loader.load(['./monitors/' + path], function (setup) {
+
+                        var i = 0,
+                            monitor = self._monitors[path],
+                            l, watch, watches, items, event;
+
+                        // bind trigger events for this setup if not defined yet
+                        if (!monitor) {
+
+                            // setup
+                            monitor = {
+
+                                // bound watches (each watch has own data object)
+                                watches: [],
+
+                                // change method
+                                change: function () {
+                                    i = 0;
+                                    l = monitor.watches.length;
+                                    for (; i < l; i++) {
+                                        monitor.watches[i].test();
+                                    }
+                                }
+
+                            };
+
+                            // setup trigger events manually
+                            if (typeof setup.trigger === 'function') {
+                                setup.trigger(monitor.change, monitor.data);
+                            }
+
+                            // auto bind trigger events
+                            else {
+                                for (event in setup.trigger) {
+                                    if (!setup.trigger.hasOwnProperty(event)) {
+                                        continue;
+                                    }
+                                    setup.trigger[event].addEventListener(event, monitor.change, false);
+                                }
+                            }
+
+                            // test if should remember this monitor or should create a new one on each match
+                            if (!setup.unique) {
+                                self._monitors[path] = monitor;
+                            }
+                        }
+
+                        // add watches
+                        watches = [];
+                        items = monitor.parse ? monitor.parse(expected) : self.parse(expected);
+                        l = items.length;
+
+                        for (; i < l; i++) {
+
+                            watch = {
+
+                                // default state before we've done any tests
+                                valid: false,
+
+                                // setup data holder for this watcher
+                                data: mergeObjects(
+                                setup.data, {
+                                    element: element,
+                                    expected: typeof setup.test === 'function' ? items[i].test : items[i].value
+                                }),
+
+                                // run test
+                                test: (function (fn) {
+                                    return function () {
+                                        this.valid = fn(this.data);
+                                    };
+                                }(typeof setup.test === 'function' ? setup.test : setup.test[items[i].test]))
+
+                            };
+
+                            // run initial test so we have start state
+                            watch.test();
+
+                            // we need to return it for later binding
+                            watches.push(watch);
+                        }
+
+                        // add these new watches to the already existing watches so they receive trigger updates
+                        monitor.watches = monitor.watches.concat(watches);
+
+                        // resolve with the new watches
+                        p.resolve(watches);
+
+                    });
+
+                    return p;
+
+                }
+            };
+
+            var _instance;
+            return {
+                getInstance: function () {
+                    if (!_instance) {
+                        _instance = new MonitorFactory();
+                    }
+                    return _instance;
+                }
+            };
+
+        }());
         /**
          * @class
          * @constructor
-         * @param {BinaryExpression|Tester|object} expression
+         * @param {UnaryExpression|BinaryExpression|Test} expression
          * @param {Boolean} negate
          */
         var UnaryExpression = function (expression, negate) {
 
-            this._expression = expression instanceof BinaryExpression || expression instanceof UnaryExpression ? expression : null;
-
-            this._config = this._expression ? null : expression;
-
+            this._expression = expression;
             this._negate = typeof negate === 'undefined' ? false : negate;
-
-        };
-
-        /**
-         * Sets test reference
-         * @param {Tester} tester
-         */
-        UnaryExpression.prototype.assignTester = function (tester) {
-
-            this._expression = tester;
-
-        };
-
-        UnaryExpression.prototype.getConfig = function () {
-
-            return this._config ? [{
-                'expression': this,
-                'config': this._config
-            }] : this._expression.getConfig();
 
         };
 
@@ -124,18 +351,24 @@
          * Tests if valid expression
          * @returns {Boolean}
          */
-        UnaryExpression.prototype.succeeds = function () {
-
-            if (!this._expression.succeeds) {
-                return false;
-            }
-
-            return this._expression.succeeds() !== this._negate;
-
+        UnaryExpression.prototype.isTrue = function () {
+            return this._expression.isTrue() !== this._negate;
         };
 
+        /**
+         * Returns tests contained in this expression
+         * @returns Array
+         */
+        UnaryExpression.prototype.getTests = function () {
+            return this._expression instanceof Test ? [this._expression] : this._expression.getTests();
+        };
+
+        /**
+         * Cast to string
+         * @returns {string}
+         */
         UnaryExpression.prototype.toString = function () {
-            return (this._negate ? 'not ' : '') + (this._expression ? this._expression.toString() : this._config.path + ':{' + this._config.value + '}');
+            return (this._negate ? 'not ' : '') + this._expression.toString();
         };
         /**
          * @class
@@ -156,16 +389,24 @@
          * Tests if valid expression
          * @returns {Boolean}
          */
-        BinaryExpression.prototype.succeeds = function () {
+        BinaryExpression.prototype.isTrue = function () {
 
             return this._operator === 'and' ?
 
             // is 'and' operator
-            this._a.succeeds() && this._b.succeeds() :
+            this._a.isTrue() && this._b.isTrue() :
 
             // is 'or' operator
-            this._a.succeeds() || this._b.succeeds();
+            this._a.isTrue() || this._b.isTrue();
 
+        };
+
+        /**
+         * Returns tests contained in this expression
+         * @returns Array
+         */
+        BinaryExpression.prototype.getTests = function () {
+            return this._a.getTests().concat(this._b.getTests());
         };
 
         /**
@@ -175,37 +416,16 @@
         BinaryExpression.prototype.toString = function () {
             return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
         };
-
-        /**
-         * Returns the configuration of this expression
-         * @returns {Array}
-         */
-        BinaryExpression.prototype.getConfig = function () {
-
-            return [this._a.getConfig(), this._b.getConfig()];
-
-        };
-        var ExpressionFormatter = {
-
-            /**
-             * Returns the amount of sub expressions contained in the supplied expression
-             * @memberof ExpressionFormatter
-             * @param {String} expression
-             * @returns {Number}
-             * @public
-             */
-            getExpressionsCount: function (expression) {
-                return expression.match(/(:\{)/g).length;
-            },
+        var ExpressionParser = {
 
             /**
              * Parses an expression in string format and returns the same expression formatted as an expression tree
              * @memberof ExpressionFormatter
              * @param {String} expression
-             * @returns {Array}
+             * @returns {Object}
              * @public
              */
-            fromString: function (expression) {
+            parse: function (expression) {
 
                 var i = 0,
                     path = '',
@@ -217,7 +437,7 @@
                     parent = null,
                     parents = [],
                     l = expression.length,
-                    lastIndex, index, operator, j, c, k, n, op, ol, tl;
+                    lastIndex, index, operator, test, j, c, k, n, op, ol, tl;
 
                 if (!target) {
                     target = tree;
@@ -267,11 +487,12 @@
                         // if negate overwrite not operator location in array
                         index = negate ? lastIndex : lastIndex + 1;
 
+                        // setup test
+                        test = new Test(path, value);
+
                         // add expression
-                        target[index] = new UnaryExpression({
-                            'path': path,
-                            'value': value
-                        }, negate);
+                        target[index] = new UnaryExpression(
+                        test, negate);
 
                         // reset vars
                         path = '';
@@ -388,218 +609,10 @@
                 }
 
                 // return final expression tree
+                //return {
                 return tree.length === 1 ? tree[0] : tree;
-
-            }
-
-        };
-        var TestFactory = {
-
-            _tests: {},
-
-            /**
-             * Creates a Test Class based on a given path and test configuration
-             * @param path
-             * @param config
-             * @returns {Test}
-             * @private
-             */
-            _createTest: function (path, config) {
-
-                if (!config.assert) {
-                    throw new Error('TestRegister._addTest(path,config): "config.assert" is a required parameter.');
-                }
-
-                // create Test Class
-                var Test = function () {};
-
-                // setup static methods and properties
-                Test.supported = 'support' in config ? config.support() : true;
-                Test._callbacks = [];
-                Test._ready = false;
-
-                Test._setup = function (test) {
-
-                    // if test is not supported stop here
-                    if (!Test.supported) {
-                        return;
-                    }
-
-                    // push reference to test act method
-                    Test._callbacks.push(test.onchange.bind(test));
-
-                    // if setup done
-                    if (Test._ready) {
-                        return;
-                    }
-
-                    // Test is about to be setup
-                    Test._ready = true;
-
-                    // call test setup method
-                    config.setup.call(Test, Test._measure);
-
-                };
-
-                Test._measure = function (e) {
-
-                    // call change method if defined
-                    var changed = 'measure' in config ? config.measure.call(Test._measure, e) : true;
-
-                    // if result of measurement was a change
-                    if (changed) {
-                        var i = 0,
-                            l = Test._callbacks.length;
-                        for (; i < l; i++) {
-                            Test._callbacks[i](e);
-                        }
-                    }
-
-                };
-
-                // setup instance methods
-                Test.prototype.supported = function () {
-                    return Test.supported;
-                };
-
-                // set change publisher
-                Test.prototype.onchange = function () {
-                    Observer.publish(this, 'change');
-                };
-
-                // set custom or default arrange method
-                if (config.arrange) {
-                    Test.prototype.arrange = function (expected, element) {
-
-                        // if no support, don't arrange
-                        if (!Test.supported) {
-                            return;
-                        }
-
-                        // arrange this test using the supplied arrange method
-                        config.arrange.call(this, expected, element);
-                    };
-                }
-                else {
-                    Test.prototype.arrange = function () {
-                        Test._setup(this);
-                    };
-                }
-
-                // override act method if necessary
-                if (config.measure) {
-                    Test.prototype.measure = config.measure;
-                }
-
-                // set assert method
-                Test.prototype.assert = config.assert;
-
-                // return reference
-                return Test;
-            },
-
-            /**
-             * Searches in cache for a test with the supplied path
-             * @param path
-             * @returns {Test}
-             * @private
-             */
-            _findTest: function (path) {
-                return this._tests[path];
-            },
-
-            /**
-             * Remebers a test for the given path
-             * @param {String} path
-             * @param {Test} Test
-             * @private
-             */
-            _storeTest: function (path, Test) {
-                this._tests[path] = Test;
-            },
-
-            /**
-             * Loads the test with the geiven path
-             * @param {String} path - path to test
-             * @param {function} success - callback method, will be called when test found and instantiated
-             */
-            getTest: function (path, success) {
-
-                path = './tests/' + path;
-
-                _options.loader([path], function (config) {
-
-                    var Test = TestFactory._findTest(path);
-                    if (!Test) {
-
-                        // create the test
-                        Test = TestFactory._createTest(path, config);
-
-                        // remember this test
-                        TestFactory._storeTest(path, Test);
-                    }
-
-                    success(new Test());
-
-                });
-            }
-        };
-        /**
-         * @param {function} test
-         * @param {String} expected
-         * @param {Element} element
-         * @constructor
-         */
-        var Tester = function (test, expected, element) {
-
-            // test and data references
-            this._test = test;
-            this._expected = expected;
-            this._element = element;
-
-            // cache result
-            this._result = false;
-            this._changed = true;
-
-            // listen to changes on test
-            this._onChangeBind = this._onChange.bind(this);
-            Observer.subscribe(this._test, 'change', this._onChangeBind);
-
-            // arrange test
-            this._test.arrange(this._expected, this._element);
-
-        };
-
-        Tester.prototype = {
-
-            /**
-             * Called when the test has changed it's state
-             * @private
-             */
-            _onChange: function () {
-                this._changed = true;
-            },
-
-            /**
-             * Returns true if test assertion successful
-             * @returns {Boolean}
-             */
-            succeeds: function () {
-
-                if (this._changed) {
-                    this._changed = false;
-                    this._result = this._test.assert(this._expected, this._element);
-                }
-
-                return this._result;
-
-            },
-
-            /**
-             * Cleans up object events
-             */
-            destroy: function () {
-                Observer.unsubscribe(this._test, 'change', this._onChangeBind);
+                //     tests:test
+                //};
             }
 
         };
@@ -1544,26 +1557,64 @@
                 return;
             }
 
-            // conditions supplied, conditions are now unsuitable by default
-            this._suitable = false;
+            var self = this;
+            this._state = false;
 
-            // set element reference
-            this._element = element;
+            WebContext.test(conditions, element, function (state) {
 
-            // remember tester references in this array for later removal
-            this._testers = [];
+                // something changed
+                self._state = state;
 
-            // change event bind
-            this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
+                // notify others of this state change
+                Observer.publish(self, 'change');
 
-            // returns the amount of expressions in this expression
-            this._count = ExpressionFormatter.getExpressionsCount(conditions);
+            });
 
-            // load to expression tree
-            this._expression = ExpressionFormatter.fromString(conditions);
 
-            // load tests to expression tree
-            this._loadExpressionTests(this._expression.getConfig());
+            // register
+/*
+    TestPanel.test(conditions,element,function(state){
+
+        // something changed
+
+    });
+
+    // tester
+    this._tester = new Tester();
+    this._tester.assign(conditions,element).next(
+
+        // ready for testing
+        function(){},
+
+        // something went horribly wrong
+        function(){}
+    );
+    */
+
+
+/*
+
+    // conditions supplied, conditions are now unsuitable by default
+    this._suitable = false;
+
+    // remember tester references in this array for later removal
+    this._testers = [];
+
+    // change event bind
+    this._onResultsChangedBind = this._onTestResultsChanged.bind(this);
+
+    // returns the amount of expressions in this expression
+    this._count = ExpressionFormatter.getExpressionsCount(conditions);
+
+    // load to expression tree
+    this._expression = ExpressionFormatter.fromString(conditions);
+
+    // load tests to expression tree
+    this._loadExpressionTests(this._expression.getConfig());
+
+    */
+
+
 
         };
 
@@ -1575,7 +1626,7 @@
              * @public
              */
             allowsActivation: function () {
-                return this._suitable;
+                return this._state;
             },
 
             /**
@@ -1583,113 +1634,100 @@
              */
             destroy: function () {
 
-                var i = 0,
-                    l = this._testers.length;
-                for (; i < l; i++) {
-
-                    // no longer listen to change events on the tester
-                    Observer.unsubscribe(this._testers[i], 'change', this._onResultsChangedBind);
-
-                    // todo: further look into unloading the manufactured Test itself
-                }
-
-                this._testers = [];
-                this._suitable = false;
-
-            },
+            }
 
             /**
              * Tests if conditions are suitable
              * @fires change
+             
+             _test:function() {
+             
+             // test expression success state
+             var suitable = this._expression.succeeds();
+             
+             // fire changed event if environment suitability changed
+             if (suitable != this._suitable) {
+             this._suitable = suitable;
+             Observer.publish(this,'change');
+             }
+             },
              */
-            _test: function () {
-
-                // test expression success state
-                var suitable = this._expression.succeeds();
-
-                // fire changed event if environment suitability changed
-                if (suitable != this._suitable) {
-                    this._suitable = suitable;
-                    Observer.publish(this, 'change');
-                }
-            },
 
             /**
              * Loads test configurations contained in expressions
              * @param {Array} configuration
              * @private
+             
+             _loadExpressionTests:function(configuration) {
+             
+             var i=0,l=configuration.length;
+             
+             for (;i<l;i++) {
+             
+             if (Array.isArray(configuration[i])) {
+             this._loadExpressionTests(configuration[i]);
+             continue;
+             }
+             
+             this._loadTesterToExpression(configuration[i].config,configuration[i].expression);
+             }
+             },
              */
-            _loadExpressionTests: function (configuration) {
-
-                var i = 0,
-                    l = configuration.length;
-
-                for (; i < l; i++) {
-
-                    if (Array.isArray(configuration[i])) {
-                        this._loadExpressionTests(configuration[i]);
-                        continue;
-                    }
-
-                    this._loadTesterToExpression(configuration[i].config, configuration[i].expression);
-                }
-            },
 
             /**
              * Loads a tester to supplied expression
              * @param {Object} config
              * @param {UnaryExpression} expression
              * @private
+             _loadTesterToExpression:function(config,expression) {
+             
+             var self = this,tester;
+             
+             TestFactory.getTest(config.path,function(test) {
+             
+             // create a new tester instance for this test
+             tester = new Tester(test,config.value,self._element);
+             
+             // remember tester
+             self._testers.push(tester);
+             
+             // assign tester to expression
+             expression.assignTester(tester);
+             
+             // listen to test result updates
+             Observer.subscribe(test,'change',self._onResultsChangedBind);
+             
+             // lower test count so we know when we're ready
+             self._count--;
+             if (self._count===0) {
+             self._onReady();
+             }
+             
+             });
+             },
              */
-            _loadTesterToExpression: function (config, expression) {
-
-                var self = this,
-                    tester;
-
-                TestFactory.getTest(config.path, function (test) {
-
-                    // create a new tester instance for this test
-                    tester = new Tester(test, config.value, self._element);
-
-                    // remember tester
-                    self._testers.push(tester);
-
-                    // assign tester to expression
-                    expression.assignTester(tester);
-
-                    // listen to test result updates
-                    Observer.subscribe(test, 'change', self._onResultsChangedBind);
-
-                    // lower test count so we know when we're ready
-                    self._count--;
-                    if (self._count === 0) {
-                        self._onReady();
-                    }
-
-                });
-            },
 
             /**
              * Called when all tests are ready
              * @fires ready
              * @private
+             _onReady:function() {
+             
+             // test current state
+             this._test();
+             
+             // we are now ready to start testing
+             Observer.publish(this,'ready');
+             },
              */
-            _onReady: function () {
-
-                // test current state
-                this._test();
-
-                // we are now ready to start testing
-                Observer.publish(this, 'ready');
-            },
 
             /**
              * Called when a condition has changed
              * @private
+             _onTestResultsChanged:function() {
+             this._test();
+             }
              */
-            _onTestResultsChanged: function () {
-                this._test();
-            }
 
         };
         /**
@@ -2168,18 +2206,25 @@
 
             /**
              * Manual run an expression
-             * @param {String} expression - Expression to test
+             * @param {String} conditions - Expression to test
+             * @param {Element} [element] - Optional element to run the test on
              * @returns {Promise}
              */
-            test: function (expression) {
+            test: function (conditions, element) {
 
+                if (!conditions) {
+                    throw new Error('Conditioner.test(conditions): "conditions" is a required parameter.');
+                }
+
+                // run test and resolve with first received state
                 var p = new Promise();
+                WebContext.test(conditions, element, function (valid) {
 
-                setTimeout(function () {
+                    console.log(conditions, valid);
 
-                    p.resolve(expression ? true : false);
+                    p[valid ? 'resolve' : 'reject']();
 
-                }, 500);
+                });
 
                 return p;
 
@@ -2191,11 +2236,11 @@
 
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = factory(require, require('./utils/Observer'), require('./utils/contains'), require('./utils/matchesSelector'), require('./utils/mergeObjects'));
+        module.exports = factory(require, require('./utils/Observer'), require('./utils/Promise'), require('./utils/contains'), require('./utils/matchesSelector'), require('./utils/mergeObjects'));
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
-        define(['require', './utils/Observer', './utils/contains', './utils/matchesSelector', './utils/mergeObjects'], factory);
+        define(['require', './utils/Observer', './utils/Promise', './utils/contains', './utils/matchesSelector', './utils/mergeObjects'], factory);
     }
     // Browser globals
     else {

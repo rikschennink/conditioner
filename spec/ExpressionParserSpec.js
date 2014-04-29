@@ -2,30 +2,9 @@ define(function(){
 
 	'use strict';
 
-    describe('ExpressionFormatter',function(){
+    describe('ExpressionParser',function(){
 
-        describe('.getExpressionsCount(str)',function(){
-
-            it('will return the correct amount of sub expressions',function(){
-
-                // arrange
-                var expression = 'foo:{bar:1} and (foo:{bar:2_1} or foo:{bar:2_2})';
-
-                // act
-                var result = ExpressionFormatter.getExpressionsCount(expression);
-
-                // assert
-                expect(result).to.equal(3);
-
-            });
-
-        });
-
-        describe('.fromString(str)',function(){
-
-            var parse = function(str) {
-                return ExpressionFormatter.fromString(str);
-            };
+        describe('.parse(str)',function(){
 
             // setup expressions
             var expressions = [],key,result;
@@ -71,7 +50,7 @@ define(function(){
                     it('will parse "' + key + '"',function(){
 
                         // act
-                        result = parse(key).toString();
+                        result = ExpressionParser.parse(key).expression.toString();
 
                         // assert
                         expect(result).to.equal(expressions[key]);
