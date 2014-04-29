@@ -34,14 +34,12 @@ var WebContext = {
         var i=0,l;
         MonitorFactory.getInstance().create(test,element).then(function(watches){
 
-            console.log('create->then',new Date().getTime());
+            // multiple watches
+            test.assignWatches(watches);
 
             // add value watches
             l=watches.length;
             for(;i<l;i++) {
-
-                // multiple watches
-                test.assignWatches(watches[i]);
 
                 // listen to change event on the watchers
                 // jshint -W083

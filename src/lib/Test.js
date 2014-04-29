@@ -4,7 +4,7 @@
  * @param {String} expected value
  * @constructor
  */
-var Test = function(path,expected){
+var Test = function Test(path,expected){
 
     this._path = path;
     this._expected = expected;
@@ -51,7 +51,7 @@ Test.prototype = {
      */
     assignWatches:function(watches){
         this._watches = watches;
-        this._count = this._watches.length;
+        this._count = watches.length;
     },
 
     /**

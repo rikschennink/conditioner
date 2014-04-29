@@ -14,7 +14,7 @@
          * @param {String} expected value
          * @constructor
          */
-        var Test = function (path, expected) {
+        var Test = function Test(path, expected) {
 
             this._path = path;
             this._expected = expected;
@@ -62,7 +62,7 @@
              */
             assignWatches: function (watches) {
                 this._watches = watches;
-                this._count = this._watches.length;
+                this._count = watches.length;
             },
 
             /**
@@ -82,21 +82,22 @@
             // on detect change callback
             this._change = callback;
 
-            // default state is false
-            this._currentState = false;
+            // default state is limbo
+            this._currentState = null;
 
         };
 
         Condition.prototype = {
 
+            /**
+             * Evaluate expression, call change method if there's a diff with the last evaluation
+             */
             evaluate: function () {
-
                 var state = this._expression.isTrue();
                 if (state != this._currentState) {
                     this._currentState = state;
                     this._change(state);
                 }
-
             }
 
         };
@@ -139,14 +140,12 @@
                     l;
                 MonitorFactory.getInstance().create(test, element).then(function (watches) {
 
-                    console.log('create->then', new Date().getTime());
+                    // multiple watches
+                    test.assignWatches(watches);
 
                     // add value watches
                     l = watches.length;
                     for (; i < l; i++) {
-
-                        // multiple watches
-                        test.assignWatches(watches[i]);
 
                         // listen to change event on the watchers
                         // jshint -W083
@@ -284,8 +283,8 @@
 
                             watch = {
 
-                                // default state before we've done any tests
-                                valid: false,
+                                // default limbo state before we've done any tests
+                                valid: null,
 
                                 // setup data holder for this watcher
                                 data: mergeObjects(
@@ -295,6 +294,7 @@
                                 }),
 
                                 // run test
+                                // jshint -W083
                                 test: (function (fn) {
                                     return function () {
                                         this.valid = fn(this.data);
@@ -2219,11 +2219,7 @@
                 // run test and resolve with first received state
                 var p = new Promise();
                 WebContext.test(conditions, element, function (valid) {
-
-                    console.log(conditions, valid);
-
                     p[valid ? 'resolve' : 'reject']();
-
                 });
 
                 return p;

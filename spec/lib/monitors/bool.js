@@ -20,8 +20,6 @@
             },500);
         },
         test:function(data) {
-            console.log(data.expected === 'true');
-
             return data.expected === 'true';
         }
     };

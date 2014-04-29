@@ -110,8 +110,8 @@ var MonitorFactory = (function(undefined){
 
                     watch = {
 
-                        // default state before we've done any tests
-                        valid:false,
+                        // default limbo state before we've done any tests
+                        valid:null,
 
                         // setup data holder for this watcher
                         data:mergeObjects(
@@ -122,6 +122,7 @@ var MonitorFactory = (function(undefined){
                         ),
 
                         // run test
+                        // jshint -W083
                         test:(function(fn){
                             return function() {
                                 this.valid = fn(this.data);
