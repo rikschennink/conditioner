@@ -50,7 +50,7 @@ define(function(){
                     it('will parse "' + key + '"',function(){
 
                         // act
-                        result = ExpressionParser.parse(key).expression.toString();
+                        result = ExpressionParser.parse(key).toString();
 
                         // assert
                         expect(result).to.equal(expressions[key]);

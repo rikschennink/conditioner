@@ -33,22 +33,18 @@ require([
     // globals
     'lib/utils/Observer','lib/utils/Promise','lib/utils/contains','lib/utils/matchesSelector','lib/utils/mergeObjects',
 
-    /*
     // utils
     'ObserverSpec.js',
     'extendClassOptionsSpec.js',
 
     // inner
     'ExpressionParserSpec',
-    'MonitorSpec',
-    'TesterSpec',
 
     // exposed
     'ModuleControllerSpec',
     'NodeControllerSpec',
     'ModuleLoaderSpec',
     'SyncedControllerGroupSpec',
-    */
 
     // API
     'APISpec'

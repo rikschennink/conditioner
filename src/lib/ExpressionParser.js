@@ -4,7 +4,7 @@ var ExpressionParser = {
 	 * Parses an expression in string format and returns the same expression formatted as an expression tree
 	 * @memberof ExpressionFormatter
 	 * @param {String} expression
-	 * @returns {Object}
+	 * @returns {UnaryExpression|BinaryExpression}
 	 * @public
 	 */
 	parse:function(expression) {
