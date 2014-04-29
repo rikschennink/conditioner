@@ -51,13 +51,13 @@ var files = {
         './src/lib/UnaryExpression.js',
         './src/lib/BinaryExpression.js',
         './src/lib/ExpressionParser.js',
+        './src/lib/StaticModuleAgent.js',
+        './src/lib/ConditionModuleAgent.js',
 
         './src/lib/ModuleRegistry.js',
         './src/lib/ModuleController.js',
         './src/lib/NodeController.js',
         './src/lib/SyncedControllerGroup.js',
-        './src/lib/StaticModuleAgent.js',
-        './src/lib/ConditionModuleAgent.js',
         './src/lib/ModuleLoader.js'
     ]
 };

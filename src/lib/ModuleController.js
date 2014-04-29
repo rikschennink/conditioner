@@ -37,17 +37,13 @@ var ModuleController = function(path,element,options,agent) {
     this._initialized = false;
 
     // agent binds
-    this._onAgentReadyBind = this._onAgentReady.bind(this);
     this._onAgentStateChangeBind = this._onAgentStateChange.bind(this);
 
-    // let's see if the behavior allows immediate activation
-    if (this._agent.allowsActivation()) {
-        this._initialize();
-    }
-    // wait for ready state on behavior
-    else {
-        Observer.subscribe(this._agent,'ready',this._onAgentReadyBind);
-    }
+    // wait for init to complete
+    var self = this;
+    this._agent.init(function(){
+        self._initialize();
+    });
 
 };
 
@@ -97,18 +93,6 @@ ModuleController.prototype = {
     wrapsModuleWithPath:function(path) {
         return this._path === path || this._alias === path;
     },
-
-	/**
-     * Called when the module behavior has initialized
-	 * @private
-	 */
-	_onAgentReady:function() {
-
-		// module has now completed the initialization process
-		// (!) this does not mean it's available
-        this._initialize();
-
-	},
 
     /**
      * Called to initialize the module

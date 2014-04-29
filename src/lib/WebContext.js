@@ -1,6 +1,6 @@
 var WebContext = {
 
-    test:function(query,element,change){
+    test:function(query,element,change) {
 
         var expression,condition,i,tests,l;
 

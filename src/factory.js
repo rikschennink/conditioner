@@ -242,7 +242,6 @@
                 WebContext.test(conditions,element,function(valid){
                     p[valid ? 'resolve' : 'reject']();
                 });
-
                 return p;
 
             }
