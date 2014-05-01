@@ -12,6 +12,9 @@
     var _height = function () {
         return win.innerHeight || doc.documentElement.clientHeight;
     };
+    var _toInt = function (value) {
+        return parseInt(value, 10);
+    };
 
     var exports = {
         trigger: {
@@ -19,16 +22,16 @@
         },
         test: {
             'min-width': function (data) {
-                return data.expected >= _width();
+                return _toInt(data.expected) <= _width();
             },
             'max-width': function (data) {
-                return data.expected <= _width();
+                return _toInt(data.expected) >= _width();
             },
             'min-height': function (data) {
-                return data.expected >= _height();
+                return _toInt(data.expected) <= _height();
             },
             'max-height': function (data) {
-                return data.expected <= _height();
+                return _toInt(data.expected) >= _height();
             }
         }
     };

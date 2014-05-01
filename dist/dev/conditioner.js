@@ -118,7 +118,7 @@
              * @param {Boolean} isSingleTest - is true when only one test is defined, in that case only value can be returned
              * @returns {*}
              */
-            parse: function (expression, isSingleTest) {
+            _parse: function (expression, isSingleTest) {
 
                 // if earlier parse action found return that one
                 if (this._expressions[expression]) {
@@ -149,6 +149,13 @@
                 return result;
             },
 
+            _mergeData: function (base, expected, element) {
+                return mergeObjects({
+                    element: element,
+                    expected: expected
+                }, base);
+            },
+
             /**
              * Create a new Monitor based on passed configuration
              * @param {Test} test
@@ -172,7 +179,7 @@
 
                     var i = 0,
                         monitor = self._monitors[path],
-                        l, watch, watches, items, event, item, isSingleTest;
+                        l, watch, watches, items, event, item, data, isSingleTest;
 
                     // bind trigger events for this setup if not defined yet
                     if (!monitor) {
@@ -194,9 +201,12 @@
 
                         };
 
+                        // data holder
+                        data = setup.unique ? self._mergeData(setup.data, expected, element) : setup.data;
+
                         // setup trigger events manually
                         if (typeof setup.trigger === 'function') {
-                            setup.trigger(monitor.change, monitor.data);
+                            setup.trigger(monitor.change, data);
                         }
 
                         // auto bind trigger events
@@ -223,7 +233,7 @@
                     isSingleTest = typeof setup.test === 'function';
 
                     // does the monitor have an own custom parse method or should we use the default parse method
-                    items = setup.parse ? setup.parse(expected, isSingleTest) : self.parse(expected, isSingleTest);
+                    items = setup.parse ? setup.parse(expected, isSingleTest) : self._parse(expected, isSingleTest);
 
                     // cache the amount of items
                     l = items.length;
@@ -238,16 +248,17 @@
                             valid: null,
 
                             // setup data holder for this watcher
-                            data: mergeObjects({
-                                element: element,
-                                expected: item.value
-                            }, setup.data),
+                            data: self._mergeData(setup, item.value, element),
 
                             // setup test method to use
                             // jshint -W083
                             test: (function (fn) {
                                 return function () {
-                                    this.valid = fn(this.data);
+                                    var state = fn(this.data);
+                                    if (this.valid != state) {
+                                        this.valid = state;
+                                        Observer.publish(this, 'change');
+                                    }
                                 };
                             }(isSingleTest ? setup.test : setup.test[item.test]))
 

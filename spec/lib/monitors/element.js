@@ -12,6 +12,10 @@
         return (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
     };
 
+    var _toInt = function (value) {
+        return parseInt(value, 10);
+    };
+
     var exports = {
         data: {
             seen: false
@@ -28,16 +32,16 @@
                 return data.seen && data.expected;
             },
             'min-width': function (data) {
-                return data.expected >= data.element.offsetWidth;
+                return _toInt(data.expected) <= data.element.offsetWidth;
             },
             'max-width': function (data) {
-                return data.expected <= data.element.offsetWidth;
+                return _toInt(data.expected) >= data.element.offsetWidth;
             },
             'min-height': function (data) {
-                return data.expected >= data.element.offsetHeight;
+                return _toInt(data.expected) <= data.element.offsetHeight;
             },
             'max-height': function (data) {
-                return data.expected <= data.element.offsetHeight;
+                return _toInt(data.expected) >= data.element.offsetHeight;
             }
         }
     };

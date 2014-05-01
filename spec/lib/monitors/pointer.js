@@ -46,7 +46,7 @@
         },
         test: {
             'available': function (data) {
-                return _shared.available && data.expected;
+                return _shared.available && data.expected === 'true';
             }
         }
     };
