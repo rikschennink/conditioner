@@ -248,7 +248,7 @@
                             valid: null,
 
                             // setup data holder for this watcher
-                            data: self._mergeData(setup, item.value, element),
+                            data: setup.unique ? data : self._mergeData(setup.data, item.value, element),
 
                             // setup test method to use
                             // jshint -W083

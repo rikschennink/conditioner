@@ -16,16 +16,16 @@
         },
         test:{
             'min-width':function(data){
-                return _toInt(data.expected) <= _width();
-            },
-            'max-width':function(data){
                 return _toInt(data.expected) >= _width();
             },
+            'max-width':function(data){
+                return _toInt(data.expected) <= _width();
+            },
             'min-height':function(data){
-                return _toInt(data.expected) <= _height();
+                return _toInt(data.expected) >= _height();
             },
             'max-height':function(data){
-                return _toInt(data.expected) >= _height();
+                return _toInt(data.expected) <= _height();
             }
         }
     };
