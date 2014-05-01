@@ -9,6 +9,9 @@
 
         // conditioner options object
         var _options = {
+            'paths':{
+                'monitors':'./monitors/'
+            },
             'attr':{
                 'options':'data-options',
                 'module':'data-module',

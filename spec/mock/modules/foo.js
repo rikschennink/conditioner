@@ -1,5 +1,5 @@
 
-define(['lib/utils/Observer'],function(Observer){
+define(['../../lib/utils/Observer'],function(Observer){
 
     var exports = function Foo(element,options) {
 

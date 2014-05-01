@@ -12,6 +12,8 @@ var reporter = require('jshint-stylish');
 var wrap = require('gulp-wrap');
 var beautify = require('gulp-beautify');
 var replace = require('gulp-replace');
+var clean = require('gulp-clean');
+var sequence = require('run-sequence');
 
 /**
  * Package data
@@ -76,7 +78,6 @@ var copySupportFilesInFolder = function(folder) {
 };
 
 gulp.task('_lib',function(){
-
     return gulp
         .src(files.lib)
         .pipe(concat(pkg.name + '.js'))
@@ -89,7 +90,6 @@ gulp.task('_lib',function(){
         .pipe(uglify())
         .pipe(size())
         .pipe(gulp.dest(paths.dist.prod));
-
 });
 
 gulp.task('_utils',function(){
@@ -98,6 +98,11 @@ gulp.task('_utils',function(){
 
 gulp.task('_plugins',function() {
     return copySupportFilesInFolder('monitors/');
+});
+
+gulp.task('_clean',function(){
+    return gulp.src(['./dist/**/*','./spec/lib/**/*'],{read: false})
+        .pipe(clean());
 });
 
 
@@ -110,6 +115,13 @@ gulp.task('test',['build'],function(){
     return gulp
         .src(paths.spec + 'runner.html')
         .pipe(mocha({reporter:'spec'}));
+
+});
+
+gulp.task('build',function(cb){
+
+    // first runs clean than runs _lib _utils and _plugins in parallel
+    sequence('_clean',['_lib','_utils','_plugins'],cb);
 
 });
 

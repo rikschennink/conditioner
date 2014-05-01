@@ -1,7 +1,7 @@
 
 // has relative path "../mock/bar"
 
-define(['require','lib/utils/extendClassOptions','./bar'],function(require,_extend,_super){
+define(['require','../../lib/utils/extendClassOptions','./bar'],function(require,_extend,_super){
 
     var exports = _extend(require,'./bar',function Baz(element,options){
 

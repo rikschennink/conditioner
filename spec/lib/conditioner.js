@@ -227,7 +227,7 @@
 
                     // load monitor configuration
                     var self = this;
-                    _options.loader.load(['./monitors/' + path], function (setup) {
+                    _options.loader.load([_options.paths.monitors + '/' + path], function (setup) {
 
                         var i = 0,
                             monitor = self._monitors[path],
@@ -1850,6 +1850,9 @@
 
         // conditioner options object
         var _options = {
+            'paths': {
+                'monitors': './monitors/'
+            },
             'attr': {
                 'options': 'data-options',
                 'module': 'data-module',

@@ -10,7 +10,7 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
                 var node,group,results;
                 node = document.createElement('div');
-                node.setAttribute('data-module','mock/baz');
+                node.setAttribute('data-module','mock/modules/baz');
 
                 group = document.createElement('div');
                 group.appendChild(node);
@@ -18,17 +18,17 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
                 // act
                 conditioner.setOptions({
                     'modules':{
-                        'mock/foo':{
+                        'mock/modules/foo':{
                             'options':{
                                 'foo':2
                             }
                         },
-                        'mock/bar':{
+                        'mock/modules/bar':{
                             'options':{
                                 'bar':2
                             }
                         },
-                        'mock/baz':{
+                        'mock/modules/baz':{
                             'options':{
                                 'baz':2
                             }

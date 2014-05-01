@@ -10,17 +10,17 @@ define(['lib/utils/Observer'],function(Observer){
             a = document.createElement('div');
             a.id = 'a';
             a.className = 'alpha';
-            a.setAttribute('data-module','mock/foo');
+            a.setAttribute('data-module','mock/modules/foo');
 
             b = document.createElement('div');
             b.id = 'b';
             b.className = 'beta';
-            b.setAttribute('data-module','mock/bar');
+            b.setAttribute('data-module','mock/modules/bar');
 
             c = document.createElement('div');
             c.id = 'c';
             c.className = 'beta';
-            c.setAttribute('data-module','mock/baz');
+            c.setAttribute('data-module','mock/modules/baz');
 
             group = document.createElement('div');
             group.appendChild(a);

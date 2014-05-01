@@ -9,7 +9,7 @@ define(['lib/utils/Observer'],function(Observer){
         beforeEach(function(){
 
             element = document.createElement('div');
-            path = 'mock/foo';
+            path = 'mock/modules/foo';
             mc = new ModuleController(path,element);
 
         });
@@ -52,7 +52,7 @@ define(['lib/utils/Observer'],function(Observer){
 
             it('will return the correct path',function(){
 
-                expect(mc.getModulePath()).to.equal('mock/foo');
+                expect(mc.getModulePath()).to.equal('mock/modules/foo');
 
             });
 
@@ -62,7 +62,7 @@ define(['lib/utils/Observer'],function(Observer){
 
             it('will return the correct state when asked if it\'s module matches a given path',function(){
 
-                expect(mc.wrapsModuleWithPath('mock/foo')).to.be.ok;
+                expect(mc.wrapsModuleWithPath('mock/modules/foo')).to.be.ok;
 
             });
 

@@ -1,9 +1,9 @@
 
 // has fixed path "mock/foo"
 
-define(['lib/utils/extendClassOptions','mock/foo'],function(_extend,_super){
+define(['../../lib/utils/extendClassOptions','mock/modules/foo'],function(_extend,_super){
 
-    var exports = _extend('mock/foo',function Bar(element,options){
+    var exports = _extend('mock/modules/foo',function Bar(element,options){
 
         // bar
 
