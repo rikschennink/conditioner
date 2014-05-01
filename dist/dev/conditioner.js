@@ -2107,7 +2107,7 @@
                 // run test and resolve with first received state
                 var p = new Promise();
                 WebContext.test(conditions, element, function (valid) {
-                    p[valid ? 'resolve' : 'reject']();
+                    p.resolve(valid);
                 });
                 return p;
 

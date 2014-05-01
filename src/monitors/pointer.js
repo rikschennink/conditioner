@@ -44,9 +44,9 @@
             doc.addEventListener('mousedown', filter, false);
 
         },
-        test:{
-            'available':function(data){
-                return _shared.available && data.expected === 'true';
+        test: {
+            'available': function (data) {
+                return _shared.available === data.expected;
             }
         }
     };

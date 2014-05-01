@@ -351,11 +351,9 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
             it('will call resolve method on test assertion success',function(done){
 
                 conditioner.test('single:{true}').then(
-                    function(){ // true
+                    function(state){
+                        expect(state).to.be.ok;
                         done();
-                    },
-                    function() { // false
-
                     }
                 );
 
@@ -364,10 +362,8 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
             it('will call reject method on test assertion failure',function(done){
 
                 conditioner.test('single:{false}').then(
-                    function(){ // true
-
-                    },
-                    function() { // false
+                    function(state){
+                        expect(state).to.not.be.ok;
                         done();
                     }
                 );
