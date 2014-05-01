@@ -2,9 +2,8 @@
 
     'use strict';
 
-
     // Promise
-    // https://gist.github.com/rikschennink/11279384
+    // https://gist.github.com/rikschennink/11279384 (fork)
     var util = function Promise() {
         this._thens = [];
     };
@@ -90,7 +89,7 @@
     }
     // Browser globals
     else {
-        win.Promise = utils;
+        win.Promise = util;
     }
 
 }(window));

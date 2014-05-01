@@ -1,15 +1,17 @@
 // conditioner v1.0.0 - ConditionerJS - Frizz free, environment-aware, javascript modules.
 // Copyright (c) 2014 Rik Schennink - http://conditionerjs.com
 // License: MIT - http://www.opensource.org/licenses/mit-license.php
-(function (undefined) {
+(function (doc, undefined) {
 
     'use strict';
 
     // returns conditioner API
     var factory = function (require, Observer, Promise, contains, matchesSelector, mergeObjects) {
 
-        var _monitorFactory;
+        // private vars
+        var _options, _monitorFactory, _moduleLoader;
 
+        // internal modules
         /**
          * Test
          * @param {String} path to monitor
@@ -166,7 +168,7 @@
 
                 // load monitor configuration
                 var self = this;
-                _options.loader.load([_options.paths.monitors + '/' + path], function (setup) {
+                _options.loader.require([_options.paths.monitors + '/' + path], function (setup) {
 
                     var i = 0,
                         monitor = self._monitors[path],
@@ -923,7 +925,7 @@
 
                 // load module, and remember reference
                 var self = this;
-                _options.loader.load([this._path], function (Module) {
+                _options.loader.require([this._path], function (Module) {
 
                     // if module does not export a module quit here
                     if (!Module) {
@@ -1846,11 +1848,8 @@
 
         };
 
-        // setup monitor factory
-        _monitorFactory = new MonitorFactory();
-
         // conditioner options object
-        var _options = {
+        _options = {
             'paths': {
                 'monitors': './monitors/'
             },
@@ -1864,7 +1863,7 @@
                 'loading': 'data-loading'
             },
             'loader': {
-                'load': function (paths, callback) {
+                'require': function (paths, callback) {
                     require(paths, callback);
                 },
                 'config': function (path, options) {
@@ -1881,8 +1880,11 @@
             'modules': {}
         };
 
+        // setup monitor factory
+        _monitorFactory = new MonitorFactory();
+
         // setup loader instance
-        var _loader = new ModuleLoader();
+        _moduleLoader = new ModuleLoader();
 
         // expose API
         return {
@@ -1899,7 +1901,7 @@
                     this.setOptions(options);
                 }
 
-                return _loader.parse(document);
+                return _moduleLoader.parse(doc);
 
             },
 
@@ -1953,7 +1955,7 @@
                     throw new Error('Conditioner.parse(context): "context" is a required parameter.');
                 }
 
-                return _loader.parse(context);
+                return _moduleLoader.parse(context);
 
             },
 
@@ -1974,7 +1976,7 @@
              */
             load: function (element, controllers) {
 
-                return _loader.load(element, controllers);
+                return _moduleLoader.load(element, controllers);
 
             },
 
@@ -2003,7 +2005,7 @@
              */
             getNode: function (selector, context) {
 
-                return _loader.getNodes(selector, context, true);
+                return _moduleLoader.getNodes(selector, context, true);
 
             },
 
@@ -2015,7 +2017,7 @@
              */
             getNodes: function (selector, context) {
 
-                return _loader.getNodes(selector, context, false);
+                return _moduleLoader.getNodes(selector, context, false);
 
             },
 
@@ -2027,7 +2029,7 @@
              */
             destroyNode: function (node) {
 
-                return _loader.destroyNode(node);
+                return _moduleLoader.destroyNode(node);
 
             },
 
@@ -2106,7 +2108,8 @@
 
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = factory(require, require('./utils/Observer'), require('./utils/Promise'), require('./utils/contains'), require('./utils/matchesSelector'), require('./utils/mergeObjects'));
+        module.exports = factory(
+        require, require('./utils/Observer'), require('./utils/Promise'), require('./utils/contains'), require('./utils/matchesSelector'), require('./utils/mergeObjects'));
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
@@ -2117,4 +2120,4 @@
         throw new Error('To use ConditionerJS you need to setup a module loader like RequireJS.');
     }
 
-}());
+}(document));

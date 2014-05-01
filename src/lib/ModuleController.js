@@ -165,7 +165,7 @@ ModuleController.prototype = {
 
 		// load module, and remember reference
 		var self = this;
-        _options.loader.load([this._path],function(Module) {
+        _options.loader.require([this._path],function(Module) {
 
             // if module does not export a module quit here
             if (!Module) {

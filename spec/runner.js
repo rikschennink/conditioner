@@ -64,7 +64,7 @@ require([
             'loading':'data-loading'
         },
         'loader':{
-            'load':function(paths,callback){
+            'require':function(paths,callback){
                 require(paths,callback);
             },
             'config':function(path,options){
