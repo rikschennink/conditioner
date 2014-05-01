@@ -26,22 +26,26 @@
 
         },
         parse: function (expected) {
+            var results = [];
             if (expected === 'supported') {
-                return {
+                results.push({
                     test: 'supported',
                     value: true
-                }
+                });
             }
-            return {
-                test: '*',
-                value: expected
+            else {
+                results.push({
+                    test: 'query',
+                    value: expected
+                });
             }
+            return results;
         },
         test: {
             'supported': function () {
                 return 'matchMedia' in win;
             },
-            '*': function (data) {
+            'query': function (data) {
                 return data.mql.matches;
             }
         }

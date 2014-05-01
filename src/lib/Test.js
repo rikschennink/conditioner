@@ -32,7 +32,7 @@ Test.prototype = {
     },
 
     /**
-     * Returns true if monitor currently returns true state
+     * Returns true if none of the watches return a false state
      * @returns {Boolean}
      */
     isTrue:function(){

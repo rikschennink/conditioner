@@ -7,16 +7,13 @@ require.config({
     },
     shim:{
         'lib/conditioner':[
-
-            'src/lib/MonitorFactory.js',
             'src/lib/Test.js',
             'src/lib/Condition.js',
+            'src/lib/MonitorFactory.js',
             'src/lib/WebContext.js',
-
             'src/lib/UnaryExpression.js',
             'src/lib/BinaryExpression.js',
             'src/lib/ExpressionParser.js',
-
             'src/lib/ModuleRegistry.js',
             'src/lib/ModuleController.js',
             'src/lib/NodeController.js',
@@ -39,11 +36,12 @@ require([
 
     // inner
     'ExpressionParserSpec',
+    'MonitorFactorySpec',
+    'ModuleLoaderSpec',
 
     // exposed
     'ModuleControllerSpec',
     'NodeControllerSpec',
-    'ModuleLoaderSpec',
     'SyncedControllerGroupSpec',
 
     // API
@@ -53,6 +51,9 @@ require([
 
     // setup base options
     window._options = {
+        'paths':{
+            'monitors':'mock/monitors'
+        },
         'attr':{
             'options':'data-options',
             'module':'data-module',
@@ -79,6 +80,9 @@ require([
         },
         'modules':{}
     };
+
+    // setup global monitor factory mock
+    window._monitorFactory = new MonitorFactory();
 
     // globals required for inner library workings
     window.Observer = Observer;

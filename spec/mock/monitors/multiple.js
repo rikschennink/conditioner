@@ -1,6 +1,6 @@
 /**
  * Tests if the window dimensions match certain expectations
- * @module monitors/true
+ * @module monitors/multiple
  */
 (function(undefined) {
 
@@ -19,8 +19,13 @@
                 bubble();
             },500);
         },
-        test:function(data) {
-            return data.expected === 'true';
+        test:{
+            'foo':function foo(){
+                return true;
+            },
+            'bar':function bar(){
+                return true;
+            }
         }
     };
 

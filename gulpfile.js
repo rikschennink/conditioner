@@ -47,8 +47,8 @@ var files = {
 
         './src/lib/Test.js',
         './src/lib/Condition.js',
-        './src/lib/WebContext.js',
         './src/lib/MonitorFactory.js',
+        './src/lib/WebContext.js',
 
         './src/lib/UnaryExpression.js',
         './src/lib/BinaryExpression.js',

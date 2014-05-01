@@ -32,7 +32,7 @@ var WebContext = {
     _setupMonitor:function(test,element,condition){
 
         var i=0,l;
-        MonitorFactory.getInstance().create(test,element).then(function(watches){
+        _monitorFactory.create(test,element).then(function(watches){
 
             // multiple watches
             test.assignWatches(watches);

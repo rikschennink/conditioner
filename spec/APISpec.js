@@ -2,10 +2,6 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
     'use strict';
 
-    var toArray = function(nodeList){
-        return Array.prototype.slice.call(nodeList);
-    };
-
     describe('API',function() {
 
         beforeEach(function(){
@@ -329,22 +325,7 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
         describe('test(conditions)',function(){
 
-            it('will throw an error when no test passed',function(){
-
-                var testIt = function(){conditioner.test();};
-                expect(testIt).to.throw(Error);
-
-            });
-
-            /*
-            it('will return a promise',function(){
-
-                expect(conditioner.test('bool:{true}').then).to.be.defined;
-
-            });
-            */
-
-            it('will call resolve method on test assertion success',function(done){
+            beforeEach(function(){
 
                 conditioner.setOptions({
                     'paths':{
@@ -352,7 +333,24 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
                     }
                 });
 
-                conditioner.test('bool:{true}').then(
+            });
+
+            it('will throw an error when no test passed',function(){
+
+                var testIt = function(){conditioner.test();};
+                expect(testIt).to.throw(Error);
+
+            });
+
+            it('will return a promise',function(){
+
+                expect(conditioner.test('single:{true}').then).to.be.defined;
+
+            });
+
+            it('will call resolve method on test assertion success',function(done){
+
+                conditioner.test('single:{true}').then(
                     function(){ // true
                         done();
                     },
@@ -365,7 +363,7 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
             it('will call reject method on test assertion failure',function(done){
 
-                conditioner.test('bool:{false}').then(
+                conditioner.test('single:{false}').then(
                     function(){ // true
 
                     },

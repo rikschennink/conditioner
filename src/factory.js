@@ -5,7 +5,12 @@
     // returns conditioner API
     var factory = function(require,Observer,Promise,contains,matchesSelector,mergeObjects) {
 
+        var _monitorFactory;
+
         // FACTORY <%= contents %>
+
+        // setup monitor factory
+        _monitorFactory = new MonitorFactory();
 
         // conditioner options object
         var _options = {
