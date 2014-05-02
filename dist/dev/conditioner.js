@@ -1807,19 +1807,16 @@
                 var controllers = [],
                     config = element.getAttribute(_options.attr.module) || '',
                     i = 0,
-                    specs, spec, l,
+                    specs, spec, l;
 
-                    // test if first character is a '[', if so multiple modules have been defined
-                    multiple = config.charCodeAt(0) === 91;
-
-                if (multiple) {
+                // test if first character is a '[', if so multiple modules have been defined
+                if (config.charCodeAt(0) === 91) {
 
                     // add multiple module adapters
                     try {
                         specs = JSON.parse(config);
                     }
                     catch (e) {
-                        // failed parsing spec
                         throw new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.');
                     }
 
@@ -1831,16 +1828,29 @@
                     // setup vars
                     l = specs.length;
 
-                    // create specs
-                    for (; i < l; i++) {
-                        spec = specs[i];
-                        controllers.push(
-                        this._getModuleController(spec.path, element, spec.options, spec.conditions));
+                    // test if second character is a '{' if so, json format
+                    if (config.charCodeAt(1) === 123) {
+                        for (; i < l; i++) {
+                            spec = specs[i];
+                            controllers.push(
+                            this._getModuleController(
+                            spec.path, element, spec.options, spec.conditions));
+                        }
                     }
+                    else {
+                        for (; i < l; i++) {
+                            spec = specs[i];
+                            controllers.push(
+                            this._getModuleController(
+                            spec[0], element, typeof spec[1] === 'string' ? spec[2] : spec[1], typeof spec[1] === 'string' ? spec[1] : spec[2]));
+                        }
+                    }
+
                 }
                 else if (config.length) {
                     controllers.push(
-                    this._getModuleController(config, element, element.getAttribute(_options.attr.options), element.getAttribute(_options.attr.conditions)));
+                    this._getModuleController(
+                    config, element, element.getAttribute(_options.attr.options), element.getAttribute(_options.attr.conditions)));
                 }
 
                 return controllers;
