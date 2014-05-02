@@ -12,15 +12,15 @@ define(function() {
 
                 // arrange
                 a = document.createElement('div');
-                a.setAttribute('data-module','mock/foo');
+                a.setAttribute('data-module','mock/modules/foo');
                 a.setAttribute('data-priority','-1');
 
                 b = document.createElement('div');
                 b.setAttribute('data-priority','1');
-                b.setAttribute('data-module','mock/foo');
+                b.setAttribute('data-module','mock/modules/foo');
 
                 c = document.createElement('div');
-                c.setAttribute('data-module','mock/foo');
+                c.setAttribute('data-module','mock/modules/foo');
 
                 var group = document.createElement('div');
                 group.appendChild(a);
@@ -37,7 +37,7 @@ define(function() {
 
                 // arrange
                 var a = document.createElement('div');
-                a.setAttribute('data-module','[{"mock/foo"},{]');
+                a.setAttribute('data-module','[{"mock/modules/foo"},{]');
 
                 var group = document.createElement('div');
                 group.appendChild(a);
@@ -77,7 +77,7 @@ define(function() {
 
                 // arrange
                 var a = document.createElement('div');
-                a.setAttribute('data-module','mock/foo');
+                a.setAttribute('data-module','mock/modules/foo');
                 a.setAttribute('data-conditions','');
 
                 var group = document.createElement('div');
@@ -105,22 +105,22 @@ define(function() {
                 a = document.createElement('div');
                 a.id = 'a';
                 a.className = 'alpha';
-                a.setAttribute('data-module','mock/foo');
+                a.setAttribute('data-module','mock/modules/foo');
 
                 b = document.createElement('div');
                 b.id = 'b';
                 b.className = 'beta';
-                b.setAttribute('data-module','mock/foo');
+                b.setAttribute('data-module','mock/modules/foo');
 
                 c = document.createElement('div');
                 c.id = 'c';
                 c.className = 'beta';
-                c.setAttribute('data-module','mock/foo');
+                c.setAttribute('data-module','mock/modules/foo');
 
                 d = document.createElement('div');
                 d.id = 'd';
                 d.className = 'beta';
-                d.setAttribute('data-module','mock/foo');
+                d.setAttribute('data-module','mock/modules/foo');
 
                 d.appendChild(b);
                 d.appendChild(c);

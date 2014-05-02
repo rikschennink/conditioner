@@ -5,6 +5,14 @@
 var StaticModuleAgent = {
 
     /**
+     * Initialize, resolved immediately
+     * @returns {Promise}
+     */
+    init:function(ready){
+        ready();
+    },
+
+    /**
      * Is activation currently allowed, will always return true for static module agent
      * @returns {boolean}
      */

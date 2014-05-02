@@ -14,9 +14,9 @@ define(function() {
             // act
             nc = new NodeController(el,5);
             nc.load(
-                new ModuleController('mock/foo',el),
-                new ModuleController('mock/bar',el),
-                new ModuleController('mock/baz',el)
+                new ModuleController('mock/modules/foo',el),
+                new ModuleController('mock/modules/bar',el),
+                new ModuleController('mock/modules/baz',el)
             );
 
         });
@@ -74,14 +74,14 @@ define(function() {
 
             it('will return the first matched module controller when a path is supplied',function(){
 
-                var mc = nc.getModule('mock/foo');
+                var mc = nc.getModule('mock/modules/foo');
                 expect(mc).to.be.defined;
 
             });
 
             it('will return null if no matches found',function(){
 
-                var mc = nc.getModule('mock/trololo');
+                var mc = nc.getModule('mock/modules/trololo');
                 expect(mc).to.not.be.defined;
 
             });
@@ -106,8 +106,8 @@ define(function() {
 
             it('will return the matched module controllers when a path is supplied',function(){
 
-                var mcs = nc.getModules('mock/bar');
-                expect(mcs[0].getModulePath()).to.equal('mock/bar');
+                var mcs = nc.getModules('mock/modules/bar');
+                expect(mcs[0].getModulePath()).to.equal('mock/modules/bar');
 
             });
 

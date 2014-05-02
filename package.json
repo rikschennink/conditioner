@@ -38,6 +38,7 @@
     "chai": "^1.9.1",
     "gulp": "^3.6.1",
     "gulp-beautify": "^1.0.3",
+    "gulp-clean": "^0.2.4",
     "gulp-concat": "^2.2.0",
     "gulp-header": "^1.0.2",
     "gulp-jshint": "^1.5.3",
@@ -47,6 +48,7 @@
     "gulp-uglify": "^0.2.1",
     "gulp-wrap": "^0.3.0",
     "jshint-stylish": "^0.1.5",
-    "requirejs": "^2.1.11"
+    "requirejs": "^2.1.11",
+    "run-sequence": "^0.3.6"
   }
 }

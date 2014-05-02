@@ -1,14 +1,21 @@
-(function(undefined){
+(function(doc,undefined){
 
     'use strict';
 
     // returns conditioner API
-    var factory = function(require,Observer,contains,matchesSelector,mergeObjects) {
+    var factory = function(require,Observer,Promise,contains,matchesSelector,mergeObjects) {
 
+        // private vars
+        var _options,_monitorFactory,_moduleLoader;
+
+        // internal modules
         // FACTORY <%= contents %>
 
         // conditioner options object
-        var _options = {
+        _options = {
+            'paths':{
+                'monitors':'./monitors/'
+            },
             'attr':{
                 'options':'data-options',
                 'module':'data-module',
@@ -19,7 +26,7 @@
                 'loading':'data-loading'
             },
             'loader':{
-                'load':function(paths,callback){
+                'require':function(paths,callback){
                     require(paths,callback);
                 },
                 'config':function(path,options){
@@ -36,8 +43,11 @@
             'modules':{}
         };
 
+        // setup monitor factory
+        _monitorFactory = new MonitorFactory();
+
         // setup loader instance
-        var _loader =  new ModuleLoader();
+        _moduleLoader =  new ModuleLoader();
 
         // expose API
         return {
@@ -54,7 +64,7 @@
                     this.setOptions(options);
                 }
 
-                return _loader.parse(document);
+                return _moduleLoader.parse(doc);
 
             },
 
@@ -106,7 +116,7 @@
                     throw new Error('Conditioner.parse(context): "context" is a required parameter.');
                 }
 
-                return _loader.parse(context);
+                return _moduleLoader.parse(context);
 
             },
 
@@ -127,7 +137,7 @@
              */
             load:function(element,controllers) {
 
-                return _loader.load(element,controllers);
+                return _moduleLoader.load(element,controllers);
 
             },
 
@@ -156,7 +166,7 @@
              */
             getNode:function(selector,context) {
 
-                return _loader.getNodes(selector,context,true);
+                return _moduleLoader.getNodes(selector,context,true);
 
             },
 
@@ -168,7 +178,7 @@
              */
             getNodes:function(selector,context) {
 
-                return _loader.getNodes(selector,context,false);
+                return _moduleLoader.getNodes(selector,context,false);
 
             },
 
@@ -180,7 +190,7 @@
              */
             destroyNode:function(node) {
 
-                return _loader.destroyNode(node);
+                return _moduleLoader.destroyNode(node);
 
             },
 
@@ -223,6 +233,48 @@
                 }
                 return filtered;
 
+            },
+
+            /**
+             * Manually run an expression, only returns once with a true or false state
+             * @param {String} condition - Expression to test
+             * @param {Element} [element] - Optional element to run the test on
+             * @returns {Promise}
+             */
+            is:function(condition,element){
+
+                if (!condition) {
+                    throw new Error('Conditioner.is(condition,[element]): "condition" is a required parameter.');
+                }
+
+                // run test and resolve with first received state
+                var p = new Promise();
+                WebContext.test(condition,element,function(valid){
+                    p.resolve(valid);
+                });
+                return p;
+
+            },
+
+            /**
+             * Manually run an expression, bind a callback method to be executed once something changes
+             * @param {String} condition - Expression to test
+             * @param {Element} [element] - Optional element to run the test on
+             * @param {Function} callback - callback method
+             */
+            on:function(condition,element,callback) {
+
+                if (!condition) {
+                    throw new Error('Conditioner.on(condition,[element],callback): "condition" and "callback" are required parameter.');
+                }
+
+                // handle optional element parameter
+                callback = typeof element === 'function' ? element : callback;
+
+                // run test and execute callback on change
+                WebContext.test(condition,element,function(valid){
+                    callback(valid);
+                });
             }
 
         };
@@ -231,8 +283,10 @@
 
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = factory(require,
+        module.exports = factory(
+            require,
             require('./utils/Observer'),
+            require('./utils/Promise'),
             require('./utils/contains'),
             require('./utils/matchesSelector'),
             require('./utils/mergeObjects')
@@ -240,11 +294,18 @@
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
-        define(['require','./utils/Observer','./utils/contains','./utils/matchesSelector','./utils/mergeObjects'], factory);
+        define([
+            'require',
+            './utils/Observer',
+            './utils/Promise',
+            './utils/contains',
+            './utils/matchesSelector',
+            './utils/mergeObjects'
+        ],factory);
     }
     // Browser globals
     else {
         throw new Error('To use ConditionerJS you need to setup a module loader like RequireJS.');
     }
 
-}());
+}(document));

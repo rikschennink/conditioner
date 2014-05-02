@@ -2,10 +2,6 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
     'use strict';
 
-    var toArray = function(nodeList){
-        return Array.prototype.slice.call(nodeList);
-    };
-
     describe('API',function() {
 
         beforeEach(function(){
@@ -26,7 +22,7 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
                 // arrange
                 var element = document.createElement('div');
-                element.setAttribute('data-module', 'mock/foo');
+                element.setAttribute('data-module', 'mock/modules/foo');
                 document.body.appendChild(element);
 
                 // act
@@ -47,7 +43,7 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
                 // act
                 conditioner.init({
                     'modules': {
-                        'mock/foo': {
+                        'mock/modules/foo': {
                             'alias':'IFoo'
                         }
                     }
@@ -82,7 +78,7 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
                 // act
                 conditioner.setOptions({
                     'modules': {
-                        'mock/foo':{
+                        'mock/modules/foo':{
                             'options':{
                                 'foo':10
                             }
@@ -114,7 +110,7 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
                 // act
                 conditioner.setOptions({
                     'modules': {
-                        'mock/foo': {
+                        'mock/modules/foo': {
                             'alias':'IFoo'
                         }
                     }
@@ -136,7 +132,7 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
                 // act
                 conditioner.setOptions({
                     'modules': {
-                        'mock/foo':'IFoo'
+                        'mock/modules/foo':'IFoo'
                     }
                 });
                 conditioner.init();
@@ -170,17 +166,17 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
                 a = document.createElement('div');
                 a.id = 'a';
                 a.className = 'alpha';
-                a.setAttribute('data-module','mock/foo');
+                a.setAttribute('data-module','mock/modules/foo');
 
                 b = document.createElement('div');
                 b.id = 'b';
                 b.className = 'beta';
-                b.setAttribute('data-module','mock/bar');
+                b.setAttribute('data-module','mock/modules/bar');
 
                 c = document.createElement('div');
                 c.id = 'c';
                 c.className = 'beta';
-                c.setAttribute('data-module','mock/baz');
+                c.setAttribute('data-module','mock/modules/baz');
 
                 group = document.createElement('div');
                 group.appendChild(a);
@@ -227,17 +223,17 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
                 a = document.createElement('div');
                 a.id = 'a';
                 a.className = 'alpha';
-                a.setAttribute('data-module','mock/foo');
+                a.setAttribute('data-module','mock/modules/foo');
 
                 b = document.createElement('div');
                 b.id = 'b';
                 b.className = 'beta';
-                b.setAttribute('data-module','mock/bar');
+                b.setAttribute('data-module','mock/modules/bar');
 
                 c = document.createElement('div');
                 c.id = 'c';
                 c.className = 'beta';
-                c.setAttribute('data-module','mock/baz');
+                c.setAttribute('data-module','mock/modules/baz');
 
                 group = document.createElement('div');
                 group.appendChild(a);
@@ -258,14 +254,14 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
             it('will return the first matched module controller when a path is supplied',function(){
 
-                var mc = conditioner.getModule('mock/bar');
+                var mc = conditioner.getModule('mock/modules/bar');
                 expect(mc.getModulePath()).to.equal(b.getAttribute('data-module'));
 
             });
 
             it('will return null if no matches found',function(){
 
-                var mc = conditioner.getModule('mock/trololo');
+                var mc = conditioner.getModule('mock/modules/trololo');
                 expect(mc).to.not.be.defined;
 
             });
@@ -282,17 +278,17 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
                 a = document.createElement('div');
                 a.id = 'a';
                 a.className = 'alpha';
-                a.setAttribute('data-module','mock/foo');
+                a.setAttribute('data-module','mock/modules/foo');
 
                 b = document.createElement('div');
                 b.id = 'b';
                 b.className = 'beta';
-                b.setAttribute('data-module','mock/foo');
+                b.setAttribute('data-module','mock/modules/foo');
 
                 c = document.createElement('div');
                 c.id = 'c';
                 c.className = 'beta';
-                c.setAttribute('data-module','mock/baz');
+                c.setAttribute('data-module','mock/modules/baz');
 
                 group = document.createElement('div');
                 group.appendChild(a);
@@ -313,15 +309,64 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
             it('will return the first matched module controller when a path is supplied',function(){
 
-                var mcs = conditioner.getModules('mock/foo','.beta');
+                var mcs = conditioner.getModules('mock/modules/foo','.beta');
                 expect(mcs.length).to.equal(1);
 
             });
 
             it('will return empty array if no matches found',function(){
 
-                var mcs = conditioner.getModules('mock/trololo');
+                var mcs = conditioner.getModules('mock/modules/trololo');
                 expect(mcs.length).to.equal(0);
+
+            });
+
+        });
+
+        describe('test(conditions)',function(){
+
+            beforeEach(function(){
+
+                conditioner.setOptions({
+                    'paths':{
+                        'monitors':'mock/monitors/'
+                    }
+                });
+
+            });
+
+            it('will throw an error when no test passed',function(){
+
+                var testIt = function(){conditioner.is();};
+                expect(testIt).to.throw(Error);
+
+            });
+
+            it('will return a promise',function(){
+
+                expect(conditioner.is('single:{true}').then).to.be.defined;
+
+            });
+
+            it('will call resolve method on test assertion success',function(done){
+
+                conditioner.is('single:{true}').then(
+                    function(state){
+                        expect(state).to.be.ok;
+                        done();
+                    }
+                );
+
+            });
+
+            it('will call reject method on test assertion failure',function(done){
+
+                conditioner.is('single:{false}').then(
+                    function(state){
+                        expect(state).to.not.be.ok;
+                        done();
+                    }
+                );
 
             });
 
