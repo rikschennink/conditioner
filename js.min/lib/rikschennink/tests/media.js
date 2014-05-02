@@ -1,1 +1,0 @@
-define([],function(){return{support:function(){return"matchMedia"in window},arrange:function(t){if("supported"!==t){var e=this;this._mql=window.matchMedia(t),this._mql.addListener(function(){e.onchange()})}},assert:function(t){return this.supported()?"supported"===t?this.supported():this._mql.matches:!1}}});

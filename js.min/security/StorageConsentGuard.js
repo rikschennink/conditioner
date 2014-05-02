@@ -1,1 +1,69 @@
-define(["utils/Observer","utils/mergeObjects","module"],function(t,e,n){var i=function(){this._level=null,this.setOptions(n.config()),this._setDefaultLevel()},o=i.prototype;o.setOptions=function(t){t||(t={}),this._options=e({initial:"all",levels:["all","none"]},t),this._setDefaultLevel()},o._setDefaultLevel=function(){this.setActiveLevel(this._options.initial)},o.getLevels=function(){return this._options.levels},o.getActiveLevel=function(){return this._level},o.setActiveLevel=function(e){e!=this._level&&(this._level=e,t.publish(this,"change",this._level))};var r;return{getInstance:function(){return r||(r=new i),r}}});
+define(['utils/Observer','utils/mergeObjects','module'],function(Observer,mergeObjects,module){
+
+    'use strict';
+
+    // StorageConsentGuard
+    var StorageConsentGuard = function() {
+
+        // current level
+        this._level = null;
+
+        // set options
+        this.setOptions(module.config());
+
+        // set default level
+        this._setDefaultLevel();
+    };
+
+    var p = StorageConsentGuard.prototype;
+
+    p.setOptions = function(options) {
+
+        if (!options) {
+            options = {};
+        }
+
+        // sets initial options
+        this._options = mergeObjects({
+            'initial':'all',
+            'levels':['all','none']
+        },options);
+
+        this._setDefaultLevel();
+    };
+
+    p._setDefaultLevel = function() {
+        this.setActiveLevel(this._options.initial);
+    };
+
+    p.getLevels = function() {
+        return this._options.levels;
+    };
+
+    p.getActiveLevel = function() {
+        return this._level;
+    };
+
+    p.setActiveLevel = function(level) {
+
+        if (level == this._level) {
+            return;
+        }
+
+        this._level = level;
+
+        Observer.publish(this,'change',this._level);
+    };
+
+
+    // reference to singleton
+    var _instance;
+
+    return {
+        getInstance:function() {
+            if (!_instance) { _instance = new StorageConsentGuard(); }
+            return _instance;
+        }
+    };
+
+});

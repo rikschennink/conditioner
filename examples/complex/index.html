@@ -10,20 +10,20 @@ title: Complex Conditions &bull; Conditioner.js
 </nav>
 
 <h3>Based on multiple window dimensions</h3>
-<p>Clock will be active as long as window width falls between 450 and 750 pixels. Priority of this component has a value of 1 which causes it to be loaded before all components without and explicit priority.</p>
+<p>Clock will be active as long as window width falls between 450 and 750 pixels.</p>
 
 {% highlight html %}
 <div data-module="ui/Clock"
-     data-conditions="window:{min-width:450} and window:{max-width:750}"> ... </div>
+     data-conditions="window:{min-width:450,max-width:750}"> ... </div>
 {% endhighlight %}
 
 <div class="component">
     <div data-module="ui/Clock"
-         data-conditions="window:{min-width:450} and window:{max-width:750}"></div>
+         data-conditions="window:{min-width:450,max-width:750}"></div>
 </div>
 
 <h3>Based on Media Query</h3>
-<p>Clock will be active as long as media the media query is matched. Priority of this component has a value of minus 1, which causes it to be loaded after all components without and explicit priority have loaded.</p>
+<p>Clock will be active as long as media the media query is matched.</p>
 
 {% highlight html %}
 <div data-module="ui/Clock"

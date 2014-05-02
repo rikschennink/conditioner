@@ -4,15 +4,11 @@ require.config({
     baseUrl:'/js',
     map:{
         '*':{
-            'conditioner':'lib/rikschennink/conditioner-1.0.0',
+            'conditioner':'lib/rikschennink/conditioner',
             'utils/Observer':'lib/rikschennink/utils/Observer',
             'utils/mergeObjects':'lib/rikschennink/utils/mergeObjects'
         }
     }
-    //,
-    //path:{
-    //    'Observer':'lib/rikschennink/utils'
-   // }
 });
 
 // load conditioner

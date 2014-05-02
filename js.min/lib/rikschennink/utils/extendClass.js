@@ -1,1 +1,0 @@
-define([],function(){return function(){var t,e,n=arguments[arguments.length-1],i=arguments[0];return"string"==typeof i?(t=requirejs,e=i,n.__superUrl=i):(t=i,e=arguments[1],n.__superUrl=t.toUrl(e)),n.__super=t(e),n.prototype=Object.create(n.__super.prototype),n}});

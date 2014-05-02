@@ -1,1 +1,0 @@
-define([],function(){var t=0;return{setup:function(t){window.addEventListener("resize",t,!1)},measure:function(){return t=window.innerWidth||document.documentElement.clientWidth,!0},assert:function(e){var n=e.split(":"),i=n[0],o=parseInt(n[1],10);return"min-width"===i?t>=o:"max-width"===i?o>=t:!1}}});

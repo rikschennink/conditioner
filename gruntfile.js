@@ -27,7 +27,7 @@ module.exports = function(grunt) {
 
                     // set main path
                     paths: {
-                        'tests':'lib/rikschennink/tests',
+                        'monitors':'lib/rikschennink/monitors',
                         'utils':'lib/rikschennink/utils'
                     },
 
@@ -38,14 +38,14 @@ module.exports = function(grunt) {
                             include:[
 
                                 // custom test
-                                'tests/cookies',
+                                'monitors/cookies',
 
                                 // default tests
-                                'tests/connection',
-                                'tests/element',
-                                'tests/media',
-                                'tests/pointer',
-                                'tests/window',
+                                'monitors/connection',
+                                'monitors/element',
+                                'monitors/media',
+                                'monitors/pointer',
+                                'monitors/window',
 
                                 // ui modules
                                 'ui/Clock',
@@ -59,35 +59,6 @@ module.exports = function(grunt) {
                             ]
                         }
                     ]
-
-                    /*
-                    name:'lib/jrburke/require',
-                    out:'js.min/built.js',
-                    include:[
-
-                        'conditioner',
-
-                        // custom test
-                        'conditioner/tests/cookies',
-
-                        // default tests
-                        'conditioner/tests/connection',
-                        'conditioner/tests/element',
-                        'conditioner/tests/media',
-                        'conditioner/tests/pointer',
-                        'conditioner/tests/window',
-
-                        // ui modules
-                        'ui/Clock',
-                        'ui/Zoom',
-                        'ui/StorageConsentSelect',
-                        'ui/StarGazers',
-                        'security/StorageConsentGuard'
-
-                        // 'ui/Map' not included to test conditional loading
-
-                    ]
-                    */
 
                 }
             }

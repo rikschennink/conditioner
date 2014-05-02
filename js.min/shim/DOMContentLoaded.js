@@ -1,1 +1,52 @@
-var contentLoaded=function(t,e){var n=!1,i=!0,o=t.document,r=o.documentElement,s="attachEvent",u="detachEvent",l="on",a=function(i){("readystatechange"!=i.type||"complete"==o.readyState)&&(("load"==i.type?t:o)[u](l+i.type,a,!1),!n&&(n=!0)&&e.call(t,i.type||i))},h=function(){try{r.doScroll("left")}catch(t){return setTimeout(h,50),void 0}a("poll")};if("complete"==o.readyState)e.call(t,"lazy");else{if(o.createEventObject&&r.doScroll){try{i=!t.frameElement}catch(c){}i&&h()}o[s](l+"DOMContentLoaded",a,!1),o[s](l+"readystatechange",a,!1),t[s](l+"load",a,!1)}};
+
+    /*!
+     * contentloaded.js
+     *
+     * Author: Diego Perini (diego.perini at gmail.com)
+     * Summary: cross-browser wrapper for DOMContentLoaded
+     * Updated: 20101020
+     * License: MIT
+     * Version: 1.2
+     *
+     * URL:
+     * http://javascript.nwbox.com/ContentLoaded/
+     * http://javascript.nwbox.com/ContentLoaded/MIT-LICENSE
+     * https://github.com/dperini/ContentLoaded
+     *
+     */
+
+// @win window reference
+// @fn function reference
+var contentLoaded = function(win, fn) {
+
+    var done = false, top = true,
+
+        doc = win.document, root = doc.documentElement,
+
+        add = 'attachEvent',
+        rem = 'detachEvent',
+        pre = 'on',
+
+        init = function(e) {
+            if (e.type == 'readystatechange' && doc.readyState != 'complete') return;
+            (e.type == 'load' ? win : doc)[rem](pre + e.type, init, false);
+            if (!done && (done = true)) fn.call(win, e.type || e);
+        },
+
+        poll = function() {
+            try { root.doScroll('left'); } catch(e) { setTimeout(poll, 50); return; }
+            init('poll');
+        };
+
+    if (doc.readyState == 'complete') fn.call(win, 'lazy');
+    else {
+        if (doc.createEventObject && root.doScroll) {
+            try { top = !win.frameElement; } catch(e) { }
+            if (top) poll();
+        }
+        doc[add](pre + 'DOMContentLoaded', init, false);
+        doc[add](pre + 'readystatechange', init, false);
+        win[add](pre + 'load', init, false);
+    }
+
+};

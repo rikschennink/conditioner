@@ -1,20 +1,21 @@
-define(function() {
+(function (win, undefined) {
 
     'use strict';
 
-    var _uid = 1, // start at 1 because !uid returns false when uid===0
+    var _uid = 1,
+        // start at 1 because !uid returns false when uid===0
         _db = {};
 
-    return {
+    var util = {
 
-        _setEntry:function(obj,prop) {
+        _setEntry: function (obj, prop) {
 
             var uid = obj.__pubSubUID;
             if (!uid) {
                 uid = _uid++;
                 obj.__pubSubUID = uid;
                 _db[uid] = {
-                    'obj':obj
+                    'obj': obj
                 };
             }
 
@@ -25,7 +26,7 @@ define(function() {
             return _db[uid];
         },
 
-        _getEntryProp:function(obj,prop) {
+        _getEntryProp: function (obj, prop) {
             var entry = _db[obj.__pubSubUID];
             return entry ? _db[obj.__pubSubUID][prop] : null;
         },
@@ -38,13 +39,15 @@ define(function() {
          * @param {Function} fn - Function to call when event fires
          * @static
          */
-        subscribe:function(obj,type,fn) {
+        subscribe: function (obj, type, fn) {
 
-            var entry = this._setEntry(obj,'subscriptions');
+            var entry = this._setEntry(obj, 'subscriptions');
 
             // check if already added
-            var sub,i=0,subs=entry.subscriptions,l=subs.length;
-            for (; i<l; i++) {
+            var sub, i = 0,
+                subs = entry.subscriptions,
+                l = subs.length;
+            for (; i < l; i++) {
                 sub = subs[i];
                 if (sub.type === type && sub.fn === fn) {
                     return;
@@ -52,7 +55,10 @@ define(function() {
             }
 
             // add event
-            subs.push({'type':type,'fn':fn});
+            subs.push({
+                'type': type,
+                'fn': fn
+            });
         },
 
         /**
@@ -63,17 +69,19 @@ define(function() {
          * @param {Function} fn - Function to match
          * @static
          */
-        unsubscribe:function(obj,type,fn) {
+        unsubscribe: function (obj, type, fn) {
 
-            var subs = this._getEntryProp(obj,'subscriptions');
-            if (!subs) {return;}
+            var subs = this._getEntryProp(obj, 'subscriptions');
+            if (!subs) {
+                return;
+            }
 
             // find and remove
-            var sub,i=subs.length;
+            var sub, i = subs.length;
             while (--i >= 0) {
                 sub = subs[i];
                 if (sub.type === type && (sub.fn === fn || !fn)) {
-                    subs.splice(i,1);
+                    subs.splice(i, 1);
                 }
             }
         },
@@ -86,11 +94,11 @@ define(function() {
          * @param {Object} [data] - optional data carrier
          * @static
          */
-        publishAsync:function(obj,type,data) {
+        publishAsync: function (obj, type, data) {
             var self = this;
-            setTimeout(function(){
-                self.publish(obj,type,data);
-            },0);
+            setTimeout(function () {
+                self.publish(obj, type, data);
+            }, 0);
         },
 
         /**
@@ -101,13 +109,18 @@ define(function() {
          * @param {Object} [data] - optional data carrier
          * @static
          */
-        publish:function(obj,type,data) {
+        publish: function (obj, type, data) {
 
-            var entry = this._setEntry(obj,'subscriptions');
+            var entry = this._setEntry(obj, 'subscriptions');
 
             // find and execute callback
-            var matches=[],i=0,subs=entry.subscriptions,l=subs.length,receivers = entry.receivers,sub;
-            for (;i<l;i++) {
+            var matches = [],
+                i = 0,
+                subs = entry.subscriptions,
+                l = subs.length,
+                receivers = entry.receivers,
+                sub;
+            for (; i < l; i++) {
                 sub = subs[i];
                 if (sub.type === type) {
                     matches.push(sub);
@@ -116,7 +129,7 @@ define(function() {
 
             // execute matched callbacks
             l = matches.length;
-            for (i=0;i<l;i++) {
+            for (i = 0; i < l; i++) {
                 matches[i].fn(data);
             }
 
@@ -126,8 +139,8 @@ define(function() {
             }
 
             l = receivers.length;
-            for (i=0;i<l;i++) {
-                this.publish(receivers[i],type,data);
+            for (i = 0; i < l; i++) {
+                this.publish(receivers[i], type, data);
             }
         },
 
@@ -139,13 +152,13 @@ define(function() {
          * @return {Boolean} if setup was successful
          * @static
          */
-        inform:function(informant,receiver) {
+        inform: function (informant, receiver) {
 
             if (!informant || !receiver) {
                 return false;
             }
 
-            var entry = this._setEntry(informant,'receivers');
+            var entry = this._setEntry(informant, 'receivers');
             entry.receivers.push(receiver);
 
             return true;
@@ -159,23 +172,24 @@ define(function() {
          * @return {Boolean} if removal was successful
          * @static
          */
-        conceal:function(informant,receiver) {
+        conceal: function (informant, receiver) {
 
             if (!informant || !receiver) {
                 return false;
             }
 
-            var receivers = this._getEntryProp(informant,'receivers');
+            var receivers = this._getEntryProp(informant, 'receivers');
             if (!receivers) {
                 return false;
             }
 
             // find and remove
-            var i=receivers.length,item;
+            var i = receivers.length,
+                item;
             while (--i >= 0) {
                 item = receivers[i];
                 if (item === receiver) {
-                    receivers.splice(i,1);
+                    receivers.splice(i, 1);
                     return true;
                 }
             }
@@ -184,4 +198,19 @@ define(function() {
         }
     };
 
-});
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = util;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function () {
+            return util;
+        });
+    }
+    // Browser globals
+    else {
+        win.Observer = util;
+    }
+
+}(window));

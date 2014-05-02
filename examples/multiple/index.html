@@ -23,6 +23,19 @@ title: Multiple Conditions &bull; Conditioner.js
 <h3>Binding multiple conditioned modules on an element</h3>
 <p>The clock below will always be active and will be accompanied by a Zoom control on pages wider than 35ems.</p>
 
+<h4>Using Array notation</h4>
+
+{% highlight html %}
+<div data-module='[["ui/Clock",{"time":false}],["ui/Zoom","media:{(min-width:35em)}"]'> ... </div>
+{% endhighlight %}
+
+<div class="component alt">
+    <div data-module='[["ui/Clock",{"time":false}],["ui/Zoom","media:{(min-width:35em)}"]]'></div>
+</div>
+
+
+<h4>Using JSON notation</h4>
+
 {% highlight html %}
 <div data-module='[{"path":"ui/Clock","options":{"time":false}},{"path":"ui/Zoom","conditions":"media:{(min-width:35em)}"}]'> ... </div>
 {% endhighlight %}

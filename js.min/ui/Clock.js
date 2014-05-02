@@ -1,1 +1,65 @@
-define([],function(){var t=function(t){return 10>t?"0"+t:t},e=function(t,e){this._element=t,this._options=e,this._time=document.createElement("p"),this._element.appendChild(this._time),this._tick()};return e.options={time:!0},e.prototype._tick=function(){var e=this,n=new Date,i=t(n.getDate())+"/"+(n.getMonth()+1)+"/"+n.getFullYear(),o=t(n.getHours())+":"+t(n.getMinutes())+":"+t(n.getSeconds());this._time.innerHTML=i+(this._options.time?" - "+o:""),this._options.time&&(this._timer=setTimeout(function(){e._tick()},900))},e.prototype.unload=function(){clearTimeout(this._timer),this._time.parentNode.removeChild(this._time)},e});
+define(function(){
+
+    'use strict';
+
+    // adds leading zero's
+    var _pad = function(n){return n<10 ? '0'+n : n;};
+
+    // Clock Class
+    var exports = function(element,options) {
+
+        // set default options
+        this._element = element;
+        this._options = options;
+
+        // set time holder
+        this._time = document.createElement('p');
+        this._element.appendChild(this._time);
+
+        // start ticking
+        this._tick();
+    };
+
+    // default options
+    exports.options = {
+        'time':true
+    };
+
+    // update time
+    exports.prototype._tick = function() {
+
+        var self = this,
+            now = new Date(),
+            date = _pad(now.getDate()) + '/' + (now.getMonth()+1) + '/'+ now.getFullYear(),
+            time = _pad(now.getHours()) + ':' + _pad(now.getMinutes()) + ':' + _pad(now.getSeconds());
+
+        // write inner html
+        this._time.innerHTML = date + (this._options.time ? ' - ' + time : '');
+
+        // if time is not enabled, don't start ticking
+        if (!this._options.time) {
+            return;
+        }
+
+        // wait timeout milliseconds till next clock tick
+        this._timer = setTimeout(function(){
+            self._tick();
+        },900);
+
+    };
+
+    // unload clock
+    exports.prototype.unload = function() {
+
+        // stop ticking
+        clearTimeout(this._timer);
+
+        // restore content
+        //this._element.innerHTML = this._inner;
+        this._time.parentNode.removeChild(this._time);
+
+    };
+
+    return exports;
+
+});

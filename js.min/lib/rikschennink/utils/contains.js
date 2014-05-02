@@ -1,1 +1,46 @@
-define([],function(){var t=document?document.body:null;return t&&t.compareDocumentPosition?function(t,e){return!!(16&t.compareDocumentPosition(e))}:t&&t.contains?function(t,e){return t!=e&&t.contains(e)}:function(t,e){for(var n=e.parentNode;n;){if(n===t)return!0;n=n.parentNode}return!1}});
+(function (win, doc, undefined) {
+
+    'use strict';
+
+    // define contains method based on browser capabilities
+    var el = doc ? doc.body : null,
+        util;
+    if (el && el.compareDocumentPosition) {
+        util = function (parent, child) { /* jshint -W016 */
+            return !!(parent.compareDocumentPosition(child) & 16);
+        };
+    }
+    else if (el && el.contains) {
+        util = function (parent, child) {
+            return parent != child && parent.contains(child);
+        };
+    }
+    else {
+        util = function (parent, child) {
+            var node = child.parentNode;
+            while (node) {
+                if (node === parent) {
+                    return true;
+                }
+                node = node.parentNode;
+            }
+            return false;
+        };
+    }
+
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = util;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function () {
+            return util;
+        });
+    }
+    // Browser globals
+    else {
+        win.contains = util;
+    }
+
+}(window, document));

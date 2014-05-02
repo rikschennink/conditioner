@@ -1,1 +1,216 @@
-define([],function(){var t=1,e={};return{_setEntry:function(n,i){var o=n.__pubSubUID;return o||(o=t++,n.__pubSubUID=o,e[o]={obj:n}),e[o][i]||(e[o][i]=[]),e[o]},_getEntryProp:function(t,n){var i=e[t.__pubSubUID];return i?e[t.__pubSubUID][n]:null},subscribe:function(t,e,n){for(var i,o=this._setEntry(t,"subscriptions"),r=0,s=o.subscriptions,u=s.length;u>r;r++)if(i=s[r],i.type===e&&i.fn===n)return;s.push({type:e,fn:n})},unsubscribe:function(t,e,n){var i=this._getEntryProp(t,"subscriptions");if(i)for(var o,r=i.length;--r>=0;)o=i[r],o.type!==e||o.fn!==n&&n||i.splice(r,1)},publishAsync:function(t,e,n){var i=this;setTimeout(function(){i.publish(t,e,n)},0)},publish:function(t,e,n){for(var i,o=this._setEntry(t,"subscriptions"),r=[],s=0,u=o.subscriptions,l=u.length,a=o.receivers;l>s;s++)i=u[s],i.type===e&&r.push(i);for(l=r.length,s=0;l>s;s++)r[s].fn(n);if(a)for(l=a.length,s=0;l>s;s++)this.publish(a[s],e,n)},inform:function(t,e){if(!t||!e)return!1;var n=this._setEntry(t,"receivers");return n.receivers.push(e),!0},conceal:function(t,e){if(!t||!e)return!1;var n=this._getEntryProp(t,"receivers");if(!n)return!1;for(var i,o=n.length;--o>=0;)if(i=n[o],i===e)return n.splice(o,1),!0;return!1}}});
+(function (win, undefined) {
+
+    'use strict';
+
+    var _uid = 1,
+        // start at 1 because !uid returns false when uid===0
+        _db = {};
+
+    var util = {
+
+        _setEntry: function (obj, prop) {
+
+            var uid = obj.__pubSubUID;
+            if (!uid) {
+                uid = _uid++;
+                obj.__pubSubUID = uid;
+                _db[uid] = {
+                    'obj': obj
+                };
+            }
+
+            if (!_db[uid][prop]) {
+                _db[uid][prop] = [];
+            }
+
+            return _db[uid];
+        },
+
+        _getEntryProp: function (obj, prop) {
+            var entry = _db[obj.__pubSubUID];
+            return entry ? _db[obj.__pubSubUID][prop] : null;
+        },
+
+        /**
+         * Subscribe to an event
+         * @memberof Observer
+         * @param {Object} obj - Object to subscribe to
+         * @param {String} type - Event type to listen for
+         * @param {Function} fn - Function to call when event fires
+         * @static
+         */
+        subscribe: function (obj, type, fn) {
+
+            var entry = this._setEntry(obj, 'subscriptions');
+
+            // check if already added
+            var sub, i = 0,
+                subs = entry.subscriptions,
+                l = subs.length;
+            for (; i < l; i++) {
+                sub = subs[i];
+                if (sub.type === type && sub.fn === fn) {
+                    return;
+                }
+            }
+
+            // add event
+            subs.push({
+                'type': type,
+                'fn': fn
+            });
+        },
+
+        /**
+         * Unsubscribe from further notifications
+         * @memberof Observer
+         * @param {Object} obj - Object to unsubscribe from
+         * @param {String} type - Event type to match
+         * @param {Function} fn - Function to match
+         * @static
+         */
+        unsubscribe: function (obj, type, fn) {
+
+            var subs = this._getEntryProp(obj, 'subscriptions');
+            if (!subs) {
+                return;
+            }
+
+            // find and remove
+            var sub, i = subs.length;
+            while (--i >= 0) {
+                sub = subs[i];
+                if (sub.type === type && (sub.fn === fn || !fn)) {
+                    subs.splice(i, 1);
+                }
+            }
+        },
+
+        /**
+         * Publishes an event async
+         * http://ejohn.org/blog/how-javascript-timers-work/
+         * @param {Object} obj - Object to fire the event on
+         * @param {String} type - Event type to fire
+         * @param {Object} [data] - optional data carrier
+         * @static
+         */
+        publishAsync: function (obj, type, data) {
+            var self = this;
+            setTimeout(function () {
+                self.publish(obj, type, data);
+            }, 0);
+        },
+
+        /**
+         * Publish an event
+         * @memberof Observer
+         * @param {Object} obj - Object to fire the event on
+         * @param {String} type - Event type to fire
+         * @param {Object} [data] - optional data carrier
+         * @static
+         */
+        publish: function (obj, type, data) {
+
+            var entry = this._setEntry(obj, 'subscriptions');
+
+            // find and execute callback
+            var matches = [],
+                i = 0,
+                subs = entry.subscriptions,
+                l = subs.length,
+                receivers = entry.receivers,
+                sub;
+            for (; i < l; i++) {
+                sub = subs[i];
+                if (sub.type === type) {
+                    matches.push(sub);
+                }
+            }
+
+            // execute matched callbacks
+            l = matches.length;
+            for (i = 0; i < l; i++) {
+                matches[i].fn(data);
+            }
+
+            // see if any receivers should be informed
+            if (!receivers) {
+                return;
+            }
+
+            l = receivers.length;
+            for (i = 0; i < l; i++) {
+                this.publish(receivers[i], type, data);
+            }
+        },
+
+        /**
+         * Setup propagation target for events so they can bubble up the object tree
+         * @memberof Observer
+         * @param {Object} informant - Object to set as origin
+         * @param {Object} receiver - Object to set as target
+         * @return {Boolean} if setup was successful
+         * @static
+         */
+        inform: function (informant, receiver) {
+
+            if (!informant || !receiver) {
+                return false;
+            }
+
+            var entry = this._setEntry(informant, 'receivers');
+            entry.receivers.push(receiver);
+
+            return true;
+        },
+
+        /**
+         * Remove propagation target
+         * @memberof Observer
+         * @param {Object} informant - Object set as origin
+         * @param {Object} receiver - Object set as target
+         * @return {Boolean} if removal was successful
+         * @static
+         */
+        conceal: function (informant, receiver) {
+
+            if (!informant || !receiver) {
+                return false;
+            }
+
+            var receivers = this._getEntryProp(informant, 'receivers');
+            if (!receivers) {
+                return false;
+            }
+
+            // find and remove
+            var i = receivers.length,
+                item;
+            while (--i >= 0) {
+                item = receivers[i];
+                if (item === receiver) {
+                    receivers.splice(i, 1);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    };
+
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = util;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function () {
+            return util;
+        });
+    }
+    // Browser globals
+    else {
+        win.Observer = util;
+    }
+
+}(window));
