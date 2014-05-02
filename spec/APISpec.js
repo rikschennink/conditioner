@@ -337,20 +337,20 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
             it('will throw an error when no test passed',function(){
 
-                var testIt = function(){conditioner.test();};
+                var testIt = function(){conditioner.is();};
                 expect(testIt).to.throw(Error);
 
             });
 
             it('will return a promise',function(){
 
-                expect(conditioner.test('single:{true}').then).to.be.defined;
+                expect(conditioner.is('single:{true}').then).to.be.defined;
 
             });
 
             it('will call resolve method on test assertion success',function(done){
 
-                conditioner.test('single:{true}').then(
+                conditioner.is('single:{true}').then(
                     function(state){
                         expect(state).to.be.ok;
                         done();
@@ -361,7 +361,7 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
             it('will call reject method on test assertion failure',function(done){
 
-                conditioner.test('single:{false}').then(
+                conditioner.is('single:{false}').then(
                     function(state){
                         expect(state).to.not.be.ok;
                         done();

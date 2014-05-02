@@ -236,24 +236,45 @@
             },
 
             /**
-             * Manual run an expression
-             * @param {String} conditions - Expression to test
+             * Manually run an expression, only returns once with a true or false state
+             * @param {String} condition - Expression to test
              * @param {Element} [element] - Optional element to run the test on
              * @returns {Promise}
              */
-            test:function(conditions,element) {
+            is:function(condition,element){
 
-                if (!conditions) {
-                    throw new Error('Conditioner.test(conditions): "conditions" is a required parameter.');
+                if (!condition) {
+                    throw new Error('Conditioner.is(condition,[element]): "condition" is a required parameter.');
                 }
 
                 // run test and resolve with first received state
                 var p = new Promise();
-                WebContext.test(conditions,element,function(valid){
+                WebContext.test(condition,element,function(valid){
                     p.resolve(valid);
                 });
                 return p;
 
+            },
+
+            /**
+             * Manually run an expression, bind a callback method to be executed once something changes
+             * @param {String} condition - Expression to test
+             * @param {Element} [element] - Optional element to run the test on
+             * @param {Function} callback - callback method
+             */
+            on:function(condition,element,callback) {
+
+                if (!condition) {
+                    throw new Error('Conditioner.on(condition,[element],callback): "condition" and "callback" are required parameter.');
+                }
+
+                // handle optional element parameter
+                callback = typeof element === 'function' ? element : callback;
+
+                // run test and execute callback on change
+                WebContext.test(condition,element,function(valid){
+                    callback(valid);
+                });
             }
 
         };
