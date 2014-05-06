@@ -67,7 +67,7 @@ MonitorFactory.prototype = {
 
         // load monitor configuration
         var self = this;
-        _options.loader.require([_options.paths.monitors + '/' + path],function(setup) {
+        _options.loader.require([_options.paths.monitors + path],function(setup) {
 
             var i=0,monitor = self._monitors[path],l,watch,watches,items,event,item,data,isSingleTest;
 

@@ -175,7 +175,7 @@
 
                 // load monitor configuration
                 var self = this;
-                _options.loader.require([_options.paths.monitors + '/' + path], function (setup) {
+                _options.loader.require([_options.paths.monitors + path], function (setup) {
 
                     var i = 0,
                         monitor = self._monitors[path],
@@ -1954,6 +1954,17 @@
                 // update options
                 _options = mergeObjects(_options, options);
 
+                // fix paths if not ending with slash
+                for (path in _options.paths) {
+
+                    if (!_options.paths.hasOwnProperty(path)) {
+                        continue;
+                    }
+
+                    // add slash if path does not end on slash already
+                    _options.paths[path] += _options.paths[path].slice(-1) !== '/' ? '/' : '';
+                }
+
                 // loop over modules
                 for (path in _options.modules) {
 
@@ -2077,7 +2088,7 @@
 
                 // first argument is required
                 if (!arg) {
-                    throw new Error('Conditioner.destroy(...): A DOM node, String or NodeController is required as the first argument.');
+                    throw new Error('Conditioner.destroy(...): A DOM node, Array, String or NodeController is required as the first argument.');
                 }
 
                 // test if is an array
