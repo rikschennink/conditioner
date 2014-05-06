@@ -32,13 +32,13 @@
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = factory(
-            require('../../utils/Observer'),
+            require('../utils/Observer'),
             require('security/StorageConsentGuard')
         );
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
-        define(['../../utils/Observer',
+        define(['../utils/Observer',
                 'security/StorageConsentGuard'],
             function(Observer,StorageConsentGuard){
                 return factory(Observer,StorageConsentGuard);

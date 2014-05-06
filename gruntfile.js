@@ -23,13 +23,7 @@ module.exports = function(grunt) {
                     mainConfigFile:'./js/main.js',
 
                     // Override base url in main.js
-                    baseUrl:'.',
-
-                    // set main path
-                    paths: {
-                        'monitors':'lib/rikschennink/monitors',
-                        'utils':'lib/rikschennink/utils'
-                    },
+                    baseUrl:'../js.min/',
 
                     // Core modules to merge
                     modules:[
@@ -38,14 +32,14 @@ module.exports = function(grunt) {
                             include:[
 
                                 // custom test
-                                'monitors/cookies',
+                                'lib/rikschennink/monitors/cookies',
 
                                 // default tests
-                                'monitors/connection',
-                                'monitors/element',
-                                'monitors/media',
-                                'monitors/pointer',
-                                'monitors/window',
+                                'lib/rikschennink/monitors/connection',
+                                'lib/rikschennink/monitors/element',
+                                'lib/rikschennink/monitors/media',
+                                'lib/rikschennink/monitors/pointer',
+                                'lib/rikschennink/monitors/window',
 
                                 // ui modules
                                 'ui/Clock',
@@ -54,7 +48,8 @@ module.exports = function(grunt) {
                                 'ui/StarGazers',
                                 'security/StorageConsentGuard'
 
-                                // 'ui/Map' not included to test conditional loading
+                                // not included to test conditional loading
+                                // 'ui/Map'
 
                             ]
                         }
@@ -70,6 +65,9 @@ module.exports = function(grunt) {
             all:[
                 '<%=path.js %>/ui/*.js'
             ]
+        },
+        uglify:{
+
         },
         sass:{
             dist: {
@@ -100,7 +98,7 @@ module.exports = function(grunt) {
         watch: {
             js:{
                 files:['./js/**/*'],
-                tasks:['jshint','requirejs','jekyll:build']
+                tasks:['jshint','requirejs','uglify','jekyll:build']
             },
             css:{
                 files:['./sass/**/*'],
@@ -122,6 +120,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-jekyll');
 
 

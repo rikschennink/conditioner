@@ -1,7 +1,6 @@
 
 // setup requirejs
 require.config({
-    baseUrl:'/js',
     map:{
         '*':{
             'conditioner':'lib/rikschennink/conditioner',

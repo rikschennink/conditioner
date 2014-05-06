@@ -175,7 +175,7 @@
 
                 // load monitor configuration
                 var self = this;
-                _options.loader.require([_options.paths.monitors + '/' + path], function (setup) {
+                _options.loader.require([_options.paths.monitors + path], function (setup) {
 
                     var i = 0,
                         monitor = self._monitors[path],
@@ -1742,25 +1742,6 @@
             },
 
             /**
-             * Destroy the passed node reference
-             * @param node {NodeController}
-             * @return {Boolean}
-             * @public
-             */
-            destroyNode: function (node) {
-                var i = this._nodes.length;
-                while (i--) {
-                    if (this._nodes[i] !== node) {
-                        continue;
-                    }
-                    this._nodes.splice(i, 1);
-                    node.destroy();
-                    return true;
-                }
-                return false;
-            },
-
-            /**
              * Returns one or multiple nodes matching the selector
              * @param {String} [selector] - Optional selector to match the nodes to
              * @param {Document|Element} [context] - Context to search in
@@ -1794,6 +1775,34 @@
                 }
 
                 return singleResult ? null : results;
+            },
+
+            /**
+             * Destroy the passed node reference
+             * @param {Array} nodes
+             * @return {Boolean}
+             * @public
+             */
+            destroy: function (nodes) {
+
+                var i = nodes.length,
+                    destroyed = 0,
+                    hit;
+
+                while (i--) {
+
+                    hit = this._nodes.indexOf(nodes[i]);
+                    if (hit === -1) {
+                        continue;
+                    }
+
+                    this._nodes.splice(hit, 1);
+                    nodes[i].destroy();
+                    destroyed++;
+
+                }
+
+                return nodes.length === destroyed;
             },
 
             /**
@@ -1945,6 +1954,17 @@
                 // update options
                 _options = mergeObjects(_options, options);
 
+                // fix paths if not ending with slash
+                for (path in _options.paths) {
+
+                    if (!_options.paths.hasOwnProperty(path)) {
+                        continue;
+                    }
+
+                    // add slash if path does not end on slash already
+                    _options.paths[path] += _options.paths[path].slice(-1) !== '/' ? '/' : '';
+                }
+
                 // loop over modules
                 for (path in _options.modules) {
 
@@ -2024,8 +2044,8 @@
             /**
              * Returns the first Node matching the selector
              * @param {String} [selector] - Selector to match the nodes to
-             * @param {Document|Element} [context] - Context to search in
-             * @return {Node|null} First matched node or null
+             * @param {Element} [context] - Context to search in
+             * @return {Node||null} First matched node or null
              */
             getNode: function (selector, context) {
 
@@ -2036,7 +2056,7 @@
             /**
              * Returns all nodes matching the selector
              * @param {String} [selector] - Optional selector to match the nodes to
-             * @param {Document|Element} [context] - Context to search in
+             * @param {Element} [context] - Context to search in
              * @return {Array} Array containing matched nodes or empty Array
              */
             getNodes: function (selector, context) {
@@ -2046,15 +2066,59 @@
             },
 
             /**
-             * Destroy the passed node reference
-             * @param node {NodeController}
+             * Destroy found nodes
+             * Three possible use cases
+             * 1.
+             * @param {NodeController} arguments - destroy a single node controller
+             *
+             * 2.
+             * @param {String} [arguments] - string to match elements
+             * @param {Element} arguments - context in which to filter
+             *
+             * 3.
+             * @param {Array} arguments - array containing NodeControllers
+             *
              * @return {Boolean}
              * @public
              */
-            destroyNode: function (node) {
+            destroy: function () {
 
-                return _moduleLoader.destroyNode(node);
+                var nodes = [],
+                    arg = arguments[0];
 
+                // first argument is required
+                if (!arg) {
+                    throw new Error('Conditioner.destroy(...): A DOM node, Array, String or NodeController is required as the first argument.');
+                }
+
+                // test if is an array
+                if (Array.isArray(arg)) {
+                    nodes = arg;
+                }
+
+                // test if is query selector
+                if (typeof arg === 'string') {
+                    nodes = _moduleLoader.getNodes(arg, arguments[1]);
+                }
+
+                // test if is single NodeController instance
+                else if (arg instanceof NodeController) {
+                    nodes.push(arg);
+                }
+
+                // test if is DOMNode
+                else if (arg.nodeName) {
+                    nodes = _moduleLoader.getNodes().filter(function (node) {
+                        return contains(arg, node.getElement());
+                    });
+                }
+
+                // if we don't have any nodes to destroy let's stop here
+                if (nodes.length === 0) {
+                    return false;
+                }
+
+                return _moduleLoader.destroy(nodes);
             },
 
             /**
