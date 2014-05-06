@@ -93,7 +93,7 @@
                     _options.paths[path] += _options.paths[path].slice(-1) !== '/' ? '/' : '';
                 }
 
-                    // loop over modules
+                // loop over modules
                 for (path in _options.modules) {
 
                     if (!_options.modules.hasOwnProperty(path)){continue;}

@@ -45,10 +45,10 @@ conditioner.init();
 The documentation and a bunch of demos is located at [conditionerjs.com](http://conditionerjs.com)
 
 ## Requirements
-Conditioner relies on the availability of [RequireJS](http://requirejs.org).
+Conditioner relies on the availability of an AMD loader. It's been tested with [RequireJS](http://requirejs.org), [Almond](https://github.com/jrburke/almond) and [Curl](https://github.com/cujojs/curl). As long as your AMD loader follows the [AMD spec](https://github.com/amdjs/amdjs-api) it should be fine.
 
-* RequireJS
-* Modern browser, IE8 supported but without the media queries.
+* AMD Loader
+* Modern browser, IE8 is still supported but requires a bunch of shims.
 
 
 ## Travis Build Status
