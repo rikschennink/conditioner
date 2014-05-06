@@ -2928,8 +2928,8 @@ require.config({
             'utils/mergeObjects':'lib/rikschennink/utils/mergeObjects'
         }
     },
-    shim: {
-        'lib/rikschennink/conditioner': [
+    shim:{
+        'lib/rikschennink/conditioner':[
 
             // DOMContentLoaded is required for addEventListener to shim the 'DOMContentLoaded' event
             'shim/DOMContentLoaded',
@@ -2944,8 +2944,7 @@ require.config({
             'shim/Object.keys'
 
         ],
-
-        'lib/rikschennink/monitors/media': [
+        'lib/rikschennink/monitors/media':[
             'shim/matchMedia',
             'shim/matchMedia.addListener'
         ]

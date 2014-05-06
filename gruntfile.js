@@ -66,16 +66,6 @@ module.exports = function(grunt) {
                 '<%=path.js %>/ui/*.js'
             ]
         },
-        uglify:{
-            dist:{
-                files:{
-                    'js.min/shim/all.js':[
-                        '<%=path.js %>/shim/input1.js',
-                        'src/input2.js'
-                    ]
-                }
-            }
-        },
         sass:{
             dist: {
                 files: {
@@ -127,7 +117,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-jekyll');
 
 
