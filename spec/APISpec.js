@@ -8,9 +8,10 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
             // clean up any initialized nodes
             var nodes = conditioner.getNodes(),el;
+
             nodes.forEach(function(node){
                 el = node.getElement();
-                conditioner.destroyNode(node);
+                conditioner.destroy(node);
                 el.parentNode.removeChild(el);
             });
 
@@ -323,7 +324,106 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
         });
 
-        describe('test(conditions)',function(){
+        describe('destroy()',function(){
+
+            var a, b, c, d, group, results;
+
+            beforeEach(function(){
+
+                // arrange
+                a = document.createElement('div');
+                a.id = 'a';
+                a.className = 'alpha';
+                a.setAttribute('data-module','mock/modules/foo');
+
+                b = document.createElement('div');
+                b.id = 'b';
+                b.className = 'beta';
+                b.setAttribute('data-module','mock/modules/foo');
+
+                c = document.createElement('div');
+                c.id = 'c';
+                c.className = 'beta';
+                c.setAttribute('data-module','mock/modules/foo');
+
+                d = document.createElement('div');
+                d.id = 'd';
+                d.className = 'beta';
+                d.setAttribute('data-module','mock/modules/foo');
+
+                d.appendChild(b);
+                d.appendChild(c);
+
+                group = document.createElement('div');
+                group.appendChild(a);
+                group.appendChild(d);
+
+                // act
+                results = conditioner.parse(group);
+
+            });
+
+            it('will throw an error when no parameters passed',function(){
+
+                var destroyIt = function(){conditioner.destroy();}
+                expect(destroyIt).to.throw(Error);
+
+            });
+
+            it('will destroy a single NodeController',function(){
+
+                var success = conditioner.destroy(results[0]);
+
+                expect(success).to.be.ok;
+                expect(a.getAttribute('data-processed')).to.be.a('null');
+                expect(b.getAttribute('data-processed')).to.equal('true');
+                expect(c.getAttribute('data-processed')).to.equal('true');
+                expect(d.getAttribute('data-processed')).to.equal('true');
+
+            });
+
+            it('will destroy an Array of NodeControllers',function(){
+
+                var success = conditioner.destroy(results);
+
+                expect(success).to.be.ok;
+                expect(a.getAttribute('data-processed')).to.be.a('null');
+                expect(b.getAttribute('data-processed')).to.be.a('null');
+                expect(c.getAttribute('data-processed')).to.be.a('null');
+                expect(d.getAttribute('data-processed')).to.be.a('null');
+
+            });
+
+            it('will destroy an NodeControllers found in a given context',function(){
+
+                var success = conditioner.destroy(d);
+
+                expect(success).to.be.ok;
+                expect(a.getAttribute('data-processed')).to.be.equal('true');
+                expect(b.getAttribute('data-processed')).to.be.a('null');
+                expect(c.getAttribute('data-processed')).to.be.a('null');
+                expect(d.getAttribute('data-processed')).to.be.equal('true');
+
+            });
+
+            it('will destroy an NodeControllers found with a given selector',function(){
+
+                var success = conditioner.destroy('.beta');
+
+                expect(success).to.be.ok;
+                expect(a.getAttribute('data-processed')).to.equal('true');
+                expect(b.getAttribute('data-processed')).to.be.a('null');
+                expect(c.getAttribute('data-processed')).to.be.a('null');
+                expect(d.getAttribute('data-processed')).to.be.a('null');
+
+            });
+
+
+
+
+        });
+
+        describe('is(conditions)',function(){
 
             beforeEach(function(){
 

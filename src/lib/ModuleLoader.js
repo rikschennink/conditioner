@@ -121,23 +121,6 @@ ModuleLoader.prototype = {
         return node;
     },
 
-    /**
-     * Destroy the passed node reference
-     * @param node {NodeController}
-     * @return {Boolean}
-     * @public
-     */
-    destroyNode:function(node){
-        var i=this._nodes.length;
-        while(i--) {
-            if (this._nodes[i]!==node) {continue;}
-            this._nodes.splice(i,1);
-            node.destroy();
-            return true;
-        }
-        return false;
-    },
-
 	/**
 	 * Returns one or multiple nodes matching the selector
 	 * @param {String} [selector] - Optional selector to match the nodes to
@@ -170,6 +153,32 @@ ModuleLoader.prototype = {
 
 		return singleResult ? null : results;
 	},
+
+    /**
+     * Destroy the passed node reference
+     * @param {Array} nodes
+     * @return {Boolean}
+     * @public
+     */
+    destroy:function(nodes){
+
+        var i=nodes.length,
+            destroyed=0,
+            hit;
+
+        while(i--) {
+
+            hit = this._nodes.indexOf(nodes[i]);
+            if (hit===-1) {continue;}
+
+            this._nodes.splice(hit,1);
+            nodes[i].destroy();
+            destroyed++;
+
+        }
+
+        return nodes.length === destroyed;
+    },
 
     /**
      * Parses module controller configuration on element and returns array of module controllers

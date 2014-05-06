@@ -161,8 +161,8 @@
             /**
              * Returns the first Node matching the selector
              * @param {String} [selector] - Selector to match the nodes to
-             * @param {Document|Element} [context] - Context to search in
-             * @return {Node|null} First matched node or null
+             * @param {Element} [context] - Context to search in
+             * @return {Node||null} First matched node or null
              */
             getNode:function(selector,context) {
 
@@ -173,7 +173,7 @@
             /**
              * Returns all nodes matching the selector
              * @param {String} [selector] - Optional selector to match the nodes to
-             * @param {Document|Element} [context] - Context to search in
+             * @param {Element} [context] - Context to search in
              * @return {Array} Array containing matched nodes or empty Array
              */
             getNodes:function(selector,context) {
@@ -183,15 +183,58 @@
             },
 
             /**
-             * Destroy the passed node reference
-             * @param node {NodeController}
+             * Destroy found nodes
+             * Three possible use cases
+             * 1.
+             * @param {NodeController} arguments - destroy a single node controller
+             *
+             * 2.
+             * @param {String} [arguments] - string to match elements
+             * @param {Element} arguments - context in which to filter
+             *
+             * 3.
+             * @param {Array} arguments - array containing NodeControllers
+             *
              * @return {Boolean}
              * @public
              */
-            destroyNode:function(node) {
+            destroy:function() {
 
-                return _moduleLoader.destroyNode(node);
+                var nodes = [],arg = arguments[0];
 
+                // first argument is required
+                if (!arg) {
+                    throw new Error('Conditioner.destroy(...): A DOM node, String or NodeController is required as the first argument.');
+                }
+
+                // test if is an array
+                if (Array.isArray(arg)) {
+                    nodes = arg;
+                }
+
+                // test if is query selector
+                if (typeof arg === 'string') {
+                    nodes = _moduleLoader.getNodes(arg,arguments[1]);
+                }
+
+                // test if is single NodeController instance
+                else if (arg instanceof NodeController) {
+                    nodes.push(arg);
+                }
+
+                // test if is DOMNode
+                else if (arg.nodeName) {
+                    nodes = _moduleLoader.getNodes().filter(function(node){
+                        return contains(arg,node.getElement());
+                    });
+                }
+
+                // if we don't have any nodes to destroy let's stop here
+                if (nodes.length===0) {
+                    return false;
+                }
+
+                return _moduleLoader.destroy(nodes);
             },
 
             /**
