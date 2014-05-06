@@ -1,1 +1,32 @@
-!function(e,t){var n={trigger:{online:t,offline:t},test:{any:function(e){return e.expected}}};"undefined"!=typeof module&&module.exports?module.exports=n:"function"==typeof define&&define.amd&&define([],function(){return n})}(navigator,window);
+/**
+ * Tests if an active network connection is available and monitors this connection
+ * @module monitors/connection
+ */
+(function (nav, win, undefined) {
+
+    
+
+    var exports = {
+        trigger: {
+            'online': win,
+            'offline': win
+        },
+        test: {
+            'any': function (data) {
+                return data.expected;
+            }
+        }
+    };
+
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = exports;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function () {
+            return exports;
+        });
+    }
+
+}(navigator, window));

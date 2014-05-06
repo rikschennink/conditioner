@@ -14,10 +14,12 @@ define(function(){
 
         // set time holder
         this._time = document.createElement('p');
-        this._element.appendChild(this._time);
 
         // start ticking
         this._tick();
+
+        // add element
+        this._element.appendChild(this._time);
     };
 
     // default options
@@ -34,7 +36,7 @@ define(function(){
             time = _pad(now.getHours()) + ':' + _pad(now.getMinutes()) + ':' + _pad(now.getSeconds());
 
         // write inner html
-        this._time.innerHTML = date + (this._options.time ? ' - ' + time : '');
+        this._time.textContent = date + (this._options.time ? ' - ' + time : '');
 
         // if time is not enabled, don't start ticking
         if (!this._options.time) {

@@ -1,1 +1,46 @@
-!function(e,t){var n,i=t?t.body:null;n=i&&i.compareDocumentPosition?function(e,t){return!!(16&e.compareDocumentPosition(t))}:i&&i.contains?function(e,t){return e!=t&&e.contains(t)}:function(e,t){for(var n=t.parentNode;n;){if(n===e)return!0;n=n.parentNode}return!1},"undefined"!=typeof module&&module.exports?module.exports=n:"function"==typeof define&&define.amd?define([],function(){return n}):e.contains=n}(window,document);
+(function (win, doc, undefined) {
+
+    
+
+    // define contains method based on browser capabilities
+    var el = doc ? doc.body : null,
+        util;
+    if (el && el.compareDocumentPosition) {
+        util = function (parent, child) { /* jshint -W016 */
+            return !!(parent.compareDocumentPosition(child) & 16);
+        };
+    }
+    else if (el && el.contains) {
+        util = function (parent, child) {
+            return parent != child && parent.contains(child);
+        };
+    }
+    else {
+        util = function (parent, child) {
+            var node = child.parentNode;
+            while (node) {
+                if (node === parent) {
+                    return true;
+                }
+                node = node.parentNode;
+            }
+            return false;
+        };
+    }
+
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = util;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function () {
+            return util;
+        });
+    }
+    // Browser globals
+    else {
+        win.contains = util;
+    }
+
+}(window, document));

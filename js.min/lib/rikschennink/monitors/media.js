@@ -1,1 +1,65 @@
-!function(e){var t={unique:!0,data:{mql:null},trigger:function(t,n){"supported"!==n.expected&&(n.mql=e.matchMedia(n.expected),n.mql.addListener(function(){t()}))},parse:function(e){var t=[];return"supported"===e?t.push({test:"supported",value:!0}):t.push({test:"query",value:e}),t},test:{supported:function(){return"matchMedia"in e},query:function(e){return e.mql.matches}}};"undefined"!=typeof module&&module.exports?module.exports=t:"function"==typeof define&&define.amd&&define([],function(){return t})}(window);
+/**
+ * Tests if a media query is matched or not and listens to changes
+ * @module monitors/media
+ */
+(function (win, undefined) {
+
+    
+
+    var exports = {
+        unique: true,
+        data: {
+            mql: null
+        },
+        trigger: function (bubble, data) {
+
+            // if testing for support don't run setup
+            if (data.expected === 'supported') {
+                return;
+            }
+
+            // if is media query
+            data.mql = win.matchMedia(data.expected);
+            data.mql.addListener(function () {
+                bubble();
+            });
+
+        },
+        parse: function (expected) {
+            var results = [];
+            if (expected === 'supported') {
+                results.push({
+                    test: 'supported',
+                    value: true
+                });
+            }
+            else {
+                results.push({
+                    test: 'query',
+                    value: expected
+                });
+            }
+            return results;
+        },
+        test: {
+            'supported': function () {
+                return 'matchMedia' in win;
+            },
+            'query': function (data) {
+                return data.mql.matches;
+            }
+        }
+    };
+
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = exports;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function () {
+            return exports;
+        });
+    }
+
+}(window));

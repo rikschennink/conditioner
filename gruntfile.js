@@ -11,7 +11,7 @@ module.exports = function(grunt) {
 
                     preserveLicenseComments:false,
                     findNestedDependencies:true,
-                    optimize:'uglify2',
+                    optimize:'none', //uglify2
 
                     // Location of app source (src)
                     appDir:'./js',
@@ -67,7 +67,14 @@ module.exports = function(grunt) {
             ]
         },
         uglify:{
-
+            dist:{
+                files:{
+                    'js.min/shim/all.js':[
+                        '<%=path.js %>/shim/input1.js',
+                        'src/input2.js'
+                    ]
+                }
+            }
         },
         sass:{
             dist: {

@@ -1,1 +1,49 @@
-!function(){var e=function(e,t){var n="";return{trigger:function(i){var r=t.getInstance();e.subscribe(r,"change",function(){n=r.getActiveLevel(),i()}),n=r.getActiveLevel()},parse:function(e){return[{value:e.split(",")}]},test:function(e){return-1!=e.expected.indexOf(n)}}};"undefined"!=typeof module&&module.exports?module.exports=e(require("../utils/Observer"),require("security/StorageConsentGuard")):"function"==typeof define&&define.amd&&define(["../utils/Observer","security/StorageConsentGuard"],function(t,n){return e(t,n)})}();
+(function(){
+
+    var factory = function(Observer,StorageConsentGuard){
+
+        var _level = '';
+
+        return {
+            trigger:function(bubble){
+
+                // listen to changes on storage guard
+                var guard = StorageConsentGuard.getInstance();
+                Observer.subscribe(guard,'change',function() {
+                    _level = guard.getActiveLevel();
+                    bubble();
+                });
+
+                // get default active level
+                _level = guard.getActiveLevel();
+            },
+            parse:function(expected){
+                return [{
+                    'value':expected.split(',')
+                }]
+            },
+            test:function(data){
+                return data.expected.indexOf(_level) != -1;
+            }
+        };
+
+    };
+
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = factory(
+            require('../utils/Observer'),
+            require('security/StorageConsentGuard')
+        );
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(['../utils/Observer',
+                'security/StorageConsentGuard'],
+            function(Observer,StorageConsentGuard){
+                return factory(Observer,StorageConsentGuard);
+            }
+        );
+    }
+
+}());

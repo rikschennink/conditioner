@@ -1,1 +1,11 @@
-"indexOf"in Array.prototype||(Array.prototype.indexOf=function(e,t){void 0===t&&(t=0),0>t&&(t+=this.length),0>t&&(t=0);for(var n=this.length;n>t;t++)if(t in this&&this[t]===e)return t;return-1});
+if (!('indexOf' in Array.prototype)) {
+    Array.prototype.indexOf= function(find, i /*opt*/) {
+        if (i===undefined) i= 0;
+        if (i<0) i+= this.length;
+        if (i<0) i= 0;
+        for (var n= this.length; i<n; i++)
+            if (i in this && this[i]===find)
+                return i;
+        return -1;
+    };
+}

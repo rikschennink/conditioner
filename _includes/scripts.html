@@ -1,17 +1,2 @@
-
-<!-- Shims to get this working on some older browsers <= IE9 (should of course be minimized in real life) -->
-<script src="/js/shim/Array.isArray.js"></script>
-<script src="/js/shim/Array.indexOf.js"></script>
-<script src="/js/shim/Array.forEach.js"></script>
-<script src="/js/shim/Object.create.js"></script>
-<script src="/js/shim/Object.keys.js"></script>
-<script src="/js/shim/Function.bind.js"></script>
-<script src="/js/shim/matchMedia/matchMedia.js"></script>
-<script src="/js/shim/matchMedia/matchMedia.addListener.js"></script>
-
-<!-- old stuff last, matchMedia won't be loaded if browser does not have addEventListener support, so we'll load shim now -->
-<script src="/js/shim/DOMContentLoaded.js"></script>
-<script src="/js/shim/addEventListener.js"></script>
-
-<!-- Load minimized library (require + modules) -->
+<!-- Load minimized library (shims + conditioner + modules) -->
 <script src="/js.min/lib/jrburke/require-2.1.11.min.js" data-main="/js.min/main"></script>
