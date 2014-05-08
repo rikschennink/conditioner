@@ -6,7 +6,7 @@
      * JavaScript Inheritance
      * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_Revisited
      */
-    var util = function () {
+    var exports = function () {
 
         // get child constructor
         var Child = arguments[arguments.length - 1],
@@ -37,17 +37,17 @@
 
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = util;
+        module.exports = exports;
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
         define(function () {
-            return util;
+            return exports;
         });
     }
     // Browser globals
     else {
-        win.extendClassOptions = util;
+        win.extendClassOptions = exports;
     }
 
 }(window));

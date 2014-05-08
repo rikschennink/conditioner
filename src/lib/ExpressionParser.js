@@ -203,11 +203,7 @@ var ExpressionParser = {
 
 		}
 
-		// return final expression tree
-        //return {
         return tree.length === 1 ? tree[0] : tree;
-        //     tests:test
-        //};
 
 	}
 

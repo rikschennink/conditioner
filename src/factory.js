@@ -75,9 +75,11 @@
              */
             setOptions:function(options){
 
+                // @ifdef DEV
                 if (!options) {
                     throw new Error('Conditioner.setOptions(options): "options" is a required parameter.');
                 }
+                // @endif
 
                 var config,path,mod,alias;
 
@@ -121,9 +123,11 @@
              */
             parse:function(context) {
 
+                // @ifdef DEV
                 if (!context) {
                     throw new Error('Conditioner.parse(context): "context" is a required parameter.');
                 }
+                // @endif
 
                 return _moduleLoader.parse(context);
 
@@ -211,10 +215,12 @@
 
                 var nodes = [],arg = arguments[0];
 
+                // @ifdef DEV
                 // first argument is required
                 if (!arg) {
                     throw new Error('Conditioner.destroy(...): A DOM node, Array, String or NodeController is required as the first argument.');
                 }
+                // @endif
 
                 // test if is an array
                 if (Array.isArray(arg)) {
@@ -295,9 +301,11 @@
              */
             is:function(condition,element){
 
+                // @ifdef DEV
                 if (!condition) {
                     throw new Error('Conditioner.is(condition,[element]): "condition" is a required parameter.');
                 }
+                // @endif
 
                 // run test and resolve with first received state
                 var p = new Promise();
@@ -316,9 +324,11 @@
              */
             on:function(condition,element,callback) {
 
+                // @ifdef DEV
                 if (!condition) {
                     throw new Error('Conditioner.on(condition,[element],callback): "condition" and "callback" are required parameter.');
                 }
+                // @endif
 
                 // handle optional element parameter
                 callback = typeof element === 'function' ? element : callback;
@@ -357,7 +367,9 @@
     }
     // Browser globals
     else {
-        throw new Error('To use ConditionerJS you need to setup a module loader like RequireJS.');
+        // @ifdef DEV
+        throw new Error('To use ConditionerJS you need to setup an AMD module loader or use something like Browserify.');
+        // @endif
     }
 
 }(document));

@@ -3,28 +3,31 @@
     'use strict';
 
     // define method used for matchesSelector
-    var util = null,
+    var exports = null,
         _method = null,
         el = doc ? doc.body : null;
     if (!el || el.matches) {
         _method = 'matches';
     }
-    else if (el.webkitMatchesSelector) {
-        _method = 'webkitMatchesSelector';
-    }
-    else if (el.mozMatchesSelector) {
-        _method = 'mozMatchesSelector';
-    }
-    else if (el.msMatchesSelector) {
-        _method = 'msMatchesSelector';
-    }
-    else if (el.oMatchesSelector) {
-        _method = 'oMatchesSelector';
+    else {
+        if (el.webkitMatchesSelector) {
+            _method = 'webkit';
+        }
+        else if (el.mozMatchesSelector) {
+            _method = 'moz';
+        }
+        else if (el.msMatchesSelector) {
+            _method = 'ms';
+        }
+        else if (el.oMatchesSelector) {
+            _method = 'o';
+        }
+        _method += 'MatchesSelector';
     }
 
     // if method found use native matchesSelector
     if (_method) {
-        util = function (element, selector) {
+        exports = function (element, selector) {
             return element[_method](selector);
         };
     }
@@ -32,7 +35,7 @@
 
         // check if an element matches a CSS selector
         // https://gist.github.com/louisremi/2851541
-        util = function (element, selector) {
+        exports = function (element, selector) {
 
             // We'll use querySelectorAll to find all element matching the selector,
             // then check if the given element is included in that list.
@@ -54,17 +57,17 @@
 
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = util;
+        module.exports = exports;
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
         define(function () {
-            return util;
+            return exports;
         });
     }
     // Browser globals
     else {
-        win.matchesSelector = util;
+        win.matchesSelector = exports;
     }
 
 }(window, document));

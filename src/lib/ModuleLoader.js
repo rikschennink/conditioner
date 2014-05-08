@@ -19,10 +19,12 @@ ModuleLoader.prototype = {
 	 */
 	parse:function(context) {
 
+        // @ifdef DEV
 		// if no context supplied, throw error
 		if (!context) {
 			throw new Error('ModuleLoader.loadModules(context): "context" is a required parameter.');
 		}
+        // @endif
 
 		// register vars and get elements
 		var elements = context.querySelectorAll('[data-module]'),
@@ -201,7 +203,9 @@ ModuleLoader.prototype = {
                 specs = JSON.parse(config);
             }
             catch(e) {
+                // @ifdef DEV
                 throw new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.');
+                // @endif
             }
 
             // no specification found or specification parsing failed

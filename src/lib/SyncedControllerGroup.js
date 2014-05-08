@@ -4,10 +4,12 @@
  */
 var SyncedControllerGroup = function() {
 
+    // @ifdef DEV
     // if no node controllers passed, no go
     if (!arguments || !arguments.length) {
         throw new Error('SyncedControllerGroup(controllers): Expects an array of node controllers as parameters.');
     }
+    // @endif
 
     // by default modules are expected to not be in sync
     this._inSync = false;
@@ -21,10 +23,12 @@ var SyncedControllerGroup = function() {
     for (;i<l;i++) {
         controller = this._controllers[i];
 
+        // @ifdef DEV
         // if controller is undefined
         if (!controller) {
             throw new Error('SyncedControllerGroup(controllers): Stumbled upon an undefined controller is undefined.');
         }
+        // @endif
 
         // listen to load and unload events so we can pass them on if appropriate
         Observer.subscribe(controller,'load',this._controllerLoadedBind);

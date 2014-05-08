@@ -24,7 +24,6 @@ var StaticModuleAgent = {
      * Clean up
      * As we have not attached any event listeners there's nothing to clean
      */
-    destroy:function() {
-        // nothing to clean up
-    }
+    destroy:function() {}
+
 };

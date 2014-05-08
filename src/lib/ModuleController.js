@@ -9,12 +9,14 @@
  */
 var ModuleController = function(path,element,options,agent) {
 
-	// if no path supplied, throw error
-	if (!path || !element) {
-		throw new Error('ModuleController(path,element,options,agent): "path" and "element" are required parameters.');
-	}
+    // @ifdef DEV
+    // if no path supplied, throw error
+    if (!path || !element) {
+        throw new Error('ModuleController(path,element,options,agent): "path" and "element" are required parameters.');
+    }
+    // @endif
 
-	// path to module
+    // path to module
 	this._path = ModuleRegistry.getRedirect(path);
     this._alias = path;
 
@@ -167,10 +169,12 @@ ModuleController.prototype = {
 		var self = this;
         _options.loader.require([this._path],function(Module) {
 
+            // @ifdef DEV
             // if module does not export a module quit here
             if (!Module) {
                 throw new Error('ModuleController: A module needs to export an object.');
             }
+            // @endif
 
 			// set reference to Module
 			self._Module = Module;
@@ -194,7 +198,9 @@ ModuleController.prototype = {
                 return JSON.parse(options);
             }
             catch(e) {
+                // @ifdef DEV
                 throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
+                // @endif
             }
         }
         return options;
@@ -278,10 +284,12 @@ ModuleController.prototype = {
 			}
 		}
 
+        // @ifdef DEV
 		// if no module defined throw error
 		if (!this._module) {
 			throw new Error('ModuleController.load(): could not initialize module, missing constructor or "load" method.');
 		}
+        // @endif
 
         // watch for events on target
         // this way it is possible to listen to events on the controller which is always there
@@ -361,9 +369,12 @@ ModuleController.prototype = {
 
 		// get function reference
 		var F = this._module[method];
-		if (!F) {
+
+        // @ifdef DEV
+        if (!F) {
 			throw new Error('ModuleController.execute(method,params): function specified in "method" not found on module.');
 		}
+        // @endif
 
 		// if no params supplied set to empty array,
 		// ie8 falls on it's knees when it gets an undefined parameter object in the apply method

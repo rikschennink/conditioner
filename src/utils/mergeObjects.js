@@ -2,7 +2,7 @@
 
     'use strict';
 
-	var util = function(target,src) {
+	var exports = function(target,src) {
 
 		var array = Array.isArray(src);
 		var dst = array && [] || {};
@@ -33,7 +33,7 @@
 						dst[key] = src[key];
 					}
 					else {
-						dst[key] = util(target[key], src[key]);
+						dst[key] = exports(target[key], src[key]);
 					}
 				}
 
@@ -45,15 +45,15 @@
 
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = util;
+        module.exports = exports;
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
-        define(function(){return util;});
+        define(function(){return exports;});
     }
     // Browser globals
     else {
-        win.mergeObjects = util;
+        win.mergeObjects = exports;
     }
 
 }(window));

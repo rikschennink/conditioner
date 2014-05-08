@@ -253,9 +253,11 @@
                             // setup test method to use
                             // jshint -W083
                             test: (function (fn) {
+                                // @ifdef DEV
                                 if (!fn) {
                                     throw new Error('Conditioner: Test "' + item.test + '" not found on "' + path + '" Monitor.');
                                 }
+                                // @endif
                                 return function () {
                                     var state = fn(this.data);
                                     if (this.valid != state) {
@@ -361,28 +363,31 @@
 
         };
 
-        /**
-         * Tests if valid expression
-         * @returns {Boolean}
-         */
-        UnaryExpression.prototype.isTrue = function () {
-            return this._expression.isTrue() !== this._negate;
-        };
+        UnaryExpression.prototype = {
 
-        /**
-         * Returns tests contained in this expression
-         * @returns Array
-         */
-        UnaryExpression.prototype.getTests = function () {
-            return this._expression instanceof Test ? [this._expression] : this._expression.getTests();
-        };
+            /**
+             * Tests if valid expression
+             * @returns {Boolean}
+             */
+            isTrue: function () {
+                return this._expression.isTrue() !== this._negate;
+            },
 
-        /**
-         * Cast to string
-         * @returns {string}
-         */
-        UnaryExpression.prototype.toString = function () {
-            return (this._negate ? 'not ' : '') + this._expression.toString();
+            /**
+             * Returns tests contained in this expression
+             * @returns Array
+             */
+            getTests: function () {
+                return this._expression instanceof Test ? [this._expression] : this._expression.getTests();
+            },
+
+            /**
+             * Cast to string
+             * @returns {string}
+             */
+            toString: function () {
+                return (this._negate ? 'not ' : '') + this._expression.toString();
+            }
         };
         /**
          * @class
@@ -399,36 +404,40 @@
 
         };
 
-        /**
-         * Tests if valid expression
-         * @returns {Boolean}
-         */
-        BinaryExpression.prototype.isTrue = function () {
+        BinaryExpression.prototype = {
 
-            return this._operator === 'and' ?
+            /**
+             * Tests if valid expression
+             * @returns {Boolean}
+             */
+            isTrue: function () {
 
-            // is 'and' operator
-            this._a.isTrue() && this._b.isTrue() :
+                return this._operator === 'and' ?
 
-            // is 'or' operator
-            this._a.isTrue() || this._b.isTrue();
+                // is 'and' operator
+                this._a.isTrue() && this._b.isTrue() :
 
-        };
+                // is 'or' operator
+                this._a.isTrue() || this._b.isTrue();
 
-        /**
-         * Returns tests contained in this expression
-         * @returns Array
-         */
-        BinaryExpression.prototype.getTests = function () {
-            return this._a.getTests().concat(this._b.getTests());
-        };
+            },
 
-        /**
-         * Outputs the expression as a string
-         * @returns {String}
-         */
-        BinaryExpression.prototype.toString = function () {
-            return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
+            /**
+             * Returns tests contained in this expression
+             * @returns Array
+             */
+            getTests: function () {
+                return this._a.getTests().concat(this._b.getTests());
+            },
+
+            /**
+             * Outputs the expression as a string
+             * @returns {String}
+             */
+            toString: function () {
+                return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
+            }
+
         };
         var ExpressionParser = {
 
@@ -622,11 +631,8 @@
                     // end of ')' character or last index
                 }
 
-                // return final expression tree
-                //return {
                 return tree.length === 1 ? tree[0] : tree;
-                //     tests:test
-                //};
+
             }
 
         };
@@ -656,9 +662,8 @@
              * Clean up
              * As we have not attached any event listeners there's nothing to clean
              */
-            destroy: function () {
-                // nothing to clean up
-            }
+            destroy: function () {}
+
         };
         var ConditionModuleAgent = function (conditions, element) {
 
@@ -762,11 +767,12 @@
              */
             getModule: function (path) {
 
+                // @ifdef DEV
                 // if no id supplied throw error
                 if (!path) {
                     throw new Error('ModuleRegistry.getModule(path): "path" is a required parameter.');
                 }
-
+                // @endif
                 return this._options[path] || this._options[_options.loader.toUrl(path)];
 
             }
@@ -783,11 +789,12 @@
          */
         var ModuleController = function (path, element, options, agent) {
 
+            // @ifdef DEV
             // if no path supplied, throw error
             if (!path || !element) {
                 throw new Error('ModuleController(path,element,options,agent): "path" and "element" are required parameters.');
             }
-
+            // @endif
             // path to module
             this._path = ModuleRegistry.getRedirect(path);
             this._alias = path;
@@ -941,11 +948,12 @@
                 var self = this;
                 _options.loader.require([this._path], function (Module) {
 
+                    // @ifdef DEV
                     // if module does not export a module quit here
                     if (!Module) {
                         throw new Error('ModuleController: A module needs to export an object.');
                     }
-
+                    // @endif
                     // set reference to Module
                     self._Module = Module;
 
@@ -968,7 +976,9 @@
                         return JSON.parse(options);
                     }
                     catch (e) {
+                        // @ifdef DEV
                         throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
+                        // @endif
                     }
                 }
                 return options;
@@ -1055,11 +1065,12 @@
                     }
                 }
 
+                // @ifdef DEV
                 // if no module defined throw error
                 if (!this._module) {
                     throw new Error('ModuleController.load(): could not initialize module, missing constructor or "load" method.');
                 }
-
+                // @endif
                 // watch for events on target
                 // this way it is possible to listen to events on the controller which is always there
                 Observer.inform(this._module, this);
@@ -1138,10 +1149,12 @@
 
                 // get function reference
                 var F = this._module[method];
+
+                // @ifdef DEV
                 if (!F) {
                     throw new Error('ModuleController.execute(method,params): function specified in "method" not found on module.');
                 }
-
+                // @endif
                 // if no params supplied set to empty array,
                 // ie8 falls on it's knees when it gets an undefined parameter object in the apply method
                 params = params || [];
@@ -1175,10 +1188,11 @@
              */
             var exports = function NodeController(element, priority) {
 
+                // @ifdef DEV
                 if (!element) {
                     throw new Error('NodeController(element): "element" is a required parameter.');
                 }
-
+                // @endif
                 // set element reference
                 this._element = element;
 
@@ -1216,11 +1230,12 @@
                  */
                 load: function () {
 
+                    // @ifdef DEV
                     // if no module controllers found
                     if (!arguments || !arguments.length) {
                         throw new Error('NodeController.load(controllers): Expects an array of module controllers as parameters.');
                     }
-
+                    // @endif
                     // turn into array
                     this._moduleControllers = Array.prototype.slice.call(arguments, 0);
 
@@ -1474,11 +1489,12 @@
          */
         var SyncedControllerGroup = function () {
 
+            // @ifdef DEV
             // if no node controllers passed, no go
             if (!arguments || !arguments.length) {
                 throw new Error('SyncedControllerGroup(controllers): Expects an array of node controllers as parameters.');
             }
-
+            // @endif
             // by default modules are expected to not be in sync
             this._inSync = false;
 
@@ -1492,11 +1508,12 @@
             for (; i < l; i++) {
                 controller = this._controllers[i];
 
+                // @ifdef DEV
                 // if controller is undefined
                 if (!controller) {
                     throw new Error('SyncedControllerGroup(controllers): Stumbled upon an undefined controller is undefined.');
                 }
-
+                // @endif
                 // listen to load and unload events so we can pass them on if appropriate
                 Observer.subscribe(controller, 'load', this._controllerLoadedBind);
                 Observer.subscribe(controller, 'unload', this._controllerUnloadedBind);
@@ -1636,11 +1653,12 @@
              */
             parse: function (context) {
 
+                // @ifdef DEV
                 // if no context supplied, throw error
                 if (!context) {
                     throw new Error('ModuleLoader.loadModules(context): "context" is a required parameter.');
                 }
-
+                // @endif
                 // register vars and get elements
                 var elements = context.querySelectorAll('[data-module]'),
                     l = elements.length,
@@ -1826,7 +1844,9 @@
                         specs = JSON.parse(config);
                     }
                     catch (e) {
+                        // @ifdef DEV
                         throw new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.');
+                        // @endif
                     }
 
                     // no specification found or specification parsing failed
@@ -1945,10 +1965,11 @@
              */
             setOptions: function (options) {
 
+                // @ifdef DEV
                 if (!options) {
                     throw new Error('Conditioner.setOptions(options): "options" is a required parameter.');
                 }
-
+                // @endif
                 var config, path, mod, alias;
 
                 // update options
@@ -1995,10 +2016,11 @@
              */
             parse: function (context) {
 
+                // @ifdef DEV
                 if (!context) {
                     throw new Error('Conditioner.parse(context): "context" is a required parameter.');
                 }
-
+                // @endif
                 return _moduleLoader.parse(context);
 
             },
@@ -2086,11 +2108,12 @@
                 var nodes = [],
                     arg = arguments[0];
 
+                // @ifdef DEV
                 // first argument is required
                 if (!arg) {
                     throw new Error('Conditioner.destroy(...): A DOM node, Array, String or NodeController is required as the first argument.');
                 }
-
+                // @endif
                 // test if is an array
                 if (Array.isArray(arg)) {
                     nodes = arg;
@@ -2177,10 +2200,11 @@
              */
             is: function (condition, element) {
 
+                // @ifdef DEV
                 if (!condition) {
                     throw new Error('Conditioner.is(condition,[element]): "condition" is a required parameter.');
                 }
-
+                // @endif
                 // run test and resolve with first received state
                 var p = new Promise();
                 WebContext.test(condition, element, function (valid) {
@@ -2198,10 +2222,11 @@
              */
             on: function (condition, element, callback) {
 
+                // @ifdef DEV
                 if (!condition) {
                     throw new Error('Conditioner.on(condition,[element],callback): "condition" and "callback" are required parameter.');
                 }
-
+                // @endif
                 // handle optional element parameter
                 callback = typeof element === 'function' ? element : callback;
 
@@ -2226,7 +2251,9 @@
     }
     // Browser globals
     else {
-        throw new Error('To use ConditionerJS you need to setup a module loader like RequireJS.');
+        // @ifdef DEV
+        throw new Error('To use ConditionerJS you need to setup an AMD module loader or use something like Browserify.');
+        // @endif
     }
 
 }(document));

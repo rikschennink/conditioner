@@ -5,7 +5,7 @@
     var _uid = 1, // start at 1 because !uid returns false when uid===0
         _db = {};
 
-    var util = {
+    var exports = {
 
         _setEntry:function(obj,prop) {
 
@@ -186,15 +186,15 @@
 
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = util;
+        module.exports = exports;
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
-        define(function(){return util;});
+        define(function(){return exports;});
     }
     // Browser globals
     else {
-        win.Observer = util;
+        win.Observer = exports;
     }
 
 }(window));

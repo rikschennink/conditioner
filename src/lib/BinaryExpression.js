@@ -13,34 +13,38 @@ var BinaryExpression = function(a,operator,b) {
 
 };
 
-/**
- * Tests if valid expression
- * @returns {Boolean}
- */
-BinaryExpression.prototype.isTrue = function() {
+BinaryExpression.prototype = {
 
-	return this._operator === 'and' ?
+    /**
+     * Tests if valid expression
+     * @returns {Boolean}
+     */
+    isTrue:function() {
 
-		// is 'and' operator
-		this._a.isTrue() && this._b.isTrue() :
+        return this._operator === 'and' ?
 
-		// is 'or' operator
-		this._a.isTrue() || this._b.isTrue();
+            // is 'and' operator
+            this._a.isTrue() && this._b.isTrue() :
 
-};
+            // is 'or' operator
+            this._a.isTrue() || this._b.isTrue();
 
-/**
- * Returns tests contained in this expression
- * @returns Array
- */
-BinaryExpression.prototype.getTests = function() {
-    return this._a.getTests().concat(this._b.getTests());
-};
+    },
 
-/**
- * Outputs the expression as a string
- * @returns {String}
- */
-BinaryExpression.prototype.toString = function() {
-	return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
+    /**
+     * Returns tests contained in this expression
+     * @returns Array
+     */
+    getTests:function() {
+        return this._a.getTests().concat(this._b.getTests());
+    },
+
+    /**
+     * Outputs the expression as a string
+     * @returns {String}
+     */
+    toString:function() {
+        return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
+    }
+    
 };

@@ -141,9 +141,11 @@ MonitorFactory.prototype = {
                     // setup test method to use
                     // jshint -W083
                     test:(function (fn) {
+                        // @ifdef DEV
                         if (!fn) {
                             throw new Error('Conditioner: Test "' + item.test + '" not found on "' + path + '" Monitor.');
                         }
+                        // @endif
                         return function () {
                             var state = fn(this.data);
                             if (this.valid!=state) {

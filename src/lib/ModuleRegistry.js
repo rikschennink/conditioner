@@ -41,10 +41,12 @@ var ModuleRegistry = {
 	 */
 	getModule:function(path) {
 
+        // @ifdef DEV
 		// if no id supplied throw error
 		if (!path) {
 			throw new Error('ModuleRegistry.getModule(path): "path" is a required parameter.');
 		}
+        // @endif
 
         return this._options[path] || this._options[_options.loader.toUrl(path)];
 

@@ -14,6 +14,7 @@ var beautify = require('gulp-beautify');
 var replace = require('gulp-replace');
 var clean = require('gulp-clean');
 var sequence = require('run-sequence');
+var preprocess = require('gulp-preprocess');
 
 /**
  * Package data
@@ -44,7 +45,6 @@ var paths = {
 
 var files = {
     lib:[
-
         './src/lib/Test.js',
         './src/lib/Condition.js',
         './src/lib/MonitorFactory.js',
@@ -87,8 +87,15 @@ gulp.task('_lib',function(){
         .pipe(beautify(beauty))
         .pipe(gulp.dest(paths.dist.dev))
         .pipe(gulp.dest(paths.dist.spec))
+        .pipe(preprocess())
         .pipe(uglify())
-        .pipe(size())
+        .pipe(size({
+            'showFiles':true
+        }))
+        .pipe(size({
+            'showFiles':true,
+            'gzip':true
+        }))
         .pipe(gulp.dest(paths.dist.prod));
 });
 
@@ -96,7 +103,7 @@ gulp.task('_utils',function(){
     return copySupportFilesInFolder('utils/');
 });
 
-gulp.task('_plugins',function() {
+gulp.task('_monitors',function() {
     return copySupportFilesInFolder('monitors/');
 });
 
@@ -125,7 +132,7 @@ gulp.task('build',function(cb){
 
 });
 
-gulp.task('build',['_lib','_utils','_plugins'],function() {
+gulp.task('build',['_lib','_utils','_monitors'],function() {
 
     // hint build results, but wait for lib to build
     return gulp

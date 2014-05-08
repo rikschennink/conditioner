@@ -4,12 +4,12 @@
 
     // Promise
     // https://gist.github.com/rikschennink/11279384 (fork)
-    var util = function Promise () {
+    var exports = function Promise () {
         this._thens = [];
     };
 
     // jshint ignore:start
-    util.prototype = {
+    exports.prototype = {
 
         /* This is the "front end" API. */
 
@@ -68,15 +68,15 @@
 
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = util;
+        module.exports = exports;
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
-        define(function(){return util;});
+        define(function(){return exports;});
     }
     // Browser globals
     else {
-        win.Promise = util;
+        win.Promise = exports;
     }
 
 }(window));

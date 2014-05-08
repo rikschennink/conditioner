@@ -12,9 +12,11 @@ var NodeController = (function(){
      */
     var exports = function NodeController(element,priority) {
 
+        // @ifdef DEV
         if (!element) {
             throw new Error('NodeController(element): "element" is a required parameter.');
         }
+        // @endif
 
         // set element reference
         this._element = element;
@@ -53,10 +55,12 @@ var NodeController = (function(){
          */
         load:function() {
 
+            // @ifdef DEV
             // if no module controllers found
             if (!arguments || !arguments.length) {
                 throw new Error('NodeController.load(controllers): Expects an array of module controllers as parameters.');
             }
+            // @endif
 
             // turn into array
             this._moduleControllers = Array.prototype.slice.call(arguments,0);

@@ -3,20 +3,20 @@
     'use strict';
 
 	// define contains method based on browser capabilities
-	var el = doc ? doc.body : null,util;
+	var el = doc ? doc.body : null,exports;
 	if (el && el.compareDocumentPosition) {
-        util = function(parent,child) {
+        exports = function(parent,child) {
 			/* jshint -W016 */
 			return !!(parent.compareDocumentPosition(child) & 16);
 		};
 	}
 	else if (el && el.contains) {
-        util = function(parent,child) {
+        exports = function(parent,child) {
 			return parent != child && parent.contains(child);
 		};
 	}
 	else {
-        util = function(parent,child) {
+        exports = function(parent,child) {
 			var node = child.parentNode;
 			while (node) {
 				if (node === parent) {
@@ -30,15 +30,15 @@
 
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = util;
+        module.exports = exports;
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
-        define(function(){return util;});
+        define(function(){return exports;});
     }
     // Browser globals
     else {
-        win.contains = util;
+        win.contains = exports;
     }
 
 }(window,document));
