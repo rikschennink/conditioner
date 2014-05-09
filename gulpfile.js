@@ -9,18 +9,6 @@ var spawn = require('child_process').spawn;
 var sequence = require('run-sequence');
 
 
-/*
-
-"gulp": "^3.6.2",
-    "gulp-connect": "^2.0.5",
-    "gulp-jekyll": "0.0.0",
-    "gulp-jshint": "^1.5.5",
-    "gulp-requirejs": "^0.1.3",
-    "gulp-sass": "^0.7.1",
-    "gulp-watch": "^0.6.4"
-    */
-
-
 
 gulp.task('_connect', function() {
 
@@ -88,58 +76,25 @@ gulp.task('_jshint',function(){
 
 });
 
-/*
-gulp.task('_requirejs',function(){
-
-    // javascript
-    return requirejs({
-        preserveLicenseComments:false,
-        findNestedDependencies:true,
-
-        // get configuration
-        mainConfigFile:'./js/main.js',
-
-        // Override base url in main.js
-        baseUrl:'./js',
-
-        // filename
-        out:'main.js',
-
-        // setup main package configuration
-        name:'main',
-        include:[
-
-            // custom test
-            'lib/rikschennink/monitors/cookies',
-
-            // default tests
-            'lib/rikschennink/monitors/connection',
-            'lib/rikschennink/monitors/element',
-            'lib/rikschennink/monitors/media',
-            'lib/rikschennink/monitors/pointer',
-            'lib/rikschennink/monitors/window',
-
-            // ui modules
-            'ui/Clock',
-            'ui/Zoom',
-            'ui/StorageConsentSelect',
-            'ui/StarGazers',
-            'security/StorageConsentGuard'
-
-            // not included to test conditional loading
-            // 'ui/Map'
-
-        ]
-
-    }).pipe(gulp.dest('./js.min'));
-
-});
-*/
-
 gulp.task('build',function(cb){
 
     sequence('_jshint',['_rjs','_sass'],'_jekyll',cb);
 
 });
 
-gulp.task('dev',['build','watch','_connect']);
+gulp.task('dev',['build','_connect'],function(){
+
+    gulp.watch([
+        './scss/**/*',
+        './js/**/*',
+
+        // all html files
+        '**/*.html',
+
+        // exclude these folders
+        '!./_site/**/*',
+        '!./node_modules/**/*'
+
+    ],['build']);
+
+});

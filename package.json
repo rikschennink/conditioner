@@ -34,17 +34,9 @@
   ],
   "readmeFilename": "README.md",
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.4.3",
-    "grunt-contrib-requirejs": "~0.4.0",
-    "grunt-contrib-sass": "~0.3.0",
-    "grunt-contrib-watch": "~0.4.3",
-    "grunt-jekyll": "~0.3.6",
     "gulp": "^3.6.2",
     "gulp-connect": "^2.0.5",
-    "gulp-jekyll": "0.0.0",
     "gulp-jshint": "^1.5.5",
-    "gulp-requirejs": "^0.1.3",
     "gulp-sass": "^0.7.1",
     "requirejs": "^2.1.11",
     "run-sequence": "^0.3.6"

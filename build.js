@@ -1,50 +1,41 @@
 ({
 
-    allowSourceOverwrites:true,
     preserveLicenseComments:false,
     findNestedDependencies:true,
-    optimize:'none', //uglify2
-
-    // Location of app source (src)
-    appDir:'./js',
+    optimize:'uglify',
 
     // Target location of app (dest), copy all files under appDir to this location
-    dir:'./js.min',
+    out:'./js/main.min.js',
 
     // get configuration
     mainConfigFile:'./js/main.js',
 
-    // Override base url in main.js
-    baseUrl:'../js.min/',
+    // include these modules
+    include:[
 
-    // Core modules to merge
-    modules:[
-        {
-            name:'main',
-            include:[
+        // include the main js file
+        'main',
 
-                // custom test
-                'lib/rikschennink/monitors/cookies',
+        // custom test
+        'lib/rikschennink/monitors/cookies',
 
-                // default tests
-                'lib/rikschennink/monitors/connection',
-                'lib/rikschennink/monitors/element',
-                'lib/rikschennink/monitors/media',
-                'lib/rikschennink/monitors/pointer',
-                'lib/rikschennink/monitors/window',
+        // default tests
+        'lib/rikschennink/monitors/connection',
+        'lib/rikschennink/monitors/element',
+        'lib/rikschennink/monitors/media',
+        'lib/rikschennink/monitors/pointer',
+        'lib/rikschennink/monitors/window',
 
-                // ui modules
-                'ui/Clock',
-                'ui/Zoom',
-                'ui/StorageConsentSelect',
-                'ui/StarGazers',
-                'security/StorageConsentGuard'
+        // ui modules
+        'ui/Clock',
+        'ui/Zoom',
+        'ui/StorageConsentSelect',
+        'ui/StarGazers',
+        'security/StorageConsentGuard'
 
-                // not included to test conditional loading
-                // 'ui/Map'
+        // not included to test conditional loading
+        // 'ui/Map'
 
-            ]
-        }
     ]
 
 })
