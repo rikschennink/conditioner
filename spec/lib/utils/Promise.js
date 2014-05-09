@@ -8,7 +8,6 @@
         this._thens = [];
     };
 
-    // jshint ignore:start
     exports.prototype = {
 
         /* This is the "front end" API. */
@@ -76,7 +75,7 @@
         }
 
     };
-    // jshint ignore:end
+
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = exports;

@@ -1,5 +1,3 @@
-
-# Folders to ignore
 .DS_Store
 .cache
 .hg
@@ -11,4 +9,3 @@ Thumbs.db
 _SpecRunner.html
 npm-debug.log
 .sass-cache
-.grunt
