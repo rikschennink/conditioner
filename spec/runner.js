@@ -29,6 +29,7 @@ require([
 
     // globals
     'lib/utils/Observer',
+    'lib/utils/Promise',
     'lib/utils/contains',
     'lib/utils/matchesSelector',
     'lib/utils/mergeObjects',
@@ -50,7 +51,7 @@ require([
     // API
     'APISpec'
 
-],function(Observer,contains,matchesSelector,mergeObjects){
+],function(Observer,Promise,contains,matchesSelector,mergeObjects){
 
     // setup base options
     window._options = {
