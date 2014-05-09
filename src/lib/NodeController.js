@@ -50,20 +50,20 @@ var NodeController = (function(){
 
         /**
          * Loads the passed module controllers to the node
-         * @param {...} arguments
+         * @param {Array} moduleControllers
          * @public
          */
-        load:function() {
+        load:function(moduleControllers) {
 
             // @ifdef DEV
             // if no module controllers found
-            if (!arguments || !arguments.length) {
-                throw new Error('NodeController.load(controllers): Expects an array of module controllers as parameters.');
+            if (!moduleControllers || !moduleControllers.length) {
+                throw new Error('NodeController.load(): Expects an Array of module controllers as parameters.');
             }
             // @endif
 
             // turn into array
-            this._moduleControllers = Array.prototype.slice.call(arguments,0);
+            this._moduleControllers = moduleControllers;
 
             // listen to load events on module controllers
             var i=0,l=this._moduleControllers.length,mc;

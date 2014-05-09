@@ -14,9 +14,9 @@ define(function() {
             // act
             nc = new NodeController(el,5);
             nc.load(
-                new ModuleController('mock/modules/foo',el),
+                [new ModuleController('mock/modules/foo',el),
                 new ModuleController('mock/modules/bar',el),
-                new ModuleController('mock/modules/baz',el)
+                new ModuleController('mock/modules/baz',el)]
             );
 
         });

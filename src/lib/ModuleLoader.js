@@ -67,7 +67,7 @@ ModuleLoader.prototype = {
 		i = nodes.length;
 		while (--i >= 0) {
             node = nodes[i];
-			node.load.apply(node,this._getModuleControllersByElement(node.getElement()));
+			node.load.call(node,this._getModuleControllersByElement(node.getElement()));
 		}
 
 		// merge new nodes with currently active nodes list
@@ -190,13 +190,15 @@ ModuleLoader.prototype = {
      */
     _getModuleControllersByElement:function(element) {
 
-        var controllers = [],
-            config = element.getAttribute(_options.attr.module) || '',
-            i= 0,
-            specs,spec,l;
+        var config = element.getAttribute(_options.attr.module) || '';
 
         // test if first character is a '[', if so multiple modules have been defined
-        if (config.charCodeAt(0) === 91) {
+        // double comparison is faster than triple
+        if (config.charCodeAt(0) == 91) {
+
+            var controllers = [],
+                i=0,
+                specs,spec,l;
 
             // add multiple module adapters
             try {
@@ -217,46 +219,39 @@ ModuleLoader.prototype = {
             l=specs.length;
 
             // test if second character is a '{' if so, json format
-            if (config.charCodeAt(1) === 123) {
+            if (config.charCodeAt(1) == 123) {
                 for (;i<l;i++) {
                     spec = specs[i];
-                    controllers.push(
-                        this._getModuleController(
-                            spec.path,
-                            element,
-                            spec.options,
-                            spec.conditions
-                        )
+                    controllers[i] = this._getModuleController(
+                        spec.path,
+                        element,
+                        spec.options,
+                        spec.conditions
                     );
                 }
-            }
-            else {
-                for (;i<l;i++) {
-                    spec = specs[i];
-                    controllers.push(
-                        this._getModuleController(
-                            spec[0],
-                            element,
-                            typeof spec[1] === 'string' ? spec[2] : spec[1],
-                            typeof spec[1] === 'string' ? spec[1] : spec[2]
-                        )
-                    );
-                }
+                return controllers;
             }
 
-        }
-        else if (config.length) {
-            controllers.push(
-                this._getModuleController(
-                    config,
+
+            for (;i<l;i++) {
+                spec = specs[i];
+                controllers[i] = this._getModuleController(
+                    spec[0],
                     element,
-                    element.getAttribute(_options.attr.options),
-                    element.getAttribute(_options.attr.conditions)
-                )
-            );
+                    typeof spec[1] == 'string' ? spec[2] : spec[1],
+                    typeof spec[1] == 'string' ? spec[1] : spec[2]
+                );
+            }
+            return controllers;
+
         }
 
-        return controllers;
+        return [this._getModuleController(
+            config,
+            element,
+            element.getAttribute(_options.attr.options),
+            element.getAttribute(_options.attr.conditions)
+        )];
     },
 
     /**
@@ -276,5 +271,4 @@ ModuleLoader.prototype = {
             conditions ? new ConditionModuleAgent(conditions,element) : StaticModuleAgent
         );
     }
-
 };
