@@ -1,8 +1,8 @@
 # Conditioner
 
-[![Build Status](https://travis-ci.org/rikschennink/conditioner.png?branch=master)](https://travis-ci.org/rikschennink/conditioner)
-
 Conditioner.js is a javascript library for loading and unloading behavior based on environment conditions.
+
+Currently the build is: [![Build Status](https://travis-ci.org/rikschennink/conditioner.png?branch=master)](https://travis-ci.org/rikschennink/conditioner)
 
 
 ### Environment Aware
