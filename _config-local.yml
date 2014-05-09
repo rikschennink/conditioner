@@ -3,6 +3,7 @@ safe: true
 rawurl: "https://raw.github.com/rikschennink/conditioner/master"
 url: "http://localhost:4000"
 version: 0.10.0
+exclude: [node_modules]
 
 api:
  -
