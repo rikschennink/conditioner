@@ -1003,19 +1003,19 @@
                     // get settings
                     options = ModuleRegistry.getModule(url);
 
-                    // stack the options
+                    // create a stack of options
                     stack.push({
                         'page': options,
                         'module': Module.options
                     });
 
-                    // fetch super path
+                    // fetch super path, if this module has a super module load that modules options aswell
                     url = Module.__superUrl;
 
                     // jshint -W084
                 } while (Module = Module.__super);
 
-                // reverse loop over stack and merge options
+                // reverse loop over stack and merge all entries to create the final options objects
                 i = stack.length;
                 while (i--) {
                     pageOptions = mergeObjects(pageOptions, stack[i].page);
@@ -1056,11 +1056,11 @@
                 }
                 else {
 
-                    // is of other type so expect load method to be defined
+                    // is of other type, expect load method to be defined
                     this._module = this._Module.load ? this._Module.load(this._element, options) : null;
 
-                    // if module not defined we could be dealing with a static class
-                    if (typeof this._module === 'undefined') {
+                    // if module not defined we are probably dealing with a static class
+                    if (!this._module) {
                         this._module = this._Module;
                     }
                 }
@@ -1086,9 +1086,6 @@
              * @return {Boolean}
              */
             _unload: function () {
-
-                // module is now no longer ready to be loaded
-                this._available = false;
 
                 // if no module, module has already been unloaded or was never loaded
                 if (!this._module) {
@@ -1122,7 +1119,6 @@
                 this._unload();
 
                 // unbind events
-                Observer.unsubscribe(this._agent, 'ready', this._onAgentReadyBind);
                 Observer.unsubscribe(this._agent, 'change', this._onAgentStateChangeBind);
 
                 // call destroy on agent
@@ -1156,7 +1152,7 @@
                 }
                 // @endif
                 // if no params supplied set to empty array,
-                // ie8 falls on it's knees when it gets an undefined parameter object in the apply method
+                // ie8 falls to it's knees when it receives an undefined parameter object in the apply method
                 params = params || [];
 
                 // once loaded call method and pass parameters

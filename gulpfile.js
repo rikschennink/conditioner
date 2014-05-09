@@ -118,6 +118,11 @@ gulp.task('_clean',function(){
  */
 gulp.task('test',['build'],function(){
 
+    // hint build results, but wait for lib to build
+    gulp.src(paths.dist.dev + pkg.name + '.js')
+        .pipe(jshint())
+        .pipe(jshint.reporter(reporter));
+
     // do mocha tests, but wait for build
     return gulp
         .src(paths.spec + 'runner.html')
@@ -127,18 +132,8 @@ gulp.task('test',['build'],function(){
 
 gulp.task('build',function(cb){
 
-    // first runs clean than runs _lib _utils and _plugins in parallel
-    sequence('_clean',['_lib','_utils','_plugins'],cb);
-
-});
-
-gulp.task('build',['_lib','_utils','_monitors'],function() {
-
-    // hint build results, but wait for lib to build
-    return gulp
-        .src(paths.dist.dev + pkg.name + '.js')
-        .pipe(jshint())
-        .pipe(jshint.reporter(reporter));
+    // first runs clean than runs _lib _utils and _monitors in parallel
+    sequence('_clean',['_lib','_utils','_monitors'],cb);
 
 });
 
