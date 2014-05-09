@@ -113,11 +113,9 @@ gulp.task('_clean',function(){
 });
 
 gulp.task('_hint',function(){
-
     return gulp.src(paths.dist.dev + pkg.name + '.js')
         .pipe(jshint())
         .pipe(jshint.reporter(reporter));
-
 });
 
 /**
