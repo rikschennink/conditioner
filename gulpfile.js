@@ -1,13 +1,10 @@
-
 var gulp = require('gulp');
 var connect = require('gulp-connect');
-var jekyll = require('gulp-jekyll');
 var jshint = require('gulp-jshint');
 var reporter = require('jshint-stylish');
 var sass = require('gulp-sass');
-var spawn = require('child_process').spawn;
 var sequence = require('run-sequence');
-
+var spawn = require('child_process').spawn;
 
 
 gulp.task('_connect', function() {
