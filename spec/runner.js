@@ -29,7 +29,7 @@ require([
 
     // globals
     'lib/utils/Observer',
-    'lib/utils/Promise.js',
+    'lib/utils/Promise',
     'lib/utils/contains',
     'lib/utils/matchesSelector',
     'lib/utils/mergeObjects',
