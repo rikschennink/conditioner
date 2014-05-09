@@ -1,8 +1,6 @@
 # Conditioner
 
-**This library is still under development so new versions might break backwards compatibility.**
-
-## Introduction
+[![Build Status](https://travis-ci.org/rikschennink/conditioner.png?branch=master)](https://travis-ci.org/rikschennink/conditioner)
 
 Conditioner.js is a javascript library for loading and unloading behavior based on environment conditions.
 
@@ -16,10 +14,9 @@ You define the required state, conditioner takes it from there.
 
 ### Frizz Free
 
-Modules are loaded separate from each other preventing them  from getting into fights.
+Modules are loaded separate from each other preventing them from getting into fights.
 
 Conditioner exposes an API that allows for structured peace negotiations between modules.
-
 
 ### Example
 
@@ -41,19 +38,19 @@ We can accomplish this by calling the `init` method.
 conditioner.init();
 ```
 
+## Articles
+* [Frizz Free JavaScript With ConditionerJS](http://www.smashingmagazine.com/2014/04/03/frizz-free-javascript-with-conditionerjs/)
+
 ## Documentation
-The documentation and a bunch of demos is located at [conditionerjs.com](http://conditionerjs.com)
+You can find the API documentation and a selection of demos at [conditionerjs.com](http://conditionerjs.com)
 
 ## Requirements
-Conditioner relies on the availability of an AMD loader. It's been tested with [RequireJS](http://requirejs.org), [Almond](https://github.com/jrburke/almond) and [Curl](https://github.com/cujojs/curl). As long as your AMD loader follows the [AMD spec](https://github.com/amdjs/amdjs-api) it should be fine.
+Conditioner expects an AMD loader to be available. It's been tested with [RequireJS](http://requirejs.org), [Almond](https://github.com/jrburke/almond) and [Curl](https://github.com/cujojs/curl). As long as your AMD loader follows the [AMD spec](https://github.com/amdjs/amdjs-api) it should be fine.
 
-* AMD Loader
-* Modern browser, IE8 is still supported but requires a bunch of shims.
+If you're not into AMD and prefer [Browserify](http://browserify.org) that's fine too but keep in mind that your optimized file should contain all modules. If you want the best of both worlds you might be interested in [WebPack](http://webpack.github.io).
 
-
-## Travis Build Status
-
-Develop [![Build Status](https://travis-ci.org/rikschennink/conditioner.png?branch=develop)](https://travis-ci.org/rikschennink/conditioner)
+* AMD Loader / CommonJS Processor
+* Modern browser, IE8 is supported but requires a bit of shimming.
 
 ## Feedback, Comments, Critique
 [Contact me on Twitter](http://twitter.com/rikschennink)
