@@ -114,7 +114,7 @@ gulp.task('_clean',function(){
 
 gulp.task('_hint',function(){
 
-    gulp.src(paths.dist.dev + pkg.name + '.js')
+    return gulp.src(paths.dist.dev + pkg.name + '.js')
         .pipe(jshint())
         .pipe(jshint.reporter(reporter));
 
@@ -135,7 +135,7 @@ gulp.task('test',['build'],function(){
 gulp.task('build',function(cb){
 
     // first runs clean than runs _lib _utils and _monitors in parallel
-    sequence('_clean',['_lib','_utils','_monitors'],'_hint',cb);
+    return sequence('_clean',['_lib','_utils','_monitors'],'_hint',cb);
 
 });
 
