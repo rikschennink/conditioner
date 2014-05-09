@@ -29,14 +29,14 @@ require([
 
     // globals
     'lib/utils/Observer',
-    'lib/utils/Promise',
+    'lib/utils/Promise.js',
     'lib/utils/contains',
     'lib/utils/matchesSelector',
     'lib/utils/mergeObjects',
 
     // utils
-    'ObserverSpec.js',
-    'extendClassOptionsSpec.js',
+    'ObserverSpec',
+    'extendClassOptionsSpec',
 
     // inner
     'ExpressionParserSpec',
