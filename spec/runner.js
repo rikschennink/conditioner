@@ -31,7 +31,11 @@ require([
     'lib/conditioner',
 
     // globals
-    'lib/utils/Observer','lib/utils/Promise','lib/utils/contains','lib/utils/matchesSelector','lib/utils/mergeObjects',
+    'lib/utils/Observer',
+    'lib/utils/contains',
+    'lib/utils/matchesSelector',
+    'lib/utils/mergeObjects',
+    'lib/utils/Promise',
 
     // utils
     'ObserverSpec.js',
@@ -50,7 +54,7 @@ require([
     // API
     'APISpec'
 
-],function(c,Observer,Promise,contains,matchesSelector,mergeObjects){
+],function(c,Observer,contains,matchesSelector,mergeObjects,Promise){
 
     // setup base options
     window._options = {
