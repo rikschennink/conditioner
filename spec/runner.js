@@ -27,15 +27,12 @@ require.config({
 
 require([
 
-    // conditioner (makes sure all parts are loaded as shims)
-    'lib/conditioner',
-
     // globals
     'lib/utils/Observer',
+    'lib/utils/Promise',
     'lib/utils/contains',
     'lib/utils/matchesSelector',
     'lib/utils/mergeObjects',
-    'lib/utils/Promise',
 
     // utils
     'ObserverSpec.js',
@@ -54,7 +51,7 @@ require([
     // API
     'APISpec'
 
-],function(c,Observer,contains,matchesSelector,mergeObjects,Promise){
+],function(Observer,Promise,contains,matchesSelector,mergeObjects){
 
     // setup base options
     window._options = {

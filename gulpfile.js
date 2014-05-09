@@ -118,11 +118,13 @@ gulp.task('_clean',function(){
  */
 gulp.task('test',['build'],function(){
 
+    /*
     // hint build results, but wait for lib to build
     gulp.src(paths.dist.dev + pkg.name + '.js')
         .pipe(jshint())
         .pipe(jshint.reporter(reporter));
 
+*/
     // do mocha tests, but wait for build
     return gulp
         .src(paths.spec + 'runner.html')
