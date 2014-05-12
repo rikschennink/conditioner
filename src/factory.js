@@ -49,13 +49,22 @@
         // setup loader instance
         _moduleLoader =  new ModuleLoader();
 
-        // expose API
+        /***
+         * Call [init()](#conditioner-init) on the conditioner object to start loading the referenced modules in the HTML document. Once this is done the conditioner will return the nodes it found as an Array and will initialize them automatically once they are ready.
+         *
+         * Each node is wrapped in a [NodeController](#nodecontroller) which contains one or more [ModuleControllers](#modulecontroller).
+         *
+         * @exports Conditioner
+         */
         return {
 
-            /**
-             * Initialises the conditioner and parses the document for modules
-             * @param {Object} [options] - optional options to override
-             * @return {Array} of initialized nodes
+            /***
+             * Call this method to start parsing the document for modules. Conditioner will initialize all found modules and return an Array containing the newly found nodes.
+             *
+             * @method init
+             * @memberof Conditioner
+             * @param {Object=} options - Options to override.
+             * @returns {Array} nodes - Array of initialized nodes.
              * @public
              */
             init:function(options){
@@ -68,9 +77,12 @@
 
             },
 
-            /**
-             * Set custom options
-             * @param {Object} options - options to override
+            /***
+             * Allows defining page level Module options, shortcuts to modules, and overrides for conditioners inner workings.
+             *
+             * @method setOptions
+             * @memberof Conditioner
+             * @param {Object} options - Options to override.
              * @public
              */
             setOptions:function(options){
@@ -116,10 +128,13 @@
 
             },
 
-            /**
-             * Loads all modules within the supplied dom tree
-             * @param {Document|Element} context - Context to find modules in
-             * @return {Array} - Array of found Nodes
+            /***
+             * Finds and loads all Modules defined on child elements of the supplied context. Returns an Array of found Nodes.
+             *
+             * @method parse
+             * @memberof Conditioner
+             * @param {Element} context - Context to find modules in.
+             * @returns {Array} nodes - Array of initialized nodes.
              */
             parse:function(context) {
 
@@ -133,20 +148,23 @@
 
             },
 
-            /**
-             * Setup the given element with the passed module controller(s)
-             * @param {Element} element - Element to bind the controllers to
-             * @param {Array|ModuleController} controllers - module controller configurations
-             * [
-             *     {
-             *         path: 'path/to/module',
-             *         conditions: 'config',
-             *         options: {
-             *             foo: 'bar'
+            /***
+             * Creates a [NodeController](#nodecontroller) based on the passed element and set of controllers.
+             *     [
+             *         {
+             *             path: 'path/to/module',
+             *             conditions: 'foo:{bar}',
+             *             options: {
+             *                 foo: 'bar'
+             *             }
              *         }
-             *     }
-             * ]
-             * @return {NodeController|null} - The newly created node or null if something went wrong
+             *     ]
+             *
+             * @method load
+             * @memberof Conditioner
+             * @param {Element} element - Element to bind the controllers to.
+             * @param {(Array|ModuleController)} controllers - [ModuleController](#modulecontroller) configurations.
+             * @returns {(NodeController|null)} node - The newly created node or null if something went wrong.
              */
             load:function(element,controllers) {
 
@@ -154,10 +172,13 @@
 
             },
 
-            /**
-             * Returns a synced controller group which fires a load event once all modules have loaded
-             * {ModuleController|NodeController} [arguments] - list of module controllers or node controllers to synchronize
-             * @return SyncedControllerGroup.prototype
+            /***
+             * Wraps the supplied controllers in a [SyncedControllerGroup](#syncedcontrollergroup) which will fire a load event when all of the supplied modules have loaded.
+             *
+             * @method sync
+             * @memberof Conditioner
+             * @param {(ModuleController|NodeController)} arguments - List of [ModuleControllers](#modulecontroller) or [NodeControllers](#nodecontroller) to synchronize.
+             * @returns {SyncedControllerGroup} syncedControllerGroup - A [SyncedControllerGroup](#syncedcontrollergroup).
              */
             sync:function() {
 
@@ -171,11 +192,14 @@
 
             },
 
-            /**
-             * Returns the first Node matching the selector
-             * @param {String} [selector] - Selector to match the nodes to
-             * @param {Element} [context] - Context to search in
-             * @return {Node||null} First matched node or null
+            /***
+             * Returns the first [NodeController](#nodecontroller) matching the given selector within the passed context
+             *
+             * @method getNode
+             * @memberof Conditioner
+             * @param {String=} selector - Selector to match the nodes to.
+             * @param {Element=} context - Context to search in.
+             * @returns {(NodeController|null)} node - First matched node or null.
              */
             getNode:function(selector,context) {
 
@@ -183,11 +207,15 @@
 
             },
 
-            /**
-             * Returns all nodes matching the selector
-             * @param {String} [selector] - Optional selector to match the nodes to
-             * @param {Element} [context] - Context to search in
-             * @return {Array} Array containing matched nodes or empty Array
+            /***
+             * Returns all [NodeControllers](#nodecontroller) matching the given selector with the passed context
+             *
+             * @method getNodes
+             * @memberof Conditioner
+             * @param {String=} selector - Optional selector to match the nodes to.
+             * @param {Element=} context - Context to search in.
+             * @returns {Array} nodes -  Array containing matched nodes or empty .
+Array
              */
             getNodes:function(selector,context) {
 
@@ -195,20 +223,13 @@
 
             },
 
-            /**
-             * Destroy found nodes
-             * Three possible use cases
-             * 1.
-             * @param {NodeController} arguments - destroy a single node controller
+            /***
+             * Destroy matched [NodeControllers](#nodecontroller) based on the supplied parameters.
              *
-             * 2.
-             * @param {String} [arguments] - string to match elements
-             * @param {Element} arguments - context in which to filter
-             *
-             * 3.
-             * @param {Array} arguments - array containing NodeControllers
-             *
-             * @return {Boolean}
+             * @method destroy
+             * @memberof Conditioner
+             * @param {(NodeController|String|Array)} arguments - Destroy a single node controller, matched elements or an Array of NodeControllers.
+             * @returns {Boolean} state - Were all nodes destroyed successfuly
              * @public
              */
             destroy:function() {
@@ -252,11 +273,15 @@
                 return _moduleLoader.destroy(nodes);
             },
 
-            /**
-             * Returns the first Module matching the selector
-             * @param {String} path - Optional path to match the modules to
-             * @param {String} selector - Optional selector to match the nodes to
-             * @param {Document|Element} [context] - Context to search in
+            /***
+             * Returns the first [ModuleController](#modulecontroller) matching the given selector within the supplied context.
+             *
+             * @method getModule
+             * @memberof Conditioner
+             * @param {String=} path - Path to match the modules to.
+             * @param {String=} selector - Selector to match the nodes to.
+             * @param {Element=} context - Context to search in.
+             * @returns {(ModuleController|null)} module - The found module.
              * @public
              */
             getModule:function(path,selector,context){
@@ -272,12 +297,15 @@
 
             },
 
-            /**
-             * Returns multiple modules matching the given path
-             * @param {String} path - Optional path to match the modules to
-             * @param {String} selector - Optional selector to match the nodes to
-             * @param {Document|Element} [context] - Context to search in
-             * @returns {Array|Node|null}
+            /***
+             * Returns multiple [ModuleControllers](#modulecontroller) matching the given path within the supplied context.
+             *
+             * @method getModules
+             * @memberof Conditioner
+             * @param {String=} path - Path to match the modules to
+             * @param {String=} selector - Selector to match the nodes to
+             * @param {Element=} context - Context to search in
+             * @returns {(Array|null)} modules - The found modules.
              * @public
              */
             getModules:function(path,selector,context) {
@@ -293,10 +321,13 @@
 
             },
 
-            /**
-             * Manually run an expression, only returns once with a true or false state
-             * @param {String} condition - Expression to test
-             * @param {Element} [element] - Optional element to run the test on
+            /***
+             * Manually test an expression, only returns once with a `true` or `false` state
+             *
+             * @method is
+             * @memberof Conditioner
+             * @param {String} condition - Expression to test.
+             * @param {Element=} element - Element to run the test on.
              * @returns {Promise}
              */
             is:function(condition,element){
@@ -316,11 +347,14 @@
 
             },
 
-            /**
-             * Manually run an expression, bind a callback method to be executed once something changes
-             * @param {String} condition - Expression to test
-             * @param {Element} [element] - Optional element to run the test on
-             * @param {Function} callback - callback method
+            /***
+             * Manually test an expression, bind a callback method to be executed once something changes.
+             *
+             * @method on
+             * @memberof Conditioner
+             * @param {String} condition - Expression to test.
+             * @param {(Element|Function)=} element - Optional element to run the test on.
+             * @param {Function=} change - Callback method.
              */
             on:function(condition,element,callback) {
 

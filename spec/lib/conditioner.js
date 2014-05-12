@@ -778,7 +778,9 @@
             }
 
         };
-        /**
+        /***
+         * The ModuleController loads and unloads the contained Module based on the conditions received. It propagates events from the contained Module so you can safely subscribe to them.
+         *
          * @exports ModuleController
          * @class
          * @constructor
@@ -838,8 +840,11 @@
                 return this._initialized;
             },
 
-            /**
+            /***
              * Returns the module path
+             *
+             * @method getModulePath
+             * @memberof ModuleController
              * @returns {String}
              * @public
              */
@@ -847,8 +852,11 @@
                 return this._path;
             },
 
-            /**
+            /***
              * Returns true if the module is currently waiting for load
+             *
+             * @method isModuleAvailable
+             * @memberof ModuleController
              * @returns {Boolean}
              * @public
              */
@@ -856,8 +864,11 @@
                 return this._agent.allowsActivation() && !this._module;
             },
 
-            /**
+            /***
              * Returns true if module is currently active and loaded
+             *
+             * @method isModuleActive
+             * @memberof ModuleController
              * @returns {Boolean}
              * @public
              */
@@ -865,9 +876,12 @@
                 return this._module !== null;
             },
 
-            /**
+            /***
              * Checks if it wraps a module with the supplied path
-             * @param {String} path - path of module to test for
+             *
+             * @method wrapsModuleWithPath
+             * @memberof ModuleController
+             * @param {String} path - Path of module to test for.
              * @return {Boolean}
              * @public
              */
@@ -1126,11 +1140,14 @@
 
             },
 
-            /**
-             * Executes a methods on the wrapped module
-             * @param {String} method - method key
-             * @param {Array} [params] - optional array containing the method parameters
-             * @return {Object} containing response of executed method and a status code
+            /***
+             * Executes a methods on the wrapped module.
+             *
+             * @method execute
+             * @memberof ModuleController
+             * @param {String} method - Method name.
+             * @param {Array=} params - Array containing the method parameters.
+             * @return {Object} response - containing return of executed method and a status code
              * @public
              */
             execute: function (method, params) {
@@ -1176,7 +1193,10 @@
                 return item.getModulePath();
             };
 
-            /**
+            /***
+             * For each element found having a `data-module` attribute an object of type NodeController is made. The node object can then be queried for the [ModuleControllers](#modulecontroller) it contains.
+             *
+             * @exports NodeController
              * @class
              * @constructor
              * @param {Object} element
@@ -1220,7 +1240,7 @@
             exports.prototype = {
 
                 /**
-                 * Loads the passed module controllers to the node
+                 * Loads the passed ModuleControllers to the node
                  * @param {Array} moduleControllers
                  * @public
                  */
@@ -1300,19 +1320,26 @@
                     return this._priority;
                 },
 
-                /**
+                /***
                  * Returns the element linked to this node
+                 *
+                 * @method getElement
+                 * @memberof NodeController
+                 * @returns {Element} element - A reference to the element wrapped by this NodeController
                  * @public
                  */
                 getElement: function () {
                     return this._element;
                 },
 
-                /**
-                 * Public method to check if the module matches the given query
-                 * @param {String} selector - CSS selector to match module to
-                 * @param {Document|Element} [context] - Context to search in
-                 * @return {Boolean}
+                /***
+                 * Tests if the element contained in the NodeController object matches the supplied CSS selector.
+                 *
+                 * @method matchesSelector
+                 * @memberof NodeController
+                 * @param {String} selector - CSS selector to match element to.
+                 * @param {Element=} context - Context to search in.
+                 * @return {Boolean} match - Result of matchs
                  * @public
                  */
                 matchesSelector: function (selector, context) {
@@ -1322,37 +1349,50 @@
                     return matchesSelector(this._element, selector, context);
                 },
 
-                /**
-                 * Returns true if all module controllers are active
+                /***
+                 * Returns true if all [ModuleControllers](#modulecontroller) are active
+                 *
+                 * @method areAllModulesActive
+                 * @memberof NodeController
+                 * @returns {Boolean} state - All modules loaded state
                  * @public
                  */
                 areAllModulesActive: function () {
                     return this.getActiveModules().length === this._moduleControllers.length;
                 },
 
-                /**
-                 * Returns an array containing all active module controllers
-                 * @return {Array}
+                /***
+                 * Returns an array containing all active [ModuleControllers](#modulecontroller)
+                 *
+                 * @method getActiveModules
+                 * @memberof NodeController
+                 * @returns {Array} modules - An Array of active ModuleControllers
                  * @public
                  */
                 getActiveModules: function () {
                     return this._moduleControllers.filter(_filterIsActiveModule);
                 },
 
-                /**
-                 * Returns the first ModuleController matching the given path
-                 * @param {String} [path] - module id
-                 * @return {ModuleController|null}
+                /***
+                 * Returns the first [ModuleController](#modulecontroller) matching the given path
+                 *
+                 * @method getModule
+                 * @memberof NodeController
+                 * @param {String=} path - The module id to search for.
+                 * @returns {(ModuleController|null)} module - A [ModuleController](#modulecontroller) or null if none found
                  * @public
                  */
                 getModule: function (path) {
                     return this._getModules(path, true);
                 },
 
-                /**
-                 * Returns an array of ModuleControllers matching the given path
-                 * @param {String} [path] to module
-                 * @return {Array}
+                /***
+                 * Returns an Array of [ModuleControllers](#modulecontroller) matching the given path
+                 *
+                 * @method getModules
+                 * @memberof NodeController
+                 * @param {String=} path - The module id to search for.
+                 * @returns {Array} modules - An Array of [ModuleControllers](#modulecontroller)
                  * @public
                  */
                 getModules: function (path) {
@@ -1360,10 +1400,11 @@
                 },
 
                 /**
-                 * Returns one or multiple ModuleControllers matching the supplied path
-                 * @param {String} [path] - Optional path to match the nodes to
-                 * @param {Boolean} [singleResult] - Optional boolean to only ask for one result
-                 * @returns {Array|ModuleController|null}
+                 * Returns one or multiple [ModuleControllers](#modulecontroller) matching the supplied path
+                 *
+                 * @param {String=} path - Path to match the nodes to
+                 * @param {Boolean=} singleResult - Boolean to only ask for one result
+                 * @returns {(Array|ModuleController|null)}
                  * @private
                  */
                 _getModules: function (path, singleResult) {
@@ -1394,11 +1435,14 @@
                     return singleResult ? null : results;
                 },
 
-                /**
-                 * Public method for safely attempting method execution on modules
-                 * @param {String} method - method key
-                 * @param {Array} [params] - array containing the method parameters
-                 * @return [Array] returns object containing status code and possible response data
+                /***
+                 * Safely tries to executes a method on the currently active Module. Always returns an object containing a status code and a response data property.
+                 *
+                 * @method execute
+                 * @memberof NodeController
+                 * @param {String} method - Method name.
+                 * @param {Array=} params - Array containing the method parameters.
+                 * @returns {Array} results - An object containing status code and possible response data.
                  * @public
                  */
                 execute: function (method, params) {
@@ -1480,7 +1524,9 @@
 
         }());
         /**
-         * Creates a controller group to sync controllers
+         * Creates a controller group to sync [ModuleControllers](#modulecontroller).
+         *
+         * @name SyncedControllerGroup
          * @constructor
          */
         var SyncedControllerGroup = function () {
@@ -1521,8 +1567,12 @@
 
         SyncedControllerGroup.prototype = {
 
-            /**
+            /***
              * Destroy sync group, stops listening and cleans up
+             *
+             * @method destroy
+             * @memberof SyncedControllerGroup
+             * @public
              */
             destroy: function () {
 
@@ -1542,8 +1592,11 @@
 
             },
 
-            /**
+            /***
              * Returns true if all modules have loaded
+             *
+             * @method areAllModulesActive
+             * @memberof SyncedControllerGroup
              * @returns {Boolean}
              */
             areAllModulesActive: function () {
@@ -1601,8 +1654,10 @@
 
             },
 
-            /**
+            /***
              * Fires a load event when all controllers have indicated they have loaded and we have not loaded yet
+             *
+             * @memberof SyncedControllerGroup
              * @fires load
              * @private
              */
@@ -1614,8 +1669,10 @@
                 Observer.publishAsync(this, 'load', this._controllers);
             },
 
-            /**
+            /***
              * Fires an unload event once we are in loaded state and one of the controllers unloads
+             *
+             * @memberof SyncedControllerGroup
              * @fires unload
              * @private
              */
@@ -1932,13 +1989,22 @@
         // setup loader instance
         _moduleLoader = new ModuleLoader();
 
-        // expose API
+        /***
+         * Call [init()](#conditioner-init) on the conditioner object to start loading the referenced modules in the HTML document. Once this is done the conditioner will return the nodes it found as an Array and will initialize them automatically once they are ready.
+         *
+         * Each node is wrapped in a [NodeController](#nodecontroller) which contains one or more [ModuleControllers](#modulecontroller).
+         *
+         * @exports Conditioner
+         */
         return {
 
-            /**
-             * Initialises the conditioner and parses the document for modules
-             * @param {Object} [options] - optional options to override
-             * @return {Array} of initialized nodes
+            /***
+             * Call this method to start parsing the document for modules. Conditioner will initialize all found modules and return an Array containing the newly found nodes.
+             *
+             * @method init
+             * @memberof Conditioner
+             * @param {Object=} options - Options to override.
+             * @returns {Array} nodes - Array of initialized nodes.
              * @public
              */
             init: function (options) {
@@ -1951,9 +2017,12 @@
 
             },
 
-            /**
-             * Set custom options
-             * @param {Object} options - options to override
+            /***
+             * Allows defining page level Module options, shortcuts to modules, and overrides for conditioners inner workings.
+             *
+             * @method setOptions
+             * @memberof Conditioner
+             * @param {Object} options - Options to override.
              * @public
              */
             setOptions: function (options) {
@@ -2002,10 +2071,13 @@
 
             },
 
-            /**
-             * Loads all modules within the supplied dom tree
-             * @param {Document|Element} context - Context to find modules in
-             * @return {Array} - Array of found Nodes
+            /***
+             * Finds and loads all Modules defined on child elements of the supplied context. Returns an Array of found Nodes.
+             *
+             * @method parse
+             * @memberof Conditioner
+             * @param {Element} context - Context to find modules in.
+             * @returns {Array} nodes - Array of initialized nodes.
              */
             parse: function (context) {
 
@@ -2018,20 +2090,23 @@
 
             },
 
-            /**
-             * Setup the given element with the passed module controller(s)
-             * @param {Element} element - Element to bind the controllers to
-             * @param {Array|ModuleController} controllers - module controller configurations
-             * [
-             *     {
-             *         path: 'path/to/module',
-             *         conditions: 'config',
-             *         options: {
-             *             foo: 'bar'
+            /***
+             * Creates a [NodeController](#nodecontroller) based on the passed element and set of controllers.
+             *     [
+             *         {
+             *             path: 'path/to/module',
+             *             conditions: 'foo:{bar}',
+             *             options: {
+             *                 foo: 'bar'
+             *             }
              *         }
-             *     }
-             * ]
-             * @return {NodeController|null} - The newly created node or null if something went wrong
+             *     ]
+             *
+             * @method load
+             * @memberof Conditioner
+             * @param {Element} element - Element to bind the controllers to.
+             * @param {(Array|ModuleController)} controllers - [ModuleController](#modulecontroller) configurations.
+             * @returns {(NodeController|null)} node - The newly created node or null if something went wrong.
              */
             load: function (element, controllers) {
 
@@ -2039,10 +2114,13 @@
 
             },
 
-            /**
-             * Returns a synced controller group which fires a load event once all modules have loaded
-             * {ModuleController|NodeController} [arguments] - list of module controllers or node controllers to synchronize
-             * @return SyncedControllerGroup.prototype
+            /***
+             * Wraps the supplied controllers in a [SyncedControllerGroup](#syncedcontrollergroup) which will fire a load event when all of the supplied modules have loaded.
+             *
+             * @method sync
+             * @memberof Conditioner
+             * @param {(ModuleController|NodeController)} arguments - List of [ModuleControllers](#modulecontroller) or [NodeControllers](#nodecontroller) to synchronize.
+             * @returns {SyncedControllerGroup} syncedControllerGroup - A [SyncedControllerGroup](#syncedcontrollergroup).
              */
             sync: function () {
 
@@ -2056,11 +2134,14 @@
 
             },
 
-            /**
-             * Returns the first Node matching the selector
-             * @param {String} [selector] - Selector to match the nodes to
-             * @param {Element} [context] - Context to search in
-             * @return {Node||null} First matched node or null
+            /***
+             * Returns the first [NodeController](#nodecontroller) matching the given selector within the passed context
+             *
+             * @method getNode
+             * @memberof Conditioner
+             * @param {String=} selector - Selector to match the nodes to.
+             * @param {Element=} context - Context to search in.
+             * @returns {(NodeController|null)} node - First matched node or null.
              */
             getNode: function (selector, context) {
 
@@ -2068,11 +2149,15 @@
 
             },
 
-            /**
-             * Returns all nodes matching the selector
-             * @param {String} [selector] - Optional selector to match the nodes to
-             * @param {Element} [context] - Context to search in
-             * @return {Array} Array containing matched nodes or empty Array
+            /***
+             * Returns all [NodeControllers](#nodecontroller) matching the given selector with the passed context
+             *
+             * @method getNodes
+             * @memberof Conditioner
+             * @param {String=} selector - Optional selector to match the nodes to.
+             * @param {Element=} context - Context to search in.
+             * @returns {Array} nodes -  Array containing matched nodes or empty .
+             Array
              */
             getNodes: function (selector, context) {
 
@@ -2080,20 +2165,13 @@
 
             },
 
-            /**
-             * Destroy found nodes
-             * Three possible use cases
-             * 1.
-             * @param {NodeController} arguments - destroy a single node controller
+            /***
+             * Destroy matched [NodeControllers](#nodecontroller) based on the supplied parameters.
              *
-             * 2.
-             * @param {String} [arguments] - string to match elements
-             * @param {Element} arguments - context in which to filter
-             *
-             * 3.
-             * @param {Array} arguments - array containing NodeControllers
-             *
-             * @return {Boolean}
+             * @method destroy
+             * @memberof Conditioner
+             * @param {(NodeController|String|Array)} arguments - Destroy a single node controller, matched elements or an Array of NodeControllers.
+             * @returns {Boolean} state - Were all nodes destroyed successfuly
              * @public
              */
             destroy: function () {
@@ -2137,11 +2215,15 @@
                 return _moduleLoader.destroy(nodes);
             },
 
-            /**
-             * Returns the first Module matching the selector
-             * @param {String} path - Optional path to match the modules to
-             * @param {String} selector - Optional selector to match the nodes to
-             * @param {Document|Element} [context] - Context to search in
+            /***
+             * Returns the first [ModuleController](#modulecontroller) matching the given selector within the supplied context.
+             *
+             * @method getModule
+             * @memberof Conditioner
+             * @param {String=} path - Path to match the modules to.
+             * @param {String=} selector - Selector to match the nodes to.
+             * @param {Element=} context - Context to search in.
+             * @returns {(ModuleController|null)} module - The found module.
              * @public
              */
             getModule: function (path, selector, context) {
@@ -2160,12 +2242,15 @@
 
             },
 
-            /**
-             * Returns multiple modules matching the given path
-             * @param {String} path - Optional path to match the modules to
-             * @param {String} selector - Optional selector to match the nodes to
-             * @param {Document|Element} [context] - Context to search in
-             * @returns {Array|Node|null}
+            /***
+             * Returns multiple [ModuleControllers](#modulecontroller) matching the given path within the supplied context.
+             *
+             * @method getModules
+             * @memberof Conditioner
+             * @param {String=} path - Path to match the modules to
+             * @param {String=} selector - Selector to match the nodes to
+             * @param {Element=} context - Context to search in
+             * @returns {(Array|null)} modules - The found modules.
              * @public
              */
             getModules: function (path, selector, context) {
@@ -2185,10 +2270,13 @@
 
             },
 
-            /**
-             * Manually run an expression, only returns once with a true or false state
-             * @param {String} condition - Expression to test
-             * @param {Element} [element] - Optional element to run the test on
+            /***
+             * Manually test an expression, only returns once with a `true` or `false` state
+             *
+             * @method is
+             * @memberof Conditioner
+             * @param {String} condition - Expression to test.
+             * @param {Element=} element - Element to run the test on.
              * @returns {Promise}
              */
             is: function (condition, element) {
@@ -2207,11 +2295,14 @@
 
             },
 
-            /**
-             * Manually run an expression, bind a callback method to be executed once something changes
-             * @param {String} condition - Expression to test
-             * @param {Element} [element] - Optional element to run the test on
-             * @param {Function} callback - callback method
+            /***
+             * Manually test an expression, bind a callback method to be executed once something changes.
+             *
+             * @method on
+             * @memberof Conditioner
+             * @param {String} condition - Expression to test.
+             * @param {(Element|Function)=} element - Optional element to run the test on.
+             * @param {Function=} change - Callback method.
              */
             on: function (condition, element, callback) {
 

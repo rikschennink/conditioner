@@ -1,5 +1,7 @@
 /**
- * Creates a controller group to sync controllers
+ * Creates a controller group to sync [ModuleControllers](#modulecontroller).
+ *
+ * @name SyncedControllerGroup
  * @constructor
  */
 var SyncedControllerGroup = function() {
@@ -41,8 +43,12 @@ var SyncedControllerGroup = function() {
 
 SyncedControllerGroup.prototype = {
 
-    /**
+    /***
      * Destroy sync group, stops listening and cleans up
+     *
+     * @method destroy
+     * @memberof SyncedControllerGroup
+     * @public
      */
     destroy:function() {
 
@@ -61,8 +67,11 @@ SyncedControllerGroup.prototype = {
 
     },
 
-    /**
+    /***
      * Returns true if all modules have loaded
+     *
+     * @method areAllModulesActive
+     * @memberof SyncedControllerGroup
      * @returns {Boolean}
      */
     areAllModulesActive:function(){
@@ -117,8 +126,10 @@ SyncedControllerGroup.prototype = {
 
     },
 
-    /**
+    /***
      * Fires a load event when all controllers have indicated they have loaded and we have not loaded yet
+     *
+     * @memberof SyncedControllerGroup
      * @fires load
      * @private
      */
@@ -128,8 +139,10 @@ SyncedControllerGroup.prototype = {
         Observer.publishAsync(this,'load',this._controllers);
     },
 
-    /**
+    /***
      * Fires an unload event once we are in loaded state and one of the controllers unloads
+     *
+     * @memberof SyncedControllerGroup
      * @fires unload
      * @private
      */

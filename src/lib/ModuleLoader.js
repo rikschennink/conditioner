@@ -79,8 +79,6 @@ ModuleLoader.prototype = {
 
     /**
      * Setup the given element with the passed module controller(s)
-     * @param {Element} element - Element to bind the controllers to
-     * @param {Array|ModuleController} controllers - module controller configurations
      * [
      *     {
      *         path: 'path/to/module',
@@ -90,6 +88,8 @@ ModuleLoader.prototype = {
      *         }
      *     }
      * ]
+     * @param {Element} element - Element to bind the controllers to
+     * @param {Array|ModuleController} controllers - module controller configurations
      * @return {NodeController|null} - The newly created node or null if something went wrong
      */
     load:function(element,controllers) {

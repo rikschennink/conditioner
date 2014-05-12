@@ -1,4 +1,6 @@
-/**
+/***
+ * The ModuleController loads and unloads the contained Module based on the conditions received. It propagates events from the contained Module so you can safely subscribe to them.
+ *
  * @exports ModuleController
  * @class
  * @constructor
@@ -59,8 +61,11 @@ ModuleController.prototype = {
         return this._initialized;
     },
 
-    /**
+    /***
      * Returns the module path
+     *
+     * @method getModulePath
+     * @memberof ModuleController
      * @returns {String}
      * @public
      */
@@ -68,8 +73,11 @@ ModuleController.prototype = {
         return this._path;
     },
 
-    /**
+    /***
      * Returns true if the module is currently waiting for load
+     *
+     * @method isModuleAvailable
+     * @memberof ModuleController
      * @returns {Boolean}
      * @public
      */
@@ -77,8 +85,11 @@ ModuleController.prototype = {
         return this._agent.allowsActivation() && !this._module;
     },
 
-	/**
+	/***
 	 * Returns true if module is currently active and loaded
+     *
+     * @method isModuleActive
+     * @memberof ModuleController
 	 * @returns {Boolean}
 	 * @public
 	 */
@@ -86,9 +97,12 @@ ModuleController.prototype = {
 		return this._module !== null;
 	},
 
-    /**
+    /***
      * Checks if it wraps a module with the supplied path
-     * @param {String} path - path of module to test for
+     *
+     * @method wrapsModuleWithPath
+     * @memberof ModuleController
+     * @param {String} path - Path of module to test for.
      * @return {Boolean}
      * @public
      */
@@ -346,11 +360,14 @@ ModuleController.prototype = {
 
     },
 
-	/**
-	 * Executes a methods on the wrapped module
-	 * @param {String} method - method key
-	 * @param {Array} [params] - optional array containing the method parameters
-	 * @return {Object} containing response of executed method and a status code
+	/***
+	 * Executes a methods on the wrapped module.
+     *
+     * @method execute
+     * @memberof ModuleController
+	 * @param {String} method - Method name.
+	 * @param {Array=} params - Array containing the method parameters.
+	 * @return {Object} response - containing return of executed method and a status code
 	 * @public
 	 */
 	execute:function(method,params) {

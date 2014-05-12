@@ -4,7 +4,10 @@ var NodeController = (function(){
     var _filterIsAvailableModule = function(item){return item.isModuleAvailable();};
     var _mapModuleToPath = function(item){return item.getModulePath();};
 
-    /**
+    /***
+     * For each element found having a `data-module` attribute an object of type NodeController is made. The node object can then be queried for the [ModuleControllers](#modulecontroller) it contains.
+     *
+     * @exports NodeController
      * @class
      * @constructor
      * @param {Object} element
@@ -49,7 +52,7 @@ var NodeController = (function(){
     exports.prototype = {
 
         /**
-         * Loads the passed module controllers to the node
+         * Loads the passed ModuleControllers to the node
          * @param {Array} moduleControllers
          * @public
          */
@@ -127,19 +130,26 @@ var NodeController = (function(){
             return this._priority;
         },
 
-        /**
+        /***
          * Returns the element linked to this node
+         *
+         * @method getElement
+         * @memberof NodeController
+         * @returns {Element} element - A reference to the element wrapped by this NodeController
          * @public
          */
         getElement:function() {
             return this._element;
         },
 
-        /**
-         * Public method to check if the module matches the given query
-         * @param {String} selector - CSS selector to match module to
-         * @param {Document|Element} [context] - Context to search in
-         * @return {Boolean}
+        /***
+         * Tests if the element contained in the NodeController object matches the supplied CSS selector.
+         *
+         * @method matchesSelector
+         * @memberof NodeController
+         * @param {String} selector - CSS selector to match element to.
+         * @param {Element=} context - Context to search in.
+         * @return {Boolean} match - Result of matchs
          * @public
          */
         matchesSelector:function(selector,context) {
@@ -149,37 +159,50 @@ var NodeController = (function(){
             return matchesSelector(this._element,selector,context);
         },
 
-        /**
-         * Returns true if all module controllers are active
+        /***
+         * Returns true if all [ModuleControllers](#modulecontroller) are active
+         *
+         * @method areAllModulesActive
+         * @memberof NodeController
+         * @returns {Boolean} state - All modules loaded state
          * @public
          */
         areAllModulesActive:function() {
             return this.getActiveModules().length === this._moduleControllers.length;
         },
 
-        /**
-         * Returns an array containing all active module controllers
-         * @return {Array}
+        /***
+         * Returns an array containing all active [ModuleControllers](#modulecontroller)
+         *
+         * @method getActiveModules
+         * @memberof NodeController
+         * @returns {Array} modules - An Array of active ModuleControllers
          * @public
          */
         getActiveModules:function() {
             return this._moduleControllers.filter(_filterIsActiveModule);
         },
 
-        /**
-         * Returns the first ModuleController matching the given path
-         * @param {String} [path] - module id
-         * @return {ModuleController|null}
+        /***
+         * Returns the first [ModuleController](#modulecontroller) matching the given path
+         *
+         * @method getModule
+         * @memberof NodeController
+         * @param {String=} path - The module id to search for.
+         * @returns {(ModuleController|null)} module - A [ModuleController](#modulecontroller) or null if none found
          * @public
          */
         getModule:function(path) {
             return this._getModules(path,true);
         },
 
-        /**
-         * Returns an array of ModuleControllers matching the given path
-         * @param {String} [path] to module
-         * @return {Array}
+        /***
+         * Returns an Array of [ModuleControllers](#modulecontroller) matching the given path
+         *
+         * @method getModules
+         * @memberof NodeController
+         * @param {String=} path - The module id to search for.
+         * @returns {Array} modules - An Array of [ModuleControllers](#modulecontroller)
          * @public
          */
         getModules:function(path) {
@@ -187,10 +210,11 @@ var NodeController = (function(){
         },
 
         /**
-         * Returns one or multiple ModuleControllers matching the supplied path
-         * @param {String} [path] - Optional path to match the nodes to
-         * @param {Boolean} [singleResult] - Optional boolean to only ask for one result
-         * @returns {Array|ModuleController|null}
+         * Returns one or multiple [ModuleControllers](#modulecontroller) matching the supplied path
+         *
+         * @param {String=} path - Path to match the nodes to
+         * @param {Boolean=} singleResult - Boolean to only ask for one result
+         * @returns {(Array|ModuleController|null)}
          * @private
          */
         _getModules:function(path,singleResult) {
@@ -218,11 +242,14 @@ var NodeController = (function(){
             return singleResult ? null : results;
         },
 
-        /**
-         * Public method for safely attempting method execution on modules
-         * @param {String} method - method key
-         * @param {Array} [params] - array containing the method parameters
-         * @return [Array] returns object containing status code and possible response data
+        /***
+         * Safely tries to executes a method on the currently active Module. Always returns an object containing a status code and a response data property.
+         *
+         * @method execute
+         * @memberof NodeController
+         * @param {String} method - Method name.
+         * @param {Array=} params - Array containing the method parameters.
+         * @returns {Array} results - An object containing status code and possible response data.
          * @public
          */
         execute:function(method,params) {
