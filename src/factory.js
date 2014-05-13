@@ -50,7 +50,7 @@
         _moduleLoader =  new ModuleLoader();
 
         /***
-         * Call [init()](#conditioner-init) on the conditioner object to start loading the referenced modules in the HTML document. Once this is done the conditioner will return the nodes it found as an Array and will initialize them automatically once they are ready.
+         * Call `[init](#conditioner-init)` on the `conditioner` object to start loading the referenced modules in the HTML document. Once this is done the conditioner will return the nodes it found as an Array and will initialize them automatically once they are ready.
          *
          * Each node is wrapped in a [NodeController](#nodecontroller) which contains one or more [ModuleControllers](#modulecontroller).
          *
@@ -60,6 +60,14 @@
 
             /***
              * Call this method to start parsing the document for modules. Conditioner will initialize all found modules and return an Array containing the newly found nodes.
+             *
+             * ```js
+             * require(['conditioner'],function(conditioner){
+             *
+             *     conditioner.init();
+             *
+             * });
+             * ```
              *
              * @method init
              * @memberof Conditioner
@@ -76,9 +84,86 @@
                 return _moduleLoader.parse(doc);
 
             },
-
+/*
+ {
+ 'paths':{
+ 'monitors':'./monitors/'
+ },
+ 'attr':{
+ 'options':'data-options',
+ 'module':'data-module',
+ 'conditions':'data-conditions',
+ 'priority':'data-priority',
+ 'initialized':'data-initialized',
+ 'processed':'data-processed',
+ 'loading':'data-loading'
+ },
+ 'loader':{
+ 'require':function(paths,callback){
+ require(paths,callback);
+ },
+ 'config':function(path,options){
+ var config = {};
+ config[path] = options;
+ requirejs.config({
+ config:config
+ });
+ },
+ 'toUrl':function(path) {
+ return requirejs.toUrl(path);
+ }
+ },
+ 'modules':{}
+ }
+ */
             /***
              * Allows defining page level Module options, shortcuts to modules, and overrides for conditioners inner workings.
+             *
+             * Default options object.
+             * ```js
+             * require(['conditioner'],function(conditioner){
+             *
+             *     conditioner.setOptions({
+             *
+             *         // Page level module options
+             *         modules:{},
+             *
+             *         // Path overrides
+             *         paths:{
+             *             monitors:'./monitors/'
+             *         },
+             *
+             *         // Attribute overrides
+             *         attr:{
+             *             options:'data-options',
+             *             module:'data-module',
+             *             conditions:'data-conditions',
+             *             priority:'data-priority',
+             *             initialized:'data-initialized',
+             *             processed:'data-processed',
+             *             loading:'data-loading'
+             *         },
+             *
+             *         // AMD loader overrides
+             *         loader:{
+             *             require:function(paths,callback){
+             *                 require(paths,callback)
+             *             },
+             *             config:function(path,options){
+             *                 var config = {};
+             *                 config[path] = options;
+             *                 requirejs.config({
+             *                     config:config
+             *                 });
+             *             },
+             *             toUrl:function(path){
+             *                 return requirejs.toUrl(path)
+             *             }
+             *         }
+             *     });
+             *
+             * });
+             * ```
              *
              * @method setOptions
              * @memberof Conditioner
@@ -150,15 +235,26 @@
 
             /***
              * Creates a [NodeController](#nodecontroller) based on the passed element and set of controllers.
-             *     [
+             *
+             * ```js
+             * require(['conditioner'],function(conditioner){
+             *
+             *     // find a suitable element
+             *     var foo = document.getElementById('foo');
+             *
+             *     // load Clock module to foo element
+             *     conditioner.load(foo,[
              *         {
-             *             path: 'path/to/module',
-             *             conditions: 'foo:{bar}',
+             *             path: 'ui/Clock',
+             *             conditions: 'media:{(min-width:30em)}',
              *             options: {
-             *                 foo: 'bar'
+             *                 time:false
              *             }
              *         }
-             *     ]
+             *     ]);
+             *
+             * });
+             * ```
              *
              * @method load
              * @memberof Conditioner
@@ -174,6 +270,37 @@
 
             /***
              * Wraps the supplied controllers in a [SyncedControllerGroup](#syncedcontrollergroup) which will fire a load event when all of the supplied modules have loaded.
+             *
+             * ```js
+             * require(['conditioner','Observer'],function(conditioner,Observer){
+             *
+             *     // Find period element on the page
+             *     var periodElement = document.querySelector('.peroid');
+             *
+             *     // Initialize all datepicker modules
+             *     // within the period element
+             *     var datePickerNodes = conditioner.parse(periodElement);
+             *
+             *     // Synchronize load events, we only want to work
+             *     // with these modules if they are all loaded
+             *     var syncGroup = conditioner.sync(datePickerNodes);
+             *
+             *     // Wait for load event to fire
+             *     Observer.subscribe(syncGroup,'load',function(nodes){
+             *
+             *         // All modules now loaded
+             *
+             *     });
+             *
+             *     // Also listen for unload event
+             *     Observer.subscribe(syncGroup,'unload',function(nodes){
+             *
+             *         // One of the modules has unloaded
+             *
+             *     });
+             *
+             * });
+             * ```
              *
              * @method sync
              * @memberof Conditioner
@@ -212,7 +339,7 @@
              *
              * @method getNodes
              * @memberof Conditioner
-             * @param {String=} selector - Optional selector to match the nodes to.
+             * @param {String=} selector - Selector to match the nodes to.
              * @param {Element=} context - Context to search in.
              * @returns {Array} nodes -  Array containing matched nodes or empty .
 Array
@@ -298,7 +425,7 @@ Array
             },
 
             /***
-             * Returns multiple [ModuleControllers](#modulecontroller) matching the given path within the supplied context.
+             * Returns all [ModuleControllers](#modulecontroller) matching the given path within the supplied context.
              *
              * @method getModules
              * @memberof Conditioner
@@ -322,7 +449,21 @@ Array
             },
 
             /***
-             * Manually test an expression, only returns once with a `true` or `false` state
+             * Manually test an expression, only returns once via promise with a `true` or `false` state
+             *
+             * ```js
+             * require(['conditioner'],function(conditioner){
+             *
+             *     // Test if supplied condition is valid
+             *     conditioner.is('window:{min-width:500}').then(function(state){
+             *
+             *         // State equals true if window has a
+             *         // minimum width of 500 pixels.
+             *
+             *     });
+             *
+             * });
+             * ```
              *
              * @method is
              * @memberof Conditioner
@@ -350,11 +491,28 @@ Array
             /***
              * Manually test an expression, bind a callback method to be executed once something changes.
              *
+             * ```js
+             * require(['conditioner'],function(conditioner){
+             *
+             *     // Test if supplied condition is valid
+             *     conditioner.on('window:{min-width:500}',function(state){
+             *
+             *         // State equals true if window a
+             *         // has minimum width of 500 pixels.
+             *
+             *         // If the window is resized this method
+             *         // is called with the new state.
+             *
+             *     });
+             *
+             * });
+             * ```
+             *
              * @method on
              * @memberof Conditioner
              * @param {String} condition - Expression to test.
              * @param {(Element|Function)=} element - Optional element to run the test on.
-             * @param {Function=} change - Callback method.
+             * @param {Function=} callback - Callback method.
              */
             on:function(condition,element,callback) {
 
@@ -371,6 +529,7 @@ Array
                 WebContext.test(condition,element,function(valid){
                     callback(valid);
                 });
+
             }
 
         };

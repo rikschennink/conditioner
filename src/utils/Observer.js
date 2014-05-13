@@ -38,6 +38,15 @@
         /***
          * Subscribe to an event
          *
+         * ```js
+         * Observer.subscribe(foo,'load',function bar(){
+         *
+         *     // bar function is called when the foo object
+         *     // publishes the load event
+         *
+         * });
+         * ```
+         *
          * @method subscribe
          * @memberof Observer
          * @param {Object} obj - Object to subscribe to.
@@ -65,6 +74,11 @@
         /***
          * Unsubscribe from further notifications
          *
+         * ```js
+         * // Remove the bar function from foo object.
+         * Observer.unsubscribe(foo,'load',bar);
+         * ```
+         *
          * @method unsubscribe
          * @memberof Observer
          * @param {Object} obj - Object to unsubscribe from.
@@ -88,7 +102,12 @@
         },
 
         /***
-         * Publishes an event async
+         * Publishes an async event. This means other waiting (synchronous) code is executed first before the event is published.
+         *
+         * ```js
+         * // Publishes a load event on the foo object. But does it async.
+         * Observer.publishAsync(foo,'load');
+         * ```
          *
          * @method publishAsync
          * @memberof Observer
@@ -107,6 +126,11 @@
 
         /***
          * Publish an event
+         *
+         * ```js
+         * // Publishes a load event on the foo object.
+         * Observer.publish(foo,'load');
+         * ```
          *
          * @method publish
          * @memberof Observer
@@ -148,6 +172,11 @@
         /***
          * Setup propagation target for events so they can bubble up the object tree.
          *
+         * ```js
+         * // When foo publishes its load event baz will republish it.
+         * Observer.inform(foo,baz);
+         * ```
+         *
          * @method inform
          * @memberof Observer
          * @param {Object} informant - Object to set as origin. Events from this object will also be published on receiver.
@@ -169,6 +198,11 @@
 
         /***
          * Remove propagation target
+         *
+         * ```js
+         * // Baz will no longer republish events from foo.
+         * Observer.conceal(foo,baz);
+         * ```
          *
          * @memberof Observer
          * @param {Object} informant - Object previously set as origin.
