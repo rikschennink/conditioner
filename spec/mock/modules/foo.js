@@ -11,7 +11,13 @@ define(['../../lib/utils/Observer'],function(Observer){
     };
 
     exports.options = {
-        'foo':1
+        'foo':1,
+        'level':{
+            'a':'default',
+            'b':[0,1,2,3],
+            'c':'base',
+            'd':1.1
+        }
     };
 
     exports.prototype = {

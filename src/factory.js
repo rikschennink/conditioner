@@ -84,42 +84,11 @@
                 return _moduleLoader.parse(doc);
 
             },
-/*
- {
- 'paths':{
- 'monitors':'./monitors/'
- },
- 'attr':{
- 'options':'data-options',
- 'module':'data-module',
- 'conditions':'data-conditions',
- 'priority':'data-priority',
- 'initialized':'data-initialized',
- 'processed':'data-processed',
- 'loading':'data-loading'
- },
- 'loader':{
- 'require':function(paths,callback){
- require(paths,callback);
- },
- 'config':function(path,options){
- var config = {};
- config[path] = options;
- requirejs.config({
- config:config
- });
- },
- 'toUrl':function(path) {
- return requirejs.toUrl(path);
- }
- },
- 'modules':{}
- }
- */
+
             /***
              * Allows defining page level Module options, shortcuts to modules, and overrides for conditioners inner workings.
              *
-             * Default options object.
+             * Passing the default options object.
              * ```js
              * require(['conditioner'],function(conditioner){
              *

@@ -45,11 +45,11 @@ Conditioner expects an AMD loader to be available. It's been tested with [Requir
 
 If you're not into AMD and prefer [Browserify](http://browserify.org) that's fine too but keep in mind that your optimized file should contain all modules. If you want the best of both worlds you might be interested in [WebPack](http://webpack.github.io).
 
-* AMD Loader / CommonJS Processor
+* AMD Loader / CommonJS Preprocessor
 * Modern browser, IE8 is supported but requires a bit of shimming.
 
 ## Feedback, Comments, Critique
-[Contact me on Twitter](http://twitter.com/rikschennink)
+[Hit me on Twitter](http://twitter.com/rikschennink)
 
 ## License
 [MIT](http://www.opensource.org/licenses/mit-license.php)

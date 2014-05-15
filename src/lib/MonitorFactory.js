@@ -7,6 +7,9 @@ MonitorFactory.prototype = {
 
     /**
      * Parse expression to deduct test names and expected values
+     *
+     * Splits the expression on a comma and splits the resulting blocks at the semi-colon
+     *
      * @param {String} expression
      * @param {Boolean} isSingleTest - is true when only one test is defined, in that case only value can be returned
      * @returns {*}

@@ -92,7 +92,6 @@ define(function() {
 
             });
 
-
         });
 
         describe('.getNodes([selector,[context,[single]]])',function() {

@@ -114,6 +114,9 @@
 
             /**
              * Parse expression to deduct test names and expected values
+             *
+             * Splits the expression on a comma and splits the resulting blocks at the semi-colon
+             *
              * @param {String} expression
              * @param {Boolean} isSingleTest - is true when only one test is defined, in that case only value can be returned
              * @returns {*}
@@ -786,8 +789,8 @@
          * @constructor
          * @param {String} path - reference to module
          * @param {Element} element - reference to element
-         * @param {Object|null} [options] - options for this ModuleController
-         * @param {Object} [agent] - module activation agent
+         * @param {(Object|String)=} options - options for this ModuleController
+         * @param {Object=} agent - module activation agent
          */
         var ModuleController = function (path, element, options, agent) {
 
@@ -805,7 +808,7 @@
             this._element = element;
 
             // options for module controller
-            this._options = options || {};
+            this._options = options;
 
             // set loader
             this._agent = agent || StaticModuleAgent;
@@ -978,31 +981,114 @@
 
             },
 
-            /**
-             * Turns possible options string into options object
-             * @param {String|Object} options
-             * @returns {Object}
-             * @private
-             */
-            _optionsToObject: function (options) {
-                if (typeof options === 'string') {
-                    try {
-                        return JSON.parse(options);
-                    }
-                    catch (e) {
+            _applyOverrides: function (options, overrides) {
+
+                // test if object is string
+                if (typeof overrides === 'string') {
+
+                    // test if overrides is json string (is first char a '{'
+                    if (overrides.charCodeAt(0) == 123) {
                         // @ifdef DEV
-                        throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
+                        try {
+                            // @endif
+                            overrides = JSON.parse(overrides);
+                            // @ifdef DEV
+                        }
+                        catch (e) {
+                            throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
+                        }
                         // @endif
                     }
+                    else {
+                        // no json object, must be options string
+                        var i = 0,
+                            opts = overrides.split(', '),
+                            l = opts.length;
+                        for (; i < l; i++) {
+                            this._overrideObjectWithUri(options, opts[i]);
+                        }
+                        return options;
+                    }
+
                 }
-                return options;
+
+                // directly merge objects
+                return mergeObjects(options, overrides);
+            },
+
+            /**
+             * Overrides options in the passed object based on the uri string
+             *
+             * number
+             * foo:1
+             *
+             * string
+             * foo.bar:baz
+             *
+             * array
+             * foo.baz:1,2,3
+             *
+             * @param {Object} options - The options to override
+             * @param {String} uri - uri to override the options with
+             * @private
+             */
+            _overrideObjectWithUri: function (options, uri) {
+
+                var level = options,
+                    prop = '',
+                    i = 0,
+                    l = uri.length,
+                    c;
+                while (i < l) {
+                    c = uri.charCodeAt(i);
+                    if (c != 46 && c != 58) {
+                        prop += uri.charAt(i);
+                    }
+                    else {
+                        if (c == 58) {
+                            level[prop] = this._castValueToType(uri.substr(i + 1));
+                        }
+                        else {
+                            level = level[prop];
+                        }
+                        prop = '';
+                    }
+                    i++;
+                }
+
+            },
+
+            /**
+             * Parses the value and returns it in the right type
+             * @param value
+             * @returns {*}
+             * @private
+             */
+            _castValueToType: function (value) {
+                // if first character is a single quote
+                if (value.charCodeAt(0) == 39) {
+                    return value.substring(1, value.length - 1);
+                }
+                // if is a number
+                else if (!isNaN(value)) {
+                    return parseFloat(value);
+                }
+                // if is boolean
+                else if (value == 'true' || value == 'false') {
+                    return value === 'true';
+                }
+                // if is an array
+                else if (value.indexOf(',') !== -1) {
+                    return value.split(',').map(this._castValueToType);
+                }
+                return value;
             },
 
             /**
              * Parses options for given url and module also
              * @param {String} url - url to module
              * @param {Object} Module - Module definition
-             * @param {Object|String} overrides - page level options to override default options with
+             * @param {(Object|String)} overrides - page level options to override default options with
              * @returns {Object}
              * @private
              */
@@ -1041,7 +1127,7 @@
 
                 // apply overrides
                 if (overrides) {
-                    options = mergeObjects(options, this._optionsToObject(overrides));
+                    options = this._applyOverrides(options, overrides);
                 }
 
                 return options;
@@ -2024,42 +2110,11 @@
                 return _moduleLoader.parse(doc);
 
             },
-/*
- {
- 'paths':{
- 'monitors':'./monitors/'
- },
- 'attr':{
- 'options':'data-options',
- 'module':'data-module',
- 'conditions':'data-conditions',
- 'priority':'data-priority',
- 'initialized':'data-initialized',
- 'processed':'data-processed',
- 'loading':'data-loading'
- },
- 'loader':{
- 'require':function(paths,callback){
- require(paths,callback);
- },
- 'config':function(path,options){
- var config = {};
- config[path] = options;
- requirejs.config({
- config:config
- });
- },
- 'toUrl':function(path) {
- return requirejs.toUrl(path);
- }
- },
- 'modules':{}
- }
- */
+
             /***
              * Allows defining page level Module options, shortcuts to modules, and overrides for conditioners inner workings.
              *
-             * Default options object.
+             * Passing the default options object.
              * ```js
              * require(['conditioner'],function(conditioner){
              *

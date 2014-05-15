@@ -25,9 +25,9 @@
             });
 
         },
-        parse: function (expected) {
+        parse: function (value) {
             var results = [];
-            if (expected === 'supported') {
+            if (value === 'supported') {
                 results.push({
                     test: 'supported',
                     value: true
@@ -36,7 +36,7 @@
             else {
                 results.push({
                     test: 'query',
-                    value: expected
+                    value: value
                 });
             }
             return results;
