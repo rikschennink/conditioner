@@ -2,5 +2,5 @@ pygments: true
 safe: true
 rawurl: "https://raw.github.com/rikschennink/conditioner/master"
 url: "http://localhost:4000"
-version: 0.10.0
+version: 1.0.0
 exclude: [node_modules]
