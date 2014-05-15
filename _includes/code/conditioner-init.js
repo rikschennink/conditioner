@@ -1,3 +1,5 @@
-requirejs(['conditioner'],function(conditioner) {
+require(['conditioner'],function(conditioner) {
+
     conditioner.init();
+
 });

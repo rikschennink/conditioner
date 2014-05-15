@@ -1,0 +1,1461 @@
+<nav class="sub code">
+    <ul>
+        
+        <li>
+            <a href="#conditioner">Conditioner</a>
+        </li>
+        
+        <li>
+            <a href="#modulecontroller">ModuleController</a>
+        </li>
+        
+        <li>
+            <a href="#nodecontroller">NodeController</a>
+        </li>
+        
+        <li>
+            <a href="#observer">Observer</a>
+        </li>
+        
+        <li>
+            <a href="#syncedcontrollergroup">SyncedControllerGroup</a>
+        </li>
+        
+    </ul>
+</nav>
+
+
+<section>
+    <h3 id="conditioner">Conditioner</h3>
+
+    <p>Call <code>[init](#conditioner-init)</code> on the <code>conditioner</code> object to start loading the referenced modules in the HTML document. Once this is done the conditioner will return the nodes it found as an Array and will initialize them automatically once they are ready.</p>
+<p>Each node is wrapped in a <a href="#nodecontroller">NodeController</a> which contains one or more <a href="#modulecontroller">ModuleControllers</a>.</p>
+
+
+    
+    <table class="events">
+        <thead>
+        <tr>
+            <th>Event</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        
+        </tbody>
+    </table>
+    
+
+    
+    <nav class="sub code">
+        <ul>
+            
+            <li><a href="#conditioner-init">init</a> → Array</li>
+            
+            <li><a href="#conditioner-setoptions">setOptions</a></li>
+            
+            <li><a href="#conditioner-parse">parse</a> → Array</li>
+            
+            <li><a href="#conditioner-load">load</a> → NodeController | null</li>
+            
+            <li><a href="#conditioner-sync">sync</a> → SyncedControllerGroup</li>
+            
+            <li><a href="#conditioner-getnode">getNode</a> → NodeController | null</li>
+            
+            <li><a href="#conditioner-getnodes">getNodes</a> → Array</li>
+            
+            <li><a href="#conditioner-destroy">destroy</a> → Boolean</li>
+            
+            <li><a href="#conditioner-getmodule">getModule</a> → ModuleController | null</li>
+            
+            <li><a href="#conditioner-getmodules">getModules</a> → Array | null</li>
+            
+            <li><a href="#conditioner-is">is</a> → Promise</li>
+            
+            <li><a href="#conditioner-on">on</a></li>
+            
+        </ul>
+    </nav>
+    
+
+    
+    <section class="method">
+
+        <h4 id="conditioner-init">init([options])<span class="code"> → Array</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>options</th>
+                <td>Object</td>
+                <td><p>Options to override.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Call this method to start parsing the document for modules. Conditioner will initialize all found modules and return an Array containing the newly found nodes.</p>
+<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span>{</span>
+
+    conditioner.init();
+
+});
+</code></pre>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="conditioner-setoptions">setOptions(options)</h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>options</th>
+                <td>Object</td>
+                <td><p>Options to override.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Allows defining page level Module options, shortcuts to modules, and overrides for conditioners inner workings.</p>
+<p>Passing the default options object.</p>
+<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span>{</span>
+
+    conditioner.setOptions({
+
+        <span class="hljs-comment">// Page level module options</span>
+        modules:{},
+
+        <span class="hljs-comment">// Path overrides</span>
+        paths:{
+            monitors:<span class="hljs-string">'./monitors/'</span>
+        },
+
+        <span class="hljs-comment">// Attribute overrides</span>
+        attr:{
+            options:<span class="hljs-string">'data-options'</span>,
+            module:<span class="hljs-string">'data-module'</span>,
+            conditions:<span class="hljs-string">'data-conditions'</span>,
+            priority:<span class="hljs-string">'data-priority'</span>,
+            initialized:<span class="hljs-string">'data-initialized'</span>,
+            processed:<span class="hljs-string">'data-processed'</span>,
+            loading:<span class="hljs-string">'data-loading'</span>
+        },
+
+        <span class="hljs-comment">// AMD loader overrides</span>
+        loader:{
+            <span class="hljs-built_in">require</span>:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(paths,callback)</span>{</span>
+                <span class="hljs-built_in">require</span>(paths,callback)
+            },
+            config:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(path,options)</span>{</span>
+                <span class="hljs-keyword">var</span> config = {};
+                config[path] = options;
+                requirejs.config({
+                    config:config
+                });
+            },
+            toUrl:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(path)</span>{</span>
+                <span class="hljs-keyword">return</span> requirejs.toUrl(path)
+            }
+        }
+    });
+
+});
+</code></pre>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="conditioner-parse">parse(context)<span class="code"> → Array</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>context</th>
+                <td>Element</td>
+                <td><p>Context to find modules in.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Finds and loads all Modules defined on child elements of the supplied context. Returns an Array of found Nodes.</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="conditioner-load">load(element, controllers)<span class="code"> → NodeController | null</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>element</th>
+                <td>Element</td>
+                <td><p>Element to bind the controllers to.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>controllers</th>
+                <td>Array,ModuleController</td>
+                <td><p><a href="#modulecontroller">ModuleController</a> configurations.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Creates a <a href="#nodecontroller">NodeController</a> based on the passed element and set of controllers.</p>
+<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span>{</span>
+
+    <span class="hljs-comment">// find a suitable element</span>
+    <span class="hljs-keyword">var</span> foo = document.getElementById(<span class="hljs-string">'foo'</span>);
+
+    <span class="hljs-comment">// load Clock module to foo element</span>
+    conditioner.load(foo,[
+        {
+            path: <span class="hljs-string">'ui/Clock'</span>,
+            conditions: <span class="hljs-string">'media:{(min-width:30em)}'</span>,
+            options: {
+                time:<span class="hljs-literal">false</span>
+            }
+        }
+    ]);
+
+});
+</code></pre>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="conditioner-sync">sync(arguments)<span class="code"> → SyncedControllerGroup</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>arguments</th>
+                <td>ModuleController,NodeController</td>
+                <td><p>List of <a href="#modulecontroller">ModuleControllers</a> or <a href="#nodecontroller">NodeControllers</a> to synchronize.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Wraps the supplied controllers in a <a href="#syncedcontrollergroup">SyncedControllerGroup</a> which will fire a load event when all of the supplied modules have loaded.</p>
+<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>,<span class="hljs-string">'Observer'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner,Observer)</span>{</span>
+
+    <span class="hljs-comment">// Find period element on the page</span>
+    <span class="hljs-keyword">var</span> periodElement = document.querySelector(<span class="hljs-string">'.peroid'</span>);
+
+    <span class="hljs-comment">// Initialize all datepicker modules</span>
+    <span class="hljs-comment">// within the period element</span>
+    <span class="hljs-keyword">var</span> datePickerNodes = conditioner.parse(periodElement);
+
+    <span class="hljs-comment">// Synchronize load events, we only want to work</span>
+    <span class="hljs-comment">// with these modules if they are all loaded</span>
+    <span class="hljs-keyword">var</span> syncGroup = conditioner.sync(datePickerNodes);
+
+    <span class="hljs-comment">// Wait for load event to fire</span>
+    Observer.subscribe(syncGroup,<span class="hljs-string">'load'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(nodes)</span>{</span>
+
+        <span class="hljs-comment">// All modules now loaded</span>
+
+    });
+
+    <span class="hljs-comment">// Also listen for unload event</span>
+    Observer.subscribe(syncGroup,<span class="hljs-string">'unload'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(nodes)</span>{</span>
+
+        <span class="hljs-comment">// One of the modules has unloaded</span>
+
+    });
+
+});
+</code></pre>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="conditioner-getnode">getNode([selector], [context])<span class="code"> → NodeController | null</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>selector</th>
+                <td>String</td>
+                <td><p>Selector to match the nodes to.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>context</th>
+                <td>Element</td>
+                <td><p>Context to search in.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Returns the first <a href="#nodecontroller">NodeController</a> matching the given selector within the passed context</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="conditioner-getnodes">getNodes([selector], [context])<span class="code"> → Array</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>selector</th>
+                <td>String</td>
+                <td><p>Selector to match the nodes to.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>context</th>
+                <td>Element</td>
+                <td><p>Context to search in.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Returns all <a href="#nodecontroller">NodeControllers</a> matching the given selector with the passed context</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="conditioner-destroy">destroy(arguments)<span class="code"> → Boolean</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>arguments</th>
+                <td>NodeController,String,Array</td>
+                <td><p>Destroy a single node controller, matched elements or an Array of NodeControllers.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Destroy matched <a href="#nodecontroller">NodeControllers</a> based on the supplied parameters.</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="conditioner-getmodule">getModule([path], [selector], [context])<span class="code"> → ModuleController | null</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>path</th>
+                <td>String</td>
+                <td><p>Path to match the modules to.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>selector</th>
+                <td>String</td>
+                <td><p>Selector to match the nodes to.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>context</th>
+                <td>Element</td>
+                <td><p>Context to search in.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Returns the first <a href="#modulecontroller">ModuleController</a> matching the given selector within the supplied context.</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="conditioner-getmodules">getModules([path], [selector], [context])<span class="code"> → Array | null</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>path</th>
+                <td>String</td>
+                <td><p>Path to match the modules to</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>selector</th>
+                <td>String</td>
+                <td><p>Selector to match the nodes to</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>context</th>
+                <td>Element</td>
+                <td><p>Context to search in</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Returns all <a href="#modulecontroller">ModuleControllers</a> matching the given path within the supplied context.</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="conditioner-is">is(condition, [element])<span class="code"> → Promise</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>condition</th>
+                <td>String</td>
+                <td><p>Expression to test.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>element</th>
+                <td>Element</td>
+                <td><p>Element to run the test on.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Manually test an expression, only returns once via promise with a <code>true</code> or <code>false</code> state</p>
+<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span>{</span>
+
+    <span class="hljs-comment">// Test if supplied condition is valid</span>
+    conditioner.is(<span class="hljs-string">'window:{min-width:500}'</span>).then(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(state)</span>{</span>
+
+        <span class="hljs-comment">// State equals true if window has a</span>
+        <span class="hljs-comment">// minimum width of 500 pixels.</span>
+
+    });
+
+});
+</code></pre>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="conditioner-on">on(condition, [element], [callback])</h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>condition</th>
+                <td>String</td>
+                <td><p>Expression to test.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>element</th>
+                <td>Element,Function</td>
+                <td><p>Optional element to run the test on.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>callback</th>
+                <td>Function</td>
+                <td><p>Callback method.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Manually test an expression, bind a callback method to be executed once something changes.</p>
+<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span>{</span>
+
+    <span class="hljs-comment">// Test if supplied condition is valid</span>
+    conditioner.on(<span class="hljs-string">'window:{min-width:500}'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(state)</span>{</span>
+
+        <span class="hljs-comment">// State equals true if window a</span>
+        <span class="hljs-comment">// has minimum width of 500 pixels.</span>
+
+        <span class="hljs-comment">// If the window is resized this method</span>
+        <span class="hljs-comment">// is called with the new state.</span>
+
+    });
+
+});
+</code></pre>
+
+
+    </section>
+    
+
+</section>
+
+<section>
+    <h3 id="modulecontroller">ModuleController</h3>
+
+    <p>The ModuleController loads and unloads the contained Module based on the conditions received. It propagates events from the contained Module so you can safely subscribe to them.</p>
+
+
+    
+    <table class="events">
+        <thead>
+        <tr>
+            <th>Event</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        
+        </tbody>
+    </table>
+    
+
+    
+    <nav class="sub code">
+        <ul>
+            
+            <li><a href="#modulecontroller-getmodulepath">getModulePath</a> → String</li>
+            
+            <li><a href="#modulecontroller-ismoduleavailable">isModuleAvailable</a> → Boolean</li>
+            
+            <li><a href="#modulecontroller-ismoduleactive">isModuleActive</a> → Boolean</li>
+            
+            <li><a href="#modulecontroller-wrapsmodulewithpath">wrapsModuleWithPath</a></li>
+            
+            <li><a href="#modulecontroller-execute">execute</a></li>
+            
+        </ul>
+    </nav>
+    
+
+    
+    <section class="method">
+
+        <h4 id="modulecontroller-getmodulepath">getModulePath()<span class="code"> → String</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Returns the module path</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="modulecontroller-ismoduleavailable">isModuleAvailable()<span class="code"> → Boolean</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Returns true if the module is currently waiting for load</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="modulecontroller-ismoduleactive">isModuleActive()<span class="code"> → Boolean</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Returns true if module is currently active and loaded</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="modulecontroller-wrapsmodulewithpath">wrapsModuleWithPath(path)</h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>path</th>
+                <td>String</td>
+                <td><p>Path of module to test for.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Checks if it wraps a module with the supplied path</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="modulecontroller-execute">execute(method, [params])</h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>method</th>
+                <td>String</td>
+                <td><p>Method name.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>params</th>
+                <td>Array</td>
+                <td><p>Array containing the method parameters.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Executes a methods on the wrapped module.</p>
+
+
+    </section>
+    
+
+</section>
+
+<section>
+    <h3 id="nodecontroller">NodeController</h3>
+
+    <p>For each element found having a <code>data-module</code> attribute an object of type NodeController is made. The node object can then be queried for the <a href="#modulecontroller">ModuleControllers</a> it contains.</p>
+
+
+    
+    <table class="events">
+        <thead>
+        <tr>
+            <th>Event</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        
+        </tbody>
+    </table>
+    
+
+    
+    <nav class="sub code">
+        <ul>
+            
+            <li><a href="#nodecontroller-getelement">getElement</a> → Element</li>
+            
+            <li><a href="#nodecontroller-matchesselector">matchesSelector</a></li>
+            
+            <li><a href="#nodecontroller-areallmodulesactive">areAllModulesActive</a> → Boolean</li>
+            
+            <li><a href="#nodecontroller-getactivemodules">getActiveModules</a> → Array</li>
+            
+            <li><a href="#nodecontroller-getmodule">getModule</a> → ModuleController | null</li>
+            
+            <li><a href="#nodecontroller-getmodules">getModules</a> → Array</li>
+            
+            <li><a href="#nodecontroller-execute">execute</a> → Array</li>
+            
+        </ul>
+    </nav>
+    
+
+    
+    <section class="method">
+
+        <h4 id="nodecontroller-getelement">getElement()<span class="code"> → Element</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Returns the element linked to this node</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="nodecontroller-matchesselector">matchesSelector(selector, [context])</h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>selector</th>
+                <td>String</td>
+                <td><p>CSS selector to match element to.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>context</th>
+                <td>Element</td>
+                <td><p>Context to search in.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Tests if the element contained in the NodeController object matches the supplied CSS selector.</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="nodecontroller-areallmodulesactive">areAllModulesActive()<span class="code"> → Boolean</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Returns true if all <a href="#modulecontroller">ModuleControllers</a> are active</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="nodecontroller-getactivemodules">getActiveModules()<span class="code"> → Array</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Returns an array containing all active <a href="#modulecontroller">ModuleControllers</a></p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="nodecontroller-getmodule">getModule([path])<span class="code"> → ModuleController | null</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>path</th>
+                <td>String</td>
+                <td><p>The module id to search for.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Returns the first <a href="#modulecontroller">ModuleController</a> matching the given path</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="nodecontroller-getmodules">getModules([path])<span class="code"> → Array</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>path</th>
+                <td>String</td>
+                <td><p>The module id to search for.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Returns an Array of <a href="#modulecontroller">ModuleControllers</a> matching the given path</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="nodecontroller-execute">execute(method, [params])<span class="code"> → Array</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>method</th>
+                <td>String</td>
+                <td><p>Method name.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>params</th>
+                <td>Array</td>
+                <td><p>Array containing the method parameters.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Safely tries to executes a method on the currently active Module. Always returns an object containing a status code and a response data property.</p>
+
+
+    </section>
+    
+
+</section>
+
+<section>
+    <h3 id="observer">Observer</h3>
+
+    
+
+    
+    <table class="events">
+        <thead>
+        <tr>
+            <th>Event</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        
+        </tbody>
+    </table>
+    
+
+    
+    <nav class="sub code">
+        <ul>
+            
+            <li><a href="#observer-subscribe">subscribe</a></li>
+            
+            <li><a href="#observer-unsubscribe">unsubscribe</a></li>
+            
+            <li><a href="#observer-publishasync">publishAsync</a></li>
+            
+            <li><a href="#observer-publish">publish</a></li>
+            
+            <li><a href="#observer-inform">inform</a></li>
+            
+        </ul>
+    </nav>
+    
+
+    
+    <section class="method">
+
+        <h4 id="observer-subscribe">subscribe(obj, type, fn)</h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>obj</th>
+                <td>Object</td>
+                <td><p>Object to subscribe to.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>type</th>
+                <td>String</td>
+                <td><p>Event type to listen for.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>fn</th>
+                <td>Function</td>
+                <td><p>Function to call when event published.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Subscribe to an event</p>
+<pre><code class="lang-js">Observer.subscribe(foo,<span class="hljs-string">'load'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bar</span><span class="hljs-params">()</span>{</span>
+
+    <span class="hljs-comment">// bar function is called when the foo object</span>
+    <span class="hljs-comment">// publishes the load event</span>
+
+});
+</code></pre>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="observer-unsubscribe">unsubscribe(obj, type, fn)</h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>obj</th>
+                <td>Object</td>
+                <td><p>Object to unsubscribe from.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>type</th>
+                <td>String</td>
+                <td><p>Event type to match.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>fn</th>
+                <td>Function</td>
+                <td><p>Function to match.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Unsubscribe from further notifications</p>
+<pre><code class="lang-js"><span class="hljs-comment">// Remove the bar function from foo object.</span>
+Observer.unsubscribe(foo,<span class="hljs-string">'load'</span>,bar);
+</code></pre>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="observer-publishasync">publishAsync(obj, type, [data])</h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>obj</th>
+                <td>Object</td>
+                <td><p>Object to fire the event on.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>type</th>
+                <td>String</td>
+                <td><p>Event type to fire.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>data</th>
+                <td>Object</td>
+                <td><p>Data carrier.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Publishes an async event. This means other waiting (synchronous) code is executed first before the event is published.</p>
+<pre><code class="lang-js"><span class="hljs-comment">// Publishes a load event on the foo object. But does it async.</span>
+Observer.publishAsync(foo,<span class="hljs-string">'load'</span>);
+</code></pre>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="observer-publish">publish(obj, type, [data])</h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>obj</th>
+                <td>Object</td>
+                <td><p>Object to fire the event on.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>type</th>
+                <td>String</td>
+                <td><p>Event type to fire.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>data</th>
+                <td>Object</td>
+                <td><p>Data carrier.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Publish an event</p>
+<pre><code class="lang-js"><span class="hljs-comment">// Publishes a load event on the foo object.</span>
+Observer.publish(foo,<span class="hljs-string">'load'</span>);
+</code></pre>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="observer-inform">inform(informant, receiver)</h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            <tr>
+                <th>informant</th>
+                <td>Object</td>
+                <td><p>Object to set as origin. Events from this object will also be published on receiver.</p>
+</td>
+            </tr>
+            
+            <tr>
+                <th>receiver</th>
+                <td>Object</td>
+                <td><p>Object to set as target.</p>
+</td>
+            </tr>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Setup propagation target for events so they can bubble up the object tree.</p>
+<pre><code class="lang-js"><span class="hljs-comment">// When foo publishes its load event baz will republish it.</span>
+Observer.inform(foo,baz);
+</code></pre>
+
+
+    </section>
+    
+
+</section>
+
+<section>
+    <h3 id="syncedcontrollergroup">SyncedControllerGroup</h3>
+
+    
+
+    
+    <table class="events">
+        <thead>
+        <tr>
+            <th>Event</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        
+        <tr>
+            <th>load</th>
+            <td><p>Fires a load event when all controllers have indicated they have loaded and we have not loaded yet</p>
+</td>
+        </tr>
+        
+        <tr>
+            <th>unload</th>
+            <td><p>Fires an unload event once we are in loaded state and one of the controllers unloads</p>
+</td>
+        </tr>
+        
+        </tbody>
+    </table>
+    
+
+    
+    <nav class="sub code">
+        <ul>
+            
+            <li><a href="#syncedcontrollergroup-destroy">destroy</a></li>
+            
+            <li><a href="#syncedcontrollergroup-areallmodulesactive">areAllModulesActive</a> → Boolean</li>
+            
+        </ul>
+    </nav>
+    
+
+    
+    <section class="method">
+
+        <h4 id="syncedcontrollergroup-destroy">destroy()</h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Destroy sync group, stops listening and cleans up</p>
+
+
+    </section>
+    
+    <section class="method">
+
+        <h4 id="syncedcontrollergroup-areallmodulesactive">areAllModulesActive()<span class="code"> → Boolean</span></h4>
+
+        
+        <table class="params">
+            <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+        
+
+        <p>Returns true if all modules have loaded</p>
+
+
+    </section>
+    
+
+</section>

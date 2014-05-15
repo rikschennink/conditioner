@@ -1,34 +1,21 @@
 define(function(){
 
-    /**
-     * Export an object literal
-     */
-    var exports = {
+    return {
 
-        /**
-         * Default options object (optional)
-         */
+        // load method, required when no constructor available
+        load:function(element,options) {
+
+        },
+
+        // options (optional)
         options:{
             'foo':'bar'
         },
 
-        /**
-         * Called by Conditioner to load the module
-         * @param {Element} element
-         * @param {Object} options
-         * @returns {Object}
-         */
-        load:function(element,options) {
-            // setup
-        },
-
-        /**
-         * Called by Conditioner to unload the module
-         */
+        // unload (optional)
         unload:function() {
-            // restore
+
         }
     };
 
-    return exports;
 });

@@ -13,8 +13,8 @@ title: Conditioner.js &bull; Frizz free, environment-aware, javascript modules.
         <li><a href="#example">Example</a></li>
         <li><a href="#requirements">Requirements</a></li>
         <li><a href="#download">Download</a></li>
-        <li><a href="#documentation">Documentation</a></li>
         <li><a href="#examples">Examples</a></li>
+        <li><a href="#documentation">Documentation</a></li>
         <li><a href="#license">License</a></li>
     </ul>
 </nav>
@@ -72,7 +72,11 @@ conditioner.init();
 
     <h2>Requirements</h2>
 
-    <p>Conditioner is based on RequireJS so you'll need RequireJS to make it fly. RequireJS is awesome at what it does, to not leverage that awesomeness and write a module loader of our own would just be silly. <a href="http://requirejs.org" title="RequireJS - A JavaScript Module Loader" target="_blank">Get RequireJS</a></p>
+    <p>Conditioner expects an AMD loader to be available. It's been tested with <a href="http://requirejs.org" target="_blank">RequireJS</a>,
+        <a href="https://github.com/jrburke/almond" target="_blank">Almond</a> and <a href="https://github.com/cujojs/curl" target="_blank">Curl</a>. As long as your AMD loader follows the
+        <a href="https://github.com/amdjs/amdjs-api" target="_blank">AMD spec</a> it should be fine.</p>
+
+    <p>If you're not "into" AMD and prefer <a href="http://browserify.org" target="_blank">Browserify</a> that's fine too but keep in mind that your optimized/minimized file should contain all modules. If you want the best of both worlds you might be interested in <a href="http://webpack.github.io" target="_blank">WebPack</a></p>
 
     <p>Conditioner requires a modern browser to function. If you require IE8 support and want to use media queries as conditions you can use the <code>or not media:{supported}</code> condition to still load a module on IE8.</p>
 
@@ -86,29 +90,19 @@ conditioner.init();
 
     <p>The latest version of the library can be downloaded below:</p>
     <ul class="files">
-        <li><a href="{{ site.rawurl }}/dist/conditioner-{{ site.version }}.js">Development</a></li>
-        <li><a href="{{ site.rawurl }}/dist/conditioner-{{ site.version }}.min.js">Production</a> ~ 2.5Kb gzipped</li>
+        <li><a href="{{ site.rawurl }}/dist/dev/conditioner.js">Development</a></li>
+        <li><a href="{{ site.rawurl }}/dist/min/conditioner.js">Production</a> ~ 5Kb gzipped</li>
     </ul>
 
-    <p>The library does not include the default tests as these might differ for each project. At the moment the following tests are available for download.</p>
+    <p>The library itself does not include the default monitors as you might not need them all for each project. At the moment the following tests are available for download.</p>
 
     <ul class="files">
-        <li><a href="{{ site.rawurl }}/dist/tests.min/media.js">Media</a></li>
-        <li><a href="{{ site.rawurl }}/dist/tests.min/element.js">Element</a></li>
-        <li><a href="{{ site.rawurl }}/dist/tests.min/window.js">Window</a></li>
-        <li><a href="{{ site.rawurl }}/dist/tests.min/pointer.js">Pointer</a></li>
-        <li><a href="{{ site.rawurl }}/dist/tests.min/connection.js">Connection</a></li>
+        {% for monitor in site.data.monitors %}
+        <li><a href="{{ site.rawurl }}/dist/monitors/{{ monitor.code }}.js">{{ monitor.name }}</a></li>
+        {% endfor %}
     </ul>
 
 </section>
-
-<nav class="sub" id="documentation">
-    <h2>Documentation</h2>
-
-    <p>The docs contain an example on how to quickly setup Conditioner. See the index below.</p>
-
-    {% include nav-docs.html %}
-</nav>
 
 <nav class="sub" id="examples">
 
@@ -117,6 +111,14 @@ conditioner.init();
     <p>Some example implementations.</p>
 
     {% include nav-examples.html %}
+</nav>
+
+<nav class="sub" id="documentation">
+    <h2>Documentation</h2>
+
+    <p>The docs contain sample code on how to quickly setup Conditioner. See the index below.</p>
+
+    {% include nav-docs.html %}
 </nav>
 
 <section id="license">

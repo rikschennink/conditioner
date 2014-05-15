@@ -4,16 +4,16 @@
 
     <p>The setup of Conditioner is a two step process.</p>
 
-    <p>As Conditioner needs RequireJS to function, download RequireJS at <a href="http://requirejs.org/docs/download.html">http://requirejs.org</a>, if you haven't played around with RequireJS before, follow the
+    <p>Conditioner needs an AMD loader to function. Currently RequireJS is a great choice. You can get it at <a href="http://requirejs.org/docs/download.html">http://requirejs.org</a>, if you haven't played around with RequireJS before, follow the
         <a href="http://requirejs.org/docs/start.html">Getting Started</a> guide for a quick meet and greet.</p>
 
     <p>Now you've got a feel for RequireJS it is time to setup Conditioner.</p>
 
-    <p>RequireJS needs to know where to find the Conditioner framework. You'll need to add a <code>path</code> entry to the RequireJS configuration object pointing to the location of Conditioner. In the example below the file 'conditioner.js' is located in the 'lib' folder within the generic 'js' folder.</p>
+    <p>For now we'll use RequireJS as an example, first it needs to know where to find the Conditioner framework. You'll need to add a <code>map</code> entry to the RequireJS configuration object pointing to the location of Conditioner. In the example below the file 'conditioner.js' is located in the 'lib' folder within the generic 'js' folder.</p>
 
 	{% highlight javascript %}{% include code/requirejs-config.js %}{% endhighlight %}
 
-    <p>Now that's setup, you can request a conditioner reference and have it start loading modules by calling the init method.</p>
+    <p>Now that's been setup, you can request a conditioner reference and have it start loading modules by calling the init method.</p>
 
 	{% highlight javascript %}{% include code/conditioner-init.js %}{% endhighlight %}
 

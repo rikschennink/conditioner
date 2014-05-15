@@ -1,0 +1,58 @@
+- name: Element
+  code: element
+  tests:
+    - name: seen
+      code: seen
+      description: Measures if the element has been seen by the user.
+    - name: min-width
+      code: min-width:500
+      description: The minimum required element width in pixels.
+    - name: max-width
+      code: max-width:500
+      description: The maximum required element width in pixels.
+    - name: min-height
+      code: min-height:500
+      description: The minimum required element height in pixels.
+    - name: max-height
+      code: max-height:500
+      description: The maximum required element height in pixels.
+
+- name: Media
+  code: media
+  tests:
+    - name: query
+      code: (min-width:500px) and (max-width:1000px)
+      description: The media query to test, don't forget the parenthesis around the queries.
+    - name: supported
+      code: supported
+      description: Tests if media queries are supported.
+
+- name: Window
+  code: window
+  tests:
+    - name: min-width
+      code: min-width:500
+      description: The minimum required window width in pixels.
+    - name: max-width
+      code: max-width:500
+      description: The maximum required window width in pixels.
+    - name: min-height
+      code: min-height:500
+      description: The minimum required window height in pixels.
+    - name: max-height
+      code: max-height:500
+      description: The maximum required window height in pixels.
+
+- name: Pointer
+  code: pointer
+  tests:
+    - name: hovers
+      description: Measures if the user is using a hover input device.
+      code: hovers
+
+- name: Connection
+  code: connection
+  tests:
+    - name: any
+      description: Measures if the user has any form of connectivity.
+      code: any

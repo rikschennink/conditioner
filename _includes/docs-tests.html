@@ -1,17 +1,36 @@
 <section>
 
-	<h3 id="tests">Custom tests</h3>
+	<h3 id="custom-monitors">Custom Monitors</h3>
 
-	<p>Conditioner allows you to setup custom tests to use in your conditions.</p>
+    <p>A really powerful feature of Conditioner is the fact that you can add your own monitors.</p>
 
-	{% highlight javascript %}{% include code/test-minimal.js %}{% endhighlight %}
+    <p>These monitors can then be used and combined in the conditioner expression engine.</p>
 
-	<p>Test with more control options.</p>
+    <p>Each test should be contained in it's own module, if tests are not minimized and added to the main package they will be loaded on the fly.</p>
 
-	{% highlight javascript %}{% include code/test-setup.js %}{% endhighlight %}
+	{% highlight javascript %}{% include code/monitor.js %}{% endhighlight %}
 
-	<p>Test with custom arrange method.</p>
+    <h4>Optional methods and overrides.</h4>
 
-	{% highlight javascript %}{% include code/test-arrange.js %}{% endhighlight %}
+    <h5>Data</h5>
+    <p>Properties to store for this monitor. If you want a monitor instance to remember something, you can add it to the data object. The
+        <a href="https://github.com/rikschennink/conditioner/blob/master/dist/dev/monitors/element.js">element</a> monitor contains some example code for implementing additional data properties.</p>
+    {% highlight javascript %}{% include code/monitor-data.js %}{% endhighlight %}
+
+    <h5>Trigger</h5>
+    <p>Trigger can also be a function, useful for when you want to bind more exotic events.</p>
+    <p>When you're done with binding events or measuring things call the <code>bubble</code> method. For implementation examples see the
+        <a href="https://github.com/rikschennink/conditioner/blob/master/dist/dev/monitors/media.js">media</a> or the <a href="https://github.com/rikschennink/conditioner/blob/master/dist/dev/monitors/pointer.js">pointer</a> monitor.</p>
+    {% highlight javascript %}{% include code/monitor-trigger.js %}{% endhighlight %}
+
+    <h5>Parse</h5>
+    <p>Conditioner automatically parses the parameters supplied to a monitor (these are the values between the curly braces). It splits them on the comma and then splits the resulting blocks on semicolon.</p>
+
+    <p>If your test parameters are formatted differently, for instance using an underscore like so <code>monitor:{foo_bar}</code>, you can supply a custom parser.</p>
+
+    <p>The <code>parse</code> method should return an array of test objects. Each object in the form of an object <code>{test:'name',value:'expected'}</code>. An example of a custom parser can be found in the
+        <a href="https://github.com/rikschennink/conditioner/blob/master/dist/dev/monitors/media.js">media</a> monitor.</p>
+
+    {% highlight javascript %}{% include code/monitor-parse.js %}{% endhighlight %}
 
 </section>

@@ -12,32 +12,13 @@ title: Documentation &bull; Conditioner.js
 
     {% include docs-setup.html %}
 
-    <section>
-
-        <h2 id="module-outline">Module outline</h2>
-
-        <p>Conditioner does not force you to write your modules in a certain way. Only if you want to unload your modules or pass custom options does it expect certain properties an methods to be there.</p>
-
-        <p>The following two basic module examples both contain an <code>unload</code> method and an <code>options</code> property. If your module will never be unloaded you can omit the unload method, the same goes for the options property.</p>
-
-        <p>An outline of a very basic module returning a class:</p>
-
-		{% highlight javascript %}{% include code/module-class.js %}{% endhighlight %}
-
-        <p>Outline of a module returning an object:</p>
-
-		{% highlight javascript %}{% include code/module-object.js %}{% endhighlight %}
-
-        <p>Now you know how to define modules, let's see how you can link them to the DOM and bring Conditioner to load them.</p>
-
-    </section>
-
+    {% include docs-format.html %}
 
     <section>
 
         <h2 id="config">Configuring modules</h2>
 
-        <p>Configuring your <a href="http://requirejs.org/docs/api.html#define" target="_blank">RequireJS Modules</a> so Conditioner can load them is done through data attributes. The following sections guide you through the configuration of a typical module.</p>
+        <p>Linking your <a href="https://github.com/amdjs/amdjs-api/wiki/AMD" target="_blank">AMD Modules</a> to the DOM is done through data attributes. The following sections guide you through the configuration of a typical module.</p>
 
         <nav class="sub">
             <ul>
@@ -59,94 +40,13 @@ title: Documentation &bull; Conditioner.js
     </section>
 
 
-
-
     <section>
 
         <h2 id="api">JavaScript API</h2>
 
-        <p>Conditioner consists of a group of publicly accessible JavaScript Classes. These Classes allow you to safely access modules once they've been parsed. The starting point to load modules is always the <code>conditioner</code> object of which there is only one instance.</p>
+        <p>Conditioner consists of a group of publicly accessible JavaScript Classes. These Classes allow you to safely access modules once they've been parsed. The starting point to load modules is always the <code>conditioner</code> object of which there is only one available.</p>
 
-        {% if site.api %}
-        <nav class="sub code">
-            <ul>
-                {% for item in site.api %}
-                <li>
-                    <a href="#{{item.name}}">{{item.name}}</a>{% if item.type %}&nbsp;:&nbsp;{{item.type}}{% endif %}
-                </li>
-                {% endfor %}
-            </ul>
-        </nav>
-        {% endif %}
-
-        {% for item in site.api %}
-        <section>
-            <h3 id="{{ item.name }}">{{ item.name }}</h3>
-            {{ item.description | markdownify }}
-
-            {% if item.events %}
-            <table class="events">
-                <thead>
-                <tr>
-                    <th>Event</th>
-                    <th>Description</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for event in item.events %}
-                <tr>
-                    <th>{{event.name}}</th>
-                    <td>{{ event.description | markdownify }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
-
-            {% if item.methods %}
-            <nav class="sub code">
-                <ul>
-                    {% for method in item.methods %}
-                    <li><a href="#{{item.name}}-{{method.name}}">{{method.name}}({% for param in method.params %}{% if forloop.index > 1 %}, {% endif %}{{ param.name }}{% endfor %})</a>{% if method.returns %}&nbsp;&rarr;&nbsp;{{method.returns}}{% endif %}</li>
-                    {% endfor %}
-                </ul>
-            </nav>
-            {% endif %}
-
-            {% for method in item.methods %}
-
-            <section class="method">
-
-                <h4 id="{{item.name}}-{{method.name}}">{{method.name}}{% if method.returns %}<span class="code">&nbsp;&rarr;&nbsp;{{method.returns}}</span>{% endif %}</h4>
-                {{ method.description | markdownify }}
-
-                {% if method.params %}
-                <table class="params">
-                    <thead>
-                    <tr>
-                        <th>Parameter</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for param in method.params %}
-                    <tr>
-                        <th>{{param.name}}</th>
-                        <td>{{param.type}}</td>
-                        <td>{{param.description | markdownify}}</td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                {% endif %}
-
-            </section>
-
-            {% endfor %}
-
-        </section>
-        {% endfor %}
+        {% include docs-api.html %}
 
     </section>
 

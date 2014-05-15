@@ -1,17 +1,24 @@
 <section>
 
-    <h3 id="data-options">Passing options to a module <span class="code">data-options</span></h3>
+    <h3 id="data-options">Passing options to a module</h3>
 
     <p>The <code>data-options</code> attribute allows you to set specific options to be passed to the Module when it's loaded.</p>
 
-    <p>Specifying specific options for a single module at node level:</p>
-    {% highlight html %}<a data-module="ui/Map" data-options='{"zoom":10}'> ... </a>{% endhighlight %}
+    <p>There's two formats to choose from. A basic JSON string or a more readable format, the later is parsed manually so might be a bit slower than the JSON string depending on the amount of options being overriden.</p>
 
-    <p>Specifying generic options for multiple modules of a certain type on conditioner init:</p>
+    {% highlight html %}<a data-module="ui/Map"
+   data-options="map.zoom:10, map.type:terrain"> ... </a>{% endhighlight %}
+
+    {% highlight html %}<a data-module="ui/Map"
+   data-options='{"map":{"zoom":10, "type":"terrain"}'> ... </a>{% endhighlight %}
+
+    <p>You can also set page level options for multiple modules of a certain type on conditioner init.</p>
 	{% highlight javascript %}{% include code/conditioner-options-map.js %}{% endhighlight %}
 
-    <p>Conditioner will merge page level options with node level options and pass the resulting options to the activated module.</p>
+    <p>Conditioner will merge module level options with page level options and in turn with node level options and pass the resulting options to the activated module.</p>
 
-    <p>In the (not so exciting) example above the resulting option object would be <code>{"zoom":10}</code>, since node level options take precedence over page level options zoom level <code>10</code> overwrites zoom level <code>5</code>.</p>
+    <p>In the (not to exciting) example above the resulting option object would be <code>{"zoom":10}</code>, since node level options take precedence over page level options zoom level <code>10</code> overwrites zoom level <code>5</code>.</p>
+
+    {% highlight javascript %}{% include code/module-options.js %}{% endhighlight %}
 
 </section>

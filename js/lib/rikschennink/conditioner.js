@@ -1,4 +1,4 @@
-// conditioner v1.0.0 - ConditionerJS - Frizz free, environment-aware, javascript modules.
+// conditioner v1.0.0 - ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules
 // Copyright (c) 2014 Rik Schennink - http://conditionerjs.com
 // License: MIT - http://www.opensource.org/licenses/mit-license.php
 (function (doc, undefined) {
@@ -114,6 +114,9 @@
 
             /**
              * Parse expression to deduct test names and expected values
+             *
+             * Splits the expression on a comma and splits the resulting blocks at the semi-colon
+             *
              * @param {String} expression
              * @param {Boolean} isSingleTest - is true when only one test is defined, in that case only value can be returned
              * @returns {*}
@@ -253,9 +256,11 @@
                             // setup test method to use
                             // jshint -W083
                             test: (function (fn) {
+                                // @ifdef DEV
                                 if (!fn) {
                                     throw new Error('Conditioner: Test "' + item.test + '" not found on "' + path + '" Monitor.');
                                 }
+                                // @endif
                                 return function () {
                                     var state = fn(this.data);
                                     if (this.valid != state) {
@@ -361,28 +366,31 @@
 
         };
 
-        /**
-         * Tests if valid expression
-         * @returns {Boolean}
-         */
-        UnaryExpression.prototype.isTrue = function () {
-            return this._expression.isTrue() !== this._negate;
-        };
+        UnaryExpression.prototype = {
 
-        /**
-         * Returns tests contained in this expression
-         * @returns Array
-         */
-        UnaryExpression.prototype.getTests = function () {
-            return this._expression instanceof Test ? [this._expression] : this._expression.getTests();
-        };
+            /**
+             * Tests if valid expression
+             * @returns {Boolean}
+             */
+            isTrue: function () {
+                return this._expression.isTrue() !== this._negate;
+            },
 
-        /**
-         * Cast to string
-         * @returns {string}
-         */
-        UnaryExpression.prototype.toString = function () {
-            return (this._negate ? 'not ' : '') + this._expression.toString();
+            /**
+             * Returns tests contained in this expression
+             * @returns Array
+             */
+            getTests: function () {
+                return this._expression instanceof Test ? [this._expression] : this._expression.getTests();
+            },
+
+            /**
+             * Cast to string
+             * @returns {string}
+             */
+            toString: function () {
+                return (this._negate ? 'not ' : '') + this._expression.toString();
+            }
         };
         /**
          * @class
@@ -399,36 +407,40 @@
 
         };
 
-        /**
-         * Tests if valid expression
-         * @returns {Boolean}
-         */
-        BinaryExpression.prototype.isTrue = function () {
+        BinaryExpression.prototype = {
 
-            return this._operator === 'and' ?
+            /**
+             * Tests if valid expression
+             * @returns {Boolean}
+             */
+            isTrue: function () {
 
-            // is 'and' operator
-            this._a.isTrue() && this._b.isTrue() :
+                return this._operator === 'and' ?
 
-            // is 'or' operator
-            this._a.isTrue() || this._b.isTrue();
+                // is 'and' operator
+                this._a.isTrue() && this._b.isTrue() :
 
-        };
+                // is 'or' operator
+                this._a.isTrue() || this._b.isTrue();
 
-        /**
-         * Returns tests contained in this expression
-         * @returns Array
-         */
-        BinaryExpression.prototype.getTests = function () {
-            return this._a.getTests().concat(this._b.getTests());
-        };
+            },
 
-        /**
-         * Outputs the expression as a string
-         * @returns {String}
-         */
-        BinaryExpression.prototype.toString = function () {
-            return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
+            /**
+             * Returns tests contained in this expression
+             * @returns Array
+             */
+            getTests: function () {
+                return this._a.getTests().concat(this._b.getTests());
+            },
+
+            /**
+             * Outputs the expression as a string
+             * @returns {String}
+             */
+            toString: function () {
+                return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
+            }
+
         };
         var ExpressionParser = {
 
@@ -622,11 +634,8 @@
                     // end of ')' character or last index
                 }
 
-                // return final expression tree
-                //return {
                 return tree.length === 1 ? tree[0] : tree;
-                //     tests:test
-                //};
+
             }
 
         };
@@ -656,9 +665,8 @@
              * Clean up
              * As we have not attached any event listeners there's nothing to clean
              */
-            destroy: function () {
-                // nothing to clean up
-            }
+            destroy: function () {}
+
         };
         var ConditionModuleAgent = function (conditions, element) {
 
@@ -762,32 +770,36 @@
              */
             getModule: function (path) {
 
+                // @ifdef DEV
                 // if no id supplied throw error
                 if (!path) {
                     throw new Error('ModuleRegistry.getModule(path): "path" is a required parameter.');
                 }
-
+                // @endif
                 return this._options[path] || this._options[_options.loader.toUrl(path)];
 
             }
 
         };
-        /**
+        /***
+         * The ModuleController loads and unloads the contained Module based on the conditions received. It propagates events from the contained Module so you can safely subscribe to them.
+         *
          * @exports ModuleController
          * @class
          * @constructor
          * @param {String} path - reference to module
          * @param {Element} element - reference to element
-         * @param {Object|null} [options] - options for this ModuleController
-         * @param {Object} [agent] - module activation agent
+         * @param {(Object|String)=} options - options for this ModuleController
+         * @param {Object=} agent - module activation agent
          */
         var ModuleController = function (path, element, options, agent) {
 
+            // @ifdef DEV
             // if no path supplied, throw error
             if (!path || !element) {
                 throw new Error('ModuleController(path,element,options,agent): "path" and "element" are required parameters.');
             }
-
+            // @endif
             // path to module
             this._path = ModuleRegistry.getRedirect(path);
             this._alias = path;
@@ -796,7 +808,7 @@
             this._element = element;
 
             // options for module controller
-            this._options = options || {};
+            this._options = options;
 
             // set loader
             this._agent = agent || StaticModuleAgent;
@@ -831,8 +843,11 @@
                 return this._initialized;
             },
 
-            /**
+            /***
              * Returns the module path
+             *
+             * @method getModulePath
+             * @memberof ModuleController
              * @returns {String}
              * @public
              */
@@ -840,8 +855,11 @@
                 return this._path;
             },
 
-            /**
+            /***
              * Returns true if the module is currently waiting for load
+             *
+             * @method isModuleAvailable
+             * @memberof ModuleController
              * @returns {Boolean}
              * @public
              */
@@ -849,8 +867,11 @@
                 return this._agent.allowsActivation() && !this._module;
             },
 
-            /**
+            /***
              * Returns true if module is currently active and loaded
+             *
+             * @method isModuleActive
+             * @memberof ModuleController
              * @returns {Boolean}
              * @public
              */
@@ -858,9 +879,12 @@
                 return this._module !== null;
             },
 
-            /**
+            /***
              * Checks if it wraps a module with the supplied path
-             * @param {String} path - path of module to test for
+             *
+             * @method wrapsModuleWithPath
+             * @memberof ModuleController
+             * @param {String} path - Path of module to test for.
              * @return {Boolean}
              * @public
              */
@@ -941,11 +965,12 @@
                 var self = this;
                 _options.loader.require([this._path], function (Module) {
 
+                    // @ifdef DEV
                     // if module does not export a module quit here
                     if (!Module) {
                         throw new Error('ModuleController: A module needs to export an object.');
                     }
-
+                    // @endif
                     // set reference to Module
                     self._Module = Module;
 
@@ -956,29 +981,114 @@
 
             },
 
+            _applyOverrides: function (options, overrides) {
+
+                // test if object is string
+                if (typeof overrides === 'string') {
+
+                    // test if overrides is json string (is first char a '{'
+                    if (overrides.charCodeAt(0) == 123) {
+                        // @ifdef DEV
+                        try {
+                            // @endif
+                            overrides = JSON.parse(overrides);
+                            // @ifdef DEV
+                        }
+                        catch (e) {
+                            throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
+                        }
+                        // @endif
+                    }
+                    else {
+                        // no json object, must be options string
+                        var i = 0,
+                            opts = overrides.split(', '),
+                            l = opts.length;
+                        for (; i < l; i++) {
+                            this._overrideObjectWithUri(options, opts[i]);
+                        }
+                        return options;
+                    }
+
+                }
+
+                // directly merge objects
+                return mergeObjects(options, overrides);
+            },
+
             /**
-             * Turns possible options string into options object
-             * @param {String|Object} options
-             * @returns {Object}
+             * Overrides options in the passed object based on the uri string
+             *
+             * number
+             * foo:1
+             *
+             * string
+             * foo.bar:baz
+             *
+             * array
+             * foo.baz:1,2,3
+             *
+             * @param {Object} options - The options to override
+             * @param {String} uri - uri to override the options with
              * @private
              */
-            _optionsToObject: function (options) {
-                if (typeof options === 'string') {
-                    try {
-                        return JSON.parse(options);
+            _overrideObjectWithUri: function (options, uri) {
+
+                var level = options,
+                    prop = '',
+                    i = 0,
+                    l = uri.length,
+                    c;
+                while (i < l) {
+                    c = uri.charCodeAt(i);
+                    if (c != 46 && c != 58) {
+                        prop += uri.charAt(i);
                     }
-                    catch (e) {
-                        throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
+                    else {
+                        if (c == 58) {
+                            level[prop] = this._castValueToType(uri.substr(i + 1));
+                        }
+                        else {
+                            level = level[prop];
+                        }
+                        prop = '';
                     }
+                    i++;
                 }
-                return options;
+
+            },
+
+            /**
+             * Parses the value and returns it in the right type
+             * @param value
+             * @returns {*}
+             * @private
+             */
+            _castValueToType: function (value) {
+                // if first character is a single quote
+                if (value.charCodeAt(0) == 39) {
+                    return value.substring(1, value.length - 1);
+                }
+                // if is a number
+                else if (!isNaN(value)) {
+                    return parseFloat(value);
+                }
+                // if is boolean
+                else if (value == 'true' || value == 'false') {
+                    return value === 'true';
+                }
+                // if is an array
+                else if (value.indexOf(',') !== -1) {
+                    return value.split(',').map(this._castValueToType);
+                }
+                return value;
             },
 
             /**
              * Parses options for given url and module also
              * @param {String} url - url to module
              * @param {Object} Module - Module definition
-             * @param {Object|String} overrides - page level options to override default options with
+             * @param {(Object|String)} overrides - page level options to override default options with
              * @returns {Object}
              * @private
              */
@@ -993,19 +1103,19 @@
                     // get settings
                     options = ModuleRegistry.getModule(url);
 
-                    // stack the options
+                    // create a stack of options
                     stack.push({
                         'page': options,
                         'module': Module.options
                     });
 
-                    // fetch super path
+                    // fetch super path, if this module has a super module load that modules options aswell
                     url = Module.__superUrl;
 
                     // jshint -W084
                 } while (Module = Module.__super);
 
-                // reverse loop over stack and merge options
+                // reverse loop over stack and merge all entries to create the final options objects
                 i = stack.length;
                 while (i--) {
                     pageOptions = mergeObjects(pageOptions, stack[i].page);
@@ -1017,7 +1127,7 @@
 
                 // apply overrides
                 if (overrides) {
-                    options = mergeObjects(options, this._optionsToObject(overrides));
+                    options = this._applyOverrides(options, overrides);
                 }
 
                 return options;
@@ -1046,20 +1156,21 @@
                 }
                 else {
 
-                    // is of other type so expect load method to be defined
+                    // is of other type, expect load method to be defined
                     this._module = this._Module.load ? this._Module.load(this._element, options) : null;
 
-                    // if module not defined we could be dealing with a static class
-                    if (typeof this._module === 'undefined') {
+                    // if module not defined we are probably dealing with a static class
+                    if (!this._module) {
                         this._module = this._Module;
                     }
                 }
 
+                // @ifdef DEV
                 // if no module defined throw error
                 if (!this._module) {
                     throw new Error('ModuleController.load(): could not initialize module, missing constructor or "load" method.');
                 }
-
+                // @endif
                 // watch for events on target
                 // this way it is possible to listen to events on the controller which is always there
                 Observer.inform(this._module, this);
@@ -1075,9 +1186,6 @@
              * @return {Boolean}
              */
             _unload: function () {
-
-                // module is now no longer ready to be loaded
-                this._available = false;
 
                 // if no module, module has already been unloaded or was never loaded
                 if (!this._module) {
@@ -1111,7 +1219,6 @@
                 this._unload();
 
                 // unbind events
-                Observer.unsubscribe(this._agent, 'ready', this._onAgentReadyBind);
                 Observer.unsubscribe(this._agent, 'change', this._onAgentStateChangeBind);
 
                 // call destroy on agent
@@ -1119,11 +1226,14 @@
 
             },
 
-            /**
-             * Executes a methods on the wrapped module
-             * @param {String} method - method key
-             * @param {Array} [params] - optional array containing the method parameters
-             * @return {Object} containing response of executed method and a status code
+            /***
+             * Executes a methods on the wrapped module.
+             *
+             * @method execute
+             * @memberof ModuleController
+             * @param {String} method - Method name.
+             * @param {Array=} params - Array containing the method parameters.
+             * @return {Object} response - containing return of executed method and a status code
              * @public
              */
             execute: function (method, params) {
@@ -1138,12 +1248,14 @@
 
                 // get function reference
                 var F = this._module[method];
+
+                // @ifdef DEV
                 if (!F) {
                     throw new Error('ModuleController.execute(method,params): function specified in "method" not found on module.');
                 }
-
+                // @endif
                 // if no params supplied set to empty array,
-                // ie8 falls on it's knees when it gets an undefined parameter object in the apply method
+                // ie8 falls to it's knees when it receives an undefined parameter object in the apply method
                 params = params || [];
 
                 // once loaded call method and pass parameters
@@ -1167,7 +1279,10 @@
                 return item.getModulePath();
             };
 
-            /**
+            /***
+             * For each element found having a `data-module` attribute an object of type NodeController is made. The node object can then be queried for the [ModuleControllers](#modulecontroller) it contains.
+             *
+             * @exports NodeController
              * @class
              * @constructor
              * @param {Object} element
@@ -1175,10 +1290,11 @@
              */
             var exports = function NodeController(element, priority) {
 
+                // @ifdef DEV
                 if (!element) {
                     throw new Error('NodeController(element): "element" is a required parameter.');
                 }
-
+                // @endif
                 // set element reference
                 this._element = element;
 
@@ -1210,19 +1326,20 @@
             exports.prototype = {
 
                 /**
-                 * Loads the passed module controllers to the node
-                 * @param {...} arguments
+                 * Loads the passed ModuleControllers to the node
+                 * @param {Array} moduleControllers
                  * @public
                  */
-                load: function () {
+                load: function (moduleControllers) {
 
+                    // @ifdef DEV
                     // if no module controllers found
-                    if (!arguments || !arguments.length) {
-                        throw new Error('NodeController.load(controllers): Expects an array of module controllers as parameters.');
+                    if (!moduleControllers || !moduleControllers.length) {
+                        throw new Error('NodeController.load(): Expects an Array of module controllers as parameters.');
                     }
-
+                    // @endif
                     // turn into array
-                    this._moduleControllers = Array.prototype.slice.call(arguments, 0);
+                    this._moduleControllers = moduleControllers;
 
                     // listen to load events on module controllers
                     var i = 0,
@@ -1289,19 +1406,26 @@
                     return this._priority;
                 },
 
-                /**
+                /***
                  * Returns the element linked to this node
+                 *
+                 * @method getElement
+                 * @memberof NodeController
+                 * @returns {Element} element - A reference to the element wrapped by this NodeController
                  * @public
                  */
                 getElement: function () {
                     return this._element;
                 },
 
-                /**
-                 * Public method to check if the module matches the given query
-                 * @param {String} selector - CSS selector to match module to
-                 * @param {Document|Element} [context] - Context to search in
-                 * @return {Boolean}
+                /***
+                 * Tests if the element contained in the NodeController object matches the supplied CSS selector.
+                 *
+                 * @method matchesSelector
+                 * @memberof NodeController
+                 * @param {String} selector - CSS selector to match element to.
+                 * @param {Element=} context - Context to search in.
+                 * @return {Boolean} match - Result of matchs
                  * @public
                  */
                 matchesSelector: function (selector, context) {
@@ -1311,37 +1435,50 @@
                     return matchesSelector(this._element, selector, context);
                 },
 
-                /**
-                 * Returns true if all module controllers are active
+                /***
+                 * Returns true if all [ModuleControllers](#modulecontroller) are active
+                 *
+                 * @method areAllModulesActive
+                 * @memberof NodeController
+                 * @returns {Boolean} state - All modules loaded state
                  * @public
                  */
                 areAllModulesActive: function () {
                     return this.getActiveModules().length === this._moduleControllers.length;
                 },
 
-                /**
-                 * Returns an array containing all active module controllers
-                 * @return {Array}
+                /***
+                 * Returns an array containing all active [ModuleControllers](#modulecontroller)
+                 *
+                 * @method getActiveModules
+                 * @memberof NodeController
+                 * @returns {Array} modules - An Array of active ModuleControllers
                  * @public
                  */
                 getActiveModules: function () {
                     return this._moduleControllers.filter(_filterIsActiveModule);
                 },
 
-                /**
-                 * Returns the first ModuleController matching the given path
-                 * @param {String} [path] - module id
-                 * @return {ModuleController|null}
+                /***
+                 * Returns the first [ModuleController](#modulecontroller) matching the given path
+                 *
+                 * @method getModule
+                 * @memberof NodeController
+                 * @param {String=} path - The module id to search for.
+                 * @returns {(ModuleController|null)} module - A [ModuleController](#modulecontroller) or null if none found
                  * @public
                  */
                 getModule: function (path) {
                     return this._getModules(path, true);
                 },
 
-                /**
-                 * Returns an array of ModuleControllers matching the given path
-                 * @param {String} [path] to module
-                 * @return {Array}
+                /***
+                 * Returns an Array of [ModuleControllers](#modulecontroller) matching the given path
+                 *
+                 * @method getModules
+                 * @memberof NodeController
+                 * @param {String=} path - The module id to search for.
+                 * @returns {Array} modules - An Array of [ModuleControllers](#modulecontroller)
                  * @public
                  */
                 getModules: function (path) {
@@ -1349,10 +1486,11 @@
                 },
 
                 /**
-                 * Returns one or multiple ModuleControllers matching the supplied path
-                 * @param {String} [path] - Optional path to match the nodes to
-                 * @param {Boolean} [singleResult] - Optional boolean to only ask for one result
-                 * @returns {Array|ModuleController|null}
+                 * Returns one or multiple [ModuleControllers](#modulecontroller) matching the supplied path
+                 *
+                 * @param {String=} path - Path to match the nodes to
+                 * @param {Boolean=} singleResult - Boolean to only ask for one result
+                 * @returns {(Array|ModuleController|null)}
                  * @private
                  */
                 _getModules: function (path, singleResult) {
@@ -1383,11 +1521,14 @@
                     return singleResult ? null : results;
                 },
 
-                /**
-                 * Public method for safely attempting method execution on modules
-                 * @param {String} method - method key
-                 * @param {Array} [params] - array containing the method parameters
-                 * @return [Array] returns object containing status code and possible response data
+                /***
+                 * Safely tries to executes a method on the currently active Module. Always returns an object containing a status code and a response data property.
+                 *
+                 * @method execute
+                 * @memberof NodeController
+                 * @param {String} method - Method name.
+                 * @param {Array=} params - Array containing the method parameters.
+                 * @returns {Array} results - An object containing status code and possible response data.
                  * @public
                  */
                 execute: function (method, params) {
@@ -1469,16 +1610,19 @@
 
         }());
         /**
-         * Creates a controller group to sync controllers
+         * Creates a controller group to sync [ModuleControllers](#modulecontroller).
+         *
+         * @name SyncedControllerGroup
          * @constructor
          */
         var SyncedControllerGroup = function () {
 
+            // @ifdef DEV
             // if no node controllers passed, no go
             if (!arguments || !arguments.length) {
                 throw new Error('SyncedControllerGroup(controllers): Expects an array of node controllers as parameters.');
             }
-
+            // @endif
             // by default modules are expected to not be in sync
             this._inSync = false;
 
@@ -1492,11 +1636,12 @@
             for (; i < l; i++) {
                 controller = this._controllers[i];
 
+                // @ifdef DEV
                 // if controller is undefined
                 if (!controller) {
                     throw new Error('SyncedControllerGroup(controllers): Stumbled upon an undefined controller is undefined.');
                 }
-
+                // @endif
                 // listen to load and unload events so we can pass them on if appropriate
                 Observer.subscribe(controller, 'load', this._controllerLoadedBind);
                 Observer.subscribe(controller, 'unload', this._controllerUnloadedBind);
@@ -1508,8 +1653,12 @@
 
         SyncedControllerGroup.prototype = {
 
-            /**
+            /***
              * Destroy sync group, stops listening and cleans up
+             *
+             * @method destroy
+             * @memberof SyncedControllerGroup
+             * @public
              */
             destroy: function () {
 
@@ -1529,8 +1678,11 @@
 
             },
 
-            /**
+            /***
              * Returns true if all modules have loaded
+             *
+             * @method areAllModulesActive
+             * @memberof SyncedControllerGroup
              * @returns {Boolean}
              */
             areAllModulesActive: function () {
@@ -1588,8 +1740,10 @@
 
             },
 
-            /**
+            /***
              * Fires a load event when all controllers have indicated they have loaded and we have not loaded yet
+             *
+             * @memberof SyncedControllerGroup
              * @fires load
              * @private
              */
@@ -1601,8 +1755,10 @@
                 Observer.publishAsync(this, 'load', this._controllers);
             },
 
-            /**
+            /***
              * Fires an unload event once we are in loaded state and one of the controllers unloads
+             *
+             * @memberof SyncedControllerGroup
              * @fires unload
              * @private
              */
@@ -1636,11 +1792,12 @@
              */
             parse: function (context) {
 
+                // @ifdef DEV
                 // if no context supplied, throw error
                 if (!context) {
                     throw new Error('ModuleLoader.loadModules(context): "context" is a required parameter.');
                 }
-
+                // @endif
                 // register vars and get elements
                 var elements = context.querySelectorAll('[data-module]'),
                     l = elements.length,
@@ -1681,7 +1838,7 @@
                 i = nodes.length;
                 while (--i >= 0) {
                     node = nodes[i];
-                    node.load.apply(node, this._getModuleControllersByElement(node.getElement()));
+                    node.load.call(node, this._getModuleControllersByElement(node.getElement()));
                 }
 
                 // merge new nodes with currently active nodes list
@@ -1693,8 +1850,6 @@
 
             /**
              * Setup the given element with the passed module controller(s)
-             * @param {Element} element - Element to bind the controllers to
-             * @param {Array|ModuleController} controllers - module controller configurations
              * [
              *     {
              *         path: 'path/to/module',
@@ -1704,6 +1859,8 @@
              *         }
              *     }
              * ]
+             * @param {Element} element - Element to bind the controllers to
+             * @param {Array|ModuleController} controllers - module controller configurations
              * @return {NodeController|null} - The newly created node or null if something went wrong
              */
             load: function (element, controllers) {
@@ -1813,20 +1970,24 @@
              */
             _getModuleControllersByElement: function (element) {
 
-                var controllers = [],
-                    config = element.getAttribute(_options.attr.module) || '',
-                    i = 0,
-                    specs, spec, l;
+                var config = element.getAttribute(_options.attr.module) || '';
 
                 // test if first character is a '[', if so multiple modules have been defined
-                if (config.charCodeAt(0) === 91) {
+                // double comparison is faster than triple in this case
+                if (config.charCodeAt(0) == 91) {
+
+                    var controllers = [],
+                        i = 0,
+                        specs, spec, l;
 
                     // add multiple module adapters
                     try {
                         specs = JSON.parse(config);
                     }
                     catch (e) {
+                        // @ifdef DEV
                         throw new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.');
+                        // @endif
                     }
 
                     // no specification found or specification parsing failed
@@ -1838,31 +1999,32 @@
                     l = specs.length;
 
                     // test if second character is a '{' if so, json format
-                    if (config.charCodeAt(1) === 123) {
+                    if (config.charCodeAt(1) == 123) {
                         for (; i < l; i++) {
                             spec = specs[i];
-                            controllers.push(
-                            this._getModuleController(
-                            spec.path, element, spec.options, spec.conditions));
+                            controllers[i] = this._getModuleController(
+                            spec.path, element, spec.options, spec.conditions);
                         }
-                    }
-                    else {
-                        for (; i < l; i++) {
-                            spec = specs[i];
-                            controllers.push(
-                            this._getModuleController(
-                            spec[0], element, typeof spec[1] === 'string' ? spec[2] : spec[1], typeof spec[1] === 'string' ? spec[1] : spec[2]));
-                        }
+                        return controllers;
                     }
 
-                }
-                else if (config.length) {
-                    controllers.push(
-                    this._getModuleController(
-                    config, element, element.getAttribute(_options.attr.options), element.getAttribute(_options.attr.conditions)));
+                    // array format
+                    for (; i < l; i++) {
+                        spec = specs[i];
+                        if (typeof spec == 'string') {
+                            controllers[i] = this._getModuleController(spec, element);
+                        }
+                        else {
+                            controllers[i] = this._getModuleController(
+                            spec[0], element, typeof spec[1] == 'string' ? spec[2] : spec[1], typeof spec[1] == 'string' ? spec[1] : spec[2]);
+                        }
+                    }
+                    return controllers;
+
                 }
 
-                return controllers;
+                return [this._getModuleController(
+                config, element, element.getAttribute(_options.attr.options), element.getAttribute(_options.attr.conditions))];
             },
 
             /**
@@ -1878,7 +2040,6 @@
                 return new ModuleController(
                 path, element, options, conditions ? new ConditionModuleAgent(conditions, element) : StaticModuleAgent);
             }
-
         };
 
         // conditioner options object
@@ -1919,13 +2080,30 @@
         // setup loader instance
         _moduleLoader = new ModuleLoader();
 
-        // expose API
+        /***
+         * Call `[init](#conditioner-init)` on the `conditioner` object to start loading the referenced modules in the HTML document. Once this is done the conditioner will return the nodes it found as an Array and will initialize them automatically once they are ready.
+         *
+         * Each node is wrapped in a [NodeController](#nodecontroller) which contains one or more [ModuleControllers](#modulecontroller).
+         *
+         * @exports Conditioner
+         */
         return {
 
-            /**
-             * Initialises the conditioner and parses the document for modules
-             * @param {Object} [options] - optional options to override
-             * @return {Array} of initialized nodes
+            /***
+             * Call this method to start parsing the document for modules. Conditioner will initialize all found modules and return an Array containing the newly found nodes.
+             *
+             * ```js
+             * require(['conditioner'],function(conditioner){
+             *
+             *     conditioner.init();
+             *
+             * });
+             * ```
+             *
+             * @method init
+             * @memberof Conditioner
+             * @param {Object=} options - Options to override.
+             * @returns {Array} nodes - Array of initialized nodes.
              * @public
              */
             init: function (options) {
@@ -1938,17 +2116,67 @@
 
             },
 
-            /**
-             * Set custom options
-             * @param {Object} options - options to override
+            /***
+             * Allows defining page level Module options, shortcuts to modules, and overrides for conditioners inner workings.
+             *
+             * Passing the default options object.
+             * ```js
+             * require(['conditioner'],function(conditioner){
+             *
+             *     conditioner.setOptions({
+             *
+             *         // Page level module options
+             *         modules:{},
+             *
+             *         // Path overrides
+             *         paths:{
+             *             monitors:'./monitors/'
+             *         },
+             *
+             *         // Attribute overrides
+             *         attr:{
+             *             options:'data-options',
+             *             module:'data-module',
+             *             conditions:'data-conditions',
+             *             priority:'data-priority',
+             *             initialized:'data-initialized',
+             *             processed:'data-processed',
+             *             loading:'data-loading'
+             *         },
+             *
+             *         // AMD loader overrides
+             *         loader:{
+             *             require:function(paths,callback){
+             *                 require(paths,callback)
+             *             },
+             *             config:function(path,options){
+             *                 var config = {};
+             *                 config[path] = options;
+             *                 requirejs.config({
+             *                     config:config
+             *                 });
+             *             },
+             *             toUrl:function(path){
+             *                 return requirejs.toUrl(path)
+             *             }
+             *         }
+             *     });
+             *
+             * });
+             * ```
+             *
+             * @method setOptions
+             * @memberof Conditioner
+             * @param {Object} options - Options to override.
              * @public
              */
             setOptions: function (options) {
 
+                // @ifdef DEV
                 if (!options) {
                     throw new Error('Conditioner.setOptions(options): "options" is a required parameter.');
                 }
-
+                // @endif
                 var config, path, mod, alias;
 
                 // update options
@@ -1988,35 +2216,53 @@
 
             },
 
-            /**
-             * Loads all modules within the supplied dom tree
-             * @param {Document|Element} context - Context to find modules in
-             * @return {Array} - Array of found Nodes
+            /***
+             * Finds and loads all Modules defined on child elements of the supplied context. Returns an Array of found Nodes.
+             *
+             * @method parse
+             * @memberof Conditioner
+             * @param {Element} context - Context to find modules in.
+             * @returns {Array} nodes - Array of initialized nodes.
              */
             parse: function (context) {
 
+                // @ifdef DEV
                 if (!context) {
                     throw new Error('Conditioner.parse(context): "context" is a required parameter.');
                 }
-
+                // @endif
                 return _moduleLoader.parse(context);
 
             },
 
-            /**
-             * Setup the given element with the passed module controller(s)
-             * @param {Element} element - Element to bind the controllers to
-             * @param {Array|ModuleController} controllers - module controller configurations
-             * [
-             *     {
-             *         path: 'path/to/module',
-             *         conditions: 'config',
-             *         options: {
-             *             foo: 'bar'
+            /***
+             * Creates a [NodeController](#nodecontroller) based on the passed element and set of controllers.
+             *
+             * ```js
+             * require(['conditioner'],function(conditioner){
+             *
+             *     // find a suitable element
+             *     var foo = document.getElementById('foo');
+             *
+             *     // load Clock module to foo element
+             *     conditioner.load(foo,[
+             *         {
+             *             path: 'ui/Clock',
+             *             conditions: 'media:{(min-width:30em)}',
+             *             options: {
+             *                 time:false
+             *             }
              *         }
-             *     }
-             * ]
-             * @return {NodeController|null} - The newly created node or null if something went wrong
+             *     ]);
+             *
+             * });
+             * ```
+             *
+             * @method load
+             * @memberof Conditioner
+             * @param {Element} element - Element to bind the controllers to.
+             * @param {(Array|ModuleController)} controllers - [ModuleController](#modulecontroller) configurations.
+             * @returns {(NodeController|null)} node - The newly created node or null if something went wrong.
              */
             load: function (element, controllers) {
 
@@ -2024,10 +2270,44 @@
 
             },
 
-            /**
-             * Returns a synced controller group which fires a load event once all modules have loaded
-             * {ModuleController|NodeController} [arguments] - list of module controllers or node controllers to synchronize
-             * @return SyncedControllerGroup.prototype
+            /***
+             * Wraps the supplied controllers in a [SyncedControllerGroup](#syncedcontrollergroup) which will fire a load event when all of the supplied modules have loaded.
+             *
+             * ```js
+             * require(['conditioner','Observer'],function(conditioner,Observer){
+             *
+             *     // Find period element on the page
+             *     var periodElement = document.querySelector('.peroid');
+             *
+             *     // Initialize all datepicker modules
+             *     // within the period element
+             *     var datePickerNodes = conditioner.parse(periodElement);
+             *
+             *     // Synchronize load events, we only want to work
+             *     // with these modules if they are all loaded
+             *     var syncGroup = conditioner.sync(datePickerNodes);
+             *
+             *     // Wait for load event to fire
+             *     Observer.subscribe(syncGroup,'load',function(nodes){
+             *
+             *         // All modules now loaded
+             *
+             *     });
+             *
+             *     // Also listen for unload event
+             *     Observer.subscribe(syncGroup,'unload',function(nodes){
+             *
+             *         // One of the modules has unloaded
+             *
+             *     });
+             *
+             * });
+             * ```
+             *
+             * @method sync
+             * @memberof Conditioner
+             * @param {(ModuleController|NodeController)} arguments - List of [ModuleControllers](#modulecontroller) or [NodeControllers](#nodecontroller) to synchronize.
+             * @returns {SyncedControllerGroup} syncedControllerGroup - A [SyncedControllerGroup](#syncedcontrollergroup).
              */
             sync: function () {
 
@@ -2041,11 +2321,14 @@
 
             },
 
-            /**
-             * Returns the first Node matching the selector
-             * @param {String} [selector] - Selector to match the nodes to
-             * @param {Element} [context] - Context to search in
-             * @return {Node||null} First matched node or null
+            /***
+             * Returns the first [NodeController](#nodecontroller) matching the given selector within the passed context
+             *
+             * @method getNode
+             * @memberof Conditioner
+             * @param {String=} selector - Selector to match the nodes to.
+             * @param {Element=} context - Context to search in.
+             * @returns {(NodeController|null)} node - First matched node or null.
              */
             getNode: function (selector, context) {
 
@@ -2053,11 +2336,15 @@
 
             },
 
-            /**
-             * Returns all nodes matching the selector
-             * @param {String} [selector] - Optional selector to match the nodes to
-             * @param {Element} [context] - Context to search in
-             * @return {Array} Array containing matched nodes or empty Array
+            /***
+             * Returns all [NodeControllers](#nodecontroller) matching the given selector with the passed context
+             *
+             * @method getNodes
+             * @memberof Conditioner
+             * @param {String=} selector - Selector to match the nodes to.
+             * @param {Element=} context - Context to search in.
+             * @returns {Array} nodes -  Array containing matched nodes or empty .
+             Array
              */
             getNodes: function (selector, context) {
 
@@ -2065,20 +2352,13 @@
 
             },
 
-            /**
-             * Destroy found nodes
-             * Three possible use cases
-             * 1.
-             * @param {NodeController} arguments - destroy a single node controller
+            /***
+             * Destroy matched [NodeControllers](#nodecontroller) based on the supplied parameters.
              *
-             * 2.
-             * @param {String} [arguments] - string to match elements
-             * @param {Element} arguments - context in which to filter
-             *
-             * 3.
-             * @param {Array} arguments - array containing NodeControllers
-             *
-             * @return {Boolean}
+             * @method destroy
+             * @memberof Conditioner
+             * @param {(NodeController|String|Array)} arguments - Destroy a single node controller, matched elements or an Array of NodeControllers.
+             * @returns {Boolean} state - Were all nodes destroyed successfuly
              * @public
              */
             destroy: function () {
@@ -2086,11 +2366,12 @@
                 var nodes = [],
                     arg = arguments[0];
 
+                // @ifdef DEV
                 // first argument is required
                 if (!arg) {
                     throw new Error('Conditioner.destroy(...): A DOM node, Array, String or NodeController is required as the first argument.');
                 }
-
+                // @endif
                 // test if is an array
                 if (Array.isArray(arg)) {
                     nodes = arg;
@@ -2121,11 +2402,15 @@
                 return _moduleLoader.destroy(nodes);
             },
 
-            /**
-             * Returns the first Module matching the selector
-             * @param {String} path - Optional path to match the modules to
-             * @param {String} selector - Optional selector to match the nodes to
-             * @param {Document|Element} [context] - Context to search in
+            /***
+             * Returns the first [ModuleController](#modulecontroller) matching the given selector within the supplied context.
+             *
+             * @method getModule
+             * @memberof Conditioner
+             * @param {String=} path - Path to match the modules to.
+             * @param {String=} selector - Selector to match the nodes to.
+             * @param {Element=} context - Context to search in.
+             * @returns {(ModuleController|null)} module - The found module.
              * @public
              */
             getModule: function (path, selector, context) {
@@ -2144,12 +2429,15 @@
 
             },
 
-            /**
-             * Returns multiple modules matching the given path
-             * @param {String} path - Optional path to match the modules to
-             * @param {String} selector - Optional selector to match the nodes to
-             * @param {Document|Element} [context] - Context to search in
-             * @returns {Array|Node|null}
+            /***
+             * Returns all [ModuleControllers](#modulecontroller) matching the given path within the supplied context.
+             *
+             * @method getModules
+             * @memberof Conditioner
+             * @param {String=} path - Path to match the modules to
+             * @param {String=} selector - Selector to match the nodes to
+             * @param {Element=} context - Context to search in
+             * @returns {(Array|null)} modules - The found modules.
              * @public
              */
             getModules: function (path, selector, context) {
@@ -2169,18 +2457,36 @@
 
             },
 
-            /**
-             * Manually run an expression, only returns once with a true or false state
-             * @param {String} condition - Expression to test
-             * @param {Element} [element] - Optional element to run the test on
+            /***
+             * Manually test an expression, only returns once via promise with a `true` or `false` state
+             *
+             * ```js
+             * require(['conditioner'],function(conditioner){
+             *
+             *     // Test if supplied condition is valid
+             *     conditioner.is('window:{min-width:500}').then(function(state){
+             *
+             *         // State equals true if window has a
+             *         // minimum width of 500 pixels.
+             *
+             *     });
+             *
+             * });
+             * ```
+             *
+             * @method is
+             * @memberof Conditioner
+             * @param {String} condition - Expression to test.
+             * @param {Element=} element - Element to run the test on.
              * @returns {Promise}
              */
             is: function (condition, element) {
 
+                // @ifdef DEV
                 if (!condition) {
                     throw new Error('Conditioner.is(condition,[element]): "condition" is a required parameter.');
                 }
-
+                // @endif
                 // run test and resolve with first received state
                 var p = new Promise();
                 WebContext.test(condition, element, function (valid) {
@@ -2190,18 +2496,39 @@
 
             },
 
-            /**
-             * Manually run an expression, bind a callback method to be executed once something changes
-             * @param {String} condition - Expression to test
-             * @param {Element} [element] - Optional element to run the test on
-             * @param {Function} callback - callback method
+            /***
+             * Manually test an expression, bind a callback method to be executed once something changes.
+             *
+             * ```js
+             * require(['conditioner'],function(conditioner){
+             *
+             *     // Test if supplied condition is valid
+             *     conditioner.on('window:{min-width:500}',function(state){
+             *
+             *         // State equals true if window a
+             *         // has minimum width of 500 pixels.
+             *
+             *         // If the window is resized this method
+             *         // is called with the new state.
+             *
+             *     });
+             *
+             * });
+             * ```
+             *
+             * @method on
+             * @memberof Conditioner
+             * @param {String} condition - Expression to test.
+             * @param {(Element|Function)=} element - Optional element to run the test on.
+             * @param {Function=} callback - Callback method.
              */
             on: function (condition, element, callback) {
 
+                // @ifdef DEV
                 if (!condition) {
                     throw new Error('Conditioner.on(condition,[element],callback): "condition" and "callback" are required parameter.');
                 }
-
+                // @endif
                 // handle optional element parameter
                 callback = typeof element === 'function' ? element : callback;
 
@@ -2209,6 +2536,7 @@
                 WebContext.test(condition, element, function (valid) {
                     callback(valid);
                 });
+
             }
 
         };
@@ -2226,7 +2554,9 @@
     }
     // Browser globals
     else {
-        throw new Error('To use ConditionerJS you need to setup a module loader like RequireJS.');
+        // @ifdef DEV
+        throw new Error('To use ConditionerJS you need to setup an AMD module loader or use something like Browserify.');
+        // @endif
     }
 
 }(document));

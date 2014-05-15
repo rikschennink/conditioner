@@ -6,7 +6,12 @@
         // start at 1 because !uid returns false when uid===0
         _db = {};
 
-    var util = {
+    /***
+     * Used for inter-object communication.
+     *
+     * @name Observer
+     */
+    var exports = {
 
         _setEntry: function (obj, prop) {
 
@@ -31,12 +36,23 @@
             return entry ? _db[obj.__pubSubUID][prop] : null;
         },
 
-        /**
+        /***
          * Subscribe to an event
+         *
+         * ```js
+         * Observer.subscribe(foo,'load',function bar(){
+         *
+         *     // bar function is called when the foo object
+         *     // publishes the load event
+         *
+         * });
+         * ```
+         *
+         * @method subscribe
          * @memberof Observer
-         * @param {Object} obj - Object to subscribe to
-         * @param {String} type - Event type to listen for
-         * @param {Function} fn - Function to call when event fires
+         * @param {Object} obj - Object to subscribe to.
+         * @param {String} type - Event type to listen for.
+         * @param {Function} fn - Function to call when event published.
          * @static
          */
         subscribe: function (obj, type, fn) {
@@ -61,12 +77,19 @@
             });
         },
 
-        /**
+        /***
          * Unsubscribe from further notifications
+         *
+         * ```js
+         * // Remove the bar function from foo object.
+         * Observer.unsubscribe(foo,'load',bar);
+         * ```
+         *
+         * @method unsubscribe
          * @memberof Observer
-         * @param {Object} obj - Object to unsubscribe from
-         * @param {String} type - Event type to match
-         * @param {Function} fn - Function to match
+         * @param {Object} obj - Object to unsubscribe from.
+         * @param {String} type - Event type to match.
+         * @param {Function} fn - Function to match.
          * @static
          */
         unsubscribe: function (obj, type, fn) {
@@ -86,27 +109,42 @@
             }
         },
 
-        /**
-         * Publishes an event async
-         * http://ejohn.org/blog/how-javascript-timers-work/
-         * @param {Object} obj - Object to fire the event on
-         * @param {String} type - Event type to fire
-         * @param {Object} [data] - optional data carrier
+        /***
+         * Publishes an async event. This means other waiting (synchronous) code is executed first before the event is published.
+         *
+         * ```js
+         * // Publishes a load event on the foo object. But does it async.
+         * Observer.publishAsync(foo,'load');
+         * ```
+         *
+         * @method publishAsync
+         * @memberof Observer
+         * @param {Object} obj - Object to fire the event on.
+         * @param {String} type - Event type to fire.
+         * @param {Object=} data - Data carrier.
          * @static
          */
         publishAsync: function (obj, type, data) {
+            // http://ejohn.org/blog/how-javascript-timers-work/
             var self = this;
             setTimeout(function () {
                 self.publish(obj, type, data);
             }, 0);
         },
 
-        /**
+        /***
          * Publish an event
+         *
+         * ```js
+         * // Publishes a load event on the foo object.
+         * Observer.publish(foo,'load');
+         * ```
+         *
+         * @method publish
          * @memberof Observer
-         * @param {Object} obj - Object to fire the event on
-         * @param {String} type - Event type to fire
-         * @param {Object} [data] - optional data carrier
+         * @param {Object} obj - Object to fire the event on.
+         * @param {String} type - Event type to fire.
+         * @param {Object=} data - Data carrier.
          * @static
          */
         publish: function (obj, type, data) {
@@ -144,12 +182,19 @@
             }
         },
 
-        /**
-         * Setup propagation target for events so they can bubble up the object tree
+        /***
+         * Setup propagation target for events so they can bubble up the object tree.
+         *
+         * ```js
+         * // When foo publishes its load event baz will republish it.
+         * Observer.inform(foo,baz);
+         * ```
+         *
+         * @method inform
          * @memberof Observer
-         * @param {Object} informant - Object to set as origin
-         * @param {Object} receiver - Object to set as target
-         * @return {Boolean} if setup was successful
+         * @param {Object} informant - Object to set as origin. Events from this object will also be published on receiver.
+         * @param {Object} receiver - Object to set as target.
+         * @return {Boolean} if setup was successful.
          * @static
          */
         inform: function (informant, receiver) {
@@ -164,11 +209,17 @@
             return true;
         },
 
-        /**
+        /***
          * Remove propagation target
+         *
+         * ```js
+         * // Baz will no longer republish events from foo.
+         * Observer.conceal(foo,baz);
+         * ```
+         *
          * @memberof Observer
-         * @param {Object} informant - Object set as origin
-         * @param {Object} receiver - Object set as target
+         * @param {Object} informant - Object previously set as origin.
+         * @param {Object} receiver - Object previously set as target.
          * @return {Boolean} if removal was successful
          * @static
          */
@@ -200,17 +251,17 @@
 
     // CommonJS
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = util;
+        module.exports = exports;
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
         define(function () {
-            return util;
+            return exports;
         });
     }
     // Browser globals
     else {
-        win.Observer = util;
+        win.Observer = exports;
     }
 
 }(window));

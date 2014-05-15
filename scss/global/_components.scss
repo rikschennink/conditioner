@@ -143,14 +143,11 @@ h4.code {
 /**
  * Highlight Code Block
  */
-.highlight {
+pre {
 
     margin:1rem 0;
+    background:#f6f6f6;
 
-    pre {
-        background:#f6f6f6;
-    }
-    
     code {
         display:block;
         padding:.375rem .5rem;
@@ -401,8 +398,12 @@ img.map {
 
     td,th {
         color:#777;
-        font-size:.875em;
+        font-size:.75em;
         vertical-align:top;
+
+        p {
+            font-size:.75rem;
+        }
     }
 
     thead {
@@ -418,6 +419,8 @@ img.map {
 
         td,th {
             font-weight:normal;
+            padding-right:.5rem;
+            box-sizing:borderbox;
         }
 
         th,
@@ -426,16 +429,7 @@ img.map {
         }
 
         th+td {
-
             width:30%;
-            &:before {
-                content:'{';
-            }
-
-            &:after {
-                content:'}';
-            }
-
         }
 
         td:last-child {

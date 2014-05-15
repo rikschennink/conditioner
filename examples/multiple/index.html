@@ -13,17 +13,17 @@ title: Multiple Conditions &bull; Conditioner.js
 <p>Both the Clock and the Zoom module are active on the element below.</p>
 
 {% highlight html %}
-<div data-module='[{"path":"ui/Clock"},{"path":"ui/Zoom"}]'> ... </div>
+<div data-module='["ui/Clock","ui/Zoom"]'> ... </div>
 {% endhighlight %}
 
 <div class="component alt">
-    <div data-module='[{"path":"ui/Clock"},{"path":"ui/Zoom"}]'></div>
+    <div data-module='["ui/Clock","ui/Zoom"]'></div>
 </div>
 
 <h3>Binding multiple conditioned modules on an element</h3>
 <p>The clock below will always be active and will be accompanied by a Zoom control on pages wider than 35ems.</p>
 
-<h4>Using Array notation</h4>
+<h4>Using Extended Array notation</h4>
 
 {% highlight html %}
 <div data-module='[["ui/Clock",{"time":false}],["ui/Zoom","media:{(min-width:35em)}"]'> ... </div>

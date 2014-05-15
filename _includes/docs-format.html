@@ -1,0 +1,20 @@
+
+<section>
+
+    <h2 id="module-outline">Module format</h2>
+
+    <p>Conditioner does not force you to write your AMD modules in a certain way. Only if you want to unload your modules or pass custom options does it expect certain properties and methods to be there.</p>
+
+    <p>The following two basic module examples both contain an <code>unload</code> method and an <code>options</code> property. If your module will always be active you can omit the unload method, also, if their are no options to be set, leave out the options property.</p>
+
+    <p>An outline of a very basic AMD module returning a class:</p>
+
+    {% highlight javascript %}{% include code/module-class.js %}{% endhighlight %}
+
+    <p>Outline of an AMD module returning an static object:</p>
+
+    {% highlight javascript %}{% include code/module-object.js %}{% endhighlight %}
+
+    <p>Now you know how to setup your modules, let's see how you can link them to the DOM and have Conditioner load them.</p>
+
+</section>

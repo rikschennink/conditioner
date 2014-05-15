@@ -1,45 +1,43 @@
 <section>
 
-    <h3 id="data-conditions">Setting module conditions <span class="code">data-conditions</span></h3>
+    <h3 id="data-conditions">Setting module conditions</h3>
 
-    <p>The <code>data-conditions</code> attribute allows you to control the conditions under which a module is loaded. This is what Conditioner is all about.</p>
+    <p>The <code>data-conditions</code> attribute allows you to control the conditions under which a module is loaded. This is actually what Conditioner is all about.</p>
 
     <p>The example below tells Conditioner to only load the module if the media query <code>(min-width:30em)</code> is matched.</p>
 
     {% highlight html %}<a data-module="ui/Map" data-conditions="media:{(min-width:30em)}"> ... </a>{% endhighlight %}
+    <p>Conditions consist of monitors (media) with related tests (min-width:30em) and are formatted like this: <code>&lt;monitor_name&gt;:{&lt;test_value&gt;}</code>.</p>
 
-    <p>Tests within conditions are formatted like this: <code>&lt;test_name&gt;:{&lt;expected_value&gt;}</code></p>
+    <p>To make conditions more powerful it is possible to combine multiple monitors together forming complex conditions.</p>
 
-    <p>To make conditions more powerful it is possible to combine multiple tests together forming complex conditions.</p>
-
-
-    <h4>Combining Tests</h4>
-
-    <p>Conditioner allows combining of tests to build more complex conditions.</p>
-
-    <p>Link multiple tests using the <code>and</code> or <code>or</code> operators:</p>
+    <p>Link multiple monitors using the <code>and</code> or <code>or</code> operators:</p>
     {% highlight javascript %}foo:{bar} or foo:{bar} and foo:{bar}{% endhighlight %}
 
-    <p>Group tests using brackets to override operator precedence: </p>
+    <p>Group monitors using brackets to override operator precedence: </p>
     {% highlight javascript %}foo:{bar} or (foo:{bar} and foo:{bar}){% endhighlight %}
 
-    <p>Use the <code>not</code> operator to negate a test or test group:
+    <p>Use the <code>not</code> operator to negate a monitors or monitors group:
     {% highlight javascript %}not (foo:{bar} or foo:{bar}) and not foo:{bar}{% endhighlight %}
 
-    <h4>Default Tests</h4>
+    <h4>Default Monitors</h4>
 
-    <p>Currently a couple of tests are available to use within these conditions. See the <a href="index.html#examples">example section</a> on how to combine them.</p>
+    <p>The following monitors are currenlty available. For those people who want to monitor more variables it is possible to
+        <a href="#custom-monitors">write your own monitors</a> using a special API.</p>
 
-    <h5>Element</h5>
-    <p><code>min-width</code>, <code>max-width</code> and <code>seen</code></p>
 
-    <h5>Media</h5>
-    <p><code>query</code> and <code>supported</code></p>
-
-    <h5>Window</h5>
-    <p><code>min-width</code> and <code>max-width</code></p>
-
-    <h5>Pointer</h5>
-    <p><code>available</code></p>
+    {% for monitor in site.data.monitors %}
+    <h5><a href="{{ site.rawurl }}/dist/monitors/{{ monitor.code }}.js" target="_blank">{{ monitor.name }}</a></h5>
+    <ul>
+        {% for test in monitor.tests %}
+        <li>
+            {% capture sample %}{{ monitor.code }}_:{_{{ test.code }}_}{% endcapture %}
+            <h6>{{ test.name }}</h6>
+            <p>{{ test.description }}</p>
+            <p><code>{{ sample | replace:'_','' }}</code></p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
 
 </section>

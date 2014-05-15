@@ -1,6 +1,7 @@
 requirejs.config({
-    baseUrl:'js/',
-    paths:{
-        conditioner:'lib/conditioner'
+    map:{
+        '*':{
+            conditioner:'lib/conditioner'
+        }
     }
 });

@@ -1,27 +1,20 @@
 define(function(){
 
-    /**
-     * Exports a constructor
-     * @param {Element} element
-     * @param {Object} options
-     */
+    // constructor
     var exports = function(element,options) {
-        // setup
+
     };
 
-    /**
-     * Default module options (optional)
-     */
+    // options (optional)
     exports.options = {
         'foo':'bar'
     };
 
-    /**
-     * Called by Conditioner to unload the module
-     */
+    // unload (optional)
     exports.prototype.unload = function() {
-        // restore
+
     };
 
     return exports;
+
 });

@@ -65,6 +65,12 @@ h5 {
   font-size: 1rem;
   color: #3c747c; }
 
+h6 {
+  margin: 0 0 0.25em;
+  font-size: 1rem;
+  color: #444;
+  font-weight: normal; }
+
 a {
   color: #d14; }
 
@@ -201,11 +207,10 @@ h4.code {
 /**
  * Highlight Code Block
  */
-.highlight {
-  margin: 1rem 0; }
-  .highlight pre {
-    background: #f6f6f6; }
-  .highlight code {
+pre {
+  margin: 1rem 0;
+  background: #f6f6f6; }
+  pre code {
     display: block;
     padding: 0.375rem 0.5rem;
     word-wrap: break-word; }
@@ -380,8 +385,10 @@ img.map {
     margin: 0; }
   .params td, .params th {
     color: #777;
-    font-size: 0.875em;
+    font-size: 0.75em;
     vertical-align: top; }
+    .params td p, .params th p {
+      font-size: 0.75rem; }
   .params thead {
     display: block;
     position: absolute;
@@ -390,15 +397,13 @@ img.map {
     width: 1px;
     height: 1px; }
   .params tbody td, .params tbody th {
-    font-weight: normal; }
+    font-weight: normal;
+    padding-right: 0.5rem;
+    box-sizing: borderbox; }
   .params tbody th, .params tbody th + td {
     width: 20%; }
   .params tbody th + td {
     width: 30%; }
-    .params tbody th + td:before {
-      content: '{'; }
-    .params tbody th + td:after {
-      content: '}'; }
   .params tbody td:last-child {
     width: 50%; }
 
@@ -774,3 +779,16 @@ img.map {
   color: #009999; }
 
 /* Literal.Number.Integer.Long */
+.hljs-string {
+  color: #d01040; }
+
+.hljs-function .hljs-keyword {
+  font-weight: bold; }
+
+.hljs-comment {
+  color: #998;
+  font-style: italic; }
+
+.hljs-keyword {
+  font-weight: bold;
+  color: #000; }

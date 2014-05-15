@@ -4,7 +4,7 @@
     findNestedDependencies:true,
     optimize:'uglify',
 
-    // Target location of app (dest), copy all files under appDir to this location
+    // out file
     out:'./js/main.min.js',
 
     // get configuration

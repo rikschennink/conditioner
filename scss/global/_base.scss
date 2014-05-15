@@ -77,6 +77,13 @@ h5 {
     color:darken($secondary-color,15%);
 }
 
+h6 {
+    margin:0 0 .25em;
+    font-size:1rem;
+    color:#444;
+    font-weight:normal;
+}
+
 a {
     color:$primary-color;
 }
