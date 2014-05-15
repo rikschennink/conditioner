@@ -1973,7 +1973,7 @@
                 var config = element.getAttribute(_options.attr.module) || '';
 
                 // test if first character is a '[', if so multiple modules have been defined
-                // double comparison is faster than triple
+                // double comparison is faster than triple in this case
                 if (config.charCodeAt(0) == 91) {
 
                     var controllers = [],
@@ -2008,11 +2008,16 @@
                         return controllers;
                     }
 
-
+                    // array format
                     for (; i < l; i++) {
                         spec = specs[i];
-                        controllers[i] = this._getModuleController(
-                        spec[0], element, typeof spec[1] == 'string' ? spec[2] : spec[1], typeof spec[1] == 'string' ? spec[1] : spec[2]);
+                        if (typeof spec == 'string') {
+                            controllers[i] = this._getModuleController(spec, element);
+                        }
+                        else {
+                            controllers[i] = this._getModuleController(
+                            spec[0], element, typeof spec[1] == 'string' ? spec[2] : spec[1], typeof spec[1] == 'string' ? spec[1] : spec[2]);
+                        }
                     }
                     return controllers;
 
