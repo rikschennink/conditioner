@@ -22,16 +22,21 @@ MonitorFactory.prototype = {
         }
 
         // parse expression
-        var i=0,expressions=expression.split(','),l=expressions.length,result=[],parts;
+        var i=0,expressions=expression.split(','),l=expressions.length,result=[],parts,retain,test;
         for(;i<l;i++) {
             parts=expressions[i].split(':');
+            retain = parts[0].indexOf('was ')===0;
+            test = retain ? parts[0].substr(4) : parts[0];
             result.push({
 
+                // retain when value matched
+                retain: retain,
+
                 // test name
-                test:parts[0],
+                test: test,
 
                 // expected custom value or expect true by default
-                value:isSingleTest ? parts[0] : typeof parts[1] === 'undefined' ? true : parts[1]
+                value:isSingleTest ? test : typeof parts[1] === 'undefined' ? true : parts[1]
 
             });
         }
@@ -135,6 +140,10 @@ MonitorFactory.prototype = {
 
                 watch = {
 
+                    // retain when valid
+                    retain: item.retain,
+                    retained: null,
+
                     // default limbo state before we've done any tests
                     valid:null,
 
@@ -150,10 +159,14 @@ MonitorFactory.prototype = {
                         }
                         // @endif
                         return function (event) {
-                            var state = fn(this.data,event);
-                            if (this.valid!=state) {
-                                this.valid =state;
-                                Observer.publish(this,'change');
+                            if (this.retained) {return;}
+                            var state = fn(this.data, event);
+                            if (this.valid != state) {
+                                this.valid = state;
+                                Observer.publish(this, 'change');
+                            }
+                            if (this.valid && this.retain) {
+                                this.retained = true;
                             }
                         };
                     }(isSingleTest ? setup.test : setup.test[item.test]))

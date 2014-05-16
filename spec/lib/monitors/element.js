@@ -2,7 +2,7 @@
  * Tests if an elements dimensions match certain expectations
  * @module monitors/element
  */
-(function (win, doc, undefined) {
+(function (win, undefined) {
 
     'use strict';
 
@@ -17,18 +17,13 @@
     };
 
     var exports = {
-        data: {
-            seen: false
-        },
         trigger: {
             'resize': win,
             'scroll': win
         },
         test: {
-            'seen': function (data) {
-                if (!data.seen) {
-                    data.seen = _isVisible(data.element);
-                }
+            'visible': function (data) {
+                data.seen = _isVisible(data.element);
                 return data.seen && data.expected;
             },
             'min-width': function (data) {
@@ -57,4 +52,4 @@
         });
     }
 
-}(window, document));
+}(window));

@@ -7,11 +7,11 @@
     'use strict';
 
     var _scrollX = function () {
-        return (win.pageXOffset !== undefined) ? win.pageXOffset : (doc.documentElement || doc.body.parentNode || doc.body).scrollLeft;
+        return win.pageXOffset !== undefined ? win.pageXOffset : (doc.documentElement || doc.body.parentNode || doc.body).scrollLeft;
     };
 
     var _scrollY = function () {
-        return (win.pageYOffset !== undefined) ? win.pageYOffset : (doc.documentElement || doc.body.parentNode || doc.body).scrollTop;
+        return win.pageYOffset !== undefined ? win.pageYOffset : (doc.documentElement || doc.body.parentNode || doc.body).scrollTop;
     };
 
     var _distanceSquared = function (element, event) {
@@ -61,9 +61,6 @@
     };
 
     var exports = {
-        data: {
-            beenNear: false
-        },
         trigger: function (bubble) {
 
             // filter events
@@ -132,13 +129,10 @@
                 if (!_shared.available) {
                     return false;
                 }
-                else if (data.beenNear) {
-                    return true;
-                }
                 var expected = data.expected === true ? 50 : parseInt(data.expected, 10);
                 return data.beenNear = expected * expected >= _distanceSquared(data.element, event);
             },
-            'hovers': function (data) {
+            'fine': function (data) {
                 return _shared.available === data.expected;
             }
         }
