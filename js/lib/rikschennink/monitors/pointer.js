@@ -2,26 +2,28 @@
  * Tests if the user is using a pointer device
  * @module monitors/pointer
  */
-(function(win,doc,undefined){
+(function (win, doc, undefined) {
 
     'use strict';
 
-    var _scrollX = function() {
+    var _scrollX = function () {
         return (win.pageXOffset !== undefined) ? win.pageXOffset : (doc.documentElement || doc.body.parentNode || doc.body).scrollLeft;
     };
 
-    var _scrollY = function(){
+    var _scrollY = function () {
         return (win.pageYOffset !== undefined) ? win.pageYOffset : (doc.documentElement || doc.body.parentNode || doc.body).scrollTop;
     };
 
-    var _distanceSquared = function(element,event) {
+    var _distanceSquared = function (element, event) {
 
-        if (!event) {return;}
+        if (!event) {
+            return;
+        }
 
         var dim = element.getBoundingClientRect(),
             evx = event.pageX - _scrollX(),
             evy = event.pageY - _scrollY(),
-            px,py;
+            px, py;
 
         if (evx < dim.left) { // to the left of the element
             px = dim.left;
@@ -47,25 +49,22 @@
             return 0;
         }
 
-        return Math.pow(evx - px,2) + Math.pow(evy - py,2);
+        return Math.pow(evx - px, 2) + Math.pow(evy - py, 2);
     };
 
     var _pointerEventSupport = win.PointerEvent || win.MSPointerEvent;
     var _pointerEventName = win.PointerEvent ? 'pointermove' : 'MSPointerMove';
     var _shared = {
-        available:false,
-        moves:0,
-        movesRequired:2
+        available: false,
+        moves: 0,
+        movesRequired: 2
     };
 
     var exports = {
-        data:{
-            beenNear:false
-        },
-        trigger:function(bubble){
+        trigger: function (bubble) {
 
             // filter events
-            var filter = function filter(e){
+            var filter = function filter(e) {
 
                 // handle pointer events
                 if (_pointerEventSupport) {
@@ -74,7 +73,9 @@
                     _shared.available = e.pointerType === 4 || e.pointerType === 3;
 
                     // if not yet found, stop here, support could be found later
-                    if (!_shared.available){return;}
+                    if (!_shared.available) {
+                        return;
+                    }
 
                     // clean up the mess
                     doc.removeEventListener(_pointerEventName, filter, false);
@@ -118,21 +119,20 @@
             }
 
             // near
-            doc.addEventListener('mousemove',function(e){bubble(e)},false);
+            doc.addEventListener('mousemove', function (e) {
+                bubble(e)
+            }, false);
 
         },
         test: {
-            'near': function (data,event) {
+            'near': function (data, event) {
                 if (!_shared.available) {
                     return false;
                 }
-                else if (data.beenNear) {
-                    return true;
-                }
-                var expected = data.expected === true ? 50 : parseInt(data.expected,10);
+                var expected = data.expected === true ? 50 : parseInt(data.expected, 10);
                 return data.beenNear = expected * expected >= _distanceSquared(data.element, event);
             },
-            'hovers': function (data) {
+            'fine': function (data) {
                 return _shared.available === data.expected;
             }
         }
@@ -144,7 +144,9 @@
     }
     // AMD
     else if (typeof define === 'function' && define.amd) {
-        define(function(){return exports;});
+        define(function () {
+            return exports;
+        });
     }
 
-}(window,document));
+}(window, document));

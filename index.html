@@ -46,7 +46,7 @@ title: Conditioner.js &bull; Frizz free, environment-aware, javascript modules.
 {% highlight html %}
 <a href="http://maps.google.com/?ll=51.741,3.822"
    data-module="ui/Map"
-   data-conditions="media:{(min-width:40em)} and element:{seen}"> ... </a>
+   data-conditions="media:{(min-width:40em)} and element:{was visible}"> ... </a>
 {% endhighlight %}
 
     <p>Now the HTML is setup, we only have to tell the Conditioner to look for modules in a certain section of the DOM and we're done.</p>
@@ -63,7 +63,7 @@ conditioner.init();
         <a href="http://maps.google.com/?ll=51.741380,3.822169&z=13"
            data-module="ui/Map"
            data-priority="2"
-           data-conditions="media:{(min-width:40em)} and element:{seen} or not media:{supported}">Coast of Holland at Google Maps</a>
+           data-conditions="media:{(min-width:40em)} and element:{was visible} or not media:{supported}">Coast of Holland at Google Maps</a>
     </div>
 
 </section>

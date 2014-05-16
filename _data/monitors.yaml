@@ -1,9 +1,9 @@
 - name: Element
   code: element
   tests:
-    - name: seen
-      code: seen
-      description: Measures if the element has been seen by the user.
+    - name: visible
+      code: visible
+      description: Measures if the element is currently in scrolled into view.
     - name: min-width
       code: min-width:500
       description: The minimum required element width in pixels.
@@ -49,9 +49,9 @@
     - name: near
       code: near:200
       description: Measures if the pointer moves within a certain distance from the element.
-    - name: hovers
-      description: Measures if the user is using a hover input device.
-      code: hovers
+    - name: fine
+      description: Measures if the user is using a fine pointer device.
+      code: fine
 
 - name: Connection
   code: connection
