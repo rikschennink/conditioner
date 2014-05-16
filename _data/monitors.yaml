@@ -46,6 +46,9 @@
 - name: Pointer
   code: pointer
   tests:
+    - name: near
+      code: near:200
+      description: Measures if the pointer moves within a certain distance from the element.
     - name: hovers
       description: Measures if the user is using a hover input device.
       code: hovers

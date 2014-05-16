@@ -194,11 +194,11 @@
                             watches: [],
 
                             // change method
-                            change: function () {
+                            change: function (event) {
                                 i = 0;
                                 l = monitor.watches.length;
                                 for (; i < l; i++) {
-                                    monitor.watches[i].test();
+                                    monitor.watches[i].test(event);
                                 }
                             }
 
@@ -261,8 +261,8 @@
                                     throw new Error('Conditioner: Test "' + item.test + '" not found on "' + path + '" Monitor.');
                                 }
                                 // @endif
-                                return function () {
-                                    var state = fn(this.data);
+                                return function (event) {
+                                    var state = fn(this.data, event);
                                     if (this.valid != state) {
                                         this.valid = state;
                                         Observer.publish(this, 'change');
@@ -1045,12 +1045,13 @@
                         prop += uri.charAt(i);
                     }
                     else {
+
                         if (c == 58) {
                             level[prop] = this._castValueToType(uri.substr(i + 1));
+                            break;
                         }
-                        else {
-                            level = level[prop];
-                        }
+
+                        level = level[prop];
                         prop = '';
                     }
                     i++;
@@ -1860,15 +1861,16 @@
              *     }
              * ]
              * @param {Element} element - Element to bind the controllers to
-             * @param {Array|ModuleController} controllers - module controller configurations
+             * @param {Array|Object} controllers - ModuleController configurations
              * @return {NodeController|null} - The newly created node or null if something went wrong
              */
             load: function (element, controllers) {
 
+                // @ifdef DEV
                 if (!controllers) {
-                    return null;
+                    throw new Error('ModuleLoader.load(element,controllers): "controllers" is a required parameter.');
                 }
-
+                // @endif
                 // if controllers is object put in array
                 controllers = controllers.length ? controllers : [controllers];
 

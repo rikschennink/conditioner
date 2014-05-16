@@ -34,3 +34,16 @@ title: Example Conditions &bull; Conditioner.js
     <div data-module="ui/Clock"
          data-conditions="pointer:{hovers}"></div>
 </div>
+
+<h3>Based on interaction proximity</h3>
+<p>The Clock below will be activated the moment the cursor moves closer than 150 pixels. It will not be deactivated when the pointer moves away.</p>
+
+{% highlight html %}
+<div data-module="ui/Clock"
+     data-conditions="pointer:{near:150}"> ... </div>
+{% endhighlight %}
+
+<div class="component">
+    <div data-module="ui/Clock"
+         data-conditions="pointer:{near:150}"></div>
+</div>
