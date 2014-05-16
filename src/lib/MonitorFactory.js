@@ -84,11 +84,11 @@ MonitorFactory.prototype = {
                     watches: [],
 
                     // change method
-                    change:function () {
+                    change:function(event) {
                         i = 0;
                         l = monitor.watches.length;
                         for (; i<l; i++) {
-                            monitor.watches[i].test();
+                            monitor.watches[i].test(event);
                         }
                     }
 
@@ -149,8 +149,8 @@ MonitorFactory.prototype = {
                             throw new Error('Conditioner: Test "' + item.test + '" not found on "' + path + '" Monitor.');
                         }
                         // @endif
-                        return function () {
-                            var state = fn(this.data);
+                        return function (event) {
+                            var state = fn(this.data,event);
                             if (this.valid!=state) {
                                 this.valid =state;
                                 Observer.publish(this,'change');

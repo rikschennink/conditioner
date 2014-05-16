@@ -89,12 +89,16 @@ ModuleLoader.prototype = {
      *     }
      * ]
      * @param {Element} element - Element to bind the controllers to
-     * @param {Array|ModuleController} controllers - module controller configurations
+     * @param {Array|Object} controllers - ModuleController configurations
      * @return {NodeController|null} - The newly created node or null if something went wrong
      */
     load:function(element,controllers) {
 
-        if (!controllers) {return null;}
+        // @ifdef DEV
+        if (!controllers) {
+            throw new Error('ModuleLoader.load(element,controllers): "controllers" is a required parameter.');
+        }
+        // @endif
 
         // if controllers is object put in array
         controllers = controllers.length ? controllers : [controllers];
