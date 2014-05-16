@@ -258,12 +258,13 @@ ModuleController.prototype = {
                 prop+=uri.charAt(i);
             }
             else {
+
                 if (c==58) {
                     level[prop] = this._castValueToType(uri.substr(i+1));
+                    break;
                 }
-                else {
-                    level = level[prop];
-                }
+
+                level = level[prop];
                 prop = '';
             }
             i++;
