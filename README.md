@@ -61,7 +61,9 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 * Browserify support, for conditional loading you'll still need an AMD loader though. 
 * Separate loading state attribute for binding CSS loading animations.
 * Configure the paths and attributes Conditioner uses.
-* An `is` and `on` method for manually testing conditions once or continually.
+* `getModule` and `getModules` methods to access moduleControllers more directly.
+* New `is` and `on` methods for manually testing conditions once or continually.
+* `destroy` method to destroy previously initialised nodes.
 * Writing your own monitors is now a lot easier.
 * Fixes and small improvements.
 
