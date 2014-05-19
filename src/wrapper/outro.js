@@ -1,4 +1,0 @@
-
-	return new ModuleLoader();
-
-});

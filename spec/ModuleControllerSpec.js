@@ -1,87 +1,145 @@
-(function(){
+define(['lib/utils/Observer'],function(Observer){
 
-	'use strict';
+    'use strict';
 
-	describe('ModuleController',function(){
+    describe('ModuleController',function(){
 
-		it('will throw error when not passed a "path" or "element" in constructor',function(){
+        var element,path,mc;
 
-			// act, assert
-			expect(function(){new ModuleController();}).toThrow(
-				new Error('ModuleController(path,element,options): "path" and "element" are required parameters.')
-			);
+        beforeEach(function(){
 
-		});
+            element = document.createElement('div');
+            path = 'mock/modules/foo';
 
-		it ('will return correct state when asked the module readiness',function(){
+        });
 
-			// arrange
-			var element = document.createElement('div');
-			var path = '../spec/mock/jasmine';
+        describe('(path,element,[options,[agent]])',function(){
 
-			// act
-			var mc = new ModuleController(path,element);
+            it('will throw error when not passed a "path" or "element" in constructor',function(){
 
-			// assert
-			expect(mc.hasInitialized()).toBeTruthy();
+                // act, assert
+                var createInstance = function(){new ModuleController();};
+                expect(createInstance).to.throw(Error);
 
-		});
+            });
 
-		it ('will return correct state when asked if the module is conditioned',function(){
+        });
 
-			// arrange
-			var element = document.createElement('div');
-			var path = '../spec/mock/jasmine';
+        describe('(path,element,[options,[agent]])',function(){
 
-			// act
-			var mc = new ModuleController(path,element);
+            it('will publish load event when ready',function(cb){
 
-			// assert
-			expect(mc.isModuleConditioned()).toBeFalsy();
+                mc = new ModuleController(path,element);
 
-		});
+                Observer.subscribe(mc,'load',function(){
+                    cb();
+                });
 
-		it ('will return correct state when asked if the wrapped module is available',function(){
+            });
 
-			// arrange
-			var element = document.createElement('div');
-			var path = '../spec/mock/jasmine';
+        });
 
-			// act
-			var mc = new ModuleController(path,element);
+        describe('.hasInitialized()',function(){
 
-			// assert
-			expect(mc.isModuleAvailable()).toBeTruthy();
+            it ('will return true after correct module instantiation',function(){
 
-		});
+                // assert
+                mc = new ModuleController(path,element);
+                expect(mc.hasInitialized()).to.be.ok;
 
-		it ('will return correct state when asked if the module matches a certain path',function() {
+            });
 
-			// arrange
-			var element = document.createElement('div');
-			var path = '../spec/mock/jasmine';
+        });
 
-			// act
-			var mc = new ModuleController(path,element);
+        describe('.isModuleAvailable()',function(){
 
-			// assert
-			expect(mc.matchesPath('../spec/mock/jasmine')).toBeTruthy();
-		});
+            it ('will return true for a default module',function(){
 
-		it ('will not contain an active module after unloading the module',function() {
+                // assert
+                mc = new ModuleController(path,element);
+                expect(mc.isModuleAvailable()).to.be.ok;
 
-			// arrange
-			var element = document.createElement('div');
-			var path = '../spec/mock/jasmine';
+            });
 
-			// act
-			var mc = new ModuleController(path,element);
-			mc.unload();
+        });
 
-			// assert
-			expect(mc.isModuleActive()).toBeFalsy();
-		});
+        describe('.getModulePath()',function(){
 
-	});
+            it('will return the correct path',function(){
 
-}());
+                mc = new ModuleController(path,element);
+                expect(mc.getModulePath()).to.equal('mock/modules/foo');
+
+            });
+
+        });
+
+        describe('.wrapsModuleWithPath(path)',function(){
+
+            it('will return the correct state when asked if it\'s module matches a given path',function(){
+
+                mc = new ModuleController(path,element);
+                expect(mc.wrapsModuleWithPath('mock/modules/foo')).to.be.ok;
+
+            });
+
+        });
+
+        describe('(path,element,options,[agent])',function(){
+
+            it('will parse options object',function(cb){
+
+                mc = new ModuleController(path,element,{foo:2,level:{a:'test',b:[0,3],c:'alt',d:2.2}});
+
+                Observer.subscribe(mc,'load',function(){
+
+                    expect(mc._module._options.foo).to.equal(2);
+                    expect(mc._module._options.level.a).to.equal('test');
+                    expect(mc._module._options.level.b).to.eql([0,3]);
+                    expect(mc._module._options.level.c).to.equal('alt');
+                    expect(mc._module._options.level.d).to.equal(2.2);
+
+                    cb();
+                });
+
+            });
+
+            it('will parse options json string',function(cb){
+
+                mc = new ModuleController(path,element,'{"foo":2,"level":{"a":"test","b":[0,3],"c":"alt","d":2.2}}');
+
+                Observer.subscribe(mc,'load',function(){
+
+                    expect(mc._module._options.foo).to.equal(2);
+                    expect(mc._module._options.level.a).to.equal('test');
+                    expect(mc._module._options.level.b).to.eql([0,3]);
+                    expect(mc._module._options.level.c).to.equal('alt');
+                    expect(mc._module._options.level.d).to.equal(2.2);
+
+                    cb();
+                });
+
+            });
+
+            it('will parse options string',function(cb){
+
+                mc = new ModuleController(path,element,'foo:2, level.a:test, level.b:0,3, level.c:\'alt\', level.d:2.2');
+
+                Observer.subscribe(mc,'load',function(){
+
+                    expect(mc._module._options.foo).to.equal(2);
+                    expect(mc._module._options.level.a).to.equal('test');
+                    expect(mc._module._options.level.b).to.eql([0,3]);
+                    expect(mc._module._options.level.c).to.equal('alt');
+                    expect(mc._module._options.level.d).to.equal(2.2);
+
+                    cb();
+                });
+
+            });
+
+        });
+
+    });
+
+});

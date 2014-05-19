@@ -1,1 +1,0 @@
-define(function(){"use strict";return{support:function(){return"onLine"in navigator},setup:function(n){window.addEventListener("online",n,!1),window.addEventListener("offline",n,!1)},assert:function(n){return"any"===n&&navigator.onLine}}});

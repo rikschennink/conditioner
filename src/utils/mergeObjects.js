@@ -1,5 +1,8 @@
-define(function(){
-	var exports = function(target, src) {
+(function(win,undefined){
+
+    'use strict';
+
+	var exports = function(target,src) {
 
 		var array = Array.isArray(src);
 		var dst = array && [] || {};
@@ -7,21 +10,8 @@ define(function(){
 		src = src || {};
 
 		if (array) {
-
-			target = target || [];
-			dst = dst.concat(target);
-
-			src.forEach(function(e, i) {
-
-				if (typeof e === 'object') {
-					dst[i] = exports(target[i], e);
-				}
-				else {
-					if (target.indexOf(e) === -1) {
-						dst.push(e);
-					}
-				}
-			});
+            // arrays are not merged
+            dst = src.concat();
 		}
 		else {
 
@@ -53,5 +43,17 @@ define(function(){
 		return dst;
 	};
 
-	return exports;
-});
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = exports;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function(){return exports;});
+    }
+    // Browser globals
+    else {
+        win.mergeObjects = exports;
+    }
+
+}(this));

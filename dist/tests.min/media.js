@@ -1,1 +1,0 @@
-define(function(){"use strict";return{support:function(){return"matchMedia"in window},arrange:function(n){if("supported"!==n){var t=this;this._mql=window.matchMedia(n),this._mql.addListener(function(){t.onchange()})}},assert:function(n){return this.supported()?"supported"===n?this.supported():this._mql.matches:!1}}});

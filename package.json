@@ -1,11 +1,11 @@
 {
   "name": "conditioner",
-  "version": "0.9.3",
-  "description": "ConditionerJS - Frizz free, environment-aware, javascript modules.",
+  "version": "1.0.0",
+  "description": "ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules",
   "homepage": "http://conditionerjs.com",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "javascript",
     "media queries",
     "media query",
-    "requirejs",
+    "amd",
     "conditions",
     "shampoo"
   ],
@@ -35,15 +35,21 @@
   "readmeFilename": "README.md",
   "dependencies": {},
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-uglify": "~0.2.0",
-    "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-watch": "~0.4.3",
-    "grunt-contrib-requirejs": "~0.4.1",
-    "grunt-contrib-jshint": "~0.4.3",
-    "grunt-contrib-jasmine": "~0.4.2",
-    "grunt-contrib-clean": "~0.5.0",
-    "grunt-template-jasmine-requirejs": "~0.1.6"
+    "chai": "^1.9.1",
+    "gulp": "^3.6.1",
+    "gulp-beautify": "^1.0.3",
+    "gulp-clean": "^0.2.4",
+    "gulp-concat": "^2.2.0",
+    "gulp-header": "^1.0.2",
+    "gulp-jshint": "^1.5.3",
+    "gulp-mocha-phantomjs": "^0.1.4",
+    "gulp-preprocess": "^1.0.1",
+    "gulp-replace": "^0.2.0",
+    "gulp-size": "^0.3.0",
+    "gulp-uglify": "^0.2.1",
+    "gulp-wrap": "^0.3.0",
+    "jshint-stylish": "^0.1.5",
+    "requirejs": "^2.1.11",
+    "run-sequence": "^0.3.6"
   }
 }

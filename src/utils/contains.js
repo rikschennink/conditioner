@@ -1,20 +1,22 @@
-define(function() {
+(function(win,undefined) {
+
+    'use strict';
 
 	// define contains method based on browser capabilities
-	var el = document ? document.body : null;
+	var el = win.document ? win.document.body : null, exports;
 	if (el && el.compareDocumentPosition) {
-		return function(parent,child) {
+        exports = function(parent,child) {
 			/* jshint -W016 */
 			return !!(parent.compareDocumentPosition(child) & 16);
 		};
 	}
 	else if (el && el.contains) {
-		return function(parent,child) {
+        exports = function(parent,child) {
 			return parent != child && parent.contains(child);
 		};
 	}
 	else {
-		return function(parent,child) {
+        exports = function(parent,child) {
 			var node = child.parentNode;
 			while (node) {
 				if (node === parent) {
@@ -26,4 +28,17 @@ define(function() {
 		};
 	}
 
-});
+    // CommonJS
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = exports;
+    }
+    // AMD
+    else if (typeof define === 'function' && define.amd) {
+        define(function(){return exports;});
+    }
+    // Browser globals
+    else {
+        win.contains = exports;
+    }
+
+}(this));
