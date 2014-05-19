@@ -373,6 +373,23 @@ img.map {
     content: '"'; }
 
 /**
+ * Monitors
+ */
+.monitors {
+  margin: -0.5rem -0.5rem 1rem; }
+  .monitors h6 {
+    font-weight: bold; }
+  .monitors article {
+    margin: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    padding-bottom: 0;
+    border: 1px solid #ddd; }
+  .monitors pre {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    margin: 0 -0.75rem; }
+
+/**
  * Params
  */
 .params {
@@ -441,7 +458,12 @@ img.map {
     clear: none;
     content: ''; }
   .highlight {
-    margin-right: -6rem; } }
+    margin-right: -6rem; }
+  .monitors li {
+    box-sizing: border-box;
+    display: inline-block;
+    width: 50%;
+    vertical-align: top; } }
 
 @media (min-width: 62rem) {
   body {

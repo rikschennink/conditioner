@@ -1,61 +1,61 @@
 - name: Element
   code: element
   tests:
-    - name: visible
+    - name: Visible
       code: visible
       description: Measures if the element is currently in scrolled into view.
-    - name: min-width
+    - name: Min-width
       code: min-width:500
       description: The minimum required element width in pixels.
-    - name: max-width
+    - name: Max-width
       code: max-width:500
       description: The maximum required element width in pixels.
-    - name: min-height
+    - name: Min-height
       code: min-height:500
       description: The minimum required element height in pixels.
-    - name: max-height
+    - name: Max-height
       code: max-height:500
       description: The maximum required element height in pixels.
 
 - name: Media
   code: media
   tests:
-    - name: query
-      code: (min-width:500px) and (max-width:1000px)
+    - name: Query
+      code: (min-width:500px)
       description: The media query to test, don't forget the parenthesis around the queries.
-    - name: supported
+    - name: Supported
       code: supported
       description: Tests if media queries are supported.
 
 - name: Window
   code: window
   tests:
-    - name: min-width
+    - name: Min-width
       code: min-width:500
       description: The minimum required window width in pixels.
-    - name: max-width
+    - name: Max-width
       code: max-width:500
       description: The maximum required window width in pixels.
-    - name: min-height
+    - name: Min-height
       code: min-height:500
       description: The minimum required window height in pixels.
-    - name: max-height
+    - name: Max-height
       code: max-height:500
       description: The maximum required window height in pixels.
 
 - name: Pointer
   code: pointer
   tests:
-    - name: near
+    - name: Near
       code: near:200
       description: Measures if the pointer moves within a certain distance from the element.
-    - name: fine
+    - name: Fine
       description: Measures if the user is using a fine pointer device.
       code: fine
 
 - name: Connection
   code: connection
   tests:
-    - name: any
+    - name: Any
       description: Measures if the user has any form of connectivity.
       code: any

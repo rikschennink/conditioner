@@ -380,6 +380,32 @@ img.map {
 }
 
 
+/**
+ * Monitors
+ */
+.monitors {
+
+    margin:-.5rem -.5rem 1rem;
+
+    h6 {
+        font-weight:bold;
+    }
+
+    article {
+        margin:.5rem;
+        padding:.5rem .75rem;
+        padding-bottom:0;
+        border:1px solid #ddd;
+    }
+
+    pre {
+        padding-left:.5rem;
+        padding-right:.5rem;
+        margin:0 -.75rem;
+    }
+
+}
+
 
 /**
  * Params

@@ -30,15 +30,15 @@
 
     {% for monitor in site.data.monitors %}
     <h5><a href="{{ site.rawurl }}/dist/monitors/{{ monitor.code }}.js" target="_blank">{{ monitor.name }}</a></h5>
-    <ul>
-        {% for test in monitor.tests %}
-        <li>
+    <ul class="monitors">
+        {% for test in monitor.tests %}<li>
+            <article>
             {% capture sample %}{{ monitor.code }}_:{_{{ test.code }}_}{% endcapture %}
             <h6>{{ test.name }}</h6>
             <p>{{ test.description }}</p>
-            <p><code>{{ sample | replace:'_','' }}</code></p>
-        </li>
-        {% endfor %}
+            <pre><code>{{ sample | replace:'_','' }}</code></pre>
+            </article>
+        </li>{% endfor %}
     </ul>
     {% endfor %}
 
