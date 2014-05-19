@@ -143,3 +143,12 @@ gulp.task('dev',['test'],function() {
     gulp.watch([paths.src + '**/*',paths.spec + '*.js'],['test']);
 
 });
+
+gulp.task('inject',function(){
+
+    // injects the dist files into the pages and bower folders
+    gulp.src(paths.dist.dev + '/**/*.*',{ base: paths.dist.dev })
+        .pipe(gulp.dest('../conditioner-pages/js/lib/rikschennink/'))
+        .pipe(gulp.dest('../conditioner-bower/'));
+
+});

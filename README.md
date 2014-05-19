@@ -34,6 +34,8 @@ We can accomplish this by calling the `init` method.
 conditioner.init();
 ```
 
+Some more demos can be found in the [examples](http://conditionerjs.com/examples/conditions/) section of the documentation.
+
 ## Articles
 * [Frizz Free JavaScript With ConditionerJS](http://www.smashingmagazine.com/2014/04/03/frizz-free-javascript-with-conditionerjs/)
 
