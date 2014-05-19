@@ -9,6 +9,8 @@
     {% highlight html %}<a data-module="ui/Map" data-conditions="media:{(min-width:30em)}"> ... </a>{% endhighlight %}
     <p>Conditions consist of monitors (media) with related tests (min-width:30em) and are formatted like this: <code>&lt;monitor_name&gt;:{&lt;test_value&gt;}</code>.</p>
 
+    <p>You can prepend a test with the <code>was</code> operator to have it remember it's state. For instance, the test <code>element:{was visible}</code> will not be invalidated once the element becomes invisible.</p>
+
     <p>To make conditions more powerful it is possible to combine multiple monitors together forming complex conditions.</p>
 
     <p>Link multiple monitors using the <code>and</code> or <code>or</code> operators:</p>
@@ -17,7 +19,7 @@
     <p>Group monitors using brackets to override operator precedence: </p>
     {% highlight javascript %}foo:{bar} or (foo:{bar} and foo:{bar}){% endhighlight %}
 
-    <p>Use the <code>not</code> operator to negate a monitors or monitors group:
+    <p>Set the <code>not</code> operator to negate a monitor or monitors group state:
     {% highlight javascript %}not (foo:{bar} or foo:{bar}) and not foo:{bar}{% endhighlight %}
 
     <h4>Default Monitors</h4>
