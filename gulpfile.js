@@ -40,7 +40,9 @@ var paths = {
         dev:'./dist/dev/',
         prod:'./dist/min/',
         spec:'./spec/lib/'
-    }
+    },
+    bower:'../conditioner-bower/',
+    pages:'../conditioner-pages/js/lib/rikschennink/'
 };
 
 var files = {
@@ -148,7 +150,7 @@ gulp.task('inject',function(){
 
     // injects the dist files into the pages and bower folders
     gulp.src(paths.dist.dev + '/**/*.*',{ base: paths.dist.dev })
-        .pipe(gulp.dest('../conditioner-pages/js/lib/rikschennink/'))
-        .pipe(gulp.dest('../conditioner-bower/'));
+        .pipe(gulp.dest(paths.pages))
+        .pipe(gulp.dest(paths.bower));
 
 });
