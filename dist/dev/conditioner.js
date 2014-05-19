@@ -1,7 +1,7 @@
 // conditioner v1.0.0 - ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules
 // Copyright (c) 2014 Rik Schennink - http://conditionerjs.com
 // License: MIT - http://www.opensource.org/licenses/mit-license.php
-(function (doc, undefined) {
+(function (win, undefined) {
 
     'use strict';
 
@@ -2129,7 +2129,7 @@
                     this.setOptions(options);
                 }
 
-                return _moduleLoader.parse(doc);
+                return _moduleLoader.parse(win.document);
 
             },
 
@@ -2576,4 +2576,4 @@
         // @endif
     }
 
-}(document));
+}(this));

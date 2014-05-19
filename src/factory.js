@@ -1,4 +1,4 @@
-(function(doc,undefined){
+(function(win,undefined){
 
     'use strict';
 
@@ -81,7 +81,7 @@
                     this.setOptions(options);
                 }
 
-                return _moduleLoader.parse(doc);
+                return _moduleLoader.parse(win.document);
 
             },
 
@@ -534,4 +534,4 @@ Array
         // @endif
     }
 
-}(document));
+}(this));

@@ -77,4 +77,4 @@
         win.Promise = exports;
     }
 
-}(window));
+}(this));

@@ -58,4 +58,4 @@
         win.mergeObjects = exports;
     }
 
-}(window));
+}(this));

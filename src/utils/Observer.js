@@ -248,4 +248,4 @@
         win.Observer = exports;
     }
 
-}(window));
+}(this));

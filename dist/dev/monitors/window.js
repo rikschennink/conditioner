@@ -2,17 +2,18 @@
  * Tests if the window dimensions match certain expectations
  * @module monitors/window
  */
-(function (win, doc, undefined) {
+(function (win, undefined) {
 
     'use strict';
 
-    var _width = function () {
+    var doc = win.document;
+    var width = function () {
         return win.innerWidth || doc.documentElement.clientWidth;
     };
-    var _height = function () {
+    var height = function () {
         return win.innerHeight || doc.documentElement.clientHeight;
     };
-    var _toInt = function (value) {
+    var toInt = function (value) {
         return parseInt(value, 10);
     };
 
@@ -22,16 +23,16 @@
         },
         test: {
             'min-width': function (data) {
-                return _toInt(data.expected) <= _width();
+                return toInt(data.expected) <= width();
             },
             'max-width': function (data) {
-                return _toInt(data.expected) >= _width();
+                return toInt(data.expected) >= width();
             },
             'min-height': function (data) {
-                return _toInt(data.expected) <= _height();
+                return toInt(data.expected) <= height();
             },
             'max-height': function (data) {
-                return _toInt(data.expected) >= _height();
+                return toInt(data.expected) >= height();
             }
         }
     };
@@ -47,4 +48,4 @@
         });
     }
 
-}(window, document));
+}(this));

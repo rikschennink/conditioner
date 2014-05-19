@@ -1,9 +1,8 @@
-
 /**
  * Tests if an active network connection is available and monitors this connection
  * @module monitors/connection
  */
-(function(nav,win,undefined){
+(function(win,undefined){
 
     'use strict';
 
@@ -28,4 +27,4 @@
         define(function(){return exports;});
     }
 
-}(navigator,window));
+}(this));

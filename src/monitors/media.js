@@ -58,4 +58,4 @@
         define(function(){return exports;});
     }
 
-}(window));
+}(this));

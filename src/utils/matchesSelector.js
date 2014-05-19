@@ -1,9 +1,9 @@
-(function(win,doc,undefined) {
+(function(win,undefined) {
 
     'use strict';
 
 	// define method used for matchesSelector
-	var exports=null,_method = null,el = doc ? doc.body : null;
+	var exports=null,_method = null,el = win.document ? win.document.body : null;
 	if (!el || el.matches) {
 		_method = 'matches';
 	}
@@ -39,7 +39,7 @@
             // then check if the given element is included in that list.
             // Executing the query on the parentNode reduces the resulting nodeList,
             // document doesn't have a parentNode, though.
-            var nodeList = (element.parentNode || doc).querySelectorAll(selector) || [],
+            var nodeList = (element.parentNode || win.document).querySelectorAll(selector) || [],
                 i = nodeList.length;
 
             // loop through nodeList
@@ -64,4 +64,4 @@
         win.matchesSelector = exports;
     }
 
-}(window,document));
+}(this));

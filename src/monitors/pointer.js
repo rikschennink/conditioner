@@ -2,25 +2,23 @@
  * Tests if the user is using a pointer device
  * @module monitors/pointer
  */
-(function(win,doc,undefined){
+(function(win,undefined){
 
     'use strict';
 
-    var _scrollX = function() {
-        return win.pageXOffset !== undefined ? win.pageXOffset : (doc.documentElement || doc.body.parentNode || doc.body).scrollLeft;
-    };
+    var doc = win.document;
+    var docEl = doc.documentElement || doc.body.parentNode || doc.body;
 
-    var _scrollY = function(){
-        return win.pageYOffset !== undefined ? win.pageYOffset : (doc.documentElement || doc.body.parentNode || doc.body).scrollTop;
-    };
+    var scrollX = function() { return win.pageXOffset !== undefined ? win.pageXOffset : docEl.scrollLeft; };
+    var scrollY = function(){ return win.pageYOffset !== undefined ? win.pageYOffset : docEl.scrollTop; };
 
-    var _distanceSquared = function(element,event) {
+    var distanceSquared = function(element,event) {
 
         if (!event) {return;}
 
         var dim = element.getBoundingClientRect(),
-            evx = event.pageX - _scrollX(),
-            evy = event.pageY - _scrollY(),
+            evx = event.pageX - scrollX(),
+            evy = event.pageY - scrollY(),
             px,py;
 
         if (evx < dim.left) { // to the left of the element
@@ -50,9 +48,9 @@
         return Math.pow(evx - px,2) + Math.pow(evy - py,2);
     };
 
-    var _pointerEventSupport = win.PointerEvent || win.MSPointerEvent;
-    var _pointerEventName = win.PointerEvent ? 'pointermove' : 'MSPointerMove';
-    var _shared = {
+    var pointerEventSupport = win.PointerEvent || win.MSPointerEvent;
+    var pointerEventName = win.PointerEvent ? 'pointermove' : 'MSPointerMove';
+    var shared = {
         available:false,
         moves:0,
         movesRequired:2
@@ -65,16 +63,16 @@
             var filter = function filter(e){
 
                 // handle pointer events
-                if (_pointerEventSupport) {
+                if (pointerEventSupport) {
 
                     // only available if is mouse or pen
-                    _shared.available = e.pointerType === 4 || e.pointerType === 3;
+                    shared.available = e.pointerType === 4 || e.pointerType === 3;
 
                     // if not yet found, stop here, support could be found later
-                    if (!_shared.available){return;}
+                    if (!shared.available){return;}
 
                     // clean up the mess
-                    doc.removeEventListener(_pointerEventName, filter, false);
+                    doc.removeEventListener(pointerEventName, filter, false);
 
                     // handle the change
                     bubble();
@@ -85,19 +83,19 @@
 
                 // stop here if no mouse move event
                 if (e.type !== 'mousemove') {
-                    _shared.moves = 0;
+                    shared.moves = 0;
                     return;
                 }
 
                 // test if the user has fired enough mouse move events
-                if (++_shared.moves >= _shared.movesRequired) {
+                if (++shared.moves >= shared.movesRequired) {
 
                     // stop listening to events
                     doc.removeEventListener('mousemove', filter, false);
                     doc.removeEventListener('mousedown', filter, false);
 
                     // trigger
-                    _shared.available = true;
+                    shared.available = true;
 
                     // handle the change
                     bubble();
@@ -105,8 +103,8 @@
             };
 
             // if pointer events supported use those as they offer more granularity
-            if (_pointerEventSupport) {
-                doc.addEventListener(_pointerEventName, filter, false);
+            if (pointerEventSupport) {
+                doc.addEventListener(pointerEventName, filter, false);
             }
             else {
                 // start listening to mousemoves to deduce the availability of a pointer device
@@ -120,12 +118,12 @@
         },
         test: {
             'near': function (data,event) {
-                if (!_shared.available) {return false;}
+                if (!shared.available) {return false;}
                 var expected = data.expected === true ? 50 : parseInt(data.expected,10);
-                return data.beenNear = expected * expected >= _distanceSquared(data.element, event);
+                return data.beenNear = expected * expected >= distanceSquared(data.element, event);
             },
             'fine': function (data) {
-                return _shared.available === data.expected;
+                return shared.available === data.expected;
             }
         }
     };
@@ -139,4 +137,4 @@
         define(function(){return exports;});
     }
 
-}(window,document));
+}(this));

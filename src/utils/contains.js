@@ -1,9 +1,9 @@
-(function(win,doc,undefined) {
+(function(win,undefined) {
 
     'use strict';
 
 	// define contains method based on browser capabilities
-	var el = doc ? doc.body : null,exports;
+	var el = win.document ? win.document.body : null, exports;
 	if (el && el.compareDocumentPosition) {
         exports = function(parent,child) {
 			/* jshint -W016 */
@@ -41,4 +41,4 @@
         win.contains = exports;
     }
 
-}(window,document));
+}(this));

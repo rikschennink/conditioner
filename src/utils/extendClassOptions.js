@@ -47,4 +47,4 @@
         win.extendClassOptions = exports;
     }
 
-}(window));
+}(this));
