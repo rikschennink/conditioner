@@ -26,24 +26,23 @@ define(function(){
         'type':'watch'
     };
 
-    // load component
-    exports.prototype._load = function() {
-        this._element.innerHTML = '<iframe src="http://ghbtns.com/github-btn.html?user=' + this._options.user + '&repo=' + this._options.repo + '&type=' + this._options.type + '&count=' + this._options.count + '"' +
-            'allowtransparency="true" ' +
-            'frameborder="0" ' +
-            'scrolling="0" ' +
-            'width="' + this._options.width + '" ' +
-            'height="' + this._options.height + '"></iframe>';
-    };
+    exports.prototype = {
 
-    // unload stargazers
-    exports.prototype.unload = function() {
+        // load component
+        _load:function() {
+            this._element.innerHTML = '<iframe src="http://ghbtns.com/github-btn.html?user=' + this._options.user + '&repo=' + this._options.repo + '&type=' + this._options.type + '&count=' + this._options.count + '"' +
+                'allowtransparency="true" ' +
+                'frameborder="0" ' +
+                'scrolling="0" ' +
+                'width="' + this._options.width + '" ' +
+                'height="' + this._options.height + '"></iframe>';
+        },
 
-        // restore content
-        this._element.innerHTML = this._inner;
-
+        // unload stargazers
+        unload:function() {
+            this._element.innerHTML = this._inner;
+        }
     };
 
     return exports;
-
 });

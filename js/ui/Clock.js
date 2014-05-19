@@ -3,7 +3,7 @@ define(function(){
     'use strict';
 
     // adds leading zero's
-    var _pad = function(n){return n<10 ? '0'+n : n;};
+    var pad = function(n){return n<10 ? '0'+n : n;};
 
     // Clock Class
     var exports = function(element,options) {
@@ -28,40 +28,41 @@ define(function(){
     };
 
     // update time
-    exports.prototype._tick = function() {
+    exports.prototype = {
 
-        var self = this,
-            now = new Date(),
-            date = _pad(now.getDate()) + '/' + (now.getMonth()+1) + '/'+ now.getFullYear(),
-            time = _pad(now.getHours()) + ':' + _pad(now.getMinutes()) + ':' + _pad(now.getSeconds());
+        _tick:function() {
 
-        // write inner html
-        this._time.textContent = date + (this._options.time ? ' - ' + time : '');
+            var self = this,
+                now = new Date(),
+                date = pad(now.getDate()) + '/' + (now.getMonth()+1) + '/'+ now.getFullYear(),
+                time = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
 
-        // if time is not enabled, don't start ticking
-        if (!this._options.time) {
-            return;
+            // write inner html
+            this._time.textContent = date + (this._options.time ? ' - ' + time : '');
+
+            // if time is not enabled, don't start ticking
+            if (!this._options.time) {
+                return;
+            }
+
+            // wait timeout milliseconds till next clock tick
+            this._timer = setTimeout(function(){
+                self._tick();
+            },900);
+
+        },
+
+        // unload clock
+        unload:function() {
+
+            // stop ticking
+            clearTimeout(this._timer);
+
+            // restore content
+            this._time.parentNode.removeChild(this._time);
+
         }
-
-        // wait timeout milliseconds till next clock tick
-        this._timer = setTimeout(function(){
-            self._tick();
-        },900);
-
-    };
-
-    // unload clock
-    exports.prototype.unload = function() {
-
-        // stop ticking
-        clearTimeout(this._timer);
-
-        // restore content
-        //this._element.innerHTML = this._inner;
-        this._time.parentNode.removeChild(this._time);
-
     };
 
     return exports;
-
 });

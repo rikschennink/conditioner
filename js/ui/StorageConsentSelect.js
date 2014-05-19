@@ -44,28 +44,29 @@ define(['security/StorageConsentGuard'],function(StorageConsentGuard){
         }
     };
 
-    // Handle events
-    exports.prototype.handleEvent = function(e) {
-        if (e.type === 'change') {
-            var select = this._element.querySelector('select'),
-                value = select.options[select.selectedIndex].value;
+    exports.prototype = {
 
-            // set active level
-            this._storageGuard.setActiveLevel(value);
+        // Handle events
+        handleEvent:function(e) {
+            if (e.type === 'change') {
+                var select = this._element.querySelector('select'),
+                    value = select.options[select.selectedIndex].value;
+
+                // set active level
+                this._storageGuard.setActiveLevel(value);
+            }
+        },
+
+        // Unload StorageConsentSelect module
+        unload:function() {
+
+            // remove event listener
+            this._element.querySelector('select').removeEventListener('change',this);
+
+            // restore original content
+            this._element.innerHTML = this._inner;
         }
     };
 
-    // Unload StorageConsentSelect module
-    exports.prototype.unload = function() {
-
-        // remove event listener
-        this._element.querySelector('select').removeEventListener('change',this);
-
-        // restore original content
-        this._element.innerHTML = this._inner;
-
-    };
-
     return exports;
-
 });

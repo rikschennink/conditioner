@@ -15,50 +15,48 @@ define(['utils/Observer','utils/mergeObjects','module'],function(Observer,mergeO
         this._setDefaultLevel();
     };
 
-    var p = StorageConsentGuard.prototype;
+    StorageConsentGuard.prototype = {
 
-    p.setOptions = function(options) {
+        setOptions:function(options) {
 
-        if (!options) {
-            options = {};
+            if (!options) {options = {};}
+
+            // sets initial options
+            this._options = mergeObjects({
+                'initial':'all',
+                'levels':['all','none']
+            },options);
+
+            this._setDefaultLevel();
+        },
+
+        _setDefaultLevel:function() {
+            this.setActiveLevel(this._options.initial);
+        },
+
+        getLevels:function() {
+            return this._options.levels;
+        },
+
+        getActiveLevel:function() {
+            return this._level;
+        },
+
+        setActiveLevel:function(level) {
+
+            // if is already the active level
+            if (level === this._level) {return;}
+
+            // set new level
+            this._level = level;
+
+            Observer.publish(this,'change',this._level);
         }
 
-        // sets initial options
-        this._options = mergeObjects({
-            'initial':'all',
-            'levels':['all','none']
-        },options);
-
-        this._setDefaultLevel();
     };
-
-    p._setDefaultLevel = function() {
-        this.setActiveLevel(this._options.initial);
-    };
-
-    p.getLevels = function() {
-        return this._options.levels;
-    };
-
-    p.getActiveLevel = function() {
-        return this._level;
-    };
-
-    p.setActiveLevel = function(level) {
-
-        if (level == this._level) {
-            return;
-        }
-
-        this._level = level;
-
-        Observer.publish(this,'change',this._level);
-    };
-
 
     // reference to singleton
     var _instance;
-
     return {
         getInstance:function() {
             if (!_instance) { _instance = new StorageConsentGuard(); }

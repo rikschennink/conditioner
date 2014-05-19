@@ -55,5 +55,4 @@ define(function(){
     };
 
     return exports;
-
 });
