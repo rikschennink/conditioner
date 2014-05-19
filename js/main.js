@@ -17,6 +17,8 @@ require.config({
 
             // Other small shims
             'shim/Array.forEach',
+            'shim/Array.filter',
+            'shim/Array.map',
             'shim/Array.indexOf',
             'shim/Array.isArray',
             'shim/Function.bind',
