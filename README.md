@@ -1,20 +1,20 @@
-# Conditioner
+# ConditionerJS
 
 [![Build Status](https://travis-ci.org/rikschennink/conditioner.png?branch=master)](https://travis-ci.org/rikschennink/conditioner)
 
 ConditionerJS is a javascript library for loading and unloading behavior based on environment conditions.
 
 
-### Environment Aware
+**Environment Aware**
 
 Conditioner automatically loads and unloads modules based on the state of their surroundings. You define the required state, conditioner takes it from there.
 
 
-### Frizz Free
+**Frizz Free**
 
 Modules are loaded separate from each other preventing them from getting into fights. Conditioner exposes an API that allows for structured peace negotiations between modules.
 
-### Example
+## Demo
 
 Suppose you have a Google Maps module which transforms an anchor to a full blown Google Map. It would make sense to only activate the maps module if there's enough real estate on the screen to render a decent sized map. And to save a request and some bits and bytes you might only want to start loading the map once the map container becomes visible to the user.
 
