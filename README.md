@@ -1,8 +1,8 @@
 # Conditioner
 
-Conditioner.js is a javascript library for loading and unloading behavior based on environment conditions.
-
 [![Build Status](https://travis-ci.org/rikschennink/conditioner.png?branch=master)](https://travis-ci.org/rikschennink/conditioner)
+
+ConditionerJS is a javascript library for loading and unloading behavior based on environment conditions.
 
 
 ### Environment Aware
