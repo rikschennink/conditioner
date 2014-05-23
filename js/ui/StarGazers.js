@@ -40,6 +40,7 @@ define(function(){
 
         // unload stargazers
         unload:function() {
+
             this._element.innerHTML = this._inner;
         }
     };

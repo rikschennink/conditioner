@@ -65,6 +65,9 @@ define(['security/StorageConsentGuard'],function(StorageConsentGuard){
 
             // restore original content
             this._element.innerHTML = this._inner;
+
+            // remove references
+            this._storageGuard = null;
         }
     };
 

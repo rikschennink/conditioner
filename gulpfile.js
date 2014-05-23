@@ -319,7 +319,6 @@ gulp.task('_jshint',function(){
         .pipe(jshint())
         .pipe(jshint.reporter(reporter));
 
-
 });
 
 gulp.task('build',function(cb){
