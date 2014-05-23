@@ -52,6 +52,10 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 
 ## History
 
+### 1.0.1
+
+* Fixed [memory leaks](https://github.com/rikschennink/conditioner/issues/71)
+
 ### 1.0.0
 
 * Bind multiple modules to the same DOM node.

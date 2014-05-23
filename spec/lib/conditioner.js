@@ -24,6 +24,7 @@
             this._expected = expected;
             this._watches = [];
             this._count = 0;
+            this._monitor = null;
 
         };
 
@@ -61,12 +62,32 @@
             },
 
             /**
+             * Related monitor
+             * @param {String|Number} monitor
+             */
+            assignMonitor: function (monitor) {
+                this._monitor = monitor;
+            },
+
+            /**
              * Assigns a new watch for this test
              * @param watches
              */
             assignWatches: function (watches) {
                 this._watches = watches;
                 this._count = watches.length;
+            },
+
+            getMonitor: function () {
+                return this._monitor;
+            },
+
+            /**
+             * Returns watches assigned to this test
+             * @returns {Array}
+             */
+            getWatches: function () {
+                return this._watches;
             },
 
             /**
@@ -106,7 +127,8 @@
 
         };
         var MonitorFactory = function () {
-            this._monitors = [];
+            this._uid = 1;
+            this._db = [];
             this._expressions = [];
         };
 
@@ -186,7 +208,8 @@
                 _options.loader.require([_options.paths.monitors + path], function (setup) {
 
                     var i = 0,
-                        monitor = self._monitors[path],
+                        monitor = self._db[path],
+                        id = setup.unload ? self._uid++ : path,
                         l, watch, watches, items, event, item, data, isSingleTest;
 
                     // bind trigger events for this setup if not defined yet
@@ -210,7 +233,16 @@
                         };
 
                         // data holder
-                        data = setup.unique ? self._mergeData(setup.data, expected, element) : setup.data;
+                        data = setup.unload ? self._mergeData(setup.data, expected, element) : setup.data;
+
+                        // if unload method defined
+                        if (typeof setup.unload === 'function') {
+                            monitor.unload = (function (data) {
+                                return function () {
+                                    setup.unload(data);
+                                };
+                            }(data));
+                        }
 
                         // setup trigger events manually
                         if (typeof setup.trigger === 'function') {
@@ -228,10 +260,11 @@
                         }
 
                         // test if should remember this monitor or should create a new one on each match
-                        if (!setup.unique) {
-                            self._monitors[path] = monitor;
-                        }
+                        self._db[id] = monitor;
                     }
+
+                    // remember
+                    test.assignMonitor(id);
 
                     // add watches
                     watches = [];
@@ -252,6 +285,9 @@
 
                         watch = {
 
+                            // on change callback
+                            changed: null,
+
                             // retain when valid
                             retain: item.retain,
                             retained: null,
@@ -260,7 +296,7 @@
                             valid: null,
 
                             // setup data holder for this watcher
-                            data: setup.unique ? data : self._mergeData(setup.data, item.value, element),
+                            data: setup.unload ? data : self._mergeData(setup.data, item.value, element),
 
                             // setup test method to use
                             // jshint -W083
@@ -277,7 +313,9 @@
                                     var state = fn(this.data, event);
                                     if (this.valid != state) {
                                         this.valid = state;
-                                        Observer.publish(this, 'change');
+                                        if (this.changed) {
+                                            this.changed();
+                                        }
                                     }
                                     if (this.valid && this.retain) {
                                         this.retained = true;
@@ -304,66 +342,139 @@
 
                 return p;
 
+            },
+
+            destroy: function (test) {
+
+                // get monitor and remove watches contained in this test
+                var monitorId = test.getMonitor(),
+                    monitor = this._db[monitorId],
+                    monitorWatches = monitor.watches,
+                    l = monitorWatches.length,
+                    i;
+
+                // remove watches
+                test.getWatches().forEach(function (watch) {
+                    for (i = 0; i < l; i++) {
+                        if (monitorWatches[i] === watch) {
+                            monitorWatches.splice(i, 1);
+                        }
+                    }
+                });
+
+                // unload monitor, then remove from db
+                if (monitor.unload) {
+                    monitor.unload();
+                    this._db[monitorId] = null;
+                }
             }
+
         };
-        var WebContext = {
+        var TestWrapper = function (query, element, cb) {
+            var expression = ExpressionParser.parse(query);
+            this._element = element;
+            this._tests = expression.getTests();
+            this._condition = new Condition(expression, cb);
+            this._conditionChangeBind = this._condition.evaluate.bind(this._condition);
+            this._load();
+        };
 
-            test: function (query, element, change) {
+        TestWrapper.prototype = {
 
-                var expression, condition, i, tests, l;
-
-                // convert query to expression
-                expression = ExpressionParser.parse(query);
-
-                // condition to evaluate on detect changes
-                condition = new Condition(expression, change);
+            _load: function () {
 
                 // get found test setups from expression and register
-                i = 0;
-                tests = expression.getTests();
-                l = tests.length;
+                var i = 0,
+                    l = this._tests.length;
                 for (; i < l; i++) {
-                    this._setupMonitor(
-
-                    // test
-                    tests[i],
-
-                    // related element
-                    element,
-
-                    // re-evaluate this condition on change
-                    condition
-
-                    );
+                    this._setupMonitorForTest(this._tests[i]);
                 }
 
             },
 
-            _setupMonitor: function (test, element, condition) {
+            _setupMonitorForTest: function (test) {
 
                 var i = 0,
-                    l;
-                _monitorFactory.create(test, element).then(function (watches) {
+                    l, self = this;
+                _monitorFactory.create(test, this._element).then(function (watches) {
 
-                    // multiple watches
+                    // bind watches to test object
                     test.assignWatches(watches);
 
                     // add value watches
                     l = watches.length;
                     for (; i < l; i++) {
 
-                        // listen to change event on the watchers
+                        // implement change method on watchers
                         // jshint -W083
-                        Observer.subscribe(watches[i], 'change', function () {
-                            condition.evaluate();
-                        });
+                        watches[i].changed = self._conditionChangeBind;
 
                     }
 
                     // do initial evaluation
-                    condition.evaluate();
+                    self._condition.evaluate();
 
                 });
+
+            },
+
+            destroy: function () {
+
+                // unload watches
+                var i = 0,
+                    l = this._tests.length;
+                for (; i < l; i++) {
+                    _monitorFactory.destroy(this._tests[i]);
+                }
+
+                // clean bind
+                this._conditionChangeBind = null;
+
+            }
+
+        };
+
+
+        var WebContext = {
+
+            _uid: 0,
+            _db: [],
+
+            /**
+             * Removes the given test from the test database and stops testing
+             * @param {Number} id
+             * @returns {Boolean}
+             */
+            clearTest: function (id) {
+
+                // check if test with this id is available
+                var test = this._db[id];
+                if (!test) {
+                    return false;
+                }
+
+                // destroy test
+                this._db[id] = null;
+                test.destroy();
+
+            },
+
+            /**
+             * Run test and call 'change' method if outcome changes
+             * @param {String} query
+             * @param {Element} element
+             * @param {Function} cb
+             * @returns {Number} test unique id
+             */
+            setTest: function (query, element, cb) {
+
+                var id = this._uid++;
+
+                // store test
+                this._db[id] = new TestWrapper(query, element, cb);
+
+                // return the identifier
+                return id;
 
             }
 
@@ -693,6 +804,7 @@
             this._conditions = conditions;
             this._element = element;
             this._state = false;
+            this._test = null;
 
         };
 
@@ -706,7 +818,7 @@
 
                 var self = this,
                     init = false;
-                WebContext.test(this._conditions, this._element, function (valid) {
+                this._test = WebContext.setTest(this._conditions, this._element, function (valid) {
 
                     // something changed
                     self._state = valid;
@@ -738,7 +850,9 @@
              */
             destroy: function () {
 
-                // destroy
+                // stop measuring
+                WebContext.clearTest(this._test);
+
             }
 
         };
@@ -986,6 +1100,11 @@
                         throw new Error('ModuleController: A module needs to export an object.');
                     }
                     // @endif
+                    // test if not destroyed in the mean time, else stop here
+                    if (!self._agent) {
+                        return;
+                    }
+
                     // set reference to Module
                     self._Module = Module;
 
@@ -1216,11 +1335,11 @@
                     this._module.unload();
                 }
 
-                // reset property
+                // reset reference to instance
                 this._module = null;
 
                 // publish unload event
-                Observer.publishAsync(this, 'unload', this);
+                Observer.publish(this, 'unload', this);
 
                 return true;
             },
@@ -1231,15 +1350,17 @@
              */
             destroy: function () {
 
-                // unload module
-                this._unload();
-
                 // unbind events
                 Observer.unsubscribe(this._agent, 'change', this._onAgentStateChangeBind);
 
-                // call destroy on agent
+                // unload module
+                this._unload();
+
+                // call destroy agent
                 this._agent.destroy();
 
+                // agent binds
+                this._onAgentStateChangeBind = null;
             },
 
             /***
@@ -1381,17 +1502,20 @@
                         this._destroyModule(this._moduleControllers[i]);
                     }
 
-                    // reset array
-                    this._moduleControllers = [];
+                    // clear binds
+                    this._moduleAvailableBind = null;
+                    this._moduleLoadBind = null;
+                    this._moduleUnloadBind = null;
 
                     // update initialized state
                     this._updateAttribute(_options.attr.initialized, this._moduleControllers);
 
+                    // reset array
+                    this._moduleControllers = null;
+
                     // reset processed state
                     this._element.removeAttribute(_options.attr.processed);
 
-                    // clear reference
-                    this._element = null;
                 },
 
                 /**
@@ -1604,6 +1728,7 @@
 
                     // update initialized attribute with now active module controllers list
                     this._updateAttribute(_options.attr.initialized, this.getActiveModules());
+
                 },
 
                 /**
@@ -1611,6 +1736,7 @@
                  * @private
                  */
                 _updateAttribute: function (attr, controllers) {
+
                     var modules = controllers.map(_mapModuleToPath);
                     if (modules.length) {
                         this._element.setAttribute(attr, modules.join(','));
@@ -1618,6 +1744,7 @@
                     else {
                         this._element.removeAttribute(attr);
                     }
+
                 }
 
             };
@@ -1629,13 +1756,14 @@
          * Creates a controller group to sync [ModuleControllers](#modulecontroller).
          *
          * @name SyncedControllerGroup
+         * @param {Array} controllers
          * @constructor
          */
-        var SyncedControllerGroup = function () {
+        var SyncedControllerGroup = function (controllers) {
 
             // @ifdef DEV
             // if no node controllers passed, no go
-            if (!arguments || !arguments.length) {
+            if (!controllers || !controllers.splice) {
                 throw new Error('SyncedControllerGroup(controllers): Expects an array of node controllers as parameters.');
             }
             // @endif
@@ -1643,7 +1771,7 @@
             this._inSync = false;
 
             // turn arguments into an array
-            this._controllers = arguments.length === 1 ? arguments[0] : Array.prototype.slice.call(arguments, 0);
+            this._controllers = controllers;
             this._controllerLoadedBind = this._onLoad.bind(this);
             this._controllerUnloadedBind = this._onUnload.bind(this);
 
@@ -1655,7 +1783,12 @@
                 // @ifdef DEV
                 // if controller is undefined
                 if (!controller) {
-                    throw new Error('SyncedControllerGroup(controllers): Stumbled upon an undefined controller is undefined.');
+
+                    // revert
+                    this.destroy();
+
+                    // throw error
+                    throw new Error('SyncedControllerGroup(controllers): Stumbled upon an undefined controller');
                 }
                 // @endif
                 // listen to load and unload events so we can pass them on if appropriate
@@ -1689,8 +1822,12 @@
                     Observer.unsubscribe(controller, 'unload', this._controllerUnloadedBind);
                 }
 
+                // reset binds
+                this._controllerLoadedBind = null;
+                this._controllerUnloadedBind = null;
+
                 // reset array
-                this._controllers = [];
+                this._controllers = null;
 
             },
 
@@ -2332,7 +2469,8 @@
 
                 // create synced controller group using passed arguments
                 // test if user passed an array instead of separate arguments
-                SyncedControllerGroup.apply(group, arguments.length === 1 && !arguments.slice ? arguments[0] : arguments);
+                SyncedControllerGroup.apply(
+                group, [arguments[0].slice ? arguments[0] : Array.prototype.slice.call(arguments, 0)]);
 
                 return group;
 
@@ -2506,7 +2644,7 @@
                 // @endif
                 // run test and resolve with first received state
                 var p = new Promise();
-                WebContext.test(condition, element, function (valid) {
+                WebContext.setTest(condition, element, function (valid) {
                     p.resolve(valid);
                 });
                 return p;
@@ -2550,7 +2688,7 @@
                 callback = typeof element === 'function' ? element : callback;
 
                 // run test and execute callback on change
-                WebContext.test(condition, element, function (valid) {
+                WebContext.setTest(condition, element, function (valid) {
                     callback(valid);
                 });
 

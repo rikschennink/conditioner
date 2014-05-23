@@ -35,6 +35,25 @@
             return entry ? _db[obj.__pubSubUID][prop] : null;
         },
 
+        _clearEntry:function(obj) {
+            var entry = _db[obj.__pubSubUID];
+
+            if (
+               !entry ||
+               (entry.subscriptions && entry.subscriptions.length) ||
+               (entry.receivers && entry.receivers.length)
+               ) {
+                return;
+            }
+
+            entry.subscriptions = null;
+            entry.receivers = null;
+            entry.obj = null;
+            delete _db[obj.__pubSubUID];
+            obj.__pubSubUID = null;
+
+        },
+
         /***
          * Subscribe to an event
          *
@@ -99,6 +118,11 @@
                     subs.splice(i,1);
                 }
             }
+
+            // try to detach if no more subscribers
+            if (!subs.length) {
+                this._clearEntry(obj);
+            }
         },
 
         /***
@@ -159,6 +183,11 @@
             }
 
             // see if any receivers should be informed
+            if (!receivers || !receivers.length && !subs.length) {
+                this._clearEntry(obj);
+            }
+
+            // if no receivers stop here
             if (!receivers) {
                 return;
             }
@@ -167,6 +196,7 @@
             for (i=0;i<l;i++) {
                 this.publish(receivers[i],type,data);
             }
+
         },
 
         /***
@@ -222,16 +252,21 @@
             }
 
             // find and remove
-            var i=receivers.length,item;
+            var i=receivers.length,item,removed=false;
             while (--i >= 0) {
                 item = receivers[i];
                 if (item === receiver) {
                     receivers.splice(i,1);
-                    return true;
+                    removed = true;
                 }
             }
 
-            return false;
+            // if no more receivers try to detach
+            if (!receivers.length) {
+                this._clearEntry(informant);
+            }
+
+            return removed;
         }
     };
 

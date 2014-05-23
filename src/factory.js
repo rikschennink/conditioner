@@ -282,7 +282,10 @@
 
                 // create synced controller group using passed arguments
                 // test if user passed an array instead of separate arguments
-                SyncedControllerGroup.apply(group,arguments.length === 1 && !arguments.slice ? arguments[0] : arguments);
+                SyncedControllerGroup.apply(
+                    group,
+                    [arguments[0].slice ? arguments[0] : Array.prototype.slice.call(arguments, 0)]
+                );
 
                 return group;
 
@@ -450,7 +453,7 @@ Array
 
                 // run test and resolve with first received state
                 var p = new Promise();
-                WebContext.test(condition,element,function(valid){
+                WebContext.setTest(condition,element,function(valid){
                     p.resolve(valid);
                 });
                 return p;
@@ -495,7 +498,7 @@ Array
                 callback = typeof element === 'function' ? element : callback;
 
                 // run test and execute callback on change
-                WebContext.test(condition,element,function(valid){
+                WebContext.setTest(condition,element,function(valid){
                     callback(valid);
                 });
 

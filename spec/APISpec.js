@@ -4,15 +4,41 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
     describe('API',function() {
 
-        beforeEach(function(){
+        afterEach(function(cb){
 
-            // clean up any initialized nodes
-            var nodes = conditioner.getNodes(),el;
+            var nodes = conditioner.getNodes(),el,clean,sg;
+            if (!nodes.length) {
+                cb();
+                return;
+            }
 
-            nodes.forEach(function(node){
-                el = node.getElement();
-                conditioner.destroy(node);
-                el.parentNode.removeChild(el);
+            clean = function() {
+
+                nodes.forEach(function(node){
+                    el = node.getElement();
+                    conditioner.destroy(node);
+                    el.parentNode.removeChild(el);
+                });
+
+                sg.destroy();
+
+                cb();
+
+            };
+
+            sg = conditioner.sync(nodes);
+
+            if(sg.areAllModulesActive()) {
+
+                clean();
+
+                return;
+            }
+
+            Observer.subscribe(sg,'load',function(){
+
+                clean();
+
             });
 
         });
@@ -73,12 +99,12 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
                 // arrange
                 var element = document.createElement('div');
-                element.setAttribute('data-module', 'IFoo');
+                element.setAttribute('data-module','mock/modules/foo');
                 document.body.appendChild(element);
 
                 // act
                 conditioner.setOptions({
-                    'modules': {
+                    'modules':{
                         'mock/modules/foo':{
                             'options':{
                                 'foo':10
@@ -89,11 +115,11 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
                 var results = conditioner.init();
 
-                // assert
                 expect(results).to.be.an('array');
 
                 Observer.subscribe(results[0],'load',function(){
 
+                    // assert
                     expect(element.getAttribute('data-foo')).to.equal('10');
 
                     done();
@@ -189,12 +215,10 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
             });
 
-            it('will throw an error when passing undefined',function(){
+            it('will return a sync group object when passing Array',function(){
 
-                var syncIt = function(){
-                    conditioner.sync(results[0],undefined,results[1],results[2]);
-                };
-                expect(syncIt).to.throw(Error);
+                var syncGroup = conditioner.sync(results);
+                expect(syncGroup).to.be.an('object');
 
             });
 
@@ -205,13 +229,14 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
             });
 
-            it('will return a sync group object when passing Array',function(){
+            it('will throw an error when passing undefined',function(){
 
-                var syncGroup = conditioner.sync(results);
-                expect(syncGroup).to.be.an('object');
+                var syncIt = function(){
+                    conditioner.sync(results[0],undefined,results[1],results[2]);
+                };
+                expect(syncIt).to.throw(Error);
 
             });
-
         });
 
         describe('getModule(path,selector,context)',function(){
@@ -365,7 +390,7 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
 
             it('will throw an error when no parameters passed',function(){
 
-                var destroyIt = function(){conditioner.destroy();}
+                var destroyIt = function(){conditioner.destroy();};
                 expect(destroyIt).to.throw(Error);
 
             });
