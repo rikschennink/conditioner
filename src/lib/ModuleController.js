@@ -190,6 +190,11 @@ ModuleController.prototype = {
             }
             // @endif
 
+            // test if not destroyed in the mean time, else stop here
+            if (!self._agent) {
+                return;
+            }
+
 			// set reference to Module
 			self._Module = Module;
 
@@ -412,11 +417,11 @@ ModuleController.prototype = {
 			this._module.unload();
 		}
 
-        // reset property
+        // reset reference to instance
         this._module = null;
 
         // publish unload event
-        Observer.publishAsync(this,'unload',this);
+        Observer.publish(this,'unload',this);
 
 		return true;
 	},
@@ -427,15 +432,23 @@ ModuleController.prototype = {
      */
     destroy:function() {
 
-        // unload module
-        this._unload();
-
         // unbind events
         Observer.unsubscribe(this._agent,'change',this._onAgentStateChangeBind);
 
-        // call destroy on agent
+        // unload module
+        this._unload();
+
+        // call destroy agent
         this._agent.destroy();
 
+        // agent binds
+        this._onAgentStateChangeBind = null;
+
+        // remove references
+        this._element = null;
+        this._options = null;
+        this._agent = null;
+        this._Module = null;
     },
 
 	/***

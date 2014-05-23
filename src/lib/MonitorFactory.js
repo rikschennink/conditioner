@@ -140,6 +140,9 @@ MonitorFactory.prototype = {
 
                 watch = {
 
+                    // on change callback
+                    changed:null,
+
                     // retain when valid
                     retain: item.retain,
                     retained: null,
@@ -163,7 +166,9 @@ MonitorFactory.prototype = {
                             var state = fn(this.data, event);
                             if (this.valid != state) {
                                 this.valid = state;
-                                Observer.publish(this, 'change');
+                                if (this.changed) {
+                                    this.changed();
+                                }
                             }
                             if (this.valid && this.retain) {
                                 this.retained = true;
@@ -191,4 +196,5 @@ MonitorFactory.prototype = {
         return p;
 
     }
+
 };

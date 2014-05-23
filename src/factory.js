@@ -282,7 +282,10 @@
 
                 // create synced controller group using passed arguments
                 // test if user passed an array instead of separate arguments
-                SyncedControllerGroup.apply(group,arguments.length === 1 && !arguments.slice ? arguments[0] : arguments);
+                SyncedControllerGroup.apply(
+                    group,
+                    [arguments[0].slice ? arguments[0] : Array.prototype.slice.call(arguments, 0)]
+                );
 
                 return group;
 

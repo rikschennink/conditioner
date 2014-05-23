@@ -2,13 +2,14 @@
  * Creates a controller group to sync [ModuleControllers](#modulecontroller).
  *
  * @name SyncedControllerGroup
+ * @param {Array} controllers
  * @constructor
  */
-var SyncedControllerGroup = function() {
+var SyncedControllerGroup = function(controllers) {
 
     // @ifdef DEV
     // if no node controllers passed, no go
-    if (!arguments || !arguments.length) {
+    if (!controllers || !controllers.splice) {
         throw new Error('SyncedControllerGroup(controllers): Expects an array of node controllers as parameters.');
     }
     // @endif
@@ -17,7 +18,7 @@ var SyncedControllerGroup = function() {
     this._inSync = false;
 
     // turn arguments into an array
-    this._controllers = arguments.length === 1 ? arguments[0] : Array.prototype.slice.call(arguments,0);
+    this._controllers = controllers;
     this._controllerLoadedBind = this._onLoad.bind(this);
     this._controllerUnloadedBind = this._onUnload.bind(this);
 
@@ -28,7 +29,12 @@ var SyncedControllerGroup = function() {
         // @ifdef DEV
         // if controller is undefined
         if (!controller) {
-            throw new Error('SyncedControllerGroup(controllers): Stumbled upon an undefined controller is undefined.');
+
+            // revert
+            this.destroy();
+
+            // throw error
+            throw new Error('SyncedControllerGroup(controllers): Stumbled upon an undefined controller');
         }
         // @endif
 
@@ -62,8 +68,15 @@ SyncedControllerGroup.prototype = {
             Observer.unsubscribe(controller,'unload',this._controllerUnloadedBind);
         }
 
+        // reset binds
+        this._controllerLoadedBind = null;
+        this._controllerUnloadedBind = null;
+
         // reset array
-        this._controllers = [];
+        this._controllers = null;
+
+        // clear observer
+       // Observer.detach(this);
 
     },
 
