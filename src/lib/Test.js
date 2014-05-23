@@ -76,13 +76,6 @@ Test.prototype = {
     },
 
     /**
-     * Clean up test
-     */
-    destroy:function() {
-        this._watches = null;
-    },
-
-    /**
      * Returns test in path
      * @returns {String}
      */

@@ -103,9 +103,6 @@ var NodeController = (function(){
             // reset processed state
             this._element.removeAttribute(_options.attr.processed);
 
-            // clear reference
-            this._element = null;
-
         },
 
         /**

@@ -50,8 +50,7 @@
             }
         },
         unload: function (data) {
-            data.mql.removeListener(data.change)
-            data.mql = null;
+            data.mql.removeListener(data.change);
         }
     };
 

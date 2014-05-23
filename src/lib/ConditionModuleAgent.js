@@ -56,9 +56,6 @@ ConditionModuleAgent.prototype = {
         // stop measuring
         WebContext.clearTest(this._test);
 
-        // remove reference
-        this._element = null;
-
     }
 
 };

@@ -75,9 +75,6 @@ SyncedControllerGroup.prototype = {
         // reset array
         this._controllers = null;
 
-        // clear observer
-       // Observer.detach(this);
-
     },
 
     /***

@@ -18,11 +18,6 @@ require(['conditioner','utils/Observer'],function(conditioner,Observer){
         done = true;
 
         btnStop.removeEventListener('click',this);
-        btnStop.parentNode.removeChild(btnStop);
-        btnStop = null;
-
-        btnStart.parentNode.removeChild(btnStart);
-        btnStart = null;
 
     };
 
@@ -70,6 +65,13 @@ require(['conditioner','utils/Observer'],function(conditioner,Observer){
         sg = null;
 
         if (done) {
+
+            btnStop.parentNode.removeChild(btnStop);
+            btnStart.parentNode.removeChild(btnStart);
+
+            btnStop = null;
+            btnStart = null;
+
             document.body.innerHTML += 'ran ' + count + ' tests.';
             return;
         }

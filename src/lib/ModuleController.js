@@ -443,12 +443,6 @@ ModuleController.prototype = {
 
         // agent binds
         this._onAgentStateChangeBind = null;
-
-        // remove references
-        this._element = null;
-        this._options = null;
-        this._agent = null;
-        this._Module = null;
     },
 
 	/***

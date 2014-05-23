@@ -231,9 +231,6 @@ MonitorFactory.prototype = {
             monitor.unload();
             this._db[monitorId] = null;
         }
-
-        // destroy test
-        test.destroy();
     }
 
 };

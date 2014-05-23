@@ -20,10 +20,6 @@ define(function(){
         unload:function() {
 
             this._el.parentNode.removeChild(this._el);
-            this._el = null;
-
-            this._element = null;
-            this._options = null;
 
         }
 

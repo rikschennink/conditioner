@@ -91,13 +91,6 @@
             },
 
             /**
-             * Clean up test
-             */
-            destroy: function () {
-                this._watches = null;
-            },
-
-            /**
              * Returns test in path
              * @returns {String}
              */
@@ -374,22 +367,15 @@
                     monitor.unload();
                     this._db[monitorId] = null;
                 }
-
-                // destroy test
-                test.destroy();
             }
 
         };
         var TestWrapper = function (query, element, cb) {
-
             var expression = ExpressionParser.parse(query);
-
             this._element = element;
-
             this._tests = expression.getTests();
-
             this._condition = new Condition(expression, cb);
-
+            this._conditionChangeBind = this._condition.evaluate.bind(this._condition);
             this._load();
         };
 
@@ -421,7 +407,7 @@
 
                         // implement change method on watchers
                         // jshint -W083
-                        watches[i].changed = self._condition.evaluate;
+                        watches[i].changed = self._conditionChangeBind;
 
                     }
 
@@ -441,10 +427,8 @@
                     _monitorFactory.destroy(this._tests[i]);
                 }
 
-                // remove references
-                this._tests = null;
-                this._element = null;
-                this._condition = null;
+                // clean bind
+                this._conditionChangeBind = null;
 
             }
 
@@ -868,9 +852,6 @@
 
                 // stop measuring
                 WebContext.clearTest(this._test);
-
-                // remove reference
-                this._element = null;
 
             }
 
@@ -1380,12 +1361,6 @@
 
                 // agent binds
                 this._onAgentStateChangeBind = null;
-
-                // remove references
-                this._element = null;
-                this._options = null;
-                this._agent = null;
-                this._Module = null;
             },
 
             /***
@@ -1540,9 +1515,6 @@
 
                     // reset processed state
                     this._element.removeAttribute(_options.attr.processed);
-
-                    // clear reference
-                    this._element = null;
 
                 },
 
@@ -1857,8 +1829,6 @@
                 // reset array
                 this._controllers = null;
 
-                // clear observer
-                // Observer.detach(this);
             },
 
             /***

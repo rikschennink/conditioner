@@ -1,13 +1,9 @@
 var TestWrapper = function(query,element,cb) {
-
     var expression = ExpressionParser.parse(query);
-
     this._element = element;
-
     this._tests = expression.getTests();
-
     this._condition = new Condition(expression,cb);
-
+    this._conditionChangeBind = this._condition.evaluate.bind(this._condition);
     this._load();
 };
 
@@ -37,7 +33,7 @@ TestWrapper.prototype = {
 
                 // implement change method on watchers
                 // jshint -W083
-                watches[i].changed = self._condition.evaluate;
+                watches[i].changed = self._conditionChangeBind;
 
             }
 
@@ -56,10 +52,8 @@ TestWrapper.prototype = {
             _monitorFactory.destroy(this._tests[i]);
         }
 
-        // remove references
-        this._tests = null;
-        this._element = null;
-        this._condition = null;
+        // clean bind
+        this._conditionChangeBind = null;
 
     }
 
