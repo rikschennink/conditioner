@@ -8,6 +8,7 @@ var ConditionModuleAgent = function(conditions,element) {
     this._conditions = conditions;
     this._element = element;
     this._state = false;
+    this._test = null;
 
 };
 
@@ -20,7 +21,7 @@ ConditionModuleAgent.prototype = {
     init:function(ready){
 
         var self = this,init=false;
-        WebContext.test(this._conditions,this._element,function(valid) {
+        this._test = WebContext.setTest(this._conditions,this._element,function(valid) {
 
             // something changed
             self._state = valid;
@@ -52,7 +53,8 @@ ConditionModuleAgent.prototype = {
      */
     destroy:function() {
 
-        // destroy
+        // stop measuring
+        WebContext.clearTest(this._test);
 
     }
 

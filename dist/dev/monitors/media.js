@@ -7,7 +7,6 @@
     'use strict';
 
     var exports = {
-        unique: true,
         data: {
             mql: null
         },
@@ -19,10 +18,11 @@
             }
 
             // if is media query
-            data.mql = win.matchMedia(data.expected);
-            data.mql.addListener(function () {
+            data.change = function () {
                 bubble();
-            });
+            };
+            data.mql = win.matchMedia(data.expected);
+            data.mql.addListener(data.change);
 
         },
         parse: function (value) {
@@ -48,6 +48,9 @@
             'query': function (data) {
                 return data.mql.matches;
             }
+        },
+        unload: function (data) {
+            data.mql.removeListener(data.change);
         }
     };
 

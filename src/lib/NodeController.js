@@ -89,17 +89,20 @@ var NodeController = (function(){
                 this._destroyModule(this._moduleControllers[i]);
             }
 
-            // reset array
-            this._moduleControllers = [];
+            // clear binds
+            this._moduleAvailableBind = null;
+            this._moduleLoadBind = null;
+            this._moduleUnloadBind = null;
 
             // update initialized state
             this._updateAttribute(_options.attr.initialized,this._moduleControllers);
 
+            // reset array
+            this._moduleControllers = null;
+
             // reset processed state
             this._element.removeAttribute(_options.attr.processed);
 
-            // clear reference
-            this._element = null;
         },
 
         /**
@@ -309,6 +312,7 @@ var NodeController = (function(){
 
             // update initialized attribute with now active module controllers list
             this._updateAttribute(_options.attr.initialized,this.getActiveModules());
+
         },
 
         /**
@@ -316,6 +320,7 @@ var NodeController = (function(){
          * @private
          */
         _updateAttribute:function(attr,controllers) {
+
             var modules = controllers.map(_mapModuleToPath);
             if (modules.length) {
                 this._element.setAttribute(attr,modules.join(','));
@@ -323,6 +328,7 @@ var NodeController = (function(){
             else {
                 this._element.removeAttribute(attr);
             }
+
         }
 
     };
