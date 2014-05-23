@@ -24,6 +24,7 @@
             this._expected = expected;
             this._watches = [];
             this._count = 0;
+            this._monitor = null;
 
         };
 
@@ -61,12 +62,39 @@
             },
 
             /**
+             * Related monitor
+             * @param {String|Number} monitor
+             */
+            assignMonitor: function (monitor) {
+                this._monitor = monitor;
+            },
+
+            /**
              * Assigns a new watch for this test
              * @param watches
              */
             assignWatches: function (watches) {
                 this._watches = watches;
                 this._count = watches.length;
+            },
+
+            getMonitor: function () {
+                return this._monitor;
+            },
+
+            /**
+             * Returns watches assigned to this test
+             * @returns {Array}
+             */
+            getWatches: function () {
+                return this._watches;
+            },
+
+            /**
+             * Clean up test
+             */
+            destroy: function () {
+                this._watches = null;
             },
 
             /**
@@ -106,7 +134,8 @@
 
         };
         var MonitorFactory = function () {
-            this._monitors = [];
+            this._uid = 1;
+            this._db = [];
             this._expressions = [];
         };
 
@@ -186,7 +215,8 @@
                 _options.loader.require([_options.paths.monitors + path], function (setup) {
 
                     var i = 0,
-                        monitor = self._monitors[path],
+                        monitor = self._db[path],
+                        id = setup.unload ? self._uid++ : path,
                         l, watch, watches, items, event, item, data, isSingleTest;
 
                     // bind trigger events for this setup if not defined yet
@@ -210,7 +240,16 @@
                         };
 
                         // data holder
-                        data = setup.unique ? self._mergeData(setup.data, expected, element) : setup.data;
+                        data = setup.unload ? self._mergeData(setup.data, expected, element) : setup.data;
+
+                        // if unload method defined
+                        if (typeof setup.unload === 'function') {
+                            monitor.unload = (function (data) {
+                                return function () {
+                                    setup.unload(data);
+                                };
+                            }(data));
+                        }
 
                         // setup trigger events manually
                         if (typeof setup.trigger === 'function') {
@@ -228,10 +267,11 @@
                         }
 
                         // test if should remember this monitor or should create a new one on each match
-                        if (!setup.unique) {
-                            self._monitors[path] = monitor;
-                        }
+                        self._db[id] = monitor;
                     }
+
+                    // remember
+                    test.assignMonitor(id);
 
                     // add watches
                     watches = [];
@@ -263,7 +303,7 @@
                             valid: null,
 
                             // setup data holder for this watcher
-                            data: setup.unique ? data : self._mergeData(setup.data, item.value, element),
+                            data: setup.unload ? data : self._mergeData(setup.data, item.value, element),
 
                             // setup test method to use
                             // jshint -W083
@@ -309,31 +349,59 @@
 
                 return p;
 
+            },
+
+            destroy: function (test) {
+
+                // get monitor and remove watches contained in this test
+                var monitorId = test.getMonitor(),
+                    monitor = this._db[monitorId],
+                    monitorWatches = monitor.watches,
+                    l = monitorWatches.length,
+                    i;
+
+                // remove watches
+                test.getWatches().forEach(function (watch) {
+                    for (i = 0; i < l; i++) {
+                        if (monitorWatches[i] === watch) {
+                            monitorWatches.splice(i, 1);
+                        }
+                    }
+                });
+
+                // unload monitor, then remove from db
+                if (monitor.unload) {
+                    monitor.unload();
+                    this._db[monitorId] = null;
+                }
+
+                // destroy test
+                test.destroy();
             }
 
         };
         var TestWrapper = function (query, element, cb) {
 
+            var expression = ExpressionParser.parse(query);
+
             this._element = element;
 
-            var expression = ExpressionParser.parse(query);
+            this._tests = expression.getTests();
 
             this._condition = new Condition(expression, cb);
 
-            this._load(expression);
-
+            this._load();
         };
 
         TestWrapper.prototype = {
 
-            _load: function (expression) {
+            _load: function () {
 
                 // get found test setups from expression and register
                 var i = 0,
-                    tests = expression.getTests(),
-                    l = tests.length;
+                    l = this._tests.length;
                 for (; i < l; i++) {
-                    this._setupMonitorForTest(tests[i]);
+                    this._setupMonitorForTest(this._tests[i]);
                 }
 
             },
@@ -366,7 +434,17 @@
 
             destroy: function () {
 
+                // unload watches
+                var i = 0,
+                    l = this._tests.length;
+                for (; i < l; i++) {
+                    _monitorFactory.destroy(this._tests[i]);
+                }
 
+                // remove references
+                this._tests = null;
+                this._element = null;
+                this._condition = null;
 
             }
 
@@ -376,7 +454,7 @@
         var WebContext = {
 
             _uid: 0,
-            _tests: [],
+            _db: [],
 
             /**
              * Removes the given test from the test database and stops testing
@@ -386,13 +464,13 @@
             clearTest: function (id) {
 
                 // check if test with this id is available
-                var test = this._tests[id];
+                var test = this._db[id];
                 if (!test) {
                     return false;
                 }
 
                 // destroy test
-                this._tests[id] = null;
+                this._db[id] = null;
                 test.destroy();
 
             },
@@ -404,91 +482,17 @@
              * @param {Function} cb
              * @returns {Number} test unique id
              */
-            test: function (query, element, cb) {
+            setTest: function (query, element, cb) {
 
                 var id = this._uid++;
 
                 // store test
-                this._tests[id] = new TestWrapper(query, element, cb);
+                this._db[id] = new TestWrapper(query, element, cb);
 
                 // return the identifier
                 return id;
 
-                //var i=0,id=this._uid++,expression=ExpressionParser.parse(query),tests,condition,l;
-                // create condition test container
-                //var test =
-                //new Condition(expression,change)
-                //);
-/*
-        condition = {
-
-            // condition to evaluate on detect changes
-            condition:new Condition(expression,change),
-
-            // assert
-            evaluate:function(){
-                this.condition.evaluate();
-            },
-
-            // monitors
-            monitors:[]
-
-        };
-        */
-
-                // get found test setups from expression and register
-/*
-        tests=expression.getTests();l=tests.length;
-        for (;i<l;i++){
-            this._setupMonitor(
-
-                // test
-                tests[i],
-
-                // related element
-                element,
-
-                // re-evaluate this condition object on change
-                condition
-
-            );
-        }
-
-        // store test
-        this._conditions[id] = condition;
-
-        // return the identifier
-        return id;
-        */
             }
-
-/*,
-
-    _setupMonitor:function(test,element,condition){
-
-        var i=0,l;
-        _monitorFactory.create(test,element).then(function(watches){
-
-            // multiple watches
-            test.assignWatches(watches);
-
-            // add value watches
-            l=watches.length;
-            for(;i<l;i++) {
-
-                // implement change method on watchers
-                // jshint -W083
-                watches[i].changed = condition.evaluate;
-
-            }
-
-            // do initial evaluation
-            condition.evaluate();
-
-        });
-
-    }
-    */
 
         };
         /**
@@ -830,7 +834,7 @@
 
                 var self = this,
                     init = false;
-                this._test = WebContext.test(this._conditions, this._element, function (valid) {
+                this._test = WebContext.setTest(this._conditions, this._element, function (valid) {
 
                     // something changed
                     self._state = valid;
@@ -2670,7 +2674,7 @@
                 // @endif
                 // run test and resolve with first received state
                 var p = new Promise();
-                WebContext.test(condition, element, function (valid) {
+                WebContext.setTest(condition, element, function (valid) {
                     p.resolve(valid);
                 });
                 return p;
@@ -2714,7 +2718,7 @@
                 callback = typeof element === 'function' ? element : callback;
 
                 // run test and execute callback on change
-                WebContext.test(condition, element, function (valid) {
+                WebContext.setTest(condition, element, function (valid) {
                     callback(valid);
                 });
 

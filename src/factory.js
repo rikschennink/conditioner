@@ -453,7 +453,7 @@ Array
 
                 // run test and resolve with first received state
                 var p = new Promise();
-                WebContext.test(condition,element,function(valid){
+                WebContext.setTest(condition,element,function(valid){
                     p.resolve(valid);
                 });
                 return p;
@@ -498,7 +498,7 @@ Array
                 callback = typeof element === 'function' ? element : callback;
 
                 // run test and execute callback on change
-                WebContext.test(condition,element,function(valid){
+                WebContext.setTest(condition,element,function(valid){
                     callback(valid);
                 });
 

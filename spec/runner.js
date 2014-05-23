@@ -34,7 +34,6 @@ require([
     'lib/utils/matchesSelector',
     'lib/utils/mergeObjects',
 
-    /*
     // utils
     'ObserverSpec',
     'extendClassOptionsSpec',
@@ -48,7 +47,6 @@ require([
     'ModuleControllerSpec',
     'NodeControllerSpec',
     'SyncedControllerGroupSpec',
-    */
 
     // API
     'APISpec'

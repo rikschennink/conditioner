@@ -6,13 +6,13 @@ define(function(){
         this._options = options;
 
         this._el = document.createElement('div');
-        this._el.textContent = 'el';
+        this._el.textContent = Array(this._options.frame).join('.')
         this._element.appendChild(this._el);
 
     };
 
     exports.options = {
-        'mem':'test'
+        'frame':0
     };
 
     exports.prototype = {

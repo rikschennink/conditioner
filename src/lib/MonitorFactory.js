@@ -1,5 +1,6 @@
 var MonitorFactory = function(){
-    this._monitors = [];
+    this._uid = 1;
+    this._db = [];
     this._expressions = [];
 };
 
@@ -77,7 +78,7 @@ MonitorFactory.prototype = {
         var self = this;
         _options.loader.require([_options.paths.monitors + path],function(setup) {
 
-            var i=0,monitor = self._monitors[path],l,watch,watches,items,event,item,data,isSingleTest;
+            var i=0,monitor = self._db[path],id=setup.unload ? self._uid++ : path,l,watch,watches,items,event,item,data,isSingleTest;
 
             // bind trigger events for this setup if not defined yet
             if (!monitor) {
@@ -100,7 +101,16 @@ MonitorFactory.prototype = {
                 };
 
                 // data holder
-                data = setup.unique ? self._mergeData(setup.data,expected,element) : setup.data;
+                data = setup.unload ? self._mergeData(setup.data,expected,element) : setup.data;
+
+                // if unload method defined
+                if (typeof setup.unload === 'function') {
+                    monitor.unload = (function(data) {
+                        return function(){
+                            setup.unload(data);
+                        };
+                    }(data));
+                }
 
                 // setup trigger events manually
                 if (typeof setup.trigger === 'function') {
@@ -116,10 +126,11 @@ MonitorFactory.prototype = {
                 }
 
                 // test if should remember this monitor or should create a new one on each match
-                if (!setup.unique) {
-                    self._monitors[path] = monitor;
-                }
+                self._db[id] = monitor;
             }
+
+            // remember
+            test.assignMonitor(id);
 
             // add watches
             watches = [];
@@ -144,14 +155,14 @@ MonitorFactory.prototype = {
                     changed:null,
 
                     // retain when valid
-                    retain: item.retain,
+                    retain:item.retain,
                     retained: null,
 
                     // default limbo state before we've done any tests
                     valid:null,
 
                     // setup data holder for this watcher
-                    data:setup.unique ? data : self._mergeData(setup.data,item.value,element),
+                    data:setup.unload ? data : self._mergeData(setup.data,item.value,element),
 
                     // setup test method to use
                     // jshint -W083
@@ -195,6 +206,34 @@ MonitorFactory.prototype = {
 
         return p;
 
+    },
+
+    destroy:function(test) {
+
+        // get monitor and remove watches contained in this test
+        var monitorId = test.getMonitor(),
+            monitor = this._db[monitorId],
+            monitorWatches = monitor.watches,
+            l=monitorWatches.length,
+            i;
+
+        // remove watches
+        test.getWatches().forEach(function(watch){
+            for (i=0;i<l;i++) {
+                if (monitorWatches[i]===watch) {
+                    monitorWatches.splice(i,1);
+                }
+            }
+        });
+
+        // unload monitor, then remove from db
+        if (monitor.unload) {
+            monitor.unload();
+            this._db[monitorId] = null;
+        }
+
+        // destroy test
+        test.destroy();
     }
 
 };

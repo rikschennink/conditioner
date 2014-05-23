@@ -11,36 +11,41 @@ require.config({
 
 require(['conditioner','utils/Observer'],function(conditioner,Observer){
 
-    var count = 1,till=Number.NaN,el,btn,start,stop,test,node,nodes,sg,load;
+    var count=0,done=false,el,btnStart,btnStop,start,stop,test,node,nodes,sg,load;
 
     stop = function(e) {
-        till = count;
 
-        e.target.removeEventListener('click',this);
-        e.target.parentNode.removeChild(e.target);
+        done = true;
+
+        btnStop.removeEventListener('click',this);
+        btnStop.parentNode.removeChild(btnStop);
+        btnStop = null;
+
+        btnStart.parentNode.removeChild(btnStart);
+        btnStart = null;
+
     };
 
     start = function(e) {
 
-        e.target.setAttribute('disabled','disabled');
+        btnStart.setAttribute('disabled','disabled');
         test();
-        e.target.removeEventListener('click',this);
+        btnStart.removeEventListener('click',this);
 
-        btn = document.createElement('button');
-        btn.setAttribute('type','button');
-        btn.textContent = 'stop tests';
-        btn.addEventListener('click',stop);
-        document.body.appendChild(btn);
+        btnStop = document.createElement('button');
+        btnStop.setAttribute('type','button');
+        btnStop.textContent = 'stop tests';
+        btnStop.addEventListener('click',stop);
+        document.body.appendChild(btnStop);
 
-        btn = e.target;
     };
 
 
-    btn = document.createElement('button');
-    btn.setAttribute('type','button');
-    btn.textContent = 'start tests';
-    btn.addEventListener('click',start);
-    document.body.appendChild(btn);
+    btnStart = document.createElement('button');
+    btnStart.setAttribute('type','button');
+    btnStart.textContent = 'start tests';
+    btnStart.addEventListener('click',start);
+    document.body.appendChild(btnStart);
 
     load = function(){
 
@@ -55,17 +60,17 @@ require(['conditioner','utils/Observer'],function(conditioner,Observer){
         // destroy controllers
         conditioner.destroy(nodes);
 
-        // clear nodes array
-        nodes = null;
-
         // destroy sg
         sg.destroy();
 
-        // remove sg
+        // clear nodes array
+        nodes = null;
+        node = null;
+        el = null;
         sg = null;
 
-        if (isNaN(count) || count++ >= till) {
-            btn.textContent = 'ran ' + count + ' tests';
+        if (done) {
+            document.body.innerHTML += 'ran ' + count + ' tests.';
             return;
         }
 
@@ -77,11 +82,15 @@ require(['conditioner','utils/Observer'],function(conditioner,Observer){
 
     test = function() {
 
-        btn.textContent = 'running test ' + count;
+        count++;
+
+        btnStart.textContent = 'running test #' + count;
 
         node = document.createElement('div');
-        node.textContent = 'foo ' + count;
+        node.textContent = 'test #' + count;
         node.setAttribute('data-module','mock/modules/mem');
+        node.setAttribute('data-options','frame:' + count % 50);
+        node.setAttribute('data-conditions','element:{min-width:0} and media:{(min-width:0em)}');
         document.body.appendChild(node);
 
         nodes = conditioner.parse(document.body);

@@ -10,6 +10,7 @@ var Test = function Test(path,expected){
     this._expected = expected;
     this._watches = [];
     this._count = 0;
+    this._monitor = null;
 
 };
 
@@ -46,12 +47,39 @@ Test.prototype = {
     },
 
     /**
+     * Related monitor
+     * @param {String|Number} monitor
+     */
+    assignMonitor:function(monitor) {
+        this._monitor = monitor;
+    },
+
+    /**
      * Assigns a new watch for this test
      * @param watches
      */
     assignWatches:function(watches){
         this._watches = watches;
         this._count = watches.length;
+    },
+
+    getMonitor:function() {
+        return this._monitor;
+    },
+
+    /**
+     * Returns watches assigned to this test
+     * @returns {Array}
+     */
+    getWatches:function() {
+        return this._watches;
+    },
+
+    /**
+     * Clean up test
+     */
+    destroy:function() {
+        this._watches = null;
     },
 
     /**

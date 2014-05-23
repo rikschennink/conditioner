@@ -21,7 +21,7 @@ ConditionModuleAgent.prototype = {
     init:function(ready){
 
         var self = this,init=false;
-        this._test = WebContext.test(this._conditions,this._element,function(valid) {
+        this._test = WebContext.setTest(this._conditions,this._element,function(valid) {
 
             // something changed
             self._state = valid;

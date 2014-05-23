@@ -1,23 +1,24 @@
 var TestWrapper = function(query,element,cb) {
 
+    var expression = ExpressionParser.parse(query);
+
     this._element = element;
 
-    var expression = ExpressionParser.parse(query);
+    this._tests = expression.getTests();
 
     this._condition = new Condition(expression,cb);
 
-    this._load(expression);
-
+    this._load();
 };
 
 TestWrapper.prototype = {
 
-    _load:function(expression) {
+    _load:function() {
 
         // get found test setups from expression and register
-        var i= 0, tests = expression.getTests(),l=tests.length;
+        var i= 0,l=this._tests.length;
         for (;i<l;i++){
-            this._setupMonitorForTest(tests[i]);
+            this._setupMonitorForTest(this._tests[i]);
         }
 
     },
@@ -49,7 +50,16 @@ TestWrapper.prototype = {
 
     destroy:function() {
 
+        // unload watches
+        var i= 0,l=this._tests.length;
+        for (;i<l;i++) {
+            _monitorFactory.destroy(this._tests[i]);
+        }
 
+        // remove references
+        this._tests = null;
+        this._element = null;
+        this._condition = null;
 
     }
 
@@ -59,7 +69,7 @@ TestWrapper.prototype = {
 var WebContext = {
 
     _uid:0,
-    _tests:[],
+    _db:[],
 
     /**
      * Removes the given test from the test database and stops testing
@@ -69,13 +79,13 @@ var WebContext = {
     clearTest:function(id) {
 
         // check if test with this id is available
-        var test = this._tests[id];
+        var test = this._db[id];
         if (!test) {
             return false;
         }
 
         // destroy test
-        this._tests[id] = null;
+        this._db[id] = null;
         test.destroy();
 
     },
@@ -87,92 +97,16 @@ var WebContext = {
      * @param {Function} cb
      * @returns {Number} test unique id
      */
-    test:function(query,element,cb) {
+    setTest:function(query,element,cb) {
 
         var id = this._uid++;
 
         // store test
-        this._tests[id] = new TestWrapper(query,element,cb);
+        this._db[id] = new TestWrapper(query,element,cb);
 
         // return the identifier
         return id;
 
-        //var i=0,id=this._uid++,expression=ExpressionParser.parse(query),tests,condition,l;
-
-        // create condition test container
-        //var test =
-        //new Condition(expression,change)
-        //);
-
-        /*
-        condition = {
-
-            // condition to evaluate on detect changes
-            condition:new Condition(expression,change),
-
-            // assert
-            evaluate:function(){
-                this.condition.evaluate();
-            },
-
-            // monitors
-            monitors:[]
-
-        };
-        */
-
-        // get found test setups from expression and register
-        /*
-        tests=expression.getTests();l=tests.length;
-        for (;i<l;i++){
-            this._setupMonitor(
-
-                // test
-                tests[i],
-
-                // related element
-                element,
-
-                // re-evaluate this condition object on change
-                condition
-
-            );
-        }
-
-        // store test
-        this._conditions[id] = condition;
-
-        // return the identifier
-        return id;
-        */
     }
-
-    /*,
-
-    _setupMonitor:function(test,element,condition){
-
-        var i=0,l;
-        _monitorFactory.create(test,element).then(function(watches){
-
-            // multiple watches
-            test.assignWatches(watches);
-
-            // add value watches
-            l=watches.length;
-            for(;i<l;i++) {
-
-                // implement change method on watchers
-                // jshint -W083
-                watches[i].changed = condition.evaluate;
-
-            }
-
-            // do initial evaluation
-            condition.evaluate();
-
-        });
-
-    }
-    */
 
 };
