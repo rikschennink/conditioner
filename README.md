@@ -50,6 +50,25 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 * AMD Loader / CommonJS Preprocessor
 * Modern browser, IE8 is supported but requires a bit of shimming.
 
+## History
+
+### 1.0.0
+
+* Bind multiple modules to the same DOM node.
+* New `was` statement to make tests sticky `element:{was visible}`.
+* Alternative more human readable option format `data-options=“map.zoom:10, map.type:terrain”`.
+* Support for other AMD loaders, if you follow AMD specs you should be fine.
+* Browserify support, for conditional loading you'll still need an AMD loader though. 
+* Separate loading state attribute for binding CSS loading animations.
+* Configure the paths and attributes Conditioner uses.
+* `getModule` and `getModules` methods to access moduleControllers more directly.
+* New `is` and `on` methods for manually testing conditions once or continually.
+* `destroy` method to destroy previously initialised nodes.
+* Writing your own monitors is now a lot easier.
+* Fixes and small improvements.
+
+Read the [1.0.0 closed issue list](https://github.com/rikschennink/conditioner/issues?milestone=2&page=1&state=closed) for a complete overview.
+
 ## Feedback, Comments, Critique
 [Hit me on Twitter](http://twitter.com/rikschennink)
 
