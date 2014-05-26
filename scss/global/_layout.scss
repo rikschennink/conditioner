@@ -106,7 +106,7 @@
 		padding:5rem 0 0 0;
         width:16rem;
         margin:0;
-        text-align:right;
+        text-align:center;
 		z-index:1;
 
         li {
@@ -114,9 +114,7 @@
         }
 
 		>ul {
-			border-top:1px dotted #516574;
 			padding-top:1.5rem;
-			padding-right:2rem;
             background:transparent;
 		}
 
@@ -126,14 +124,20 @@
             height:0;
             width:0;
             border:5px solid transparent;
-            pointer-events:none;
             content:'';
             margin-top:-5px;
+            pointer-events:none;
+        }
+
+        ul ul {
+            margin-left:0;
         }
 
 		a {
 			color:#a2b3c0;
 			text-decoration:none;
+            display:inline-block;
+            padding:.333em;
 
 			&:hover,
 			&:focus {
@@ -152,37 +156,6 @@
         border-radius:0 0 .25rem .25rem;
     }
 
-    .author {
-        position:fixed;
-        left:0;
-        bottom:2rem;
-        width:16rem;
-        text-align:center;
-        z-index:2;
-
-        h2 {
-            display:none;
-        }
-
-        img {
-            margin:0 auto 1em;
-            border-radius:50%;
-        }
-
-        a {
-            color:#a2b3c0;
-        }
-
-        a[href*=twitter] {
-            display:inline-block;
-            background:#a2b3c0;
-            color:#40494E;
-            border-radius:.25em;
-            line-height:1.75;
-            padding:0 .5em;
-        }
-    }
-
     h1.logo {
 
         position:fixed;
@@ -190,8 +163,8 @@
         top:1.5rem;
         padding:0;
         z-index:2;
-        width:14rem;
-        text-align:right;
+        width:16rem;
+        text-align:center;
 
         a {
             color:#8596A2;
@@ -212,5 +185,45 @@
 			padding-top:0;
 		}
 	}
+
+}
+
+
+@media (min-width:62rem) and (min-height:32rem) {
+
+    .author {
+        position:fixed;
+        left:0;
+        bottom:2rem;
+        width:16rem;
+        text-align:center;
+        z-index:2;
+
+        h2 {
+            display:none;
+        }
+
+        img {
+            margin:0 auto 1em;
+            border-radius:50%;
+        }
+
+        a {
+            color:#a2b3c0;
+
+            &:hover {
+                text-decoration:underline;
+            }
+        }
+
+        a[href*=twitter] {
+            display:inline-block;
+            background:#a2b3c0;
+            color:#40494E;
+            border-radius:.25em;
+            line-height:1.75;
+            padding:0 .5em;
+        }
+    }
 
 }

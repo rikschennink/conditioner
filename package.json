@@ -37,6 +37,7 @@
     "doctrine": "^0.5.1",
     "glob": "^3.2.9",
     "gulp": "^3.6.2",
+    "gulp-autoprefixer": "0.0.7",
     "gulp-connect": "^2.0.5",
     "gulp-jshint": "^1.5.5",
     "gulp-sass": "^0.7.1",

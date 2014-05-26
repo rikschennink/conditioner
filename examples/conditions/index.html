@@ -1,6 +1,6 @@
 ---
 layout: content
-title: Example Conditions &bull; Conditioner.js
+title: Default Conditions Example
 ---
 
 <h1 class="title">Default conditions</h1>
@@ -23,7 +23,7 @@ title: Example Conditions &bull; Conditioner.js
 </div>
 
 <h3>Based on the availability of a pointer device</h3>
-<p>The Clock below will be active as long as we can detect the user has a pointer device.</p>
+<p>The Clock below will be activated the moment we detect the user has a fine pointer device like for example a mouse.</p>
 
 {% highlight html %}
 <div data-module="ui/Clock"
@@ -36,7 +36,7 @@ title: Example Conditions &bull; Conditioner.js
 </div>
 
 <h3>Based on interaction proximity</h3>
-<p>The Clock below will be activated the moment the cursor moves closer than 150 pixels. It will not be deactivated when the pointer moves away.</p>
+<p>The Clock below will be activated the moment the cursor moves within a distance of 150 pixels of the node. Because of the <code>was</code> statement, it will not be deactivated when the pointer moves away.</p>
 
 {% highlight html %}
 <div data-module="ui/Clock"

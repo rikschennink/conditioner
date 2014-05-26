@@ -458,6 +458,35 @@ img.map {
     }
 }
 
+.download-clone {
+
+    line-height:2.5;
+
+    a {
+        display:inline-block;
+    }
+
+    span {
+        display:block;
+    }
+
+    pre {
+        margin:0;
+        padding:0 .5em;
+        display:inline-block;
+    }
+}
+
+.download {
+    line-height:2.5;
+    padding:0 1em;
+    color:#fff;
+
+    background:lighten($primary-color,10%);
+    text-decoration:none;
+    text-transform:lowercase;
+}
+
 .author {
 
     font-size:.875rem;

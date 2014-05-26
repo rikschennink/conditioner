@@ -10,6 +10,7 @@ var spawn = require('child_process').spawn;
 var swig = require('swig');
 var marked = require('marked');
 var hljs = require('highlight.js');
+var autoprefixer = require('gulp-autoprefixer');
 var glob = require('glob');
 
 
@@ -309,6 +310,7 @@ gulp.task('_scss',function(){
 
     return gulp.src('./scss/styles.scss')
         .pipe(sass())
+        .pipe(autoprefixer('last 1 version', '> 1%', 'ie 8'))
         .pipe(gulp.dest('./css'));
 
 });

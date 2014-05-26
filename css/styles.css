@@ -290,6 +290,8 @@ p.note {
  * Component
  */
 .component {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   box-sizing: border-box;
   padding: 1em;
   margin: 1em 0;
@@ -299,8 +301,6 @@ p.note {
   .component p {
     margin-bottom: 0;
     -webkit-transition: font-size 0.25s;
-    -moz-transition: font-size 0.25s;
-    -ms-transition: font-size 0.25s;
     transition: font-size 0.25s; }
   .component.alt {
     width: 50%; }
@@ -318,8 +318,6 @@ p.note {
 [data-module] {
   color: #aeaaa0;
   -webkit-transition: color 0.5s;
-  -moz-transition: color 0.5s;
-  -ms-transition: color 0.5s;
   transition: color 0.5s; }
   [data-module]:empty:before {
     content: 'No modules active'; }
@@ -416,6 +414,8 @@ img.map {
   .params tbody td, .params tbody th {
     font-weight: normal;
     padding-right: 0.5rem;
+    -webkit-box-sizing: borderbox;
+    -moz-box-sizing: borderbox;
     box-sizing: borderbox; }
   .params tbody th, .params tbody th + td {
     width: 20%; }
@@ -423,6 +423,25 @@ img.map {
     width: 30%; }
   .params tbody td:last-child {
     width: 50%; }
+
+.download-clone {
+  line-height: 2.5; }
+  .download-clone a {
+    display: inline-block; }
+  .download-clone span {
+    display: block; }
+  .download-clone pre {
+    margin: 0;
+    padding: 0 0.5em;
+    display: inline-block; }
+
+.download {
+  line-height: 2.5;
+  padding: 0 1em;
+  color: #fff;
+  background: #ef3261;
+  text-decoration: none;
+  text-transform: lowercase; }
 
 .author {
   font-size: 0.875rem; }
@@ -480,6 +499,8 @@ img.map {
   .highlight {
     margin-right: -6rem; }
   .monitors li {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
     display: inline-block;
     width: 50%;
@@ -506,14 +527,12 @@ img.map {
     padding: 5rem 0 0 0;
     width: 16rem;
     margin: 0;
-    text-align: right;
+    text-align: center;
     z-index: 1; }
     nav.main li {
       display: block; }
     nav.main > ul {
-      border-top: 1px dotted #516574;
       padding-top: 1.5rem;
-      padding-right: 2rem;
       background: transparent; }
     nav.main > ul > li > a:after {
       position: absolute;
@@ -521,12 +540,16 @@ img.map {
       height: 0;
       width: 0;
       border: 5px solid transparent;
-      pointer-events: none;
       content: '';
-      margin-top: -5px; }
+      margin-top: -5px;
+      pointer-events: none; }
+    nav.main ul ul {
+      margin-left: 0; }
     nav.main a {
       color: #a2b3c0;
-      text-decoration: none; }
+      text-decoration: none;
+      display: inline-block;
+      padding: 0.333em; }
       nav.main a:hover, nav.main a:focus {
         text-decoration: underline; }
     nav.main ul ul a {
@@ -534,6 +557,26 @@ img.map {
   .git {
     left: auto;
     border-radius: 0 0 0.25rem 0.25rem; }
+  h1.logo {
+    position: fixed;
+    left: 0;
+    top: 1.5rem;
+    padding: 0;
+    z-index: 2;
+    width: 16rem;
+    text-align: center; }
+    h1.logo a {
+      color: #8596A2; }
+  .landing h1.logo {
+    position: static;
+    text-align: left; }
+  .landing nav.main {
+    padding-top: 4rem; }
+    .landing nav.main > ul {
+      border-top: none;
+      padding-top: 0; } }
+
+@media (min-width: 62rem) and (min-height: 32rem) {
   .author {
     position: fixed;
     left: 0;
@@ -548,31 +591,15 @@ img.map {
       border-radius: 50%; }
     .author a {
       color: #a2b3c0; }
+      .author a:hover {
+        text-decoration: underline; }
     .author a[href*=twitter] {
       display: inline-block;
       background: #a2b3c0;
       color: #40494E;
       border-radius: 0.25em;
       line-height: 1.75;
-      padding: 0 0.5em; }
-  h1.logo {
-    position: fixed;
-    left: 0;
-    top: 1.5rem;
-    padding: 0;
-    z-index: 2;
-    width: 14rem;
-    text-align: right; }
-    h1.logo a {
-      color: #8596A2; }
-  .landing h1.logo {
-    position: static;
-    text-align: left; }
-  .landing nav.main {
-    padding-top: 4rem; }
-    .landing nav.main > ul {
-      border-top: none;
-      padding-top: 0; } }
+      padding: 0 0.5em; } }
 
 .hll {
   background-color: #ffffcc; }

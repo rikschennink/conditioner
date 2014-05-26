@@ -29,7 +29,7 @@
 
 
     {% for monitor in site.data.monitors %}
-    <h5><a href="{{ site.rawurl }}/dist/monitors/{{ monitor.code }}.js" target="_blank">{{ monitor.name }}</a></h5>
+    <h5><a href="{{ site.github.repository_url }}/master/dist/monitors/{{ monitor.code }}.js" target="_blank">{{ monitor.name }}</a></h5>
     <ul class="monitors">
         {% for test in monitor.tests %}<li>
             <article>

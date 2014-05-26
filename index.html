@@ -1,7 +1,6 @@
 ---
 layout: landing
 type: landing
-title: Conditioner.js &bull; Frizz Free, Environment-aware, JavaScript Modules
 ---
 
 <p class="introduction"><strong>A javascript library for loading and unloading behavior based on environment conditions.</strong></p>
@@ -29,7 +28,8 @@ title: Conditioner.js &bull; Frizz Free, Environment-aware, JavaScript Modules
 
     <div class="introduction-block">
         <h3>Frizz free</h3>
-        <p>Modules are loaded separate from each other preventing them  from getting into fights.</p><p>Conditioner exposes an API that allows for structured peace negotiations between modules.</p>
+        <p>Modules loaded with Conditioner live on their own little islands.</p><p>Conditioner exposes an API to facilitate safe communication between modules.</p>
+
     </div>
 
 </section>
@@ -77,29 +77,25 @@ conditioner.init();
 
     <p>If you're not "into" AMD and prefer <a href="http://browserify.org" target="_blank">Browserify</a> that's fine too but keep in mind that your optimized/minimized file should contain all modules. If you want the best of both worlds you might be interested in <a href="http://webpack.github.io" target="_blank">WebPack</a></p>
 
-    <p>Conditioner requires a modern browser to function. If you require IE8 support and want to use media queries as conditions you can use the <code>or not media:{supported}</code> condition to still load a module on IE8.</p>
+    <p>Conditioner requires a modern browser to function. Older browsers are going to need some shims to function correctly (view the gh_pages branch on GitHub for the complete list).</p>
+
+    <p>If you are in some way forced to support IE8 and want to use Media Queries in your conditions (for modern browsers), first call the authorities. Then, while your waiting to be rescued, add the <code>or not media:{supported}</code> condition to always load the module if support is lacking.</p>
 
 </section>
 
-<section id="download">
+<section id="download" class="download-section">
 
     <h2>Download</h2>
 
-    <p>As the library is still being worked on I would advice not to use it in any big project for now.</p>
+    <div class="download-clone">
 
-    <p>The latest version of the library can be downloaded below:</p>
-    <ul class="files">
-        <li><a href="{{ site.rawurl }}/dist/dev/conditioner.js">Development</a></li>
-        <li><a href="{{ site.rawurl }}/dist/min/conditioner.js">Production</a> ~ 5Kb gzipped</li>
-    </ul>
+        <a class="download" href="{{ site.github.zip_url }}">Download Conditioner v{{ site.data.package.version }} as zip</a>
 
-    <p>The library itself does not include the default monitors as you might not need them all for each project. At the moment the following tests are available for download.</p>
+        <span>or</span>
 
-    <ul class="files">
-        {% for monitor in site.data.monitors %}
-        <li><a href="{{ site.rawurl }}/dist/dev/monitors/{{ monitor.code }}.js">{{ monitor.name }}</a></li>
-        {% endfor %}
-    </ul>
+        <pre><code>$ git clone {{ site.github.clone_url }}</code></pre>
+
+    </div>
 
 </section>
 
@@ -107,17 +103,15 @@ conditioner.init();
 
     <h2>Examples</h2>
 
-    <p>Some example implementations.</p>
-
     {% include nav-examples.html %}
+
 </nav>
 
 <nav class="sub" id="documentation">
     <h2>Documentation</h2>
 
-    <p>The docs contain sample code on how to quickly setup Conditioner. See the index below.</p>
-
     {% include nav-docs.html %}
+
 </nav>
 
 <section class="author">
@@ -126,6 +120,6 @@ conditioner.init();
 
     <a href="http://rikschennink.nl"><img src="{{ site.github.owner_gravatar_url }}" alt=""/>Rik Schennink</a>
 
-    <a href="http://twitter.com/rikschennink" class="twitter">Follow @rikschennink</a>
+    <a href="http://twitter.com/rikschennink">Follow @rikschennink</a>
 
 </section>

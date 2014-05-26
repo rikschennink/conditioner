@@ -1,9 +1,11 @@
 pygments: true
 safe: true
-rawurl: "https://raw.github.com/rikschennink/conditioner/master"
-url: "http://localhost:4000"
-version: 1.0.1
 exclude: [node_modules]
 
 github:
+  url: http://localhost:4000
   owner_gravatar_url: images/avatar.png
+  zip_url: https://github.com/github/metadata-example/zipball/gh-pages
+  clone_url: https://github.com/github/metadata-example.git
+  repository_url: https://github.com/github/metadata-example
+  project_tagline: Frizz Free, Environment-aware, JavaScript Modules
