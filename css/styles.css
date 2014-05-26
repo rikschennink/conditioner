@@ -424,6 +424,26 @@ img.map {
   .params tbody td:last-child {
     width: 50%; }
 
+.author {
+  font-size: 0.875rem; }
+  .author a {
+    display: block;
+    text-decoration: none; }
+  .author img {
+    display: block;
+    width: 5rem; }
+  .author a, .author img {
+    margin-bottom: 1em; }
+
+.footer {
+  border-top: 1px solid #ddd;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  font-size: 0.875rem; }
+  .footer, .footer a {
+    color: #aaa; }
+
 /**
  * Body + Header layouting
  */
@@ -514,6 +534,27 @@ img.map {
   .git {
     left: auto;
     border-radius: 0 0 0.25rem 0.25rem; }
+  .author {
+    position: fixed;
+    left: 0;
+    bottom: 2rem;
+    width: 16rem;
+    text-align: center;
+    z-index: 2; }
+    .author h2 {
+      display: none; }
+    .author img {
+      margin: 0 auto 1em;
+      border-radius: 50%; }
+    .author a {
+      color: #a2b3c0; }
+    .author a[href*=twitter] {
+      display: inline-block;
+      background: #a2b3c0;
+      color: #40494E;
+      border-radius: 0.25em;
+      line-height: 1.75;
+      padding: 0 0.5em; }
   h1.logo {
     position: fixed;
     left: 0;

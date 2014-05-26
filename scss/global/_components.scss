@@ -457,3 +457,34 @@ img.map {
 
     }
 }
+
+.author {
+
+    font-size:.875rem;
+
+    a {
+        display:block;
+        text-decoration:none;
+    }
+
+    img {
+        display:block;
+        width:5rem;
+    }
+
+    a,img {
+        margin-bottom:1em;
+    }
+}
+
+.footer {
+    border-top:1px solid #ddd;
+    margin-top:3rem;
+    padding-top:2rem;
+    padding-bottom:2rem;
+    font-size:.875rem;
+
+    &,a {
+        color:#aaa;
+    }
+}

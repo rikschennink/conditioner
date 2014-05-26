@@ -4,3 +4,6 @@ rawurl: "https://raw.github.com/rikschennink/conditioner/master"
 url: "http://localhost:4000"
 version: 1.0.1
 exclude: [node_modules]
+
+github:
+  owner_gravatar_url: images/avatar.png
