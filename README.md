@@ -1,6 +1,4 @@
-# ConditionerJS
-
-[![Build Status](https://travis-ci.org/rikschennink/conditioner.png?branch=master)](https://travis-ci.org/rikschennink/conditioner)
+# ConditionerJS [![Build Status](https://travis-ci.org/rikschennink/conditioner.png?branch=master)](https://travis-ci.org/rikschennink/conditioner)
 
 ConditionerJS is a javascript library for loading and unloading behavior based on environment conditions.
 
@@ -12,7 +10,7 @@ Conditioner automatically loads and unloads modules based on the state of their 
 
 **Frizz Free**
 
-Modules are loaded separate from each other preventing them from getting into fights. Conditioner exposes an API that allows for structured peace negotiations between modules.
+Modules loaded with Conditioner live on their own little islands. Conditioner exposes an API to facilitate safe communication between modules.
 
 ## Demo
 
