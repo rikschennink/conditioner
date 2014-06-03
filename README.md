@@ -72,7 +72,7 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 Read the [1.0.0 closed issue list](https://github.com/rikschennink/conditioner/issues?milestone=2&page=1&state=closed) for a complete overview.
 
 ## Feedback
-If you like what you're seeing, you can show support through [Gittip](https://www.gittip.com/rikschennink/) or send me a happy message on [Twitter](http://twitter.com/rikschennink)!
+If you like what you're seeing, send me smiley faces on [Twitter](http://twitter.com/rikschennink) or sponsor through [Gittip](https://www.gittip.com/rikschennink/)!
 
 ## License
 [MIT](http://www.opensource.org/licenses/mit-license.php)
