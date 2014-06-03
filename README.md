@@ -1,4 +1,4 @@
-# ConditionerJS [![Build Status](https://travis-ci.org/rikschennink/conditioner.png?branch=master)](https://travis-ci.org/rikschennink/conditioner) [![Donate via Gittip](http://img.shields.io/gittip/rikschennink.png)](https://www.gittip.com/rikschennink/)
+# ConditionerJS [![Build Status](https://travis-ci.org/rikschennink/conditioner.png?branch=master)](https://travis-ci.org/rikschennink/conditioner)
 
 ConditionerJS is a javascript library for loading and unloading behavior based on environment conditions.
 
@@ -71,8 +71,8 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 
 Read the [1.0.0 closed issue list](https://github.com/rikschennink/conditioner/issues?milestone=2&page=1&state=closed) for a complete overview.
 
-## Feedback, Comments, Critique
-[Hit me on Twitter](http://twitter.com/rikschennink)
+## Feedback
+If you like what you're seeing, you can show support through [Gittip](https://www.gittip.com/rikschennink/) or send me a happy message on [Twitter](http://twitter.com/rikschennink)!
 
 ## License
 [MIT](http://www.opensource.org/licenses/mit-license.php)
