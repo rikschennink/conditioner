@@ -21,7 +21,7 @@ The following HTML snippet shows how to setup this Google Map using Conditioner.
 ```html
 <a href="http://maps.google.com/?ll=51.741,3.822"
    data-module="ui/Map"
-   data-conditions="media:{(min-width:40em)} and element:{seen}"> ... </a>
+   data-conditions="media:{(min-width:40em)} and element:{was visible}"> ... </a>
 ```
 
 Now the HTML is setup, we only have to tell Conditioner to look for modules in a certain section of the DOM and we're done.
