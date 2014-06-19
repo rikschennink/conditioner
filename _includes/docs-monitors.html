@@ -14,13 +14,13 @@
 
     <h5>Data</h5>
     <p>Properties to store for this monitor. If you want a monitor instance to remember something, you can add it to the data object. The
-        <a href="{{ site.github.repository_url }}/master/dist/dev/monitors/element.js">element</a> monitor contains some example code for implementing additional data properties.</p>
+        <a href="{{ site.github.repository_url }}/blob/master/dist/dev/monitors/element.js">element</a> monitor contains some example code for implementing additional data properties.</p>
     {% highlight javascript %}{% include code/monitor-data.js %}{% endhighlight %}
 
     <h5>Trigger</h5>
     <p>Trigger can also be a function, useful for when you want to bind more exotic events.</p>
     <p>When you're done with binding events or measuring things call the <code>bubble</code> method. For implementation examples see the
-        <a href="{{ site.github.repository_url }}/master/dist/dev/monitors/media.js">media</a> or the <a href="{{ site.github.repository_url }}/master/dist/dev/monitors/pointer.js">pointer</a> monitor.</p>
+        <a href="{{ site.github.repository_url }}/blob/master/dist/dev/monitors/media.js">media</a> or the <a href="{{ site.github.repository_url }}/blob/master/dist/dev/monitors/pointer.js">pointer</a> monitor.</p>
     {% highlight javascript %}{% include code/monitor-trigger.js %}{% endhighlight %}
 
     <h5>Parse</h5>
@@ -29,11 +29,11 @@
     <p>If your test parameters are formatted differently, for instance using an underscore like so <code>monitor:{foo_bar}</code>, you can supply a custom parser.</p>
 
     <p>The <code>parse</code> method should return an array of test objects. Each object in the form of an object <code>{test:'name',value:'expected'}</code>. An example of a custom parser can be found in the
-        <a href="{{ site.github.repository_url }}/master/dist/dev/monitors/media.js">media</a> monitor.</p>
+        <a href="{{ site.github.repository_url }}/blob/master/dist/dev/monitors/media.js">media</a> monitor.</p>
 
     {% highlight javascript %}{% include code/monitor-parse.js %}{% endhighlight %}
 
     <h5>Unload</h5>
-    <p>If an unload method is present, conditioner will make a single monitor for each node. Use the unload method to clean up after a node is destroyed. View the <a href="{{ site.github.repository_url }}/master/dist/dev/monitors/media.js">media</a> monitor for an example implementation.</p>
+    <p>If an unload method is present, conditioner will make a single monitor for each node. Use the unload method to clean up after a node is destroyed. View the <a href="{{ site.github.repository_url }}/blob/master/dist/dev/monitors/media.js">media</a> monitor for an example implementation.</p>
 
 </section>
