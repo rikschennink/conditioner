@@ -215,7 +215,8 @@ ModuleController.prototype = {
                 // @ifdef DEV
                 try {
                 // @endif
-                    overrides = JSON.parse(overrides);
+                // no try catch in production to optimize performance (v8 optimizer won't optimize functions that contain try catch statements)
+                overrides = JSON.parse(overrides);
                 // @ifdef DEV
                 }
                 catch(e) {
