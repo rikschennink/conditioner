@@ -17,7 +17,7 @@ var SyncedControllerGroup = function(controllers) {
     // by default modules are expected to not be in sync
     this._inSync = false;
 
-    // turn arguments into an array
+    // remember controllers for later use
     this._controllers = controllers;
     this._controllerLoadedBind = this._onLoad.bind(this);
     this._controllerUnloadedBind = this._onUnload.bind(this);
