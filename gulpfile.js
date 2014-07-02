@@ -12,7 +12,7 @@ var reporter = require('jshint-stylish');
 var wrap = require('gulp-wrap');
 var beautify = require('gulp-beautify');
 var replace = require('gulp-replace');
-var clean = require('gulp-clean');
+var rimraf = require('gulp-rimraf');
 var sequence = require('run-sequence');
 var preprocess = require('gulp-preprocess');
 
@@ -110,8 +110,8 @@ gulp.task('_monitors',function() {
 });
 
 gulp.task('_clean',function(){
-    return gulp.src(['./dist/**/*','./spec/lib/**/*'],{read: false})
-        .pipe(clean());
+    return gulp.src(['./dist/**/*','./spec/lib/**/*'],{read:false})
+        .pipe(rimraf());
 });
 
 gulp.task('_hint',function(){
