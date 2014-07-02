@@ -110,7 +110,7 @@ gulp.task('_monitors',function() {
 });
 
 gulp.task('_clean',function(){
-    return gulp.src(['./dist/**/*','./spec/lib/**/*'],{read:false})
+    return gulp.src(['./dist','./spec/lib'],{read:false})
         .pipe(rimraf());
 });
 
