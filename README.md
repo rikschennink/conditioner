@@ -4,7 +4,7 @@ ConditionerJS is a javascript library for loading and unloading behavior based o
 
 
 
-[![Dependencies](http://img.shields.io/david/rikschennink/conditioner.svg)]
+![Dependencies](http://img.shields.io/david/rikschennink/conditioner.svg)
 
 **Environment Aware**
 
