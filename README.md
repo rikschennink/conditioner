@@ -1,4 +1,4 @@
-# ConditionerJS [![Build Status](https://travis-ci.org/rikschennink/conditioner.svg?branch=master)](https://travis-ci.org/rikschennink/conditioner)[![Coverage Status](https://img.shields.io/coveralls/rikschennink/conditioner.svg)](https://coveralls.io/r/rikschennink/conditioner)
+# ConditionerJS [![Build Status](https://travis-ci.org/rikschennink/conditioner.svg?branch=master)](https://travis-ci.org/rikschennink/conditioner) [![Coverage Status](https://img.shields.io/coveralls/rikschennink/conditioner.svg)](https://coveralls.io/r/rikschennink/conditioner)
 
 ConditionerJS is a javascript library for loading and unloading behavior based on environment conditions.
 
