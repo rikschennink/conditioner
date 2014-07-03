@@ -3,9 +3,6 @@
 ConditionerJS is a javascript library for loading and unloading behavior based on environment conditions.
 
 
-
-![Dependencies](http://img.shields.io/david/rikschennink/conditioner.svg)
-
 **Environment Aware**
 
 Conditioner automatically loads and unloads modules based on the state of their surroundings. You define the required state, conditioner takes it from there.
