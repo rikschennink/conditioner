@@ -90,7 +90,7 @@ module.exports = function(config) {
 
     // if running on travis
     if (process.env.TRAVIS) {
-        settings.reports.push('coveralls');
+        settings.reporters.push('coveralls');
     }
 
     config.set(settings);
