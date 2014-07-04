@@ -205,14 +205,17 @@ ModuleLoader.prototype = {
                 specs,spec,l;
 
             // add multiple module adapters
+            // @ifdef DEV
             try {
-                specs = JSON.parse(config);
+            // @endif
+            // there's no try catch in production to optimize performance (v8 optimizer won't optimize functions that contain try catch statements)
+            specs = JSON.parse(config);
+            // @ifdef DEV
             }
             catch(e) {
-                // @ifdef DEV
                 throw new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.');
-                // @endif
             }
+            // @endif
 
             // no specification found or specification parsing failed
             if (!specs) {

@@ -1125,6 +1125,7 @@
                         // @ifdef DEV
                         try {
                             // @endif
+                            // no try catch in production to optimize performance (v8 optimizer won't optimize functions that contain try catch statements)
                             overrides = JSON.parse(overrides);
                             // @ifdef DEV
                         }
@@ -1770,7 +1771,7 @@
             // by default modules are expected to not be in sync
             this._inSync = false;
 
-            // turn arguments into an array
+            // remember controllers for later use
             this._controllers = controllers;
             this._controllerLoadedBind = this._onLoad.bind(this);
             this._controllerUnloadedBind = this._onUnload.bind(this);
@@ -2135,15 +2136,17 @@
                         specs, spec, l;
 
                     // add multiple module adapters
+                    // @ifdef DEV
                     try {
+                        // @endif
+                        // there's no try catch in production to optimize performance (v8 optimizer won't optimize functions that contain try catch statements)
                         specs = JSON.parse(config);
+                        // @ifdef DEV
                     }
                     catch (e) {
-                        // @ifdef DEV
                         throw new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.');
-                        // @endif
                     }
-
+                    // @endif
                     // no specification found or specification parsing failed
                     if (!specs) {
                         return [];

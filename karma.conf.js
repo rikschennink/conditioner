@@ -1,91 +1,97 @@
 module.exports = function(config) {
-  config.set({
 
-    // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+    var settings = {
 
-    // frameworks to use
-    // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['requirejs','mocha','chai'],
+        // base path that will be used to resolve all patterns (eg. files, exclude)
+        basePath: '',
 
 
-    // list of files / patterns to load in the browser
-    files: [
+        // frameworks to use
+        frameworks: ['requirejs','mocha','chai'],
 
-        'spec/shim/Function.bind.js',
 
-        'src/lib/Test.js',
-        'src/lib/Condition.js',
-        'src/lib/MonitorFactory.js',
-        'src/lib/WebContext.js',
-        'src/lib/UnaryExpression.js',
-        'src/lib/BinaryExpression.js',
-        'src/lib/ExpressionParser.js',
-        'src/lib/ModuleRegistry.js',
-        'src/lib/ModuleController.js',
-        'src/lib/NodeController.js',
-        'src/lib/SyncedControllerGroup.js',
-        'src/lib/StaticModuleAgent.js',
-        'src/lib/ConditionModuleAgent.js',
-        'src/lib/ModuleLoader.js',
+        // list of files / patterns to load in the browser
+        files: [
 
-        'test-main.js',
+            'spec/shim/Function.bind.js',
 
-        {
-            pattern: 'src/**/*.js', included: false
+            'src/lib/Test.js',
+            'src/lib/Condition.js',
+            'src/lib/MonitorFactory.js',
+            'src/lib/WebContext.js',
+            'src/lib/UnaryExpression.js',
+            'src/lib/BinaryExpression.js',
+            'src/lib/ExpressionParser.js',
+            'src/lib/ModuleRegistry.js',
+            'src/lib/ModuleController.js',
+            'src/lib/NodeController.js',
+            'src/lib/SyncedControllerGroup.js',
+            'src/lib/StaticModuleAgent.js',
+            'src/lib/ConditionModuleAgent.js',
+            'src/lib/ModuleLoader.js',
+
+            'test-main.js',
+
+            {
+                pattern: 'src/**/*.js', included: false
+            },
+            {
+                pattern: 'spec/**/*.js', included: false
+            }
+        ],
+
+
+        // list of files to exclude
+        exclude: [],
+
+
+        // preprocess matching files before serving them to the browser
+        preprocessors: {
+            'src/**/*.js':'coverage'
         },
-        {
-            pattern: 'spec/**/*.js', included: false
-        }
-    ],
+
+        // how and where to do coverage reporting
+        coverageReporter: {
+            type : 'lcov',
+            dir : 'coverage/'
+        },
+
+        // test results reporters to use
+        reporters:['mocha','coverage'],
 
 
-    // list of files to exclude
-    exclude: [],
+        // web server port
+        port: 9876,
 
 
-    // preprocess matching files before serving them to the browser
-    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-        'src/**/*.js':'coverage'
-    },
-
-    coverageReporter: {
-        type : 'lcov',
-        dir : 'coverage/'
-    },
-
-    // test results reporter to use
-    // possible values: 'dots', 'progress'
-    // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters:['mocha','coverage','coveralls'],
+        // enable / disable colors in the output (reporters and logs)
+        colors: true,
 
 
-    // web server port
-    port: 9876,
+        // level of logging
+        // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+        logLevel: config.LOG_INFO,
 
 
-    // enable / disable colors in the output (reporters and logs)
-    colors: true,
+        // enable / disable watching file and executing tests whenever any file changes
+        autoWatch: false,
 
 
-    // level of logging
-    // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
+        // start these browsers
+        // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+        browsers: ['PhantomJS'],
 
 
-    // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false,
+        // Continuous Integration mode
+        // if true, Karma captures browsers, runs the tests and exits
+        singleRun: true
 
+    };
 
-    // start these browsers
-    // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'],
+    // if running on travis
+    if (process.env.TRAVIS) {
+        settings.reporters.push('coveralls');
+    }
 
-
-    // Continuous Integration mode
-    // if true, Karma captures browsers, runs the tests and exits
-    singleRun: true
-
-  });
+    config.set(settings);
 };
