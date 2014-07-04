@@ -16,7 +16,7 @@ define(function() {
 
             it('will return the correct watches for a single value',function(done){
 
-                factory.create(new Test('/single','true')).then(
+                factory.create(new Test('single','true')).then(
                     function(watches){
 
                         expect(watches.length).to.equal(1);
@@ -30,7 +30,7 @@ define(function() {
 
             it('will return the correct watches when using comma separated values',function(done){
 
-                factory.create(new Test('/single','a,b,c')).then(
+                factory.create(new Test('single','a,b,c')).then(
                     function(watches){
 
                         expect(watches.length).to.equal(3);
@@ -46,7 +46,7 @@ define(function() {
 
             it('will return the correct watches when using custom "parse" method',function(done){
 
-                factory.create(new Test('/custom','a,b,c')).then(
+                factory.create(new Test('custom','a,b,c')).then(
                     function(watches){
 
                         expect(watches.length).to.equal(1);
@@ -61,7 +61,7 @@ define(function() {
 
             it('will return the correct watches for a split value',function(done){
 
-                factory.create(new Test('/multiple','foo:1')).then(
+                factory.create(new Test('multiple','foo:1')).then(
                     function(watches){
 
                         expect(watches.length).to.equal(1);

@@ -1,4 +1,4 @@
-define(['lib/utils/Observer'],function(Observer){
+define(function(){
 
     'use strict';
 

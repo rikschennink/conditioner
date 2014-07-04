@@ -1,4 +1,4 @@
-define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
+define(function(){
 
     'use strict';
 
@@ -449,16 +449,6 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
         });
 
         describe('is(conditions)',function(){
-
-            beforeEach(function(){
-
-                conditioner.setOptions({
-                    'paths':{
-                        'monitors':'mock/monitors/'
-                    }
-                });
-
-            });
 
             it('will throw an error when no test passed',function(){
 

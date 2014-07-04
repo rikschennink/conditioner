@@ -1,4 +1,4 @@
-define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer) {
+define(function() {
 
     'use strict';
 

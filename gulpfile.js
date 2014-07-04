@@ -5,16 +5,16 @@ var gulp = require('gulp');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var header = require('gulp-header');
-var mocha = require('gulp-mocha-phantomjs');
 var size = require('gulp-size');
 var jshint = require('gulp-jshint');
 var reporter = require('jshint-stylish');
 var wrap = require('gulp-wrap');
 var beautify = require('gulp-beautify');
 var replace = require('gulp-replace');
-var clean = require('gulp-clean');
+var rimraf = require('gulp-rimraf');
 var sequence = require('run-sequence');
 var preprocess = require('gulp-preprocess');
+var karma = require('gulp-karma');
 
 /**
  * Package data
@@ -38,8 +38,7 @@ var paths = {
     spec:'./spec/',
     dist:{
         dev:'./dist/dev/',
-        prod:'./dist/min/',
-        spec:'./spec/lib/'
+        prod:'./dist/min/'
     },
     bower:'../conditioner-bower/',
     pages:'../conditioner-pages/js/lib/rikschennink/'
@@ -74,7 +73,6 @@ var copySupportFilesInFolder = function(folder) {
         .src(paths.src + folder + '*')
         .pipe(beautify(beauty))
         .pipe(gulp.dest(paths.dist.dev + folder))
-        .pipe(gulp.dest(paths.dist.spec + folder))
         .pipe(uglify())
         .pipe(gulp.dest(paths.dist.prod + folder))
 };
@@ -88,7 +86,6 @@ gulp.task('_lib',function(){
         .pipe(header(banner,{pkg:pkg}))
         .pipe(beautify(beauty))
         .pipe(gulp.dest(paths.dist.dev))
-        .pipe(gulp.dest(paths.dist.spec))
         .pipe(preprocess())
         .pipe(uglify())
         .pipe(size({
@@ -110,8 +107,8 @@ gulp.task('_monitors',function() {
 });
 
 gulp.task('_clean',function(){
-    return gulp.src(['./dist/**/*','./spec/lib/**/*'],{read: false})
-        .pipe(clean());
+    return gulp.src(['./dist','./spec/lib'],{read:false})
+        .pipe(rimraf());
 });
 
 gulp.task('_hint',function(){
@@ -120,17 +117,23 @@ gulp.task('_hint',function(){
         .pipe(jshint.reporter(reporter));
 });
 
+
 /**
  * 'Public' tasks
  */
 gulp.task('test',['build'],function(){
 
-    // do mocha tests, but wait for build
-    return gulp
-        .src(paths.spec + 'runner.html')
-        .pipe(mocha({reporter:'spec'}));
+    return gulp.src('./karma-config-will-handle-this')
+        .pipe(karma({
+            configFile:'./karma.conf.js',
+            action:'run'
+        }))
+        .on('error', function(err) {
+            throw err;
+        });
 
 });
+
 
 gulp.task('build',function(cb){
 
