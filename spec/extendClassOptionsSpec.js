@@ -1,4 +1,4 @@
-define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
+define(function(){
 
     'use strict';
 
@@ -15,29 +15,22 @@ define(['lib/conditioner','lib/utils/Observer'],function(conditioner,Observer){
                 group = document.createElement('div');
                 group.appendChild(node);
 
-                // act
-                conditioner.setOptions({
-                    'modules':{
-                        'mock/modules/foo':{
-                            'options':{
-                                'foo':2
-                            }
-                        },
-                        'mock/modules/bar':{
-                            'options':{
-                                'bar':2
-                            }
-                        },
-                        'mock/modules/baz':{
-                            'options':{
-                                'baz':2
-                            }
-                        }
-                    }
+
+                ModuleRegistry.registerModule('mock/modules/foo',{
+                    'foo':2
+                });
+
+                ModuleRegistry.registerModule('mock/modules/bar',{
+                    'bar':2
+                });
+
+                ModuleRegistry.registerModule('mock/modules/baz',{
+                    'baz':2
                 });
 
                 // find modules
-                results = conditioner.parse(group);
+                var loader = new ModuleLoader();
+                results = loader.parse(group);
 
                 // wait for load event to fire
                 Observer.subscribe(results[0],'load',function() {

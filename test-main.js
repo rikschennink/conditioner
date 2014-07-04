@@ -1,62 +1,40 @@
+var allTestFiles = [];
+var TEST_REGEXP = /(spec)\.js$/i;
+
+var pathToModule = function(path) {
+    return path.replace(/^\/base\//, '').replace(/\.js$/, '');
+};
+
+Object.keys(window.__karma__.files).forEach(function(file) {
+    if (TEST_REGEXP.test(file)) {
+        allTestFiles.push(pathToModule(file));
+    }
+});
+
+console.info('\n\nLoading tests:\n' + allTestFiles.join(', \n') + '\n');
+
 require.config({
-    urlArgs:'bust=' + (new Date()).getTime(),
-    map:{
-        '*':{
-            'src':'../src'
-        }
-    },
-    shim:{
-        'lib/conditioner':[
-            'src/lib/Test.js',
-            'src/lib/Condition.js',
-            'src/lib/MonitorFactory.js',
-            'src/lib/WebContext.js',
-            'src/lib/UnaryExpression.js',
-            'src/lib/BinaryExpression.js',
-            'src/lib/ExpressionParser.js',
-            'src/lib/ModuleRegistry.js',
-            'src/lib/ModuleController.js',
-            'src/lib/NodeController.js',
-            'src/lib/SyncedControllerGroup.js',
-            'src/lib/StaticModuleAgent.js',
-            'src/lib/ConditionModuleAgent.js',
-            'src/lib/ModuleLoader.js'
-        ]
+    baseUrl:'base',
+    paths:{
+        'mock':'spec/mock',
+        'lib':'src'
     }
 });
 
 require([
-
-    // globals
     'lib/utils/Observer',
     'lib/utils/Promise',
     'lib/utils/contains',
     'lib/utils/matchesSelector',
     'lib/utils/mergeObjects',
-
-    // utils
-    'ObserverSpec',
-    'extendClassOptionsSpec',
-
-    // inner
-    'ExpressionParserSpec',
-    'MonitorFactorySpec',
-    'ModuleLoaderSpec',
-
-    // exposed
-    'ModuleControllerSpec',
-    'NodeControllerSpec',
-    'SyncedControllerGroupSpec',
-
-    // API
-    'APISpec'
-
-],function(Observer,Promise,contains,matchesSelector,mergeObjects){
+    'lib/utils/extendClassOptions',
+    'lib/factory'
+],function(Observer,Promise,contains,matchesSelector,mergeObjects,extendClassOptions,factory){
 
     // setup base options
     window._options = {
         'paths':{
-            'monitors':'mock/monitors'
+            'monitors':'mock/monitors/'
         },
         'attr':{
             'options':'data-options',
@@ -94,7 +72,14 @@ require([
     window.contains = contains;
     window.matchesSelector = matchesSelector;
     window.mergeObjects = mergeObjects;
+    window.extendClassOptions = extendClassOptions;
 
-    // run mocha
-    (window.mochaPhantomJS ? window.mochaPhantomJS : mocha).run();
+    // setup factory for API test
+    window.conditioner = factory;
+
+    // run test files
+    require(allTestFiles,function(){
+        window.__karma__.start();
+    });
+
 });
