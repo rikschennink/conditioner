@@ -252,9 +252,12 @@
                         // auto bind trigger events
                         else {
                             for (event in setup.trigger) {
+
+                                /* istanbul ignore next */
                                 if (!setup.trigger.hasOwnProperty(event)) {
                                     continue;
                                 }
+
                                 setup.trigger[event].addEventListener(event, monitor.change, false);
                             }
                         }
@@ -2342,6 +2345,7 @@
                 // fix paths if not ending with slash
                 for (path in _options.paths) {
 
+                    /* istanbul ignore next */
                     if (!_options.paths.hasOwnProperty(path)) {
                         continue;
                     }
@@ -2353,6 +2357,7 @@
                 // loop over modules
                 for (path in _options.modules) {
 
+                    /* istanbul ignore next */
                     if (!_options.modules.hasOwnProperty(path)) {
                         continue;
                     }

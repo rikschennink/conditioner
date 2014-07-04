@@ -120,7 +120,10 @@ MonitorFactory.prototype = {
                 // auto bind trigger events
                 else {
                     for (event in setup.trigger) {
+
+                        /* istanbul ignore next */
                         if (!setup.trigger.hasOwnProperty(event)) {continue;}
+
                         setup.trigger[event].addEventListener(event, monitor.change, false);
                     }
                 }

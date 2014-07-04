@@ -155,6 +155,7 @@
                 // fix paths if not ending with slash
                 for (path in _options.paths) {
 
+                    /* istanbul ignore next */
                     if (!_options.paths.hasOwnProperty(path)){continue;}
 
                     // add slash if path does not end on slash already
@@ -164,6 +165,7 @@
                 // loop over modules
                 for (path in _options.modules) {
 
+                    /* istanbul ignore next */
                     if (!_options.modules.hasOwnProperty(path)){continue;}
 
                     // get module reference
