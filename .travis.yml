@@ -7,9 +7,6 @@ before_script:
 
 script: gulp test
 
-after_success:
-  - coveralls
-
 branches:
   only:
     - master
