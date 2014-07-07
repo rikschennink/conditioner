@@ -52,8 +52,9 @@ module.exports = function(config) {
 
         // how and where to do coverage reporting
         coverageReporter: {
-            type : 'lcov',
-            dir : 'coverage/'
+            reporters:[
+                {type: 'lcov', dir:'coverage/'}
+            ]
         },
 
         // test results reporters to use
@@ -88,9 +89,13 @@ module.exports = function(config) {
 
     };
 
-    // if running on travis
+    // if running on travis push results to coveralls.io service
     if (process.env.TRAVIS) {
         settings.reporters.push('coveralls');
+    }
+    // setup text type coverage reporting for local environments
+    else {
+        settings.coverageReporter.reporters.push({type: 'text'});
     }
 
     config.set(settings);
