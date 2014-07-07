@@ -9,9 +9,10 @@
     var exports = function () {
 
         // get child constructor
-        var Child = arguments[arguments.length - 1],
-            first = arguments[0],
-            req, path;
+        var Child = arguments[arguments.length - 1];
+        var first = arguments[0];
+        var req;
+        var path;
 
         if (typeof first === 'string') {
             req = requirejs;

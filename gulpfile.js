@@ -15,6 +15,8 @@ var rimraf = require('gulp-rimraf');
 var sequence = require('run-sequence');
 var preprocess = require('gulp-preprocess');
 var karma = require('gulp-karma');
+var jscs = require('gulp-jscs');
+var sloc = require('gulp-sloc');
 
 /**
  * Package data
@@ -107,20 +109,36 @@ gulp.task('_monitors',function() {
 });
 
 gulp.task('_clean',function(){
-    return gulp.src(['./dist','./spec/lib'],{read:false})
+    return gulp.src(['./dist'],{read:false})
         .pipe(rimraf());
 });
 
-gulp.task('_hint',function(){
-    return gulp.src(paths.dist.dev + pkg.name + '.js')
+gulp.task('_sloc', function(){
+	gulp.src(paths.src + '**/*.js')
+		.pipe(sloc());
+});
+
+gulp.task('_jscs', function() {
+	return gulp.src(paths.src + '**/*.js')
+		.pipe(jscs())
+});
+
+gulp.task('_hint',['_jscs'],function(){
+    return gulp.src(paths.dist.dev + '*.js')
         .pipe(jshint())
         .pipe(jshint.reporter(reporter));
 });
 
-
 /**
  * 'Public' tasks
  */
+gulp.task('build',function(cb){
+
+	// first runs clean than runs _lib _utils and _monitors in parallel
+	return sequence('_clean',['_lib','_utils','_monitors'],'_hint','_sloc',cb);
+
+});
+
 gulp.task('test',['build'],function(){
 
     return gulp.src('./karma-config-will-handle-this')
@@ -131,14 +149,6 @@ gulp.task('test',['build'],function(){
         .on('error', function(err) {
             throw err;
         });
-
-});
-
-
-gulp.task('build',function(cb){
-
-    // first runs clean than runs _lib _utils and _monitors in parallel
-    return sequence('_clean',['_lib','_utils','_monitors'],'_hint',cb);
 
 });
 

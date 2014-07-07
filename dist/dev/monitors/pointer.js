@@ -22,10 +22,11 @@
             return;
         }
 
-        var dim = element.getBoundingClientRect(),
-            evx = event.pageX - scrollX(),
-            evy = event.pageY - scrollY(),
-            px, py;
+        var dim = element.getBoundingClientRect();
+        var evx = event.pageX - scrollX();
+        var evy = event.pageY - scrollY();
+        var px;
+        var py;
 
         if (evx < dim.left) { // to the left of the element
             px = dim.left;
@@ -122,7 +123,7 @@
 
             // near
             doc.addEventListener('mousemove', function (e) {
-                bubble(e)
+                bubble(e);
             }, false);
 
         },
@@ -132,7 +133,7 @@
                     return false;
                 }
                 var expected = data.expected === true ? 50 : parseInt(data.expected, 10);
-                return data.beenNear = expected * expected >= distanceSquared(data.element, event);
+                return expected * expected >= distanceSquared(data.element, event);
             },
             'fine': function (data) {
                 return shared.available === data.expected;

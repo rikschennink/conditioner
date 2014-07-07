@@ -183,6 +183,37 @@ define(function(){
 
         });
 
+        describe('load()',function(){
+
+            it('will throw an error when no controllers supplied',function(){
+
+                var attemptToLoadNode = function(){conditioner.load(document.createElement('div'))};
+                expect(attemptToLoadNode).to.throw(Error);
+
+            });
+
+            /*
+             it('will load module and return node',function(){
+
+             var el = document.createElement('div');
+             var node = conditioner.load(el,[
+             {
+             path: 'mock/modules/foo',
+             //conditions: 'config',
+             options: {
+             foo: 3
+             }
+             }
+             ]);
+
+             expect(node).to.be.an('object');
+             node.destroy();
+
+             });
+             */
+
+        });
+
         describe('sync()',function(){
 
             var a, b, c, group, results;

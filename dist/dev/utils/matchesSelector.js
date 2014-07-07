@@ -3,9 +3,10 @@
     'use strict';
 
     // define method used for matchesSelector
-    var exports = null,
-        _method = null,
-        el = win.document ? win.document.body : null;
+    var exports = null;
+    var _method = null;
+    var el = win.document ? win.document.body : null;
+
     if (!el || el.matches) {
         _method = 'matches';
     }
@@ -41,8 +42,8 @@
             // then check if the given element is included in that list.
             // Executing the query on the parentNode reduces the resulting nodeList,
             // document doesn't have a parentNode, though.
-            var nodeList = (element.parentNode || win.document).querySelectorAll(selector) || [],
-                i = nodeList.length;
+            var nodeList = (element.parentNode || win.document).querySelectorAll(selector) || [];
+            var i = nodeList.length;
 
             // loop through nodeList
             while (i--) {
