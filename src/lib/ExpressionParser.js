@@ -9,34 +9,34 @@ var ExpressionParser = {
 	 */
 	parse:function(expression) {
 
-		var i=0,
-			path = '',
-			tree = [],
-			value = '',
-			negate = false,
-			isValue = false,
-			target = null,
-			parent = null,
-			parents = [],
-			l=expression.length,
-			lastIndex,
-			index,
-			operator,
-            test,
-			j,
-			c,
-			k,
-			n,
-			op,
-			ol,
-			tl;
+		var i = 0;
+		var	path = '';
+		var	tree = [];
+		var	value = '';
+		var	negate = false;
+		var	isValue = false;
+		var	target = null;
+		var	parent = null;
+		var	parents = [];
+		var	l = expression.length;
+		var	lastIndex;
+		var	index;
+		var	operator;
+		var	test;
+		var	j;
+		var	c;
+		var	k;
+		var	n;
+		var	op;
+		var	ol;
+		var	tl;
 
 		if (!target) {
 			target = tree;
 		}
 
 		// read explicit expressions
-		for (;i<l;i++) {
+		for (;i < l;i++) {
 
 			c = expression.charCodeAt(i);
 
@@ -50,11 +50,11 @@ var ExpressionParser = {
 				path = '';
 
 				// fetch path
-				k = i-2;
-				while(k>=0) {
+				k = i - 2;
+				while (k >= 0) {
 					n = expression.charCodeAt(k);
 
-                    // test for ' ' or '('
+					// test for ' ' or '('
 					if (n === 32 || n === 40) {
 						break;
 					}
@@ -67,26 +67,26 @@ var ExpressionParser = {
 
 			}
 
-            // else if is '}'
+			// else if is '}'
 			else if (c === 125) {
 
-				lastIndex = target.length-1;
-				index = lastIndex+1;
+				lastIndex = target.length - 1;
+				index = lastIndex + 1;
 
 				// negate if last index contains not operator
 				negate = target[lastIndex] === 'not';
 
 				// if negate overwrite not operator location in array
-				index = negate ? lastIndex : lastIndex+1;
+				index = negate ? lastIndex : lastIndex + 1;
 
-                // setup test
-                test = new Test(path,value);
+				// setup test
+				test = new Test(path,value);
 
-                // add expression
+				// add expression
 				target[index] = new UnaryExpression(
-                    test,
-                    negate
-                );
+					test,
+					negate
+				);
 
 				// reset vars
 				path = '';
@@ -115,7 +115,7 @@ var ExpressionParser = {
 				parents.push(target);
 
 				// set new child slot as new target
-				target = target[target.length-1];
+				target = target[target.length - 1];
 
 			}
 
@@ -129,7 +129,7 @@ var ExpressionParser = {
 
 				// get reference and calculate length
 				op = operator[0];
-				ol = op.length-1;
+				ol = op.length - 1;
 
 				// add operator
 				target.push(op.substring(0,ol));
@@ -139,7 +139,7 @@ var ExpressionParser = {
 			}
 
 			// expression or level finished, time to clean up. Testing for ')'
-			if (c === 41 || i === l-1) {
+			if (c === 41 || i === l - 1) {
 
 				do {
 
@@ -156,10 +156,10 @@ var ExpressionParser = {
 					}
 
 					// if more elements start the grouping process
-					j=0;
-					tl=target.length;
+					j = 0;
+					tl = target.length;
 
-					for (;j<tl;j++) {
+					for (;j < tl;j++) {
 
 						if (typeof target[j] !== 'string') {
 							continue;
@@ -167,15 +167,15 @@ var ExpressionParser = {
 
 						// handle not expressions first
 						if (target[j] === 'not') {
-							target.splice(j,2,new UnaryExpression(target[j+1],true));
+							target.splice(j,2,new UnaryExpression(target[j + 1],true));
 
 							// rewind
 							j = -1;
 							tl = target.length;
 						}
 						// handle binary expression
-						else if (target[j+1] !== 'not') {
-							target.splice(j-1,3,new BinaryExpression(target[j-1],target[j],target[j+1]));
+						else if (target[j + 1] !== 'not') {
+							target.splice(j - 1,3,new BinaryExpression(target[j - 1],target[j],target[j + 1]));
 
 							// rewind
 							j = -1;
@@ -188,7 +188,7 @@ var ExpressionParser = {
 					if (target.length === 1 && parent) {
 
 						// overwrite target index with target content
-						parent[parent.length-1] = target[0];
+						parent[parent.length - 1] = target[0];
 
 						// set target to parent array
 						target = parent;
@@ -196,14 +196,14 @@ var ExpressionParser = {
 					}
 
 				}
-				while(i === l-1 && parent);
+				while (i === l - 1 && parent);
 
 			}
 			// end of ')' character or last index
 
 		}
 
-        return tree.length === 1 ? tree[0] : tree;
+		return tree.length === 1 ? tree[0] : tree;
 
 	}
 

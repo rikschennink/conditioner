@@ -20,6 +20,53 @@ define(function() {
             }
         };
 
+        describe('contains()',function() {
+
+            it('will return correct measurement when testing if element contains sibling', function () {
+
+                var foo = document.createElement('div');
+                var bar = document.createElement('div');
+                var baz = document.createElement('div');
+                foo.appendChild(bar);
+                foo.appendChild(baz);
+
+                expect(contains(bar,baz)).to.not.be.ok;
+
+            });
+
+            it('will return correct measurement when testing if parent contains child', function () {
+
+                var foo = document.createElement('div');
+                var bar = document.createElement('div');
+                foo.appendChild(bar);
+
+                expect(contains(foo,bar)).to.be.ok;
+
+            });
+
+            it('will return correct measurement when testing if child contains parent', function () {
+
+                var foo = document.createElement('div');
+                var bar = document.createElement('div');
+                foo.appendChild(bar);
+
+                expect(contains(bar,foo)).to.not.be.ok;
+
+            });
+
+            it('will return correct measurement when testing if parent contains deeper element', function () {
+
+                var foo = document.createElement('div');
+                var bar = document.createElement('div');
+                var baz = document.createElement('div');
+                bar.appendChild(baz);
+                foo.appendChild(bar);
+
+                expect(contains(foo,baz)).to.be.ok;
+
+            });
+
+        });
 
         describe('Observer', function () {
 
