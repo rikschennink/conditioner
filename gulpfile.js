@@ -123,7 +123,8 @@ gulp.task('_jscs', function() {
 		.pipe(jscs())
 });
 
-gulp.task('_hint',['_jscs'],function(){
+gulp.task('_hint',function(){
+//gulp.task('_hint',['_jscs'],function(){
     return gulp.src(paths.dist.dev + '*.js')
         .pipe(jshint())
         .pipe(jshint.reporter(reporter));
