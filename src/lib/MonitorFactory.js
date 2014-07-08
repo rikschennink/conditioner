@@ -1,239 +1,257 @@
-var MonitorFactory = function(){
-    this._uid = 1;
-    this._db = [];
-    this._expressions = [];
+var MonitorFactory = function() {
+	this._uid = 1;
+	this._db = [];
+	this._expressions = [];
 };
 
 MonitorFactory.prototype = {
 
-    /**
-     * Parse expression to deduct test names and expected values
-     *
-     * Splits the expression on a comma and splits the resulting blocks at the semi-colon
-     *
-     * @param {String} expression
-     * @param {Boolean} isSingleTest - is true when only one test is defined, in that case only value can be returned
-     * @returns {*}
-     */
-    _parse:function(expression,isSingleTest) {
+	/**
+	 * Parse expression to deduct test names and expected values
+	 *
+	 * Splits the expression on a comma and splits the resulting blocks at the semi-colon
+	 *
+	 * @param {String} expression
+	 * @param {Boolean} isSingleTest - is true when only one test is defined, in that case only value can be returned
+	 * @returns {*}
+	 */
+	_parse:function(expression,isSingleTest) {
 
-        // if earlier parse action found return that one
-        if (this._expressions[expression]) {
-            return this._expressions[expression];
-        }
+		// if earlier parse action found return that one
+		if (this._expressions[expression]) {
+			return this._expressions[expression];
+		}
 
-        // parse expression
-        var i=0,expressions=expression.split(','),l=expressions.length,result=[],parts,retain,test;
-        for(;i<l;i++) {
-            parts=expressions[i].split(':');
-            retain = parts[0].indexOf('was ')===0;
-            test = retain ? parts[0].substr(4) : parts[0];
-            result.push({
+		// parse expression
+		var i = 0;
+		var expressions = expression.split(',');
+		var l = expressions.length;
+		var result = [];
+		var parts;
+		var retain;
+		var test;
 
-                // retain when value matched
-                retain: retain,
+		for (;i < l;i++) {
+			parts = expressions[i].split(':');
+			retain = parts[0].indexOf('was ') === 0;
+			test = retain ? parts[0].substr(4) : parts[0];
+			result.push({
 
-                // test name
-                test: test,
+				// retain when value matched
+				retain: retain,
 
-                // expected custom value or expect true by default
-                value:isSingleTest ? test : typeof parts[1] === 'undefined' ? true : parts[1]
+				// test name
+				test: test,
 
-            });
-        }
+				// expected custom value or expect true by default
+				value:isSingleTest ? test : typeof parts[1] === 'undefined' ? true : parts[1]
 
-        // remember the resulting array
-        this._expressions[expression] = result;
-        return result;
-    },
+			});
+		}
 
-    _mergeData:function(base,expected,element){
-        return mergeObjects(
-            {
-                element:element,
-                expected:expected
-            },
-            base
-        );
-    },
+		// remember the resulting array
+		this._expressions[expression] = result;
+		return result;
+	},
 
-    /**
-     * Create a new Monitor based on passed configuration
-     * @param {Test} test
-     * @param {Element} element
-     * @returns {Promise}
-     */
-    create:function(test,element){
+	_mergeData:function(base,expected,element) {
+		return mergeObjects(
+			{
+				element:element,
+				expected:expected
+			},
+			base
+		);
+	},
 
-        // setup promise
-        var p = new Promise();
+	/**
+	 * Create a new Monitor based on passed configuration
+	 * @param {Test} test
+	 * @param {Element} element
+	 * @returns {Promise}
+	 */
+	create:function(test,element) {
 
-        // path to monitor
-        var path = test.getPath();
+		// setup promise
+		var p = new Promise();
 
-        // expected value
-        var expected = test.getExpected();
+		// path to monitor
+		var path = test.getPath();
 
-        // load monitor configuration
-        var self = this;
-        _options.loader.require([_options.paths.monitors + path],function(setup) {
+		// expected value
+		var expected = test.getExpected();
 
-            var i=0,monitor = self._db[path],id=setup.unload ? self._uid++ : path,l,watch,watches,items,event,item,data,isSingleTest;
+		// load monitor configuration
+		var self = this;
+		_options.loader.require([_options.paths.monitors + path],function(setup) {
 
-            // bind trigger events for this setup if not defined yet
-            if (!monitor) {
+			var i = 0;
+			var monitor = self._db[path];
+			var id = setup.unload ? self._uid++ : path;
+			var l;
+			var watch;
+			var watches;
+			var items;
+			var event;
+			var item;
+			var data;
+			var isSingleTest;
 
-                // setup
-                monitor = {
+			// bind trigger events for this setup if not defined yet
+			if (!monitor) {
 
-                    // bound watches (each watch has own data object)
-                    watches: [],
+				// setup
+				monitor = {
 
-                    // change method
-                    change:function(event) {
-                        i = 0;
-                        l = monitor.watches.length;
-                        for (; i<l; i++) {
-                            monitor.watches[i].test(event);
-                        }
-                    }
+					// bound watches (each watch has own data object)
+					watches:[],
 
-                };
+					// change method
+					change:function(event) {
+						i = 0;
+						l = monitor.watches.length;
+						for (; i < l; i++) {
+							monitor.watches[i].test(event);
+						}
+					}
 
-                // data holder
-                data = setup.unload ? self._mergeData(setup.data,expected,element) : setup.data;
+				};
 
-                // if unload method defined
-                if (typeof setup.unload === 'function') {
-                    monitor.unload = (function(data) {
-                        return function(){
-                            setup.unload(data);
-                        };
-                    }(data));
-                }
+				// data holder
+				data = setup.unload ? self._mergeData(setup.data,expected,element) : setup.data;
 
-                // setup trigger events manually
-                if (typeof setup.trigger === 'function') {
-                    setup.trigger(monitor.change,data);
-                }
+				// if unload method defined
+				if (typeof setup.unload === 'function') {
+					monitor.unload = (function(data) {
+						return function() {
+							setup.unload(data);
+						};
+					}(data));
+				}
 
-                // auto bind trigger events
-                else {
-                    for (event in setup.trigger) {
+				// setup trigger events manually
+				if (typeof setup.trigger === 'function') {
+					setup.trigger(monitor.change,data);
+				}
 
-                        /* istanbul ignore next */
-                        if (!setup.trigger.hasOwnProperty(event)) {continue;}
+				// auto bind trigger events
+				else {
+					for (event in setup.trigger) {
 
-                        setup.trigger[event].addEventListener(event, monitor.change, false);
-                    }
-                }
+						/* istanbul ignore next */
+						if (!setup.trigger.hasOwnProperty(event)) {continue;}
 
-                // test if should remember this monitor or should create a new one on each match
-                self._db[id] = monitor;
-            }
+						setup.trigger[event].addEventListener(event, monitor.change, false);
 
-            // remember
-            test.assignMonitor(id);
+					}
+				}
 
-            // add watches
-            watches = [];
+				// test if should remember this monitor or should create a new one on each match
+				self._db[id] = monitor;
+			}
 
-            // deduce if this setup contains a single test or has a mutiple test setup
-            // this is useful to determine parsing setup and watch configuration later on
-            isSingleTest = typeof setup.test === 'function';
+			// remember
+			test.assignMonitor(id);
 
-            // does the monitor have an own custom parse method or should we use the default parse method
-            items = setup.parse ? setup.parse(expected,isSingleTest) : self._parse(expected,isSingleTest);
+			// add watches
+			watches = [];
 
-            // cache the amount of items
-            l = items.length;
+			// deduce if this setup contains a single test or has a mutiple test setup
+			// this is useful to determine parsing setup and watch configuration later on
+			isSingleTest = typeof setup.test === 'function';
 
-            for(;i<l;i++) {
+			// does the monitor have an own custom parse method or should we use the default parse method
+			items = setup.parse ? setup.parse(expected,isSingleTest) : self._parse(expected,isSingleTest);
 
-                item = items[i];
+			// cache the amount of items
+			l = items.length;
 
-                watch = {
+			for (;i < l;i++) {
 
-                    // on change callback
-                    changed:null,
+				item = items[i];
 
-                    // retain when valid
-                    retain:item.retain,
-                    retained: null,
+				watch = {
 
-                    // default limbo state before we've done any tests
-                    valid:null,
+					// on change callback
+					changed:null,
 
-                    // setup data holder for this watcher
-                    data:setup.unload ? data : self._mergeData(setup.data,item.value,element),
+					// retain when valid
+					retain:item.retain,
+					retained: null,
 
-                    // setup test method to use
-                    // jshint -W083
-                    test:(function (fn) {
-                        // @ifdef DEV
-                        if (!fn) {
-                            throw new Error('Conditioner: Test "' + item.test + '" not found on "' + path + '" Monitor.');
-                        }
-                        // @endif
-                        return function (event) {
-                            if (this.retained) {return;}
-                            var state = fn(this.data, event);
-                            if (this.valid != state) {
-                                this.valid = state;
-                                if (this.changed) {
-                                    this.changed();
-                                }
-                            }
-                            if (this.valid && this.retain) {
-                                this.retained = true;
-                            }
-                        };
-                    }(isSingleTest ? setup.test : setup.test[item.test]))
+					// default limbo state before we've done any tests
+					valid:null,
 
-                };
+					// setup data holder for this watcher
+					data:setup.unload ? data : self._mergeData(setup.data,item.value,element),
 
-                // run initial test so we have start state
-                watch.test();
+					// setup test method to use
+					// jshint -W083
+					test:(function(fn) {
+						// @ifdef DEV
+						if (!fn) {
+							throw new Error('Conditioner: Test "' + item.test + '" not found on "' + path + '" Monitor.');
+						}
+						// @endif
+						return function(event) {
+							if (this.retained) {return;}
+							var state = fn(this.data, event);
+							if (this.valid != state) {
+								this.valid = state;
+								if (this.changed) {
+									this.changed();
+								}
+							}
+							if (this.valid && this.retain) {
+								this.retained = true;
+							}
+						};
+					}(isSingleTest ? setup.test : setup.test[item.test]))
 
-                // we need to return it for later binding
-                watches.push(watch);
-            }
+				};
 
-            // add these new watches to the already existing watches so they receive trigger updates
-            monitor.watches = monitor.watches.concat(watches);
+				// run initial test so we have start state
+				watch.test();
 
-            // resolve with the new watches
-            p.resolve(watches);
+				// we need to return it for later binding
+				watches.push(watch);
+			}
 
-        });
+			// add these new watches to the already existing watches so they receive trigger updates
+			monitor.watches = monitor.watches.concat(watches);
 
-        return p;
+			// resolve with the new watches
+			p.resolve(watches);
 
-    },
+		});
 
-    destroy:function(test) {
+		return p;
 
-        // get monitor and remove watches contained in this test
-        var monitorId = test.getMonitor(),
-            monitor = this._db[monitorId],
-            monitorWatches = monitor.watches,
-            l=monitorWatches.length,
-            i;
+	},
 
-        // remove watches
-        test.getWatches().forEach(function(watch){
-            for (i=0;i<l;i++) {
-                if (monitorWatches[i]===watch) {
-                    monitorWatches.splice(i,1);
-                }
-            }
-        });
+	destroy:function(test) {
 
-        // unload monitor, then remove from db
-        if (monitor.unload) {
-            monitor.unload();
-            this._db[monitorId] = null;
-        }
-    }
+		// get monitor and remove watches contained in this test
+		var monitorId = test.getMonitor();
+		var	monitor = this._db[monitorId];
+		var	monitorWatches = monitor.watches;
+		var	l = monitorWatches.length;
+		var	i;
+
+		// remove watches
+		test.getWatches().forEach(function(watch) {
+			for (i = 0;i < l;i++) {
+				if (monitorWatches[i] === watch) {
+					monitorWatches.splice(i,1);
+				}
+			}
+		});
+
+		// unload monitor, then remove from db
+		if (monitor.unload) {
+			monitor.unload();
+			this._db[monitorId] = null;
+		}
+	}
 
 };

@@ -15,36 +15,36 @@ var BinaryExpression = function(a,operator,b) {
 
 BinaryExpression.prototype = {
 
-    /**
-     * Tests if valid expression
-     * @returns {Boolean}
-     */
-    isTrue:function() {
+	/**
+	 * Tests if valid expression
+	 * @returns {Boolean}
+	 */
+	isTrue:function() {
 
-        return this._operator === 'and' ?
+		return this._operator === 'and' ?
 
-            // is 'and' operator
-            this._a.isTrue() && this._b.isTrue() :
+			// is 'and' operator
+			this._a.isTrue() && this._b.isTrue() :
 
-            // is 'or' operator
-            this._a.isTrue() || this._b.isTrue();
+			// is 'or' operator
+			this._a.isTrue() || this._b.isTrue();
 
-    },
+	},
 
-    /**
-     * Returns tests contained in this expression
-     * @returns Array
-     */
-    getTests:function() {
-        return this._a.getTests().concat(this._b.getTests());
-    },
+	/**
+	 * Returns tests contained in this expression
+	 * @returns Array
+	 */
+	getTests:function() {
+		return this._a.getTests().concat(this._b.getTests());
+	},
 
-    /**
-     * Outputs the expression as a string
-     * @returns {String}
-     */
-    toString:function() {
-        return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
-    }
-    
+	/**
+	 * Outputs the expression as a string
+	 * @returns {String}
+	 */
+	toString:function() {
+		return '(' + this._a.toString() + ' ' + this._operator + ' ' + this._b.toString() + ')';
+	}
+
 };

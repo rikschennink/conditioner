@@ -36,7 +36,7 @@
     "multistr"      : false,
     "proto"         : false,
     "scripturl"     : false,
-    "smarttabs"     : true,
+    "smarttabs"     : false,
     "shadow"        : false,
     "sub"           : false,
     "supernew"      : false,

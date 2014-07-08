@@ -54,6 +54,7 @@
 
         _complete: function (which, arg) {
             // switch over to sync then()
+            /* jshint unused:false*/
             this.then = which === 'resolve' ?
             function (resolve, reject) {
                 resolve(arg);
@@ -67,7 +68,9 @@
                 throw new Error('Promise already completed.');
             };
             // complete all waiting (async) then()s
-            var aThen, i = 0;
+            var aThen;
+            var i = 0; /* jshint -W084 */
+            /* jshint -W030 */
             while (aThen = this._thens[i++]) {
                 aThen[which] && aThen[which](arg);
             }

@@ -13,27 +13,27 @@ var UnaryExpression = function(expression,negate) {
 
 UnaryExpression.prototype = {
 
-    /**
-     * Tests if valid expression
-     * @returns {Boolean}
-     */
-    isTrue:function() {
-        return this._expression.isTrue() !== this._negate;
-    },
+	/**
+	 * Tests if valid expression
+	 * @returns {Boolean}
+	 */
+	isTrue:function() {
+		return this._expression.isTrue() !== this._negate;
+	},
 
-    /**
-     * Returns tests contained in this expression
-     * @returns Array
-     */
-    getTests:function() {
-        return this._expression instanceof Test ? [this._expression] : this._expression.getTests();
-    },
+	/**
+	 * Returns tests contained in this expression
+	 * @returns Array
+	 */
+	getTests:function() {
+		return this._expression instanceof Test ? [this._expression] : this._expression.getTests();
+	},
 
-    /**
-     * Cast to string
-     * @returns {string}
-     */
-    toString:function() {
-        return (this._negate ? 'not ' : '') + this._expression.toString();
-    }
+	/**
+	 * Cast to string
+	 * @returns {string}
+	 */
+	toString:function() {
+		return (this._negate ? 'not ' : '') + this._expression.toString();
+	}
 };

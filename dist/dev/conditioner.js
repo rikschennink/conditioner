@@ -9,7 +9,9 @@
     var factory = function (require, Observer, Promise, contains, matchesSelector, mergeObjects) {
 
         // private vars
-        var _options, _monitorFactory, _moduleLoader;
+        var _options;
+        var _monitorFactory;
+        var _moduleLoader;
 
         // internal modules
         /**
@@ -51,8 +53,9 @@
              * @returns {Boolean}
              */
             isTrue: function () {
-                var i = 0,
-                    l = this._count;
+                var i = 0;
+                var l = this._count;
+
                 for (; i < l; i++) {
                     if (!this._watches[i].valid) {
                         return false;
@@ -151,11 +154,14 @@
                 }
 
                 // parse expression
-                var i = 0,
-                    expressions = expression.split(','),
-                    l = expressions.length,
-                    result = [],
-                    parts, retain, test;
+                var i = 0;
+                var expressions = expression.split(',');
+                var l = expressions.length;
+                var result = [];
+                var parts;
+                var retain;
+                var test;
+
                 for (; i < l; i++) {
                     parts = expressions[i].split(':');
                     retain = parts[0].indexOf('was ') === 0;
@@ -207,10 +213,17 @@
                 var self = this;
                 _options.loader.require([_options.paths.monitors + path], function (setup) {
 
-                    var i = 0,
-                        monitor = self._db[path],
-                        id = setup.unload ? self._uid++ : path,
-                        l, watch, watches, items, event, item, data, isSingleTest;
+                    var i = 0;
+                    var monitor = self._db[path];
+                    var id = setup.unload ? self._uid++ : path;
+                    var l;
+                    var watch;
+                    var watches;
+                    var items;
+                    var event;
+                    var item;
+                    var data;
+                    var isSingleTest;
 
                     // bind trigger events for this setup if not defined yet
                     if (!monitor) {
@@ -259,6 +272,7 @@
                                 }
 
                                 setup.trigger[event].addEventListener(event, monitor.change, false);
+
                             }
                         }
 
@@ -350,11 +364,11 @@
             destroy: function (test) {
 
                 // get monitor and remove watches contained in this test
-                var monitorId = test.getMonitor(),
-                    monitor = this._db[monitorId],
-                    monitorWatches = monitor.watches,
-                    l = monitorWatches.length,
-                    i;
+                var monitorId = test.getMonitor();
+                var monitor = this._db[monitorId];
+                var monitorWatches = monitor.watches;
+                var l = monitorWatches.length;
+                var i;
 
                 // remove watches
                 test.getWatches().forEach(function (watch) {
@@ -374,12 +388,14 @@
 
         };
         var TestWrapper = function (query, element, cb) {
+
             var expression = ExpressionParser.parse(query);
             this._element = element;
             this._tests = expression.getTests();
             this._condition = new Condition(expression, cb);
             this._conditionChangeBind = this._condition.evaluate.bind(this._condition);
             this._load();
+
         };
 
         TestWrapper.prototype = {
@@ -387,8 +403,9 @@
             _load: function () {
 
                 // get found test setups from expression and register
-                var i = 0,
-                    l = this._tests.length;
+                var i = 0;
+                var l = this._tests.length;
+
                 for (; i < l; i++) {
                     this._setupMonitorForTest(this._tests[i]);
                 }
@@ -397,8 +414,10 @@
 
             _setupMonitorForTest: function (test) {
 
-                var i = 0,
-                    l, self = this;
+                var self = this;
+                var i = 0;
+                var l;
+
                 _monitorFactory.create(test, this._element).then(function (watches) {
 
                     // bind watches to test object
@@ -424,8 +443,9 @@
             destroy: function () {
 
                 // unload watches
-                var i = 0,
-                    l = this._tests.length;
+                var i = 0;
+                var l = this._tests.length;
+
                 for (; i < l; i++) {
                     _monitorFactory.destroy(this._tests[i]);
                 }
@@ -436,7 +456,6 @@
             }
 
         };
-
 
         var WebContext = {
 
@@ -582,17 +601,27 @@
              */
             parse: function (expression) {
 
-                var i = 0,
-                    path = '',
-                    tree = [],
-                    value = '',
-                    negate = false,
-                    isValue = false,
-                    target = null,
-                    parent = null,
-                    parents = [],
-                    l = expression.length,
-                    lastIndex, index, operator, test, j, c, k, n, op, ol, tl;
+                var i = 0;
+                var path = '';
+                var tree = [];
+                var value = '';
+                var negate = false;
+                var isValue = false;
+                var target = null;
+                var parent = null;
+                var parents = [];
+                var l = expression.length;
+                var lastIndex;
+                var index;
+                var operator;
+                var test;
+                var j;
+                var c;
+                var k;
+                var n;
+                var op;
+                var ol;
+                var tl;
 
                 if (!target) {
                     target = tree;
@@ -819,8 +848,9 @@
              */
             init: function (ready) {
 
-                var self = this,
-                    init = false;
+                var self = this;
+                var init = false;
+
                 this._test = WebContext.setTest(this._conditions, this._element, function (valid) {
 
                     // something changed
@@ -1125,10 +1155,10 @@
 
                     // test if overrides is json string (is first char a '{'
                     if (overrides.charCodeAt(0) == 123) {
+
                         // @ifdef DEV
                         try {
                             // @endif
-                            // no try catch in production to optimize performance (v8 optimizer won't optimize functions that contain try catch statements)
                             overrides = JSON.parse(overrides);
                             // @ifdef DEV
                         }
@@ -1138,13 +1168,16 @@
                         // @endif
                     }
                     else {
+
                         // no json object, must be options string
-                        var i = 0,
-                            opts = overrides.split(', '),
-                            l = opts.length;
+                        var i = 0;
+                        var opts = overrides.split(', ');
+                        var l = opts.length;
+
                         for (; i < l; i++) {
                             this._overrideObjectWithUri(options, opts[i]);
                         }
+
                         return options;
                     }
 
@@ -1172,12 +1205,14 @@
              */
             _overrideObjectWithUri: function (options, uri) {
 
-                var level = options,
-                    prop = '',
-                    i = 0,
-                    l = uri.length,
-                    c;
+                var level = options;
+                var prop = '';
+                var i = 0;
+                var l = uri.length;
+                var c;
+
                 while (i < l) {
+
                     c = uri.charCodeAt(i);
                     if (c != 46 && c != 58) {
                         prop += uri.charAt(i);
@@ -1193,6 +1228,7 @@
                         prop = '';
                     }
                     i++;
+
                 }
 
             },
@@ -1204,6 +1240,7 @@
              * @private
              */
             _castValueToType: function (value) {
+
                 // if first character is a single quote
                 if (value.charCodeAt(0) == 39) {
                     return value.substring(1, value.length - 1);
@@ -1220,6 +1257,7 @@
                 else if (value.indexOf(',') !== -1) {
                     return value.split(',').map(this._castValueToType);
                 }
+
                 return value;
             },
 
@@ -1233,10 +1271,12 @@
              */
             _parseOptions: function (url, Module, overrides) {
 
-                var stack = [],
-                    pageOptions = {},
-                    moduleOptions = {},
-                    options, i;
+                var stack = [];
+                var pageOptions = {};
+                var moduleOptions = {};
+                var options;
+                var i;
+
                 do {
 
                     // get settings
@@ -1317,7 +1357,6 @@
                 // publish load event
                 Observer.publishAsync(this, 'load', this);
             },
-
 
             /**
              * Unloads the wrapped module
@@ -1483,9 +1522,10 @@
                     this._moduleControllers = moduleControllers;
 
                     // listen to load events on module controllers
-                    var i = 0,
-                        l = this._moduleControllers.length,
-                        mc;
+                    var i = 0;
+                    var l = this._moduleControllers.length;
+                    var mc;
+
                     for (; i < l; i++) {
                         mc = this._moduleControllers[i];
                         Observer.subscribe(mc, 'available', this._moduleAvailableBind);
@@ -1500,8 +1540,9 @@
                  */
                 destroy: function () {
 
-                    var i = 0,
-                        l = this._moduleControllers.length;
+                    var i = 0;
+                    var l = this._moduleControllers.length;
+
                     for (; i < l; i++) {
                         this._destroyModule(this._moduleControllers[i]);
                     }
@@ -1648,10 +1689,11 @@
                     }
 
                     // loop over module controllers matching the path, if single result is enabled, return on first hit, else collect
-                    var i = 0,
-                        l = this._moduleControllers.length,
-                        results = [],
-                        mc;
+                    var i = 0;
+                    var l = this._moduleControllers.length;
+                    var results = [];
+                    var mc;
+
                     for (; i < l; i++) {
                         mc = this._moduleControllers[i];
                         if (!mc.wrapsModuleWithPath(path)) {
@@ -1774,13 +1816,15 @@
             // by default modules are expected to not be in sync
             this._inSync = false;
 
-            // remember controllers for later use
+            // turn arguments into an array
             this._controllers = controllers;
             this._controllerLoadedBind = this._onLoad.bind(this);
             this._controllerUnloadedBind = this._onUnload.bind(this);
 
-            var i = 0,
-                controller, l = this._controllers.length;
+            var i = 0;
+            var l = this._controllers.length;
+            var controller;
+
             for (; i < l; i++) {
                 controller = this._controllers[i];
 
@@ -1816,8 +1860,10 @@
             destroy: function () {
 
                 // unsubscribe
-                var i = 0,
-                    controller, l = this._controllers.length;
+                var i = 0;
+                var l = this._controllers.length;
+                var controller;
+
                 for (; i < l; i++) {
                     controller = this._controllers[i];
 
@@ -1843,9 +1889,10 @@
              * @returns {Boolean}
              */
             areAllModulesActive: function () {
-                var i = 0,
-                    l = this._controllers.length,
-                    controller;
+                var i = 0;
+                var l = this._controllers.length;
+                var controller;
+
                 for (; i < l; i++) {
                     controller = this._controllers[i];
                     if (!this._isActiveController(controller)) {
@@ -1956,11 +2003,12 @@
                 }
                 // @endif
                 // register vars and get elements
-                var elements = context.querySelectorAll('[data-module]'),
-                    l = elements.length,
-                    i = 0,
-                    nodes = [],
-                    node, element;
+                var elements = context.querySelectorAll('[data-module]');
+                var l = elements.length;
+                var i = 0;
+                var nodes = [];
+                var node;
+                var element;
 
                 // if no elements do nothing
                 if (!elements) {
@@ -2031,10 +2079,11 @@
                 controllers = controllers.length ? controllers : [controllers];
 
                 // vars
-                var node, i = 0,
-                    l = controllers.length,
-                    moduleControllers = [],
-                    controller;
+                var i = 0;
+                var l = controllers.length;
+                var moduleControllers = [];
+                var controller;
+                var node;
 
                 // create node
                 node = new NodeController(element);
@@ -2075,10 +2124,11 @@
                 }
 
                 // find matches (done by querying the node for a match)
-                var i = 0,
-                    l = this._nodes.length,
-                    results = [],
-                    node;
+                var i = 0;
+                var l = this._nodes.length;
+                var results = [];
+                var node;
+
                 for (; i < l; i++) {
                     node = this._nodes[i];
                     if (node.matchesSelector(selector, context)) {
@@ -2100,9 +2150,9 @@
              */
             destroy: function (nodes) {
 
-                var i = nodes.length,
-                    destroyed = 0,
-                    hit;
+                var i = nodes.length;
+                var destroyed = 0;
+                var hit;
 
                 while (i--) {
 
@@ -2134,22 +2184,22 @@
                 // double comparison is faster than triple in this case
                 if (config.charCodeAt(0) == 91) {
 
-                    var controllers = [],
-                        i = 0,
-                        specs, spec, l;
+                    var controllers = [];
+                    var i = 0;
+                    var l;
+                    var specs;
+                    var spec;
 
                     // add multiple module adapters
-                    // @ifdef DEV
                     try {
-                        // @endif
-                        // there's no try catch in production to optimize performance (v8 optimizer won't optimize functions that contain try catch statements)
                         specs = JSON.parse(config);
-                        // @ifdef DEV
                     }
                     catch (e) {
+                        // @ifdef DEV
                         throw new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.');
+                        // @endif
                     }
-                    // @endif
+
                     // no specification found or specification parsing failed
                     if (!specs) {
                         return [];
@@ -2337,7 +2387,10 @@
                     throw new Error('Conditioner.setOptions(options): "options" is a required parameter.');
                 }
                 // @endif
-                var config, path, mod, alias;
+                var config;
+                var path;
+                var mod;
+                var alias;
 
                 // update options
                 _options = mergeObjects(_options, options);
@@ -2526,8 +2579,8 @@
              */
             destroy: function () {
 
-                var nodes = [],
-                    arg = arguments[0];
+                var nodes = [];
+                var arg = arguments[0];
 
                 // @ifdef DEV
                 // first argument is required
@@ -2578,16 +2631,18 @@
              */
             getModule: function (path, selector, context) {
 
-                var i = 0,
-                    results = this.getNodes(selector, context),
-                    l = results.length,
-                    module;
+                var i = 0;
+                var results = this.getNodes(selector, context);
+                var l = results.length;
+                var module;
+
                 for (; i < l; i++) {
                     module = results[i].getModule(path);
                     if (module) {
                         return module;
                     }
                 }
+
                 return null;
 
             },
@@ -2605,17 +2660,19 @@
              */
             getModules: function (path, selector, context) {
 
-                var i = 0,
-                    results = this.getNodes(selector, context),
-                    l = results.length,
-                    filtered = [],
-                    modules;
+                var i = 0;
+                var results = this.getNodes(selector, context);
+                var l = results.length;
+                var filtered = [];
+                var modules;
+
                 for (; i < l; i++) {
                     modules = results[i].getModules(path);
                     if (modules.length) {
                         filtered = filtered.concat(modules);
                     }
                 }
+
                 return filtered;
 
             },

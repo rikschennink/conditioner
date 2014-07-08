@@ -11,16 +11,16 @@
  */
 var ModuleController = function(path,element,options,agent) {
 
-    // @ifdef DEV
-    // if no path supplied, throw error
-    if (!path || !element) {
-        throw new Error('ModuleController(path,element,options,agent): "path" and "element" are required parameters.');
-    }
-    // @endif
+	// @ifdef DEV
+	// if no path supplied, throw error
+	if (!path || !element) {
+		throw new Error('ModuleController(path,element,options,agent): "path" and "element" are required parameters.');
+	}
+	// @endif
 
-    // path to module
+	// path to module
 	this._path = ModuleRegistry.getRedirect(path);
-    this._alias = path;
+	this._alias = path;
 
 	// reference to element
 	this._element = element;
@@ -28,68 +28,68 @@ var ModuleController = function(path,element,options,agent) {
 	// options for module controller
 	this._options = options;
 
-    // set loader
-    this._agent = agent || StaticModuleAgent;
+	// set loader
+	this._agent = agent || StaticModuleAgent;
 
-    // module definition reference
-    this._Module = null;
+	// module definition reference
+	this._Module = null;
 
-    // module instance reference
-    this._module = null;
+	// module instance reference
+	this._module = null;
 
-    // default init state
-    this._initialized = false;
+	// default init state
+	this._initialized = false;
 
-    // agent binds
-    this._onAgentStateChangeBind = this._onAgentStateChange.bind(this);
+	// agent binds
+	this._onAgentStateChangeBind = this._onAgentStateChange.bind(this);
 
-    // wait for init to complete
-    var self = this;
-    this._agent.init(function(){
-        self._initialize();
-    });
+	// wait for init to complete
+	var self = this;
+	this._agent.init(function() {
+		self._initialize();
+	});
 
 };
 
 ModuleController.prototype = {
 
-    /**
-     * returns true if the module controller has initialized
-     * @returns {Boolean}
-     */
-    hasInitialized:function() {
-        return this._initialized;
-    },
+	/**
+	 * returns true if the module controller has initialized
+	 * @returns {Boolean}
+	 */
+	hasInitialized:function() {
+		return this._initialized;
+	},
 
-    /***
-     * Returns the module path
-     *
-     * @method getModulePath
-     * @memberof ModuleController
-     * @returns {String}
-     * @public
-     */
-    getModulePath:function() {
-        return this._path;
-    },
+	/***
+	 * Returns the module path
+	 *
+	 * @method getModulePath
+	 * @memberof ModuleController
+	 * @returns {String}
+	 * @public
+	 */
+	getModulePath:function() {
+		return this._path;
+	},
 
-    /***
-     * Returns true if the module is currently waiting for load
-     *
-     * @method isModuleAvailable
-     * @memberof ModuleController
-     * @returns {Boolean}
-     * @public
-     */
-    isModuleAvailable:function() {
-        return this._agent.allowsActivation() && !this._module;
-    },
+	/***
+	 * Returns true if the module is currently waiting for load
+	 *
+	 * @method isModuleAvailable
+	 * @memberof ModuleController
+	 * @returns {Boolean}
+	 * @public
+	 */
+	isModuleAvailable:function() {
+		return this._agent.allowsActivation() && !this._module;
+	},
 
 	/***
 	 * Returns true if module is currently active and loaded
-     *
-     * @method isModuleActive
-     * @memberof ModuleController
+	 *
+	 * @method isModuleActive
+	 * @memberof ModuleController
 	 * @returns {Boolean}
 	 * @public
 	 */
@@ -97,54 +97,54 @@ ModuleController.prototype = {
 		return this._module !== null;
 	},
 
-    /***
-     * Checks if it wraps a module with the supplied path
-     *
-     * @method wrapsModuleWithPath
-     * @memberof ModuleController
-     * @param {String} path - Path of module to test for.
-     * @return {Boolean}
-     * @public
-     */
-    wrapsModuleWithPath:function(path) {
-        return this._path === path || this._alias === path;
-    },
-
-    /**
-     * Called to initialize the module
-     * @private
-     * @fires init
-     */
-    _initialize:function() {
-
-        // now in initialized state
-        this._initialized = true;
-
-        // listen to behavior changes
-        Observer.subscribe(this._agent,'change',this._onAgentStateChangeBind);
-
-        // let others know we have initialized
-        Observer.publishAsync(this,'init',this);
-
-        // if activation is allowed, we are directly available
-        if (this._agent.allowsActivation()) {
-            this._onBecameAvailable();
-        }
-
-    },
+	/***
+	 * Checks if it wraps a module with the supplied path
+	 *
+	 * @method wrapsModuleWithPath
+	 * @memberof ModuleController
+	 * @param {String} path - Path of module to test for.
+	 * @return {Boolean}
+	 * @public
+	 */
+	wrapsModuleWithPath:function(path) {
+		return this._path === path || this._alias === path;
+	},
 
 	/**
-     * Called when the module became available, this is when it's suitable for load
+	 * Called to initialize the module
+	 * @private
+	 * @fires init
+	 */
+	_initialize:function() {
+
+		// now in initialized state
+		this._initialized = true;
+
+		// listen to behavior changes
+		Observer.subscribe(this._agent,'change',this._onAgentStateChangeBind);
+
+		// let others know we have initialized
+		Observer.publishAsync(this,'init',this);
+
+		// if activation is allowed, we are directly available
+		if (this._agent.allowsActivation()) {
+			this._onBecameAvailable();
+		}
+
+	},
+
+	/**
+	 * Called when the module became available, this is when it's suitable for load
 	 * @private
 	 * @fires available
 	 */
 	_onBecameAvailable:function() {
 
-        // we are now available
-        Observer.publishAsync(this,'available',this);
+		// we are now available
+		Observer.publishAsync(this,'available',this);
 
 		// let's load the module
-        this._load();
+		this._load();
 
 	},
 
@@ -152,12 +152,12 @@ ModuleController.prototype = {
 	 * Called when the agent state changes
 	 * @private
 	 */
-    _onAgentStateChange:function() {
+	_onAgentStateChange:function() {
 
-        // check if module is available
-        var shouldLoadModule = this._agent.allowsActivation();
+		// check if module is available
+		var shouldLoadModule = this._agent.allowsActivation();
 
-        // determine what action to take basted on availability of module
+		// determine what action to take basted on availability of module
 		if (this._module && !shouldLoadModule) {
 			this._unload();
 		}
@@ -181,19 +181,19 @@ ModuleController.prototype = {
 
 		// load module, and remember reference
 		var self = this;
-        _options.loader.require([this._path],function(Module) {
+		_options.loader.require([this._path],function(Module) {
 
-            // @ifdef DEV
-            // if module does not export a module quit here
-            if (!Module) {
-                throw new Error('ModuleController: A module needs to export an object.');
-            }
-            // @endif
+			// @ifdef DEV
+			// if module does not export a module quit here
+			if (!Module) {
+				throw new Error('ModuleController: A module needs to export an object.');
+			}
+			// @endif
 
-            // test if not destroyed in the mean time, else stop here
-            if (!self._agent) {
-                return;
-            }
+			// test if not destroyed in the mean time, else stop here
+			if (!self._agent) {
+				return;
+			}
 
 			// set reference to Module
 			self._Module = Module;
@@ -205,150 +205,169 @@ ModuleController.prototype = {
 
 	},
 
-    _applyOverrides:function(options,overrides) {
+	_applyOverrides:function(options,overrides) {
 
-        // test if object is string
-        if (typeof overrides === 'string') {
+		// test if object is string
+		if (typeof overrides === 'string') {
 
-            // test if overrides is json string (is first char a '{'
-            if (overrides.charCodeAt(0) == 123) {
-                // @ifdef DEV
-                try {
-                // @endif
-                // no try catch in production to optimize performance (v8 optimizer won't optimize functions that contain try catch statements)
-                overrides = JSON.parse(overrides);
-                // @ifdef DEV
-                }
-                catch(e) {
-                    throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
-                }
-                // @endif
-            }
-            else {
-                // no json object, must be options string
-                var i= 0,opts=overrides.split(', '),l=opts.length;
-                for(;i<l;i++) {
-                    this._overrideObjectWithUri(options,opts[i]);
-                }
-                return options;
-            }
+			// test if overrides is json string (is first char a '{'
+			if (overrides.charCodeAt(0) == 123) {
 
-        }
+				// @ifdef DEV
+				try {
+				// @endif
+					overrides = JSON.parse(overrides);
+				// @ifdef DEV
+				}
+				catch(e) {
+					throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
+				}
+				// @endif
+			}
+			else {
 
-        // directly merge objects
-        return mergeObjects(options,overrides);
-    },
+				// no json object, must be options string
+				var i = 0;
+				var opts = overrides.split(', ');
+				var l = opts.length;
 
-    /**
-     * Overrides options in the passed object based on the uri string
-     *
-     * number
-     * foo:1
-     *
-     * string
-     * foo.bar:baz
-     *
-     * array
-     * foo.baz:1,2,3
-     *
-     * @param {Object} options - The options to override
-     * @param {String} uri - uri to override the options with
-     * @private
-     */
-    _overrideObjectWithUri:function(options,uri) {
+				for (;i < l;i++) {
+					this._overrideObjectWithUri(options,opts[i]);
+				}
 
-        var level = options,prop='',i=0,l=uri.length,c;
-        while(i<l) {
-            c = uri.charCodeAt(i);
-            if (c!=46 && c!=58) {
-                prop+=uri.charAt(i);
-            }
-            else {
+				return options;
+			}
 
-                if (c==58) {
-                    level[prop] = this._castValueToType(uri.substr(i+1));
-                    break;
-                }
+		}
 
-                level = level[prop];
-                prop = '';
-            }
-            i++;
-        }
+		// directly merge objects
+		return mergeObjects(options,overrides);
+	},
 
-    },
+	/**
+	 * Overrides options in the passed object based on the uri string
+	 *
+	 * number
+	 * foo:1
+	 *
+	 * string
+	 * foo.bar:baz
+	 *
+	 * array
+	 * foo.baz:1,2,3
+	 *
+	 * @param {Object} options - The options to override
+	 * @param {String} uri - uri to override the options with
+	 * @private
+	 */
+	_overrideObjectWithUri:function(options,uri) {
 
-    /**
-     * Parses the value and returns it in the right type
-     * @param value
-     * @returns {*}
-     * @private
-     */
-    _castValueToType:function(value) {
-        // if first character is a single quote
-        if (value.charCodeAt(0)==39) {
-            return value.substring(1,value.length-1);
-        }
-        // if is a number
-        else if (!isNaN(value)){
-            return parseFloat(value);
-        }
-        // if is boolean
-        else if (value=='true'||value=='false') {
-            return value==='true';
-        }
-        // if is an array
-        else if (value.indexOf(',')!==-1) {
-            return value.split(',').map(this._castValueToType);
-        }
-        return value;
-    },
+		var level = options;
+		var prop = '';
+		var i = 0;
+		var l = uri.length;
+		var c;
 
-    /**
-     * Parses options for given url and module also
-     * @param {String} url - url to module
-     * @param {Object} Module - Module definition
-     * @param {(Object|String)} overrides - page level options to override default options with
-     * @returns {Object}
-     * @private
-     */
-    _parseOptions:function(url,Module,overrides) {
+		while (i < l) {
 
-        var stack = [],pageOptions = {},moduleOptions = {},options,i;
-        do {
+			c = uri.charCodeAt(i);
+			if (c != 46 && c != 58) {
+				prop += uri.charAt(i);
+			}
+			else {
 
-            // get settings
-            options = ModuleRegistry.getModule(url);
+				if (c == 58) {
+					level[prop] = this._castValueToType(uri.substr(i + 1));
+					break;
+				}
 
-            // create a stack of options
-            stack.push({
-                'page':options,
-                'module':Module.options
-            });
+				level = level[prop];
+				prop = '';
+			}
+			i++;
 
-            // fetch super path, if this module has a super module load that modules options aswell
-            url = Module.__superUrl;
+		}
 
-            // jshint -W084
-        } while (Module = Module.__super);
+	},
 
-        // reverse loop over stack and merge all entries to create the final options objects
-        i = stack.length;
-        while (i--) {
-            pageOptions = mergeObjects(pageOptions,stack[i].page);
-            moduleOptions = mergeObjects(moduleOptions,stack[i].module);
-        }
+	/**
+	 * Parses the value and returns it in the right type
+	 * @param value
+	 * @returns {*}
+	 * @private
+	 */
+	_castValueToType:function(value) {
 
-        // merge page and module options
-        options = mergeObjects(moduleOptions,pageOptions);
+		// if first character is a single quote
+		if (value.charCodeAt(0) == 39) {
+			return value.substring(1,value.length - 1);
+		}
+		// if is a number
+		else if (!isNaN(value)) {
+			return parseFloat(value);
+		}
+		// if is boolean
+		else if (value == 'true' || value == 'false') {
+			return value === 'true';
+		}
+		// if is an array
+		else if (value.indexOf(',') !== -1) {
+			return value.split(',').map(this._castValueToType);
+		}
 
-        // apply overrides
-        if (overrides) {
-            options = this._applyOverrides(options,overrides);
-        }
+		return value;
+	},
 
-        return options;
-    },
+	/**
+	 * Parses options for given url and module also
+	 * @param {String} url - url to module
+	 * @param {Object} Module - Module definition
+	 * @param {(Object|String)} overrides - page level options to override default options with
+	 * @returns {Object}
+	 * @private
+	 */
+	_parseOptions:function(url,Module,overrides) {
+
+		var stack = [];
+		var pageOptions = {};
+		var moduleOptions = {};
+		var options;
+		var i;
+
+		do {
+
+			// get settings
+			options = ModuleRegistry.getModule(url);
+
+			// create a stack of options
+			stack.push({
+				'page':options,
+				'module':Module.options
+			});
+
+			// fetch super path, if this module has a super module load that modules options aswell
+			url = Module.__superUrl;
+
+			// jshint -W084
+		} while (Module = Module.__super);
+
+		// reverse loop over stack and merge all entries to create the final options objects
+		i = stack.length;
+		while (i--) {
+			pageOptions = mergeObjects(pageOptions,stack[i].page);
+			moduleOptions = mergeObjects(moduleOptions,stack[i].module);
+		}
+
+		// merge page and module options
+		options = mergeObjects(moduleOptions,pageOptions);
+
+		// apply overrides
+		if (overrides) {
+			options = this._applyOverrides(options,overrides);
+		}
+
+		return options;
+	},
 
 	/**
 	 * Method called when module loaded
@@ -358,12 +377,12 @@ ModuleController.prototype = {
 	_onLoad:function() {
 
 		// if activation is no longer allowed, stop here
-        if (!this._agent.allowsActivation()) {
+		if (!this._agent.allowsActivation()) {
 			return;
 		}
 
-        // parse and merge options for this module
-        var options = this._parseOptions(this._path,this._Module,this._options);
+		// parse and merge options for this module
+		var options = this._parseOptions(this._path,this._Module,this._options);
 
 		// set reference
 		if (typeof this._Module === 'function') {
@@ -382,21 +401,20 @@ ModuleController.prototype = {
 			}
 		}
 
-        // @ifdef DEV
+		// @ifdef DEV
 		// if no module defined throw error
 		if (!this._module) {
 			throw new Error('ModuleController.load(): could not initialize module, missing constructor or "load" method.');
 		}
-        // @endif
+		// @endif
 
-        // watch for events on target
-        // this way it is possible to listen to events on the controller which is always there
-        Observer.inform(this._module,this);
+		// watch for events on target
+		// this way it is possible to listen to events on the controller which is always there
+		Observer.inform(this._module,this);
 
-        // publish load event
-        Observer.publishAsync(this,'load',this);
+		// publish load event
+		Observer.publishAsync(this,'load',this);
 	},
-
 
 	/**
 	 * Unloads the wrapped module
@@ -418,39 +436,39 @@ ModuleController.prototype = {
 			this._module.unload();
 		}
 
-        // reset reference to instance
-        this._module = null;
+		// reset reference to instance
+		this._module = null;
 
-        // publish unload event
-        Observer.publish(this,'unload',this);
+		// publish unload event
+		Observer.publish(this,'unload',this);
 
 		return true;
 	},
 
-    /**
-     * Cleans up the module and module controller and all bound events
-     * @public
-     */
-    destroy:function() {
+	/**
+	 * Cleans up the module and module controller and all bound events
+	 * @public
+	 */
+	destroy:function() {
 
-        // unbind events
-        Observer.unsubscribe(this._agent,'change',this._onAgentStateChangeBind);
+		// unbind events
+		Observer.unsubscribe(this._agent,'change',this._onAgentStateChangeBind);
 
-        // unload module
-        this._unload();
+		// unload module
+		this._unload();
 
-        // call destroy agent
-        this._agent.destroy();
+		// call destroy agent
+		this._agent.destroy();
 
-        // agent binds
-        this._onAgentStateChangeBind = null;
-    },
+		// agent binds
+		this._onAgentStateChangeBind = null;
+	},
 
 	/***
 	 * Executes a methods on the wrapped module.
-     *
-     * @method execute
-     * @memberof ModuleController
+	 *
+	 * @method execute
+	 * @memberof ModuleController
 	 * @param {String} method - Method name.
 	 * @param {Array=} params - Array containing the method parameters.
 	 * @return {Object} response - containing return of executed method and a status code
@@ -469,11 +487,11 @@ ModuleController.prototype = {
 		// get function reference
 		var F = this._module[method];
 
-        // @ifdef DEV
-        if (!F) {
+		// @ifdef DEV
+		if (!F) {
 			throw new Error('ModuleController.execute(method,params): function specified in "method" not found on module.');
 		}
-        // @endif
+		// @endif
 
 		// if no params supplied set to empty array,
 		// ie8 falls to it's knees when it receives an undefined parameter object in the apply method

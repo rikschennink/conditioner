@@ -7,8 +7,8 @@
     'use strict';
 
     var isVisible = function (element) {
-        var viewHeight = win.innerHeight,
-            bounds = element.getBoundingClientRect();
+        var viewHeight = win.innerHeight;
+        var bounds = element.getBoundingClientRect();
         return (bounds.top > 0 && bounds.top < viewHeight) || (bounds.bottom > 0 && bounds.bottom < viewHeight);
     };
     var toInt = function (value) {

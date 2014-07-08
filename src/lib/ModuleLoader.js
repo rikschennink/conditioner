@@ -19,20 +19,20 @@ ModuleLoader.prototype = {
 	 */
 	parse:function(context) {
 
-        // @ifdef DEV
+		// @ifdef DEV
 		// if no context supplied, throw error
 		if (!context) {
 			throw new Error('ModuleLoader.loadModules(context): "context" is a required parameter.');
 		}
-        // @endif
+		// @endif
 
 		// register vars and get elements
-		var elements = context.querySelectorAll('[data-module]'),
-			l = elements.length,
-			i = 0,
-			nodes = [],
-            node,
-			element;
+		var elements = context.querySelectorAll('[data-module]');
+		var	l = elements.length;
+		var	i = 0;
+		var	nodes = [];
+		var	node;
+		var	element;
 
 		// if no elements do nothing
 		if (!elements) {
@@ -40,7 +40,7 @@ ModuleLoader.prototype = {
 		}
 
 		// process elements
-		for (; i<l; i++) {
+		for (; i < l; i++) {
 
 			// set element reference
 			element = elements[i];
@@ -54,19 +54,19 @@ ModuleLoader.prototype = {
 			nodes.push(new NodeController(element,element.getAttribute(_options.attr.priority)));
 		}
 
-        // sort nodes by priority:
+		// sort nodes by priority:
 		// higher numbers go first,
 		// then 0 (a.k.a. no priority assigned),
 		// then negative numbers
 		// note: it's actually the other way around but that's because of the reversed while loop coming next
-		nodes.sort(function(a,b){
+		nodes.sort(function(a,b) {
 			return a.getPriority() - b.getPriority();
 		});
 
 		// initialize modules depending on assigned priority (in reverse, but priority is reversed as well so all is okay)
 		i = nodes.length;
 		while (--i >= 0) {
-            node = nodes[i];
+			node = nodes[i];
 			node.load.call(node,this._getModuleControllersByElement(node.getElement()));
 		}
 
@@ -77,55 +77,59 @@ ModuleLoader.prototype = {
 		return nodes;
 	},
 
-    /**
-     * Setup the given element with the passed module controller(s)
-     * [
-     *     {
-     *         path: 'path/to/module',
-     *         conditions: 'config',
-     *         options: {
-     *             foo: 'bar'
-     *         }
-     *     }
-     * ]
-     * @param {Element} element - Element to bind the controllers to
-     * @param {Array|Object} controllers - ModuleController configurations
-     * @return {NodeController|null} - The newly created node or null if something went wrong
-     */
-    load:function(element,controllers) {
+	/**
+	 * Setup the given element with the passed module controller(s)
+	 * [
+	 *     {
+	 *         path: 'path/to/module',
+	 *         conditions: 'config',
+	 *         options: {
+	 *             foo: 'bar'
+	 *         }
+	 *     }
+	 * ]
+	 * @param {Element} element - Element to bind the controllers to
+	 * @param {Array|Object} controllers - ModuleController configurations
+	 * @return {NodeController|null} - The newly created node or null if something went wrong
+	 */
+	load:function(element,controllers) {
 
-        // @ifdef DEV
-        if (!controllers) {
-            throw new Error('ModuleLoader.load(element,controllers): "controllers" is a required parameter.');
-        }
-        // @endif
+		// @ifdef DEV
+		if (!controllers) {
+			throw new Error('ModuleLoader.load(element,controllers): "controllers" is a required parameter.');
+		}
+		// @endif
 
-        // if controllers is object put in array
-        controllers = controllers.length ? controllers : [controllers];
+		// if controllers is object put in array
+		controllers = controllers.length ? controllers : [controllers];
 
-        // vars
-        var node,i=0,l=controllers.length,moduleControllers=[],controller;
+		// vars
+		var i = 0;
+		var l = controllers.length;
+		var moduleControllers = [];
+		var controller;
+		var node;
 
-        // create node
-        node = new NodeController(element);
+		// create node
+		node = new NodeController(element);
 
-        // create controllers
-        for (;i<l;i++) {
-            controller = controllers[i];
-            moduleControllers.push(
-                this._getModuleController(controller.path,element,controller.options,controller.conditions)
-            );
-        }
+		// create controllers
+		for (;i < l;i++) {
+			controller = controllers[i];
+			moduleControllers.push(
+				this._getModuleController(controller.path,element,controller.options,controller.conditions)
+			);
+		}
 
-        // create initialize
-        node.load(moduleControllers);
+		// create initialize
+		node.load(moduleControllers);
 
-        // remember so can later be retrieved through getNode methodes
-        this._nodes.push(node);
+		// remember so can later be retrieved through getNode methodes
+		this._nodes.push(node);
 
-        // return the loaded Node
-        return node;
-    },
+		// return the loaded Node
+		return node;
+	},
 
 	/**
 	 * Returns one or multiple nodes matching the selector
@@ -146,8 +150,12 @@ ModuleLoader.prototype = {
 		}
 
 		// find matches (done by querying the node for a match)
-		var i=0,l=this._nodes.length,results=[],node;
-		for (;i<l;i++) {
+		var i = 0;
+		var l = this._nodes.length;
+		var results = [];
+		var node;
+
+		for (;i < l;i++) {
 			node = this._nodes[i];
 			if (node.matchesSelector(selector,context)) {
 				if (singleResult) {
@@ -160,127 +168,126 @@ ModuleLoader.prototype = {
 		return singleResult ? null : results;
 	},
 
-    /**
-     * Destroy the passed node reference
-     * @param {Array} nodes
-     * @return {Boolean}
-     * @public
-     */
-    destroy:function(nodes){
+	/**
+	 * Destroy the passed node reference
+	 * @param {Array} nodes
+	 * @return {Boolean}
+	 * @public
+	 */
+	destroy:function(nodes) {
 
-        var i=nodes.length,
-            destroyed=0,
-            hit;
+		var i = nodes.length;
+		var	destroyed = 0;
+		var	hit;
 
-        while(i--) {
+		while (i--) {
 
-            hit = this._nodes.indexOf(nodes[i]);
-            if (hit===-1) {continue;}
+			hit = this._nodes.indexOf(nodes[i]);
+			if (hit === -1) {continue;}
 
-            this._nodes.splice(hit,1);
-            nodes[i].destroy();
-            destroyed++;
+			this._nodes.splice(hit,1);
+			nodes[i].destroy();
+			destroyed++;
 
-        }
+		}
 
-        return nodes.length === destroyed;
-    },
+		return nodes.length === destroyed;
+	},
 
-    /**
-     * Parses module controller configuration on element and returns array of module controllers
-     * @param {Element} element
-     * @returns {Array}
-     * @private
-     */
-    _getModuleControllersByElement:function(element) {
+	/**
+	 * Parses module controller configuration on element and returns array of module controllers
+	 * @param {Element} element
+	 * @returns {Array}
+	 * @private
+	 */
+	_getModuleControllersByElement:function(element) {
 
-        var config = element.getAttribute(_options.attr.module) || '';
+		var config = element.getAttribute(_options.attr.module) || '';
 
-        // test if first character is a '[', if so multiple modules have been defined
-        // double comparison is faster than triple in this case
-        if (config.charCodeAt(0) == 91) {
+		// test if first character is a '[', if so multiple modules have been defined
+		// double comparison is faster than triple in this case
+		if (config.charCodeAt(0) == 91) {
 
-            var controllers = [],
-                i=0,
-                specs,spec,l;
+			var controllers = [];
+			var	i = 0;
+			var l;
+			var	specs;
+			var spec;
 
-            // add multiple module adapters
-            // @ifdef DEV
-            try {
-            // @endif
-            // there's no try catch in production to optimize performance (v8 optimizer won't optimize functions that contain try catch statements)
-            specs = JSON.parse(config);
-            // @ifdef DEV
-            }
-            catch(e) {
-                throw new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.');
-            }
-            // @endif
+			// add multiple module adapters
+			try {
+				specs = JSON.parse(config);
+			}
+			catch(e) {
+				// @ifdef DEV
+				throw new Error('ModuleLoader.load(context): "data-module" attribute contains a malformed JSON string.');
+				// @endif
+			}
 
-            // no specification found or specification parsing failed
-            if (!specs) {
-                return [];
-            }
+			// no specification found or specification parsing failed
+			if (!specs) {
+				return [];
+			}
 
-            // setup vars
-            l=specs.length;
+			// setup vars
+			l = specs.length;
 
-            // test if second character is a '{' if so, json format
-            if (config.charCodeAt(1) == 123) {
-                for (;i<l;i++) {
-                    spec = specs[i];
-                    controllers[i] = this._getModuleController(
-                        spec.path,
-                        element,
-                        spec.options,
-                        spec.conditions
-                    );
-                }
-                return controllers;
-            }
+			// test if second character is a '{' if so, json format
+			if (config.charCodeAt(1) == 123) {
+				for (;i < l;i++) {
+					spec = specs[i];
+					controllers[i] = this._getModuleController(
+						spec.path,
+						element,
+						spec.options,
+						spec.conditions
+					);
+				}
+				return controllers;
+			}
 
-            // array format
-            for (;i<l;i++) {
-                spec = specs[i];
-                if (typeof spec == 'string') {
-                    controllers[i] = this._getModuleController(spec,element);
-                }
-                else {
-                    controllers[i] = this._getModuleController(
-                        spec[0],
-                        element,
-                            typeof spec[1] == 'string' ? spec[2] : spec[1],
-                            typeof spec[1] == 'string' ? spec[1] : spec[2]
-                    );
-                }
-            }
-            return controllers;
+			// array format
+			for (;i < l;i++) {
+				spec = specs[i];
+				if (typeof spec == 'string') {
+					controllers[i] = this._getModuleController(spec,element);
+				}
+				else {
+					controllers[i] = this._getModuleController(
+						spec[0],
+						element,
+							typeof spec[1] == 'string' ? spec[2] : spec[1],
+							typeof spec[1] == 'string' ? spec[1] : spec[2]
+					);
+				}
+			}
+			return controllers;
 
-        }
+		}
 
-        return [this._getModuleController(
-            config,
-            element,
-            element.getAttribute(_options.attr.options),
-            element.getAttribute(_options.attr.conditions)
-        )];
-    },
+		return [this._getModuleController(
+			config,
+			element,
+			element.getAttribute(_options.attr.options),
+			element.getAttribute(_options.attr.conditions)
+		)];
+	},
 
-    /**
-     * Module Controller factory method, creates different ModuleControllers based on params
-     * @param path - path of module
-     * @param element - element to attach module to
-     * @param options - options for module
-     * @param conditions - conditions required for module to be loaded
-     * @returns {ModuleController}
-     * @private
-     */
-    _getModuleController:function(path,element,options,conditions) {
-        return new ModuleController(
-            path,
-            element,
-            options,
-            conditions ? new ConditionModuleAgent(conditions,element) : StaticModuleAgent
-        );
-    }
+	/**
+	 * Module Controller factory method, creates different ModuleControllers based on params
+	 * @param path - path of module
+	 * @param element - element to attach module to
+	 * @param options - options for module
+	 * @param conditions - conditions required for module to be loaded
+	 * @returns {ModuleController}
+	 * @private
+	 */
+	_getModuleController:function(path,element,options,conditions) {
+		return new ModuleController(
+			path,
+			element,
+			options,
+			conditions ? new ConditionModuleAgent(conditions,element) : StaticModuleAgent
+		);
+	}
 };
