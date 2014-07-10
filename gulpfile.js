@@ -113,18 +113,15 @@ gulp.task('_clean',function(){
         .pipe(rimraf());
 });
 
-gulp.task('_sloc', function(){
-	gulp.src(paths.src + '**/*.js')
-		.pipe(sloc());
-});
-
 gulp.task('_jscs', function() {
 	return gulp.src(paths.src + '**/*.js')
 		.pipe(jscs())
+		// add stub task to prevent jscs from crashing
+		// https://github.com/sindresorhus/gulp-jscs/issues/22
+		.pipe(sloc());
 });
 
 gulp.task('_hint',function(){
-//gulp.task('_hint',['_jscs'],function(){
     return gulp.src(paths.dist.dev + '*.js')
         .pipe(jshint())
         .pipe(jshint.reporter(reporter));
@@ -135,8 +132,8 @@ gulp.task('_hint',function(){
  */
 gulp.task('build',function(cb){
 
-	// first runs clean than runs _lib _utils and _monitors in parallel
-	return sequence('_clean',['_lib','_utils','_monitors'],'_hint','_sloc',cb);
+	// tests code quality than runs clean than runs _lib _utils and _monitors in parallel
+	return sequence('_jscs','_clean',['_lib','_utils','_monitors'],'_hint',cb);
 
 });
 
