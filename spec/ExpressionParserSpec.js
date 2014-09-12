@@ -4,7 +4,29 @@ define(function(){
 
     describe('ExpressionParser',function(){
 
-        describe('.parse(str)',function(){
+		describe('.validate(expression)',function(){
+
+			it ('will correctly catch missing semicolons',function(){
+
+				expect(ExpressionParser.validate('foo{bar:1}')).to.not.be.ok;
+
+			});
+
+			it ('will correctly catch missing curly braces',function(){
+
+				expect(ExpressionParser.validate('foo:{bar:1')).to.not.be.ok;
+
+			});
+
+			it ('will correctly catch invalid operators',function(){
+
+				expect(ExpressionParser.validate('foo:{bar:1} andr bar:{baz:2}')).to.not.be.ok;
+
+			});
+
+		});
+
+        describe('.parse(expression)',function(){
 
             // setup expressions
             var expressions = [],key,result;

@@ -1,5 +1,43 @@
 var ExpressionParser = {
 
+	// @ifdef DEV
+	/**
+	 * Validates supplied expression for validity
+	 * @param {String} expression
+	 * @returns {boolean}
+	 */
+	validate:function(expression) {
+
+		// if not supplied
+		if (!expression) {
+			return false;
+		}
+
+		// regex to match expressions with
+		var subExpression = new RegExp('[a-z]+:{[^}]*}','g');
+
+		// get sub expressions
+		var subs = expression.match(subExpression);
+
+		// if none found
+		if (!subs || !subs.length) {
+			return false;
+		}
+
+		// remove subs and check if resulting string is valid
+		var glue = expression.replace(subExpression,'');
+		if (glue.length && glue.replace(/(not|or|and| |\)|\()/g,'').length) {
+			return false;
+		}
+
+		// get amount of curly braces
+		var curlyCount = (expression.match(/[{}]/g) || []).length;
+
+		// if not matched (curly braces count should be double of semi colon count) something is wrong
+		return subs.length * 2 === curlyCount;
+	},
+	// @endif
+
 	/**
 	 * Parses an expression in string format and returns the same expression formatted as an expression tree
 	 * @memberof ExpressionFormatter
@@ -34,6 +72,14 @@ var ExpressionParser = {
 		if (!target) {
 			target = tree;
 		}
+
+		// @ifdef DEV
+		// if no invalid expression supplied, throw error
+		// this test is not definite but should catch some common mistakes
+		if (!expression || !this.validate(expression)) {
+			throw new Error('Expressionparser.parse(expression): "expression" is invalid.');
+		}
+		// @endif
 
 		// read explicit expressions
 		for (;i < l;i++) {

@@ -4,19 +4,30 @@ define(function() {
 
     describe('NodeController', function() {
 
-        var el,nc;
+        var el,subel,nc,subnc;
 
         beforeEach(function() {
 
             // arrange
             el = document.createElement('div');
+            subel = document.createElement('div');
+            el.appendChild(subel);
 
             // act
             nc = new NodeController(el,5);
             nc.load(
-                [new ModuleController('mock/modules/foo',el),
-                new ModuleController('mock/modules/bar',el),
-                new ModuleController('mock/modules/baz',el)]
+                [
+                    new ModuleController('mock/modules/foo',el),
+                    new ModuleController('mock/modules/bar',el),
+                    new ModuleController('mock/modules/baz',el)
+                ]
+            );
+
+            subnc = new NodeController(el,5);
+            subnc.load(
+                [
+                    new ModuleController('mock/modules/foo',el)
+                ]
             );
 
         });
