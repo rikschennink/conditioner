@@ -61,6 +61,14 @@ ModuleController.prototype = {
 		return this._initialized;
 	},
 
+	/**
+	 * Returns the element this module is attached to
+	 * @returns {Element}
+	 */
+	getElement:function() {
+		return this._element;
+	},
+
 	/***
 	 * Returns the module path
 	 *
