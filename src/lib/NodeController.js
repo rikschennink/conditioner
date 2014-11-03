@@ -161,10 +161,16 @@ var NodeController = (function() {
 		 * @public
 		 */
 		matchesSelector:function(selector,context) {
+
+			if (!selector && context) {
+				return contains(context,this._element);
+			}
+
 			if (context && !contains(context,this._element)) {
 				return false;
 			}
-			return matchesSelector(this._element,selector,context);
+
+			return matchesSelector(this._element,selector);
 		},
 
 		/***

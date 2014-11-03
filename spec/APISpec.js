@@ -270,9 +270,9 @@ define(function(){
             });
         });
 
-        describe('getModule(path,selector,context)',function(){
+        describe('getModule(...)',function(){
 
-            var a, b, c, group, results;
+            var a, b, c, group, results, wrapper;
 
             beforeEach(function(){
 
@@ -293,81 +293,142 @@ define(function(){
                 c.setAttribute('data-module','mock/modules/baz');
 
                 group = document.createElement('div');
+				group.className = 'alpha';
+				group.setAttribute('data-module','["mock/modules/foo","mock/modules/bar"]');
                 group.appendChild(a);
                 group.appendChild(b);
                 group.appendChild(c);
 
+				wrapper = document.createElement('div');
+				wrapper.appendChild(group);
+
                 // act
-                results = conditioner.parse(group);
+                results = conditioner.parse(wrapper);
 
             });
 
-            it('will return the first module controller if no path supplied',function(){
+            it('will return the first module controller',function(){
 
                 var mc = conditioner.getModule();
-                expect(mc.getModulePath()).to.equal(a.getAttribute('data-module'));
+                expect(mc.getElement()).to.equal(group);
 
             });
 
-            it('will return the first matched module controller when a path is supplied',function(){
+			it('will return the module controller on the given element',function(){
+
+				var mc = conditioner.getModule(c);
+				expect(mc.getElement()).to.equal(c);
+
+			});
+
+			it('will return the module controller with the supplied path on the given element',function(){
+
+				var mc = conditioner.getModule(group,'mock/modules/bar');
+				expect(mc.getElement()).to.equal(group);
+				expect(mc.getModulePath()).to.equal('mock/modules/bar');
+
+			});
+
+            it('will return the first matched module controller if only a path is supplied',function(){
 
                 var mc = conditioner.getModule('mock/modules/bar');
-                expect(mc.getModulePath()).to.equal(b.getAttribute('data-module'));
+                expect(mc.getElement()).to.equal(group);
 
             });
 
-            it('will return null if no matches found',function(){
+			it('will return the correct module controller if path and context is supplied',function(){
 
-                var mc = conditioner.getModule('mock/modules/trololo');
-                expect(mc).to.not.be.defined;
+				var mc = conditioner.getModule('mock/modules/bar',group);
+				expect(mc.getElement()).to.equal(b);
 
-            });
+			});
+
+			it('will return the correct module controller if path and filter are supplied',function(){
+
+				var mc = conditioner.getModule('mock/modules/bar','.beta');
+				expect(mc.getElement()).to.equal(b);
+
+			});
+
+			it('will return the correct module controller if path, filter and context is supplied',function(){
+
+				var mc = conditioner.getModule('mock/modules/bar','.beta',group);
+				expect(mc.getElement()).to.equal(b);
+
+			});
+
+			it('will return null if no matches found',function(){
+
+				var mc = conditioner.getModule('mock/modules/trololo');
+				expect(mc).to.not.be.defined;
+
+			});
 
         });
 
-        describe('getModules(path,selector,context)',function(){
+        describe('getModules(...)',function(){
 
-            var a, b, c, group, results;
+			var a, b, c, group, results, wrapper;
 
-            beforeEach(function(){
+			beforeEach(function(){
 
-                // arrange
-                a = document.createElement('div');
-                a.id = 'a';
-                a.className = 'alpha';
-                a.setAttribute('data-module','mock/modules/foo');
+				// arrange
+				a = document.createElement('div');
+				a.id = 'a';
+				a.className = 'alpha';
+				a.setAttribute('data-module','mock/modules/foo');
 
-                b = document.createElement('div');
-                b.id = 'b';
-                b.className = 'beta';
-                b.setAttribute('data-module','mock/modules/foo');
+				b = document.createElement('div');
+				b.id = 'b';
+				b.className = 'beta';
+				b.setAttribute('data-module','mock/modules/bar');
 
-                c = document.createElement('div');
-                c.id = 'c';
-                c.className = 'beta';
-                c.setAttribute('data-module','mock/modules/baz');
+				c = document.createElement('div');
+				c.id = 'c';
+				c.className = 'beta';
+				c.setAttribute('data-module','mock/modules/baz');
 
-                group = document.createElement('div');
-                group.appendChild(a);
-                group.appendChild(b);
-                group.appendChild(c);
+				group = document.createElement('div');
+				group.className = 'alpha';
+				group.setAttribute('data-module','["mock/modules/foo","mock/modules/bar"]');
+				group.appendChild(a);
+				group.appendChild(b);
+				group.appendChild(c);
 
-                // act
-                results = conditioner.parse(group);
+				wrapper = document.createElement('div');
+				wrapper.appendChild(group);
 
-            });
+				// act
+				results = conditioner.parse(wrapper);
+
+			});
 
             it('will return all module controllers if no path supplied',function(){
 
                 var mcs = conditioner.getModules();
-                expect(mcs.length).to.equal(results.length);
+                expect(mcs.length).to.equal(5);
 
             });
 
-            it('will return the first matched module controller when a path is supplied',function(){
+			it('will return the module controllers on the given element',function(){
 
-                var mcs = conditioner.getModules('mock/modules/foo','.beta');
-                expect(mcs.length).to.equal(1);
+				var mcs = conditioner.getModules(group);
+				expect(mcs.length).to.equal(2);
+
+			});
+
+			it('will return the correct module controllers on the element with given path',function(){
+
+				var mcs = conditioner.getModules(group,'mock/modules/foo');
+				expect(mcs.length).to.equal(1);
+
+			});
+
+			it('will return the first matched module controller when a path is supplied',function(){
+
+                var mcs = conditioner.getModules('mock/modules/foo','.alpha');
+                expect(mcs[0].getElement()).to.equal(group);
+				expect(mcs[1].getElement()).to.equal(a);
 
             });
 
@@ -379,6 +440,67 @@ define(function(){
             });
 
         });
+
+
+		describe('getNode(...)',function(){
+
+			var a, b, c, group, results, wrapper;
+
+			beforeEach(function(){
+
+				// arrange
+				a = document.createElement('div');
+				a.id = 'a';
+				a.className = 'alpha';
+				a.setAttribute('data-module','mock/modules/foo');
+
+				b = document.createElement('div');
+				b.id = 'b';
+				b.className = 'beta';
+				b.setAttribute('data-module','mock/modules/bar');
+
+				c = document.createElement('div');
+				c.id = 'c';
+				c.className = 'beta';
+				c.setAttribute('data-module','mock/modules/baz');
+
+				group = document.createElement('div');
+				group.className = 'alpha';
+				group.setAttribute('data-module','["mock/modules/foo","mock/modules/bar"]');
+				group.appendChild(a);
+				group.appendChild(b);
+				group.appendChild(c);
+
+				wrapper = document.createElement('div');
+				wrapper.appendChild(group);
+
+				// act
+				results = conditioner.parse(wrapper);
+
+			});
+
+			it('will return node controller attached to the element if element supplied',function(){
+
+				var nc = conditioner.getNode(c);
+				expect(nc.getElement()).to.equal(c);
+
+			});
+
+			it('will return node controller on the element matched with the given query',function(){
+
+				var nc = conditioner.getNode('.alpha');
+				expect(nc.getElement()).to.equal(group);
+
+			});
+
+            it('will return node controller on the element matched with the given query and context',function(){
+
+                var nc = conditioner.getNode('.beta',group);
+                expect(nc.getElement()).to.equal(b);
+
+            });
+
+		});
 
         describe('destroy()',function(){
 

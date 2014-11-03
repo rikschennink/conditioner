@@ -10,6 +10,8 @@ var ModuleLoader = function() {
 
 };
 
+var jsonRegExp = new RegExp('^\\[\\s*{','gm');
+
 ModuleLoader.prototype = {
 
 	/**
@@ -132,6 +134,29 @@ ModuleLoader.prototype = {
 	},
 
 	/**
+	 * Returns the node matching the given element
+	 * @param {Element} element - element to match to
+	 * @param {Boolean} [singleResult] - Optional boolean to only ask one result
+	 * @returns {Array|Node|null}
+	 * @public
+	 */
+	getNodeByElement:function(element) {
+
+		var i = 0;
+		var l = this._nodes.length;
+		var node;
+
+		for (;i < l;i++) {
+			node = this._nodes[i];
+			if (node.getElement() === element) {
+				return node;
+			}
+		}
+
+		return null;
+	},
+
+	/**
 	 * Returns one or multiple nodes matching the selector
 	 * @param {String} [selector] - Optional selector to match the nodes to
 	 * @param {Document|Element} [context] - Context to search in
@@ -232,8 +257,8 @@ ModuleLoader.prototype = {
 			// setup vars
 			l = specs.length;
 
-			// test if second character is a '{' if so, json format
-			if (config.charCodeAt(1) == 123) {
+			// test if is json format
+			if (jsonRegExp.test(config)) {
 				for (;i < l;i++) {
 					spec = specs[i];
 					controllers[i] = this._getModuleController(
@@ -246,7 +271,7 @@ ModuleLoader.prototype = {
 				return controllers;
 			}
 
-			// array format
+			// expect array format
 			for (;i < l;i++) {
 				spec = specs[i];
 				if (typeof spec == 'string') {

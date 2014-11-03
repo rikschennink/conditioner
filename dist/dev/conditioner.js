@@ -1049,6 +1049,14 @@
                 return this._initialized;
             },
 
+            /**
+             * Returns the element this module is attached to
+             * @returns {Element}
+             */
+            getElement: function () {
+                return this._element;
+            },
+
             /***
              * Returns the module path
              *
@@ -1658,10 +1666,16 @@
                  * @public
                  */
                 matchesSelector: function (selector, context) {
+
+                    if (!selector && context) {
+                        return contains(context, this._element);
+                    }
+
                     if (context && !contains(context, this._element)) {
                         return false;
                     }
-                    return matchesSelector(this._element, selector, context);
+
+                    return matchesSelector(this._element, selector);
                 },
 
                 /***
@@ -2031,6 +2045,8 @@
 
         };
 
+        var jsonRegExp = new RegExp('^\\[\\s*{', 'gm');
+
         ModuleLoader.prototype = {
 
             /**
@@ -2150,6 +2166,29 @@
             },
 
             /**
+             * Returns the node matching the given element
+             * @param {Element} element - element to match to
+             * @param {Boolean} [singleResult] - Optional boolean to only ask one result
+             * @returns {Array|Node|null}
+             * @public
+             */
+            getNodeByElement: function (element) {
+
+                var i = 0;
+                var l = this._nodes.length;
+                var node;
+
+                for (; i < l; i++) {
+                    node = this._nodes[i];
+                    if (node.getElement() === element) {
+                        return node;
+                    }
+                }
+
+                return null;
+            },
+
+            /**
              * Returns one or multiple nodes matching the selector
              * @param {String} [selector] - Optional selector to match the nodes to
              * @param {Document|Element} [context] - Context to search in
@@ -2252,8 +2291,8 @@
                     // setup vars
                     l = specs.length;
 
-                    // test if second character is a '{' if so, json format
-                    if (config.charCodeAt(1) == 123) {
+                    // test if is json format
+                    if (jsonRegExp.test(config)) {
                         for (; i < l; i++) {
                             spec = specs[i];
                             controllers[i] = this._getModuleController(
@@ -2262,7 +2301,7 @@
                         return controllers;
                     }
 
-                    // array format
+                    // expect array format
                     for (; i < l; i++) {
                         spec = specs[i];
                         if (typeof spec == 'string') {
@@ -2584,15 +2623,24 @@
             /***
              * Returns the first [NodeController](#nodecontroller) matching the given selector within the passed context
              *
+             * `getNode(element)` - Returns the NodeController bound to this element
+             * `getNode(selector)` - Returns the first NodeController found with given selector
+             * `getNode(selector,context)` - Returns the first NodeController found with selector within given context
+             *
              * @method getNode
              * @memberof Conditioner
-             * @param {String=} selector - Selector to match the nodes to.
-             * @param {Element=} context - Context to search in.
+             * @param {...*=} arguments
              * @returns {(NodeController|null)} node - First matched node or null.
              */
-            getNode: function (selector, context) {
+            getNode: function () {
 
-                return _moduleLoader.getNodes(selector, context, true);
+                // if first param is element return the node on that element only
+                if (typeof arguments[0] === 'object') {
+                    return _moduleLoader.getNodeByElement(arguments[0]);
+                }
+
+                // return nodes found with supplied parameters
+                return _moduleLoader.getNodes(arguments[0], arguments[1], true);
 
             },
 
@@ -2663,22 +2711,58 @@
             },
 
             /***
-             * Returns the first [ModuleController](#modulecontroller) matching the given selector within the supplied context.
+             * Returns the first [ModuleController](#modulecontroller) matching the supplied query.
+             *
+             * - `getModule(element)` get module on the given element
+             * - `getModule(element, path)` get module with path on the given element
+             * - `getModule(path)` get first module with given path
+             * - `getModule(path, filter)` get first module with path in document scope
+             * - `getModule(path, context)` get module with path, search within element subtree
+             * - `getModule(path, filter, context)` get module with path, search within matched elements in context
              *
              * @method getModule
              * @memberof Conditioner
-             * @param {String=} path - Path to match the modules to.
-             * @param {String=} selector - Selector to match the nodes to.
-             * @param {Element=} context - Context to search in.
+             * @param {...*=} arguments
              * @returns {(ModuleController|null)} module - The found module.
              * @public
              */
-            getModule: function (path, selector, context) {
+            getModule: function () {
 
-                var i = 0;
-                var results = this.getNodes(selector, context);
-                var l = results.length;
+                var i;
+                var path;
+                var filter;
+                var context;
+                var results;
+                var l;
+                var node;
                 var module;
+
+                // if the first argument is an element we are testing this element only, not it's subtree
+                // the second argument could either be 'undefined' or a 'path'
+                if (typeof arguments[0] === 'object') {
+
+                    // find the element and get the correct module by path (if set)
+                    node = _moduleLoader.getNodeByElement(arguments[0]);
+
+                    // get module controller
+                    return node ? node.getModule(arguments[1]) : null;
+                }
+
+                // if first argument is not an element, it is expected to be a module path
+                path = arguments[0];
+
+                // argument two could be a context or a filter depending on type
+                if (typeof arguments[1] === 'string') {
+                    filter = arguments[1];
+                    context = arguments[2];
+                }
+                else {
+                    context = arguments[1];
+                }
+
+                i = 0;
+                results = _moduleLoader.getNodes(filter, context, false);
+                l = results.length;
 
                 for (; i < l; i++) {
                     module = results[i].getModule(path);
@@ -2688,27 +2772,63 @@
                 }
 
                 return null;
-
             },
 
             /***
              * Returns all [ModuleControllers](#modulecontroller) matching the given path within the supplied context.
              *
+             * - `getModules(element)` get modules on the given element
+             * - `getModules(element, path)` get modules with path on the given element
+             * - `getModules(path)` get modules with given path
+             * - `getModules(path, filter)` get modules with path in document scope
+             * - `getModules(path, context)` get modules with path, search within element subtree
+             * - `getModules(path, filter, context)` get modules with path, search within matched elements in context
+             *
              * @method getModules
              * @memberof Conditioner
-             * @param {String=} path - Path to match the modules to
-             * @param {String=} selector - Selector to match the nodes to
-             * @param {Element=} context - Context to search in
+             * @param {...*=} arguments
              * @returns {(Array|null)} modules - The found modules.
              * @public
              */
-            getModules: function (path, selector, context) {
+            getModules: function () {
 
-                var i = 0;
-                var results = this.getNodes(selector, context);
-                var l = results.length;
-                var filtered = [];
+                var i;
+                var path;
+                var filter;
+                var context;
+                var results;
+                var l;
+                var node;
                 var modules;
+                var filtered;
+
+                // if the first argument is an element we are testing this element only, not it's subtree
+                // the second argument could either be 'undefined' or a 'path'
+                if (typeof arguments[0] === 'object') {
+
+                    // find the element and get the correct module by path (if set)
+                    node = _moduleLoader.getNodeByElement(arguments[0]);
+
+                    // get module controllers
+                    return node.getModules(arguments[1]);
+                }
+
+                // if first argument is not an element, it is expected to be a module path
+                path = arguments[0];
+
+                // argument two could be a context or a filter depending on type
+                if (typeof arguments[1] === 'string') {
+                    filter = arguments[1];
+                    context = arguments[2];
+                }
+                else {
+                    context = arguments[1];
+                }
+
+                i = 0;
+                results = this.getNodes(filter, context);
+                l = results.length;
+                filtered = [];
 
                 for (; i < l; i++) {
                     modules = results[i].getModules(path);

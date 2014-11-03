@@ -37,7 +37,7 @@ define(function() {
 
                 // arrange
                 var a = document.createElement('div');
-                a.setAttribute('data-module','[{"mock/modules/foo"},{]');
+                a.setAttribute('data-module','["mock/modules/foo",]');
 
                 var group = document.createElement('div');
                 group.appendChild(a);
@@ -50,6 +50,23 @@ define(function() {
                 expect(attemptToParseNodes).to.throw(Error);
 
             });
+
+			it('will not accept spaces in JSON within "data-module" attributes',function(){
+
+				// arrange
+				var a = document.createElement('div');
+				a.setAttribute('data-module','[ {"path":"mock/modules/foo"}, {"path":"mock/modules/foo"}]');
+				var group = document.createElement('div');
+				group.appendChild(a);
+
+				// act
+				var moduleLoader = new ModuleLoader();
+				results = moduleLoader.parse(group);
+
+				// assert
+				expect(results).to.be.an('array');
+
+			});
 
             it('will always return an array',function(){
 
