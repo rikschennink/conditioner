@@ -366,7 +366,7 @@ define(function(){
 
         });
 
-        describe('getModules(path,selector,context)',function(){
+        describe('getModules(...)',function(){
 
 			var a, b, c, group, results, wrapper;
 
@@ -479,19 +479,26 @@ define(function(){
 
 			});
 
-			it('will return all node controllers on the element if element supplied',function(){
+			it('will return node controller attached to the element if element supplied',function(){
 
 				var nc = conditioner.getNode(c);
 				expect(nc.getElement()).to.equal(c);
 
 			});
 
-			it('will pass query to moduleloader first parameter is not an element',function(){
+			it('will return node controller on the element matched with the given query',function(){
 
 				var nc = conditioner.getNode('.alpha');
 				expect(nc.getElement()).to.equal(group);
 
 			});
+
+            it('will return node controller on the element matched with the given query and context',function(){
+
+                var nc = conditioner.getNode('.beta',group);
+                expect(nc.getElement()).to.equal(b);
+
+            });
 
 		});
 
