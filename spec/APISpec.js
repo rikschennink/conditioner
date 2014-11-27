@@ -169,6 +169,29 @@ define(function(){
 
             });
 
+            it('will not load module module if requirements resolves to false',function(){
+
+                // arrange
+                var element = document.createElement('div');
+                element.setAttribute('data-module', 'mock/modules/foo');
+                document.body.appendChild(element);
+
+                // act
+                conditioner.setOptions({
+                    'modules': {
+                        'mock/modules/foo':{
+                            'requirements':false
+                        }
+                    }
+                });
+                conditioner.init();
+
+                // assert
+                expect(element.getAttribute('data-processed')).to.equal('false');
+
+
+            });
+
         });
 
         describe('parse(context)',function(){

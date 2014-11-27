@@ -153,6 +153,7 @@
 				var path;
 				var mod;
 				var alias;
+				var requirements;
 
 				// update options
 				_options = mergeObjects(_options,options);
@@ -182,8 +183,11 @@
 					// get config
 					config = typeof mod === 'string' ? null : mod.options || {};
 
+					// get requirements
+					requirements = typeof mod === 'string' ? null : mod.requirements;
+
 					// register this module
-					ModuleRegistry.registerModule(path,config,alias);
+					ModuleRegistry.registerModule(path,config,alias,requirements);
 
 				}
 

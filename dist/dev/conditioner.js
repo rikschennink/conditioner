@@ -1205,7 +1205,7 @@
                 // test if object is string
                 if (typeof overrides === 'string') {
 
-                    // test if overrides is json string (is first char a '{'
+                    // test if overrides is JSON string (is first char a '{'
                     if (overrides.charCodeAt(0) == 123) {
 
                         // @ifdef DEV
@@ -1221,7 +1221,7 @@
                     }
                     else {
 
-                        // no json object, must be options string
+                        // no JSON object, must be options string
                         var i = 0;
                         var opts = overrides.split(', ');
                         var l = opts.length;
@@ -2506,6 +2506,9 @@
 
                     // get config
                     config = typeof mod === 'string' ? null : mod.options || {};
+
+                    // get requirements
+                    console.log(mod.requirements);
 
                     // register this module
                     ModuleRegistry.registerModule(path, config, alias);

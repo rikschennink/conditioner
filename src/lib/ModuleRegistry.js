@@ -2,6 +2,7 @@ var ModuleRegistry = {
 
 	_options:{},
 	_redirects:{},
+	_requirements:{},
 
 	/**
 	 * Register a module
@@ -10,7 +11,7 @@ var ModuleRegistry = {
 	 * @param {String} alias - alias name for module
 	 * @static
 	 */
-	registerModule:function(path,options,alias) {
+	registerModule:function(path,options,alias,requirements) {
 
 		// remember options for absolute path
 		this._options[_options.loader.toUrl(path)] = options;
@@ -18,6 +19,11 @@ var ModuleRegistry = {
 		// setup redirect from alias
 		if (alias) {
 			this._redirects[alias] = path;
+		}
+
+		// if requirements set
+		if (requirements) {
+
 		}
 
 		// pass configuration to loader
