@@ -937,18 +937,23 @@
 
             _options: {},
             _redirects: {},
+            _supported: {},
 
             /**
              * Register a module
              * @param {String} path - path to module
              * @param {Object} options - configuration to setup for module
              * @param {String} alias - alias name for module
+             * @param {Boolean} enabled - true/false if the module is enabled, null if -don't care-
              * @static
              */
-            registerModule: function (path, options, alias) {
+            registerModule: function (path, options, alias, enabled) {
 
                 // remember options for absolute path
                 this._options[_options.loader.toUrl(path)] = options;
+
+                // remember if module is supported
+                this._supported[path] = enabled;
 
                 // setup redirect from alias
                 if (alias) {
@@ -957,6 +962,15 @@
 
                 // pass configuration to loader
                 _options.loader.config(path, options);
+            },
+
+            /**
+             * Returns if the given module is supported by the current client
+             * @param {String} path - path to module
+             * @static
+             */
+            isModuleSupported: function (path) {
+                return this._supported[path] !== false;
             },
 
             /**
@@ -1564,13 +1578,12 @@
                  */
                 load: function (moduleControllers) {
 
-                    // @ifdef DEV
-                    // if no module controllers found
+                    // if no module controllers supplied we don't have to do anything
                     if (!moduleControllers || !moduleControllers.length) {
-                        throw new Error('NodeController.load(): Expects an Array of module controllers as parameters.');
+                        return;
                     }
-                    // @endif
-                    // turn into array
+
+                    // if supplied, turn into array
                     this._moduleControllers = moduleControllers;
 
                     // listen to load events on module controllers
@@ -2291,10 +2304,15 @@
                     // setup vars
                     l = specs.length;
 
-                    // test if is json format
+                    // test if is JSON format
                     if (jsonRegExp.test(config)) {
                         for (; i < l; i++) {
                             spec = specs[i];
+
+                            if (!ModuleRegistry.isModuleSupported(spec.path)) {
+                                continue;
+                            }
+
                             controllers[i] = this._getModuleController(
                             spec.path, element, spec.options, spec.conditions);
                         }
@@ -2304,6 +2322,11 @@
                     // expect array format
                     for (; i < l; i++) {
                         spec = specs[i];
+
+                        if (!ModuleRegistry.isModuleSupported(typeof spec == 'string' ? spec : spec[0])) {
+                            continue;
+                        }
+
                         if (typeof spec == 'string') {
                             controllers[i] = this._getModuleController(spec, element);
                         }
@@ -2316,6 +2339,12 @@
 
                 }
 
+                // no support, no module
+                if (!ModuleRegistry.isModuleSupported(config)) {
+                    return null;
+                }
+
+                // support, so let's get the module controller
                 return [this._getModuleController(
                 config, element, element.getAttribute(_options.attr.options), element.getAttribute(_options.attr.conditions))];
             },
@@ -2330,6 +2359,8 @@
              * @private
              */
             _getModuleController: function (path, element, options, conditions) {
+
+                // return the module controller
                 return new ModuleController(
                 path, element, options, conditions ? new ConditionModuleAgent(conditions, element) : StaticModuleAgent);
             }
@@ -2474,6 +2505,7 @@
                 var path;
                 var mod;
                 var alias;
+                var enabled;
 
                 // update options
                 _options = mergeObjects(_options, options);
@@ -2507,11 +2539,11 @@
                     // get config
                     config = typeof mod === 'string' ? null : mod.options || {};
 
-                    // get requirements
-                    console.log(mod.requirements);
+                    // get result of requirements
+                    enabled = typeof mod === 'string' ? null : mod.requirements;
 
                     // register this module
-                    ModuleRegistry.registerModule(path, config, alias);
+                    ModuleRegistry.registerModule(path, config, alias, enabled);
 
                 }
 

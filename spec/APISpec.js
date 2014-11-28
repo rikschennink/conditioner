@@ -173,25 +173,37 @@ define(function(){
 
                 // arrange
                 var element = document.createElement('div');
-                element.setAttribute('data-module', 'mock/modules/foo');
+                element.setAttribute('data-module', 'mock/modules/unsupported');
                 document.body.appendChild(element);
 
                 // act
                 conditioner.setOptions({
                     'modules': {
-                        'mock/modules/foo':{
+                        'mock/modules/unsupported':{
+
+                            // a feature test should result this boolean
                             'requirements':false
+
                         }
                     }
                 });
                 conditioner.init();
 
                 // assert
-                expect(element.getAttribute('data-processed')).to.equal('false');
-
+                expect(element.getAttribute('data-processed')).to.equal('true');
+                expect(element.getAttribute('data-initialized')).to.not.contain('mock/modules/unsupported');
 
             });
 
+            afterEach(function(){
+                conditioner.setOptions({
+                    'modules': {
+                        'mock/modules/unsupported':{
+                            'requirements':true
+                        }
+                    }
+                });
+            });
         });
 
         describe('parse(context)',function(){
@@ -214,26 +226,6 @@ define(function(){
                 expect(attemptToLoadNode).to.throw(Error);
 
             });
-
-            /*
-             it('will load module and return node',function(){
-
-             var el = document.createElement('div');
-             var node = conditioner.load(el,[
-             {
-             path: 'mock/modules/foo',
-             //conditions: 'config',
-             options: {
-             foo: 3
-             }
-             }
-             ]);
-
-             expect(node).to.be.an('object');
-             node.destroy();
-
-             });
-             */
 
         });
 

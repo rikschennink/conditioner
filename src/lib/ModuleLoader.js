@@ -257,10 +257,13 @@ ModuleLoader.prototype = {
 			// setup vars
 			l = specs.length;
 
-			// test if is json format
+			// test if is JSON format
 			if (jsonRegExp.test(config)) {
 				for (;i < l;i++) {
 					spec = specs[i];
+
+					if (!ModuleRegistry.isModuleSupported(spec.path)) {continue;}
+
 					controllers[i] = this._getModuleController(
 						spec.path,
 						element,
@@ -274,6 +277,9 @@ ModuleLoader.prototype = {
 			// expect array format
 			for (;i < l;i++) {
 				spec = specs[i];
+
+				if (!ModuleRegistry.isModuleSupported(typeof spec == 'string' ? spec : spec[0])) {continue;}
+
 				if (typeof spec == 'string') {
 					controllers[i] = this._getModuleController(spec,element);
 				}
@@ -290,6 +296,10 @@ ModuleLoader.prototype = {
 
 		}
 
+		// no support, no module
+		if (!ModuleRegistry.isModuleSupported(config)) {return null;}
+
+		// support, so let's get the module controller
 		return [this._getModuleController(
 			config,
 			element,
@@ -308,6 +318,8 @@ ModuleLoader.prototype = {
 	 * @private
 	 */
 	_getModuleController:function(path,element,options,conditions) {
+
+		// return the module controller
 		return new ModuleController(
 			path,
 			element,

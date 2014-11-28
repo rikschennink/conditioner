@@ -58,14 +58,10 @@ var NodeController = (function() {
 		 */
 		load:function(moduleControllers) {
 
-			// @ifdef DEV
-			// if no module controllers found
-			if (!moduleControllers || !moduleControllers.length) {
-				throw new Error('NodeController.load(): Expects an Array of module controllers as parameters.');
-			}
-			// @endif
+			// if no module controllers supplied we don't have to do anything
+			if (!moduleControllers || !moduleControllers.length) {return;}
 
-			// turn into array
+			// if supplied, turn into array
 			this._moduleControllers = moduleControllers;
 
 			// listen to load events on module controllers

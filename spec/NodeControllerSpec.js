@@ -62,18 +62,6 @@ define(function() {
 
         });
 
-        describe('.load(controller)',function(){
-
-            it('will throw an error when no controllers supplied',function(){
-
-                // act, assert
-                var loadControllers = function(){nc.load();};
-                expect(loadControllers).to.throw(Error);
-
-            });
-
-        });
-
         describe('.getModule([path])',function(){
 
             it('will return the first module controller if no path supplied',function(){
