@@ -11,3 +11,5 @@ Thumbs.db
 _SpecRunner.html
 .grunt
 _site
+npm-debug.log
+coverage
