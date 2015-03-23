@@ -1,16 +1,16 @@
+var _jsonRegExp = new RegExp('^\\[\\s*{','gm');
+
 /**
  * @exports ModuleLoader
  * @class
  * @constructor
  */
-var ModuleLoader = function() {
+var ModuleLoader = function ModuleLoader() {
 
 	// array of all parsed nodes
 	this._nodes = [];
 
 };
-
-var jsonRegExp = new RegExp('^\\[\\s*{','gm');
 
 ModuleLoader.prototype = {
 
@@ -83,12 +83,12 @@ ModuleLoader.prototype = {
 	 * Setup the given element with the passed module controller(s)
 	 * [
 	 *     {
-	 *         path: 'path/to/module',
-	 *         conditions: 'config',
-	 *         options: {
-	 *             foo: 'bar'
-	 *         }
-	 *     }
+ *         path: 'path/to/module',
+ *         conditions: 'config',
+ *         options: {
+ *             foo: 'bar'
+ *         }
+ *     }
 	 * ]
 	 * @param {Element} element - Element to bind the controllers to
 	 * @param {Array|Object} controllers - ModuleController configurations
@@ -258,7 +258,7 @@ ModuleLoader.prototype = {
 			l = specs.length;
 
 			// test if is json format
-			if (jsonRegExp.test(config)) {
+			if (_jsonRegExp.test(config)) {
 				for (;i < l;i++) {
 					spec = specs[i];
 					controllers[i] = this._getModuleController(
@@ -281,8 +281,8 @@ ModuleLoader.prototype = {
 					controllers[i] = this._getModuleController(
 						spec[0],
 						element,
-							typeof spec[1] == 'string' ? spec[2] : spec[1],
-							typeof spec[1] == 'string' ? spec[1] : spec[2]
+						typeof spec[1] == 'string' ? spec[2] : spec[1],
+						typeof spec[1] == 'string' ? spec[1] : spec[2]
 					);
 				}
 			}

@@ -5,7 +5,7 @@
  * @param {String} operator
  * @param {UnaryExpression} b
  */
-var BinaryExpression = function(a,operator,b) {
+var BinaryExpression = function BinaryExpression(a,operator,b) {
 
 	this._a = a;
 	this._operator = operator;

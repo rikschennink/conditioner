@@ -1,4 +1,4 @@
-var MonitorFactory = function() {
+var MonitorFactory = function MonitorFactory() {
 	this._uid = 1;
 	this._db = [];
 	this._expressions = [];

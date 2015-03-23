@@ -102,7 +102,7 @@
             }
 
         };
-        var Condition = function (expression, callback) {
+        var Condition = function Condition(expression, callback) {
 
             // get expression
             this._expression = expression;
@@ -129,7 +129,7 @@
             }
 
         };
-        var MonitorFactory = function () {
+        var MonitorFactory = function MonitorFactory() {
             this._uid = 1;
             this._db = [];
             this._expressions = [];
@@ -387,7 +387,7 @@
             }
 
         };
-        var TestWrapper = function (query, element, cb) {
+        var TestWrapper = function TestWrapper(query, element, cb) {
 
             var expression = ExpressionParser.parse(query);
             this._element = element;
@@ -507,7 +507,7 @@
          * @param {UnaryExpression|BinaryExpression|Test} expression
          * @param {Boolean} negate
          */
-        var UnaryExpression = function (expression, negate) {
+        var UnaryExpression = function UnaryExpression(expression, negate) {
 
             this._expression = expression;
             this._negate = typeof negate === 'undefined' ? false : negate;
@@ -547,7 +547,7 @@
          * @param {String} operator
          * @param {UnaryExpression} b
          */
-        var BinaryExpression = function (a, operator, b) {
+        var BinaryExpression = function BinaryExpression(a, operator, b) {
 
             this._a = a;
             this._operator = operator;
@@ -590,257 +590,260 @@
             }
 
         };
-        var ExpressionParser = {
+        var ExpressionParser = (function (UnaryExpression, BinaryExpression) {
 
-            // @ifdef DEV
-            /**
-             * Validates supplied expression for validity
-             * @param {String} expression
-             * @returns {boolean}
-             */
-            validate: function (expression) {
-
-                // if not supplied
-                if (!expression) {
-                    return false;
-                }
-
-                // regex to match expressions with
-                var subExpression = new RegExp('[a-z]+:{[^}]*}', 'g');
-
-                // get sub expressions
-                var subs = expression.match(subExpression);
-
-                // if none found
-                if (!subs || !subs.length) {
-                    return false;
-                }
-
-                // remove subs and check if resulting string is valid
-                var glue = expression.replace(subExpression, '');
-                if (glue.length && glue.replace(/(not|or|and| |\)|\()/g, '').length) {
-                    return false;
-                }
-
-                // get amount of curly braces
-                var curlyCount = (expression.match(/[{}]/g) || []).length;
-
-                // if not matched (curly braces count should be double of semi colon count) something is wrong
-                return subs.length * 2 === curlyCount;
-            },
-            // @endif
-            /**
-             * Parses an expression in string format and returns the same expression formatted as an expression tree
-             * @memberof ExpressionFormatter
-             * @param {String} expression
-             * @returns {UnaryExpression|BinaryExpression}
-             * @public
-             */
-            parse: function (expression) {
-
-                var i = 0;
-                var path = '';
-                var tree = [];
-                var value = '';
-                var negate = false;
-                var isValue = false;
-                var target = null;
-                var parent = null;
-                var parents = [];
-                var l = expression.length;
-                var lastIndex;
-                var index;
-                var operator;
-                var test;
-                var j;
-                var c;
-                var k;
-                var n;
-                var op;
-                var ol;
-                var tl;
-
-                if (!target) {
-                    target = tree;
-                }
+            return {
 
                 // @ifdef DEV
-                // if no invalid expression supplied, throw error
-                // this test is not definite but should catch some common mistakes
-                if (!expression || !this.validate(expression)) {
-                    throw new Error('Expressionparser.parse(expression): "expression" is invalid.');
-                }
+                /**
+                 * Quickly validates supplied expression for errors, is removed in prod version because of performance penalty
+                 * @param {String} expression
+                 * @returns {boolean}
+                 */
+                validate: function (expression) {
+
+                    // if not supplied
+                    if (!expression) {
+                        return false;
+                    }
+
+                    // regex to match expressions with
+                    var subExpression = new RegExp('[a-z]+:{[^}]*}', 'g');
+
+                    // get sub expressions
+                    var subs = expression.match(subExpression);
+
+                    // if none found
+                    if (!subs || !subs.length) {
+                        return false;
+                    }
+
+                    // remove subs and check if resulting string is valid
+                    var glue = expression.replace(subExpression, '');
+                    if (glue.length && glue.replace(/(not|or|and| |\)|\()/g, '').length) {
+                        return false;
+                    }
+
+                    // get amount of curly braces
+                    var curlyCount = (expression.match(/[{}]/g) || []).length;
+
+                    // if not matched (curly braces count should be double of semi colon count) something is wrong
+                    return subs.length * 2 === curlyCount;
+                },
                 // @endif
-                // read explicit expressions
-                for (; i < l; i++) {
+                /**
+                 * Parses an expression in string format and returns the same expression formatted as an expression tree
+                 * @memberof ExpressionFormatter
+                 * @param {String} expression
+                 * @returns {UnaryExpression|BinaryExpression}
+                 * @public
+                 */
+                parse: function (expression) {
 
-                    c = expression.charCodeAt(i);
+                    var i = 0;
+                    var path = '';
+                    var tree = [];
+                    var value = '';
+                    var negate = false;
+                    var isValue = false;
+                    var target = null;
+                    var parent = null;
+                    var parents = [];
+                    var l = expression.length;
+                    var lastIndex;
+                    var index;
+                    var operator;
+                    var test;
+                    var j;
+                    var c;
+                    var k;
+                    var n;
+                    var op;
+                    var ol;
+                    var tl;
 
-                    // check if an expression, test for '{'
-                    if (c === 123) {
+                    if (!target) {
+                        target = tree;
+                    }
 
-                        // now reading the expression
-                        isValue = true;
+                    // @ifdef DEV
+                    // if no invalid expression supplied, throw error
+                    // this test is not definite but should catch some common mistakes
+                    if (!expression || !this.validate(expression)) {
+                        throw new Error('Expressionparser.parse(expression): "expression" is invalid.');
+                    }
+                    // @endif
+                    // read explicit expressions
+                    for (; i < l; i++) {
 
-                        // reset path var
-                        path = '';
+                        c = expression.charCodeAt(i);
 
-                        // fetch path
-                        k = i - 2;
-                        while (k >= 0) {
-                            n = expression.charCodeAt(k);
+                        // check if an expression, test for '{'
+                        if (c === 123) {
 
-                            // test for ' ' or '('
-                            if (n === 32 || n === 40) {
-                                break;
+                            // now reading the expression
+                            isValue = true;
+
+                            // reset path var
+                            path = '';
+
+                            // fetch path
+                            k = i - 2;
+                            while (k >= 0) {
+                                n = expression.charCodeAt(k);
+
+                                // test for ' ' or '('
+                                if (n === 32 || n === 40) {
+                                    break;
+                                }
+                                path = expression.charAt(k) + path;
+                                k--;
                             }
-                            path = expression.charAt(k) + path;
-                            k--;
+
+                            // on to the next character
+                            continue;
+
                         }
 
-                        // on to the next character
-                        continue;
+                        // else if is '}'
+                        else if (c === 125) {
 
-                    }
+                            lastIndex = target.length - 1;
+                            index = lastIndex + 1;
 
-                    // else if is '}'
-                    else if (c === 125) {
+                            // negate if last index contains not operator
+                            negate = target[lastIndex] === 'not';
 
-                        lastIndex = target.length - 1;
-                        index = lastIndex + 1;
+                            // if negate overwrite not operator location in array
+                            index = negate ? lastIndex : lastIndex + 1;
 
-                        // negate if last index contains not operator
-                        negate = target[lastIndex] === 'not';
+                            // setup test
+                            test = new Test(path, value);
 
-                        // if negate overwrite not operator location in array
-                        index = negate ? lastIndex : lastIndex + 1;
+                            // add expression
+                            target[index] = new UnaryExpression(
+                            test, negate);
 
-                        // setup test
-                        test = new Test(path, value);
+                            // reset vars
+                            path = '';
+                            value = '';
 
-                        // add expression
-                        target[index] = new UnaryExpression(
-                        test, negate);
+                            negate = false;
 
-                        // reset vars
-                        path = '';
-                        value = '';
+                            // no longer a value
+                            isValue = false;
+                        }
 
-                        negate = false;
-
-                        // no longer a value
-                        isValue = false;
-                    }
-
-                    // if we are reading an expression add characters to expression
-                    if (isValue) {
-                        value += expression.charAt(i);
-                        continue;
-                    }
-
-                    // if not in expression
-                    // check if goes up a level, test for '('
-                    if (c === 40) {
-
-                        // create new empty array in target
-                        target.push([]);
-
-                        // remember current target (is parent)
-                        parents.push(target);
-
-                        // set new child slot as new target
-                        target = target[target.length - 1];
-
-                    }
-
-                    // find out if next set of characters is a logical operator. Testing for ' ' or '('
-                    if (c === 32 || i === 0 || c === 40) {
-
-                        operator = expression.substr(i, 5).match(/and |or |not /g);
-                        if (!operator) {
+                        // if we are reading an expression add characters to expression
+                        if (isValue) {
+                            value += expression.charAt(i);
                             continue;
                         }
 
-                        // get reference and calculate length
-                        op = operator[0];
-                        ol = op.length - 1;
+                        // if not in expression
+                        // check if goes up a level, test for '('
+                        if (c === 40) {
 
-                        // add operator
-                        target.push(op.substring(0, ol));
+                            // create new empty array in target
+                            target.push([]);
 
-                        // skip over operator
-                        i += ol;
-                    }
+                            // remember current target (is parent)
+                            parents.push(target);
 
-                    // expression or level finished, time to clean up. Testing for ')'
-                    if (c === 41 || i === l - 1) {
+                            // set new child slot as new target
+                            target = target[target.length - 1];
 
-                        do {
+                        }
 
-                            // get parent reference
-                            parent = parents.pop();
+                        // find out if next set of characters is a logical operator. Testing for ' ' or '('
+                        if (c === 32 || i === 0 || c === 40) {
 
-                            // if contains zero elements = ()
-                            if (target.length === 0) {
-
-                                // zero elements added revert to parent
-                                target = parent;
-
+                            operator = expression.substr(i, 5).match(/and |or |not /g);
+                            if (!operator) {
                                 continue;
                             }
 
-                            // if more elements start the grouping process
-                            j = 0;
-                            tl = target.length;
+                            // get reference and calculate length
+                            op = operator[0];
+                            ol = op.length - 1;
 
-                            for (; j < tl; j++) {
+                            // add operator
+                            target.push(op.substring(0, ol));
 
-                                if (typeof target[j] !== 'string') {
+                            // skip over operator
+                            i += ol;
+                        }
+
+                        // expression or level finished, time to clean up. Testing for ')'
+                        if (c === 41 || i === l - 1) {
+
+                            do {
+
+                                // get parent reference
+                                parent = parents.pop();
+
+                                // if contains zero elements = ()
+                                if (target.length === 0) {
+
+                                    // zero elements added revert to parent
+                                    target = parent;
+
                                     continue;
                                 }
 
-                                // handle not expressions first
-                                if (target[j] === 'not') {
-                                    target.splice(j, 2, new UnaryExpression(target[j + 1], true));
+                                // if more elements start the grouping process
+                                j = 0;
+                                tl = target.length;
 
-                                    // rewind
-                                    j = -1;
-                                    tl = target.length;
+                                for (; j < tl; j++) {
+
+                                    if (typeof target[j] !== 'string') {
+                                        continue;
+                                    }
+
+                                    // handle not expressions first
+                                    if (target[j] === 'not') {
+                                        target.splice(j, 2, new UnaryExpression(target[j + 1], true));
+
+                                        // rewind
+                                        j = -1;
+                                        tl = target.length;
+                                    }
+                                    // handle binary expression
+                                    else if (target[j + 1] !== 'not') {
+                                        target.splice(j - 1, 3, new BinaryExpression(target[j - 1], target[j], target[j + 1]));
+
+                                        // rewind
+                                        j = -1;
+                                        tl = target.length;
+                                    }
+
                                 }
-                                // handle binary expression
-                                else if (target[j + 1] !== 'not') {
-                                    target.splice(j - 1, 3, new BinaryExpression(target[j - 1], target[j], target[j + 1]));
 
-                                    // rewind
-                                    j = -1;
-                                    tl = target.length;
+                                // if contains only one element
+                                if (target.length === 1 && parent) {
+
+                                    // overwrite target index with target content
+                                    parent[parent.length - 1] = target[0];
+
+                                    // set target to parent array
+                                    target = parent;
+
                                 }
 
                             }
-
-                            // if contains only one element
-                            if (target.length === 1 && parent) {
-
-                                // overwrite target index with target content
-                                parent[parent.length - 1] = target[0];
-
-                                // set target to parent array
-                                target = parent;
-
-                            }
+                            while (i === l - 1 && parent);
 
                         }
-                        while (i === l - 1 && parent);
-
+                        // end of ')' character or last index
                     }
-                    // end of ')' character or last index
+
+                    return tree.length === 1 ? tree[0] : tree;
+
                 }
+            };
 
-                return tree.length === 1 ? tree[0] : tree;
-
-            }
-
-        };
+        }(UnaryExpression, BinaryExpression));
         /**
          * Static Module Agent, will always load the module
          * @type {Object}
@@ -870,7 +873,7 @@
             destroy: function () {}
 
         };
-        var ConditionModuleAgent = function (conditions, element) {
+        var ConditionModuleAgent = function ConditionModuleAgent(conditions, element) {
 
             // if no conditions, conditions will always be suitable
             if (typeof conditions !== 'string' || !conditions.length) {
@@ -998,7 +1001,7 @@
          * @param {(Object|String)=} options - options for this ModuleController
          * @param {Object=} agent - module activation agent
          */
-        var ModuleController = function (path, element, options, agent) {
+        var ModuleController = function ModuleController(path, element, options, agent) {
 
             // @ifdef DEV
             // if no path supplied, throw error
@@ -1403,7 +1406,7 @@
                 }
                 // @endif
                 // watch for events on target
-                // this way it is possible to listen to events on the controller which is always there
+                // this way it is possible to listen for events on the controller which will always be there
                 Observer.inform(this._module, this);
 
                 // publish load event
@@ -1499,363 +1502,357 @@
             }
 
         };
-        var NodeController = (function () {
+        var _filterIsActiveModule = function (item) {
+            return item.isModuleActive();
+        };
+        var _filterIsAvailableModule = function (item) {
+            return item.isModuleAvailable();
+        };
+        var _mapModuleToPath = function (item) {
+            return item.getModulePath();
+        };
 
-            var _filterIsActiveModule = function (item) {
-                return item.isModuleActive();
-            };
-            var _filterIsAvailableModule = function (item) {
-                return item.isModuleAvailable();
-            };
-            var _mapModuleToPath = function (item) {
-                return item.getModulePath();
-            };
+        /***
+         * For each element found having a `data-module` attribute an object of type NodeController is made. The node object can then be queried for the [ModuleControllers](#modulecontroller) it contains.
+         *
+         * @exports NodeController
+         * @class
+         * @constructor
+         * @param {Object} element
+         * @param {Number} priority
+         */
+        var NodeController = function NodeController(element, priority) {
 
-            /***
-             * For each element found having a `data-module` attribute an object of type NodeController is made. The node object can then be queried for the [ModuleControllers](#modulecontroller) it contains.
-             *
-             * @exports NodeController
-             * @class
-             * @constructor
-             * @param {Object} element
-             * @param {Number} priority
-             */
-            var exports = function NodeController(element, priority) {
+            // @ifdef DEV
+            if (!element) {
+                throw new Error('NodeController(element): "element" is a required parameter.');
+            }
+            // @endif
+            // set element reference
+            this._element = element;
 
-                // @ifdef DEV
-                if (!element) {
-                    throw new Error('NodeController(element): "element" is a required parameter.');
-                }
-                // @endif
-                // set element reference
-                this._element = element;
+            // has been processed
+            this._element.setAttribute(_options.attr.processed, 'true');
 
-                // has been processed
-                this._element.setAttribute(_options.attr.processed, 'true');
+            // set priority
+            this._priority = !priority ? 0 : parseInt(priority, 10);
 
-                // set priority
-                this._priority = !priority ? 0 : parseInt(priority, 10);
+            // contains references to all module controllers
+            this._moduleControllers = [];
 
-                // contains references to all module controllers
-                this._moduleControllers = [];
+            // binds
+            this._moduleAvailableBind = this._onModuleAvailable.bind(this);
+            this._moduleLoadBind = this._onModuleLoad.bind(this);
+            this._moduleUnloadBind = this._onModuleUnload.bind(this);
 
-                // binds
-                this._moduleAvailableBind = this._onModuleAvailable.bind(this);
-                this._moduleLoadBind = this._onModuleLoad.bind(this);
-                this._moduleUnloadBind = this._onModuleUnload.bind(this);
+        };
 
-            };
+        /**
+         * Static method testing if the current element has been processed already
+         * @param {Element} element
+         * @static
+         */
+        NodeController.hasProcessed = function (element) {
+            return element.getAttribute(_options.attr.processed) === 'true';
+        };
+
+        NodeController.prototype = {
 
             /**
-             * Static method testing if the current element has been processed already
-             * @param {Element} element
-             * @static
+             * Loads the passed ModuleControllers to the node
+             * @param {Array} moduleControllers
+             * @public
              */
-            exports.hasProcessed = function (element) {
-                return element.getAttribute(_options.attr.processed) === 'true';
-            };
+            load: function (moduleControllers) {
 
-            exports.prototype = {
+                // @ifdef DEV
+                // if no module controllers found
+                if (!moduleControllers || !moduleControllers.length) {
+                    throw new Error('NodeController.load(): Expects an Array of module controllers as parameters.');
+                }
+                // @endif
+                // turn into array
+                this._moduleControllers = moduleControllers;
 
-                /**
-                 * Loads the passed ModuleControllers to the node
-                 * @param {Array} moduleControllers
-                 * @public
-                 */
-                load: function (moduleControllers) {
+                // listen to load events on module controllers
+                var i = 0;
+                var l = this._moduleControllers.length;
+                var mc;
 
-                    // @ifdef DEV
-                    // if no module controllers found
-                    if (!moduleControllers || !moduleControllers.length) {
-                        throw new Error('NodeController.load(): Expects an Array of module controllers as parameters.');
-                    }
-                    // @endif
-                    // turn into array
-                    this._moduleControllers = moduleControllers;
-
-                    // listen to load events on module controllers
-                    var i = 0;
-                    var l = this._moduleControllers.length;
-                    var mc;
-
-                    for (; i < l; i++) {
-                        mc = this._moduleControllers[i];
-                        Observer.subscribe(mc, 'available', this._moduleAvailableBind);
-                        Observer.subscribe(mc, 'load', this._moduleLoadBind);
-                    }
-
-                },
-
-                /**
-                 * Unload all attached modules and restore node in original state
-                 * @public
-                 */
-                destroy: function () {
-
-                    var i = 0;
-                    var l = this._moduleControllers.length;
-
-                    for (; i < l; i++) {
-                        this._destroyModule(this._moduleControllers[i]);
-                    }
-
-                    // clear binds
-                    this._moduleAvailableBind = null;
-                    this._moduleLoadBind = null;
-                    this._moduleUnloadBind = null;
-
-                    // update initialized state
-                    this._updateAttribute(_options.attr.initialized, this._moduleControllers);
-
-                    // reset array
-                    this._moduleControllers = null;
-
-                    // reset processed state
-                    this._element.removeAttribute(_options.attr.processed);
-
-                },
-
-                /**
-                 * Call destroy method on module controller and clean up listeners
-                 * @param moduleController
-                 * @private
-                 */
-                _destroyModule: function (moduleController) {
-
-                    // unsubscribe from module events
-                    Observer.unsubscribe(moduleController, 'available', this._moduleAvailableBind);
-                    Observer.unsubscribe(moduleController, 'load', this._moduleLoadBind);
-                    Observer.unsubscribe(moduleController, 'unload', this._moduleUnloadBind);
-
-                    // conceal events from module controller
-                    Observer.conceal(moduleController, this);
-
-                    // unload the controller
-                    moduleController.destroy();
-
-                },
-
-                /**
-                 * Returns the set priority for this node
-                 * @public
-                 */
-                getPriority: function () {
-                    return this._priority;
-                },
-
-                /***
-                 * Returns the element linked to this node
-                 *
-                 * @method getElement
-                 * @memberof NodeController
-                 * @returns {Element} element - A reference to the element wrapped by this NodeController
-                 * @public
-                 */
-                getElement: function () {
-                    return this._element;
-                },
-
-                /***
-                 * Tests if the element contained in the NodeController object matches the supplied CSS selector.
-                 *
-                 * @method matchesSelector
-                 * @memberof NodeController
-                 * @param {String} selector - CSS selector to match element to.
-                 * @param {Element=} context - Context to search in.
-                 * @return {Boolean} match - Result of matchs
-                 * @public
-                 */
-                matchesSelector: function (selector, context) {
-
-                    if (!selector && context) {
-                        return contains(context, this._element);
-                    }
-
-                    if (context && !contains(context, this._element)) {
-                        return false;
-                    }
-
-                    return matchesSelector(this._element, selector);
-                },
-
-                /***
-                 * Returns true if all [ModuleControllers](#modulecontroller) are active
-                 *
-                 * @method areAllModulesActive
-                 * @memberof NodeController
-                 * @returns {Boolean} state - All modules loaded state
-                 * @public
-                 */
-                areAllModulesActive: function () {
-                    return this.getActiveModules().length === this._moduleControllers.length;
-                },
-
-                /***
-                 * Returns an array containing all active [ModuleControllers](#modulecontroller)
-                 *
-                 * @method getActiveModules
-                 * @memberof NodeController
-                 * @returns {Array} modules - An Array of active ModuleControllers
-                 * @public
-                 */
-                getActiveModules: function () {
-                    return this._moduleControllers.filter(_filterIsActiveModule);
-                },
-
-                /***
-                 * Returns the first [ModuleController](#modulecontroller) matching the given path
-                 *
-                 * @method getModule
-                 * @memberof NodeController
-                 * @param {String=} path - The module id to search for.
-                 * @returns {(ModuleController|null)} module - A [ModuleController](#modulecontroller) or null if none found
-                 * @public
-                 */
-                getModule: function (path) {
-                    return this._getModules(path, true);
-                },
-
-                /***
-                 * Returns an Array of [ModuleControllers](#modulecontroller) matching the given path
-                 *
-                 * @method getModules
-                 * @memberof NodeController
-                 * @param {String=} path - The module id to search for.
-                 * @returns {Array} modules - An Array of [ModuleControllers](#modulecontroller)
-                 * @public
-                 */
-                getModules: function (path) {
-                    return this._getModules(path);
-                },
-
-                /**
-                 * Returns one or multiple [ModuleControllers](#modulecontroller) matching the supplied path
-                 *
-                 * @param {String=} path - Path to match the nodes to
-                 * @param {Boolean=} singleResult - Boolean to only ask for one result
-                 * @returns {(Array|ModuleController|null)}
-                 * @private
-                 */
-                _getModules: function (path, singleResult) {
-
-                    // if no path supplied return all module controllers (or one if single result mode)
-                    if (typeof path === 'undefined') {
-                        if (singleResult) {
-                            return this._moduleControllers[0];
-                        }
-                        return this._moduleControllers.concat();
-                    }
-
-                    // loop over module controllers matching the path, if single result is enabled, return on first hit, else collect
-                    var i = 0;
-                    var l = this._moduleControllers.length;
-                    var results = [];
-                    var mc;
-
-                    for (; i < l; i++) {
-                        mc = this._moduleControllers[i];
-                        if (!mc.wrapsModuleWithPath(path)) {
-                            continue;
-                        }
-                        if (singleResult) {
-                            return mc;
-                        }
-                        results.push(mc);
-                    }
-                    return singleResult ? null : results;
-                },
-
-                /***
-                 * Safely tries to executes a method on the currently active Module. Always returns an object containing a status code and a response data property.
-                 *
-                 * @method execute
-                 * @memberof NodeController
-                 * @param {String} method - Method name.
-                 * @param {Array=} params - Array containing the method parameters.
-                 * @returns {Array} results - An object containing status code and possible response data.
-                 * @public
-                 */
-                execute: function (method, params) {
-                    return this._moduleControllers.map(function (item) {
-                        return {
-                            controller: item,
-                            result: item.execute(method, params)
-                        };
-                    });
-                },
-
-                /**
-                 * Called when a module becomes available for load
-                 * @param moduleController
-                 * @private
-                 */
-                _onModuleAvailable: function (moduleController) {
-
-                    // propagate events from the module controller to the node so people can subscribe to events on the node
-                    Observer.inform(moduleController, this);
-
-                    // update loading attribute with currently loading module controllers list
-                    this._updateAttribute(_options.attr.loading, this._moduleControllers.filter(_filterIsAvailableModule));
-                },
-
-                /**
-                 * Called when module has loaded
-                 * @param moduleController
-                 * @private
-                 */
-                _onModuleLoad: function (moduleController) {
-
-                    // listen to unload event
-                    Observer.unsubscribe(moduleController, 'load', this._moduleLoadBind);
-                    Observer.subscribe(moduleController, 'unload', this._moduleUnloadBind);
-
-                    // update loading attribute with currently loading module controllers list
-                    this._updateAttribute(_options.attr.loading, this._moduleControllers.filter(_filterIsAvailableModule));
-
-                    // update initialized attribute with currently active module controllers list
-                    this._updateAttribute(_options.attr.initialized, this.getActiveModules());
-                },
-
-                /**
-                 * Called when module has unloaded
-                 * @param moduleController
-                 * @private
-                 */
-                _onModuleUnload: function (moduleController) {
-
-                    // stop listening to unload
-                    Observer.subscribe(moduleController, 'load', this._moduleLoadBind);
-                    Observer.unsubscribe(moduleController, 'unload', this._moduleUnloadBind);
-
-                    // conceal events from module controller
-                    Observer.conceal(moduleController, this);
-
-                    // update initialized attribute with now active module controllers list
-                    this._updateAttribute(_options.attr.initialized, this.getActiveModules());
-
-                },
-
-                /**
-                 * Updates the given attribute with paths of the supplied controllers
-                 * @private
-                 */
-                _updateAttribute: function (attr, controllers) {
-
-                    var modules = controllers.map(_mapModuleToPath);
-                    if (modules.length) {
-                        this._element.setAttribute(attr, modules.join(','));
-                    }
-                    else {
-                        this._element.removeAttribute(attr);
-                    }
-
+                for (; i < l; i++) {
+                    mc = this._moduleControllers[i];
+                    Observer.subscribe(mc, 'available', this._moduleAvailableBind);
+                    Observer.subscribe(mc, 'load', this._moduleLoadBind);
                 }
 
-            };
+            },
 
-            return exports;
+            /**
+             * Unload all attached modules and restore node in original state
+             * @public
+             */
+            destroy: function () {
 
-        }());
+                var i = 0;
+                var l = this._moduleControllers.length;
+
+                for (; i < l; i++) {
+                    this._destroyModule(this._moduleControllers[i]);
+                }
+
+                // clear binds
+                this._moduleAvailableBind = null;
+                this._moduleLoadBind = null;
+                this._moduleUnloadBind = null;
+
+                // update initialized state
+                this._updateAttribute(_options.attr.initialized, this._moduleControllers);
+
+                // reset array
+                this._moduleControllers = null;
+
+                // reset processed state
+                this._element.removeAttribute(_options.attr.processed);
+
+            },
+
+            /**
+             * Call destroy method on module controller and clean up listeners
+             * @param moduleController
+             * @private
+             */
+            _destroyModule: function (moduleController) {
+
+                // unsubscribe from module events
+                Observer.unsubscribe(moduleController, 'available', this._moduleAvailableBind);
+                Observer.unsubscribe(moduleController, 'load', this._moduleLoadBind);
+                Observer.unsubscribe(moduleController, 'unload', this._moduleUnloadBind);
+
+                // conceal events from module controller
+                Observer.conceal(moduleController, this);
+
+                // unload the controller
+                moduleController.destroy();
+
+            },
+
+            /**
+             * Returns the set priority for this node
+             * @public
+             */
+            getPriority: function () {
+                return this._priority;
+            },
+
+            /***
+             * Returns the element linked to this node
+             *
+             * @method getElement
+             * @memberof NodeController
+             * @returns {Element} element - A reference to the element wrapped by this NodeController
+             * @public
+             */
+            getElement: function () {
+                return this._element;
+            },
+
+            /***
+             * Tests if the element contained in the NodeController object matches the supplied CSS selector.
+             *
+             * @method matchesSelector
+             * @memberof NodeController
+             * @param {String} selector - CSS selector to match element to.
+             * @param {Element=} context - Context to search in.
+             * @return {Boolean} match - Result of matchs
+             * @public
+             */
+            matchesSelector: function (selector, context) {
+
+                if (!selector && context) {
+                    return contains(context, this._element);
+                }
+
+                if (context && !contains(context, this._element)) {
+                    return false;
+                }
+
+                return matchesSelector(this._element, selector);
+            },
+
+            /***
+             * Returns true if all [ModuleControllers](#modulecontroller) are active
+             *
+             * @method areAllModulesActive
+             * @memberof NodeController
+             * @returns {Boolean} state - All modules loaded state
+             * @public
+             */
+            areAllModulesActive: function () {
+                return this.getActiveModules().length === this._moduleControllers.length;
+            },
+
+            /***
+             * Returns an array containing all active [ModuleControllers](#modulecontroller)
+             *
+             * @method getActiveModules
+             * @memberof NodeController
+             * @returns {Array} modules - An Array of active ModuleControllers
+             * @public
+             */
+            getActiveModules: function () {
+                return this._moduleControllers.filter(_filterIsActiveModule);
+            },
+
+            /***
+             * Returns the first [ModuleController](#modulecontroller) matching the given path
+             *
+             * @method getModule
+             * @memberof NodeController
+             * @param {String=} path - The module id to search for.
+             * @returns {(ModuleController|null)} module - A [ModuleController](#modulecontroller) or null if none found
+             * @public
+             */
+            getModule: function (path) {
+                return this._getModules(path, true);
+            },
+
+            /***
+             * Returns an Array of [ModuleControllers](#modulecontroller) matching the given path
+             *
+             * @method getModules
+             * @memberof NodeController
+             * @param {String=} path - The module id to search for.
+             * @returns {Array} modules - An Array of [ModuleControllers](#modulecontroller)
+             * @public
+             */
+            getModules: function (path) {
+                return this._getModules(path);
+            },
+
+            /**
+             * Returns one or multiple [ModuleControllers](#modulecontroller) matching the supplied path
+             *
+             * @param {String=} path - Path to match the nodes to
+             * @param {Boolean=} singleResult - Boolean to only ask for one result
+             * @returns {(Array|ModuleController|null)}
+             * @private
+             */
+            _getModules: function (path, singleResult) {
+
+                // if no path supplied return all module controllers (or one if single result mode)
+                if (typeof path === 'undefined') {
+                    if (singleResult) {
+                        return this._moduleControllers[0];
+                    }
+                    return this._moduleControllers.concat();
+                }
+
+                // loop over module controllers matching the path, if single result is enabled, return on first hit, else collect
+                var i = 0;
+                var l = this._moduleControllers.length;
+                var results = [];
+                var mc;
+
+                for (; i < l; i++) {
+                    mc = this._moduleControllers[i];
+                    if (!mc.wrapsModuleWithPath(path)) {
+                        continue;
+                    }
+                    if (singleResult) {
+                        return mc;
+                    }
+                    results.push(mc);
+                }
+                return singleResult ? null : results;
+            },
+
+            /***
+             * Safely tries to executes a method on the currently active Module. Always returns an object containing a status code and a response data property.
+             *
+             * @method execute
+             * @memberof NodeController
+             * @param {String} method - Method name.
+             * @param {Array=} params - Array containing the method parameters.
+             * @returns {Array} results - An object containing status code and possible response data.
+             * @public
+             */
+            execute: function (method, params) {
+                return this._moduleControllers.map(function (item) {
+                    return {
+                        controller: item,
+                        result: item.execute(method, params)
+                    };
+                });
+            },
+
+            /**
+             * Called when a module becomes available for load
+             * @param moduleController
+             * @private
+             */
+            _onModuleAvailable: function (moduleController) {
+
+                // propagate events from the module controller to the node so people can subscribe to events on the node
+                Observer.inform(moduleController, this);
+
+                // update loading attribute with currently loading module controllers list
+                this._updateAttribute(_options.attr.loading, this._moduleControllers.filter(_filterIsAvailableModule));
+            },
+
+            /**
+             * Called when module has loaded
+             * @param moduleController
+             * @private
+             */
+            _onModuleLoad: function (moduleController) {
+
+                // listen to unload event
+                Observer.unsubscribe(moduleController, 'load', this._moduleLoadBind);
+                Observer.subscribe(moduleController, 'unload', this._moduleUnloadBind);
+
+                // update loading attribute with currently loading module controllers list
+                this._updateAttribute(_options.attr.loading, this._moduleControllers.filter(_filterIsAvailableModule));
+
+                // update initialized attribute with currently active module controllers list
+                this._updateAttribute(_options.attr.initialized, this.getActiveModules());
+            },
+
+            /**
+             * Called when module has unloaded
+             * @param moduleController
+             * @private
+             */
+            _onModuleUnload: function (moduleController) {
+
+                // stop listening to unload
+                Observer.subscribe(moduleController, 'load', this._moduleLoadBind);
+                Observer.unsubscribe(moduleController, 'unload', this._moduleUnloadBind);
+
+                // conceal events from module controller
+                Observer.conceal(moduleController, this);
+
+                // update initialized attribute with now active module controllers list
+                this._updateAttribute(_options.attr.initialized, this.getActiveModules());
+
+            },
+
+            /**
+             * Updates the given attribute with paths of the supplied controllers
+             * @private
+             */
+            _updateAttribute: function (attr, controllers) {
+
+                var modules = controllers.map(_mapModuleToPath);
+                if (modules.length) {
+                    this._element.setAttribute(attr, modules.join(','));
+                }
+                else {
+                    this._element.removeAttribute(attr);
+                }
+
+            }
+
+        };
         /**
          * Creates a controller group to sync [ModuleControllers](#modulecontroller).
          *
@@ -1863,7 +1860,7 @@
          * @param {Array} controllers
          * @constructor
          */
-        var SyncedControllerGroup = function (controllers) {
+        var SyncedControllerGroup = function SyncedControllerGroup(controllers) {
 
             // @ifdef DEV
             // if no node controllers passed, no go
@@ -1925,6 +1922,11 @@
                 for (; i < l; i++) {
                     controller = this._controllers[i];
 
+                    // is also called when an undefined controller was found
+                    if (!controller) {
+                        continue;
+                    }
+
                     // listen to load and unload events so we can pass them on if appropriate
                     Observer.unsubscribe(controller, 'load', this._controllerLoadedBind);
                     Observer.unsubscribe(controller, 'unload', this._controllerUnloadedBind);
@@ -1957,6 +1959,7 @@
                         return false;
                     }
                 }
+
                 return true;
             },
 
@@ -2033,19 +2036,19 @@
             }
 
         };
+        var _jsonRegExp = new RegExp('^\\[\\s*{', 'gm');
+
         /**
          * @exports ModuleLoader
          * @class
          * @constructor
          */
-        var ModuleLoader = function () {
+        var ModuleLoader = function ModuleLoader() {
 
             // array of all parsed nodes
             this._nodes = [];
 
         };
-
-        var jsonRegExp = new RegExp('^\\[\\s*{', 'gm');
 
         ModuleLoader.prototype = {
 
@@ -2292,7 +2295,7 @@
                     l = specs.length;
 
                     // test if is json format
-                    if (jsonRegExp.test(config)) {
+                    if (_jsonRegExp.test(config)) {
                         for (; i < l; i++) {
                             spec = specs[i];
                             controllers[i] = this._getModuleController(
@@ -2651,8 +2654,7 @@
              * @memberof Conditioner
              * @param {String=} selector - Selector to match the nodes to.
              * @param {Element=} context - Context to search in.
-             * @returns {Array} nodes -  Array containing matched nodes or empty .
-             Array
+             * @returns {Array} nodes -  Array containing matched nodes or empty Array.
              */
             getNodes: function (selector, context) {
 
@@ -2717,7 +2719,7 @@
              * - `getModule(element, path)` get module with path on the given element
              * - `getModule(path)` get first module with given path
              * - `getModule(path, filter)` get first module with path in document scope
-             * - `getModule(path, context)` get module with path, search within element subtree
+             * - `getModule(path, context)` get module with path, search within conetxt subtree
              * - `getModule(path, filter, context)` get module with path, search within matched elements in context
              *
              * @method getModule
