@@ -4,7 +4,7 @@
  * @param {UnaryExpression|BinaryExpression|Test} expression
  * @param {Boolean} negate
  */
-var UnaryExpression = function(expression,negate) {
+var UnaryExpression = function UnaryExpression(expression,negate) {
 
 	this._expression = expression;
 	this._negate = typeof negate === 'undefined' ? false : negate;

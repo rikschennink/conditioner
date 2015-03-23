@@ -9,7 +9,7 @@
  * @param {(Object|String)=} options - options for this ModuleController
  * @param {Object=} agent - module activation agent
  */
-var ModuleController = function(path,element,options,agent) {
+var ModuleController = function ModuleController(path,element,options,agent) {
 
 	// @ifdef DEV
 	// if no path supplied, throw error
@@ -223,9 +223,9 @@ ModuleController.prototype = {
 
 				// @ifdef DEV
 				try {
-				// @endif
+					// @endif
 					overrides = JSON.parse(overrides);
-				// @ifdef DEV
+					// @ifdef DEV
 				}
 				catch(e) {
 					throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
@@ -417,7 +417,7 @@ ModuleController.prototype = {
 		// @endif
 
 		// watch for events on target
-		// this way it is possible to listen to events on the controller which is always there
+		// this way it is possible to listen for events on the controller which will always be there
 		Observer.inform(this._module,this);
 
 		// publish load event

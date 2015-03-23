@@ -181,8 +181,8 @@ define(function(){
                     'modules': {
                         'mock/modules/unsupported':{
 
-                            // a feature test should result this boolean
-                            'requirements':false
+                            // a feature test should result in this boolean
+                            'enabled':false //
 
                         }
                     }
@@ -199,7 +199,7 @@ define(function(){
                 conditioner.setOptions({
                     'modules': {
                         'mock/modules/unsupported':{
-                            'requirements':true
+                            'enabled':true
                         }
                     }
                 });

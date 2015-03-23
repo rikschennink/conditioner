@@ -1,4 +1,4 @@
-var TestWrapper = function(query,element,cb) {
+var TestWrapper = function TestWrapper(query,element,cb) {
 
 	var expression = ExpressionParser.parse(query);
 	this._element = element;

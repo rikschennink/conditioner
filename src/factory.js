@@ -184,7 +184,7 @@
 					config = typeof mod === 'string' ? null : mod.options || {};
 
 					// get result of requirements
-					enabled = typeof mod === 'string' ? null : mod.requirements;
+					enabled = typeof mod === 'string' ? null : mod.enabled;
 
 					// register this module
 					ModuleRegistry.registerModule(path,config,alias,enabled);
@@ -333,8 +333,7 @@
 			 * @memberof Conditioner
 			 * @param {String=} selector - Selector to match the nodes to.
 			 * @param {Element=} context - Context to search in.
-			 * @returns {Array} nodes -  Array containing matched nodes or empty .
-Array
+			 * @returns {Array} nodes -  Array containing matched nodes or empty Array.
 			 */
 			getNodes:function(selector,context) {
 
@@ -400,7 +399,7 @@ Array
 			 * - `getModule(element, path)` get module with path on the given element
 			 * - `getModule(path)` get first module with given path
 			 * - `getModule(path, filter)` get first module with path in document scope
-			 * - `getModule(path, context)` get module with path, search within element subtree
+			 * - `getModule(path, context)` get module with path, search within conetxt subtree
 			 * - `getModule(path, filter, context)` get module with path, search within matched elements in context
 			 *
 			 * @method getModule

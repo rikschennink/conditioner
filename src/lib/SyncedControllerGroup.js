@@ -5,7 +5,7 @@
  * @param {Array} controllers
  * @constructor
  */
-var SyncedControllerGroup = function(controllers) {
+var SyncedControllerGroup = function SyncedControllerGroup(controllers) {
 
 	// @ifdef DEV
 	// if no node controllers passed, no go
@@ -69,6 +69,11 @@ SyncedControllerGroup.prototype = {
 		for (;i < l;i++) {
 			controller = this._controllers[i];
 
+			// is also called when an undefined controller was found
+			if (!controller) {
+				continue;
+			}
+
 			// listen to load and unload events so we can pass them on if appropriate
 			Observer.unsubscribe(controller,'load',this._controllerLoadedBind);
 			Observer.unsubscribe(controller,'unload',this._controllerUnloadedBind);
@@ -101,6 +106,7 @@ SyncedControllerGroup.prototype = {
 				return false;
 			}
 		}
+
 		return true;
 	},
 
@@ -128,7 +134,7 @@ SyncedControllerGroup.prototype = {
 	 */
 	_isActiveController:function(controller) {
 		return ((controller.isModuleActive && controller.isModuleActive()) ||
-				(controller.areAllModulesActive && controller.areAllModulesActive()));
+		(controller.areAllModulesActive && controller.areAllModulesActive()));
 	},
 
 	/**

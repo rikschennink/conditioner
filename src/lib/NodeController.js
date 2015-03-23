@@ -58,10 +58,12 @@ var NodeController = (function() {
 		 */
 		load:function(moduleControllers) {
 
-			// if no module controllers supplied we don't have to do anything
-			if (!moduleControllers || !moduleControllers.length) {return;}
+			// if no module controllers found, fail silently
+			if (!moduleControllers || !moduleControllers.length) {
+				return;
+			}
 
-			// if supplied, turn into array
+			// turn into array
 			this._moduleControllers = moduleControllers;
 
 			// listen to load events on module controllers

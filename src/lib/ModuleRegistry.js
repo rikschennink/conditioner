@@ -2,7 +2,7 @@ var ModuleRegistry = {
 
 	_options:{},
 	_redirects:{},
-	_supported:{},
+	_enabled:{},
 
 	/**
 	 * Register a module
@@ -18,7 +18,7 @@ var ModuleRegistry = {
 		this._options[_options.loader.toUrl(path)] = options;
 
 		// remember if module is supported
-		this._supported[path] = enabled;
+		this._enabled[path] = enabled;
 
 		// setup redirect from alias
 		if (alias) {
@@ -30,12 +30,12 @@ var ModuleRegistry = {
 	},
 
 	/**
-	 * Returns if the given module is supported by the current client
+	 * Returns if the given module is enabled
 	 * @param {String} path - path to module
 	 * @static
 	 */
-	isModuleSupported:function(path) {
-		return this._supported[path] !== false;
+    isModuleEnabled:function(path) {
+		return this._enabled[path] !== false;
 	},
 
 	/**

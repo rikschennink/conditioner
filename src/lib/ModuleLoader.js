@@ -1,16 +1,16 @@
+var _jsonRegExp = new RegExp('^\\[\\s*{','gm');
+
 /**
  * @exports ModuleLoader
  * @class
  * @constructor
  */
-var ModuleLoader = function() {
+var ModuleLoader = function ModuleLoader() {
 
 	// array of all parsed nodes
 	this._nodes = [];
 
 };
-
-var jsonRegExp = new RegExp('^\\[\\s*{','gm');
 
 ModuleLoader.prototype = {
 
@@ -257,12 +257,12 @@ ModuleLoader.prototype = {
 			// setup vars
 			l = specs.length;
 
-			// test if is JSON format
-			if (jsonRegExp.test(config)) {
+			// test if is json format
+			if (_jsonRegExp.test(config)) {
 				for (;i < l;i++) {
 					spec = specs[i];
 
-					if (!ModuleRegistry.isModuleSupported(spec.path)) {continue;}
+					if (!ModuleRegistry.isModuleEnabled(spec.path)) {continue;}
 
 					controllers[i] = this._getModuleController(
 						spec.path,
@@ -278,7 +278,7 @@ ModuleLoader.prototype = {
 			for (;i < l;i++) {
 				spec = specs[i];
 
-				if (!ModuleRegistry.isModuleSupported(typeof spec == 'string' ? spec : spec[0])) {continue;}
+				if (!ModuleRegistry.isModuleEnabled(typeof spec == 'string' ? spec : spec[0])) {continue;}
 
 				if (typeof spec == 'string') {
 					controllers[i] = this._getModuleController(spec,element);
@@ -287,8 +287,8 @@ ModuleLoader.prototype = {
 					controllers[i] = this._getModuleController(
 						spec[0],
 						element,
-							typeof spec[1] == 'string' ? spec[2] : spec[1],
-							typeof spec[1] == 'string' ? spec[1] : spec[2]
+						typeof spec[1] == 'string' ? spec[2] : spec[1],
+						typeof spec[1] == 'string' ? spec[1] : spec[2]
 					);
 				}
 			}
@@ -297,7 +297,7 @@ ModuleLoader.prototype = {
 		}
 
 		// no support, no module
-		if (!ModuleRegistry.isModuleSupported(config)) {return null;}
+		if (!ModuleRegistry.isModuleEnabled(config)) {return null;}
 
 		// support, so let's get the module controller
 		return [this._getModuleController(
@@ -318,8 +318,6 @@ ModuleLoader.prototype = {
 	 * @private
 	 */
 	_getModuleController:function(path,element,options,conditions) {
-
-		// return the module controller
 		return new ModuleController(
 			path,
 			element,
