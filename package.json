@@ -1,6 +1,6 @@
 {
   "name": "conditioner-pages",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Conditioner.js • Frizz Free, Environment-aware, JavaScript Modules",
   "homepage": "http://conditionerjs.com",
   "main": "index.js",
@@ -42,6 +42,7 @@
     "gulp-jshint": "^1.5.5",
     "gulp-sass": "^0.7.1",
     "highlight.js": "^8.0.0",
+    "jshint-stylish": "^1.0.1",
     "marked": "^0.3.2",
     "requirejs": "^2.1.11",
     "run-sequence": "^0.3.6",

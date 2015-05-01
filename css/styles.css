@@ -425,7 +425,9 @@ img.map {
     width: 50%; }
 
 .download-clone {
-  line-height: 2.5; }
+  line-height: 2.5;
+  max-width: 100%;
+  overflow: hidden; }
   .download-clone a {
     display: inline-block; }
   .download-clone span {

@@ -106,7 +106,7 @@
         
 
         <p>Call this method to start parsing the document for modules. Conditioner will initialize all found modules and return an Array containing the newly found nodes.</p>
-<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span>{</span>
+<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span></span>{
 
     conditioner.init();
 
@@ -144,7 +144,7 @@
 
         <p>Allows defining page level Module options, shortcuts to modules, and overrides for conditioners inner workings.</p>
 <p>Passing the default options object.</p>
-<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span>{</span>
+<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span></span>{
 
     conditioner.setOptions({
 
@@ -159,7 +159,7 @@
         <span class="hljs-comment">// Attribute overrides</span>
         attr:{
             options:<span class="hljs-string">'data-options'</span>,
-            module:<span class="hljs-string">'data-module'</span>,
+            <span class="hljs-built_in">module</span>:<span class="hljs-string">'data-module'</span>,
             conditions:<span class="hljs-string">'data-conditions'</span>,
             priority:<span class="hljs-string">'data-priority'</span>,
             initialized:<span class="hljs-string">'data-initialized'</span>,
@@ -169,17 +169,17 @@
 
         <span class="hljs-comment">// AMD loader overrides</span>
         loader:{
-            <span class="hljs-built_in">require</span>:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(paths,callback)</span>{</span>
+            <span class="hljs-built_in">require</span>:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(paths,callback)</span></span>{
                 <span class="hljs-built_in">require</span>(paths,callback)
             },
-            config:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(path,options)</span>{</span>
+            config:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(path,options)</span></span>{
                 <span class="hljs-keyword">var</span> config = {};
                 config[path] = options;
                 requirejs.config({
                     config:config
                 });
             },
-            toUrl:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(path)</span>{</span>
+            toUrl:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(path)</span></span>{
                 <span class="hljs-keyword">return</span> requirejs.toUrl(path)
             }
         }
@@ -256,10 +256,10 @@
         
 
         <p>Creates a <a href="#nodecontroller">NodeController</a> based on the passed element and set of controllers.</p>
-<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span>{</span>
+<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span></span>{
 
     <span class="hljs-comment">// find a suitable element</span>
-    <span class="hljs-keyword">var</span> foo = document.getElementById(<span class="hljs-string">'foo'</span>);
+    <span class="hljs-keyword">var</span> foo = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'foo'</span>);
 
     <span class="hljs-comment">// load Clock module to foo element</span>
     conditioner.load(foo,[
@@ -305,10 +305,10 @@
         
 
         <p>Wraps the supplied controllers in a <a href="#syncedcontrollergroup">SyncedControllerGroup</a> which will fire a load event when all of the supplied modules have loaded.</p>
-<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>,<span class="hljs-string">'Observer'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner,Observer)</span>{</span>
+<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>,<span class="hljs-string">'Observer'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner,Observer)</span></span>{
 
     <span class="hljs-comment">// Find period element on the page</span>
-    <span class="hljs-keyword">var</span> periodElement = document.querySelector(<span class="hljs-string">'.peroid'</span>);
+    <span class="hljs-keyword">var</span> periodElement = <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'.peroid'</span>);
 
     <span class="hljs-comment">// Initialize all datepicker modules</span>
     <span class="hljs-comment">// within the period element</span>
@@ -319,14 +319,14 @@
     <span class="hljs-keyword">var</span> syncGroup = conditioner.sync(datePickerNodes);
 
     <span class="hljs-comment">// Wait for load event to fire</span>
-    Observer.subscribe(syncGroup,<span class="hljs-string">'load'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(nodes)</span>{</span>
+    Observer.subscribe(syncGroup,<span class="hljs-string">'load'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(nodes)</span></span>{
 
         <span class="hljs-comment">// All modules now loaded</span>
 
     });
 
     <span class="hljs-comment">// Also listen for unload event</span>
-    Observer.subscribe(syncGroup,<span class="hljs-string">'unload'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(nodes)</span>{</span>
+    Observer.subscribe(syncGroup,<span class="hljs-string">'unload'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(nodes)</span></span>{
 
         <span class="hljs-comment">// One of the modules has unloaded</span>
 
@@ -340,7 +340,7 @@
     
     <section class="method">
 
-        <h4 id="conditioner-getnode">getNode([selector], [context])<span class="code"> → NodeController | null</span></h4>
+        <h4 id="conditioner-getnode">getNode(arguments)<span class="code"> → NodeController | null</span></h4>
 
         
         <table class="params">
@@ -354,16 +354,9 @@
             <tbody>
             
             <tr>
-                <th>selector</th>
-                <td>String</td>
-                <td><p>Selector to match the nodes to.</p>
-</td>
-            </tr>
-            
-            <tr>
-                <th>context</th>
-                <td>Element</td>
-                <td><p>Context to search in.</p>
+                <th>arguments</th>
+                <td>...</td>
+                <td><p>See description.</p>
 </td>
             </tr>
             
@@ -372,6 +365,11 @@
         
 
         <p>Returns the first <a href="#nodecontroller">NodeController</a> matching the given selector within the passed context</p>
+<ul>
+<li><code>getNode(element)</code> return the NodeController bound to this element</li>
+<li><code>getNode(selector)</code> return the first NodeController found with given selector</li>
+<li><code>getNode(selector,context)</code> return the first NodeController found with selector within given context</li>
+</ul>
 
 
     </section>
@@ -447,7 +445,7 @@
     
     <section class="method">
 
-        <h4 id="conditioner-getmodule">getModule([path], [selector], [context])<span class="code"> → ModuleController | null</span></h4>
+        <h4 id="conditioner-getmodule">getModule(arguments)<span class="code"> → ModuleController | null</span></h4>
 
         
         <table class="params">
@@ -461,23 +459,9 @@
             <tbody>
             
             <tr>
-                <th>path</th>
-                <td>String</td>
-                <td><p>Path to match the modules to.</p>
-</td>
-            </tr>
-            
-            <tr>
-                <th>selector</th>
-                <td>String</td>
-                <td><p>Selector to match the nodes to.</p>
-</td>
-            </tr>
-            
-            <tr>
-                <th>context</th>
-                <td>Element</td>
-                <td><p>Context to search in.</p>
+                <th>arguments</th>
+                <td>...</td>
+                <td><p>See description.</p>
 </td>
             </tr>
             
@@ -485,14 +469,22 @@
         </table>
         
 
-        <p>Returns the first <a href="#modulecontroller">ModuleController</a> matching the given selector within the supplied context.</p>
+        <p>Returns the first <a href="#modulecontroller">ModuleController</a> matching the supplied query.</p>
+<ul>
+<li><code>getModule(element)</code> get module on the given element</li>
+<li><code>getModule(element, path)</code> get module with path on the given element</li>
+<li><code>getModule(path)</code> get first module with given path</li>
+<li><code>getModule(path, filter)</code> get first module with path in document scope</li>
+<li><code>getModule(path, context)</code> get module with path, search within conetxt subtree</li>
+<li><code>getModule(path, filter, context)</code> get module with path, search within matched elements in context</li>
+</ul>
 
 
     </section>
     
     <section class="method">
 
-        <h4 id="conditioner-getmodules">getModules([path], [selector], [context])<span class="code"> → Array | null</span></h4>
+        <h4 id="conditioner-getmodules">getModules(arguments)<span class="code"> → Array | null</span></h4>
 
         
         <table class="params">
@@ -506,23 +498,9 @@
             <tbody>
             
             <tr>
-                <th>path</th>
-                <td>String</td>
-                <td><p>Path to match the modules to</p>
-</td>
-            </tr>
-            
-            <tr>
-                <th>selector</th>
-                <td>String</td>
-                <td><p>Selector to match the nodes to</p>
-</td>
-            </tr>
-            
-            <tr>
-                <th>context</th>
-                <td>Element</td>
-                <td><p>Context to search in</p>
+                <th>arguments</th>
+                <td>...</td>
+                <td><p>See description.</p>
 </td>
             </tr>
             
@@ -531,6 +509,14 @@
         
 
         <p>Returns all <a href="#modulecontroller">ModuleControllers</a> matching the given path within the supplied context.</p>
+<ul>
+<li><code>getModules(element)</code> get modules on the given element</li>
+<li><code>getModules(element, path)</code> get modules with path on the given element</li>
+<li><code>getModules(path)</code> get modules with given path</li>
+<li><code>getModules(path, filter)</code> get modules with path in document scope</li>
+<li><code>getModules(path, context)</code> get modules with path, search within element subtree</li>
+<li><code>getModules(path, filter, context)</code> get modules with path, search within matched elements in context</li>
+</ul>
 
 
     </section>
@@ -569,10 +555,10 @@
         
 
         <p>Manually test an expression, only returns once via promise with a <code>true</code> or <code>false</code> state</p>
-<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span>{</span>
+<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span></span>{
 
     <span class="hljs-comment">// Test if supplied condition is valid</span>
-    conditioner.is(<span class="hljs-string">'window:{min-width:500}'</span>).then(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(state)</span>{</span>
+    conditioner.is(<span class="hljs-string">'window:{min-width:500}'</span>).then(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(state)</span></span>{
 
         <span class="hljs-comment">// State equals true if window has a</span>
         <span class="hljs-comment">// minimum width of 500 pixels.</span>
@@ -626,10 +612,10 @@
         
 
         <p>Manually test an expression, bind a callback method to be executed once something changes.</p>
-<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span>{</span>
+<pre><code class="lang-js"><span class="hljs-built_in">require</span>([<span class="hljs-string">'conditioner'</span>],<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(conditioner)</span></span>{
 
     <span class="hljs-comment">// Test if supplied condition is valid</span>
-    conditioner.on(<span class="hljs-string">'window:{min-width:500}'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(state)</span>{</span>
+    conditioner.on(<span class="hljs-string">'window:{min-width:500}'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(state)</span></span>{
 
         <span class="hljs-comment">// State equals true if window a</span>
         <span class="hljs-comment">// has minimum width of 500 pixels.</span>
@@ -1166,7 +1152,7 @@
         
 
         <p>Subscribe to an event</p>
-<pre><code class="lang-js">Observer.subscribe(foo,<span class="hljs-string">'load'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bar</span><span class="hljs-params">()</span>{</span>
+<pre><code class="lang-js">Observer.subscribe(foo,<span class="hljs-string">'load'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bar</span><span class="hljs-params">()</span></span>{
 
     <span class="hljs-comment">// bar function is called when the foo object</span>
     <span class="hljs-comment">// publishes the load event</span>

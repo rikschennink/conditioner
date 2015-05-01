@@ -156,7 +156,12 @@ gulp.task('_api',function(cb){
                     optional:false
                 };
 
-                addType(obj,item.type);
+                if (!item.type) {
+                    obj.type = '...';
+                }
+                else {
+                    addType(obj,item.type);
+                }
 
                 data.params.push(obj)
             }

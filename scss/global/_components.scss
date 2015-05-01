@@ -461,6 +461,8 @@ img.map {
 .download-clone {
 
     line-height:2.5;
+    max-width:100%;
+    overflow:hidden;
 
     a {
         display:inline-block;

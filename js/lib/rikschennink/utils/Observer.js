@@ -2,9 +2,8 @@
 
     'use strict';
 
-    var _uid = 1,
-        // start at 1 because !uid returns false when uid===0
-        _db = {};
+    var _uid = 1; // start at 1 because !uid returns false when uid===0
+    var _db = {};
 
     /***
      * Used for inter-object communication.
@@ -75,9 +74,11 @@
             var entry = this._setEntry(obj, 'subscriptions');
 
             // check if already added
-            var sub, i = 0,
-                subs = entry.subscriptions,
-                l = subs.length;
+            var i = 0;
+            var subs = entry.subscriptions;
+            var l = subs.length;
+            var sub;
+
             for (; i < l; i++) {
                 sub = subs[i];
                 if (sub.type === type && sub.fn === fn) {
@@ -115,7 +116,9 @@
             }
 
             // find and remove
-            var sub, i = subs.length;
+            var i = subs.length;
+            var sub;
+
             while (--i >= 0) {
                 sub = subs[i];
                 if (sub.type === type && (sub.fn === fn || !fn)) {
@@ -172,12 +175,13 @@
             var entry = this._setEntry(obj, 'subscriptions');
 
             // find and execute callback
-            var matches = [],
-                i = 0,
-                subs = entry.subscriptions,
-                l = subs.length,
-                receivers = entry.receivers,
-                sub;
+            var matches = [];
+            var i = 0;
+            var subs = entry.subscriptions;
+            var l = subs.length;
+            var receivers = entry.receivers;
+            var sub;
+
             for (; i < l; i++) {
                 sub = subs[i];
                 if (sub.type === type) {
@@ -261,8 +265,10 @@
             }
 
             // find and remove
-            var i = receivers.length,
-                item, removed = false;
+            var i = receivers.length;
+            var removed = false;
+            var item;
+
             while (--i >= 0) {
                 item = receivers[i];
                 if (item === receiver) {

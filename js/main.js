@@ -37,27 +37,27 @@ require.config({
 require(['conditioner'],function(conditioner) {
 
     conditioner.init({
-        'modules':{
+        modules:{
             'ui/StarGazers':{
-                'options':{
-                    'width':90,
-                    'user':'rikschennink',
-                    'repo':'conditioner'
+                options:{
+                    width:90,
+                    user:'rikschennink',
+                    repo:'conditioner'
                 }
             },
             'ui/StorageConsentSelect':{
-                'options':{
-                    'label':{
-                        'level':{
-                            'incognito':'Incognito'
+                options:{
+                    label:{
+                        level:{
+                            incognito:'Incognito'
                         }
                     }
                 }
             },
             'security/StorageConsentGuard':{
-                'options':{
-                    'levels':['all','incognito','none'],
-                    'initial':'none'
+                options:{
+                    levels:['all','incognito','none'],
+                    initial:'none'
                 }
             }
         }
