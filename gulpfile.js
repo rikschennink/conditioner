@@ -22,12 +22,13 @@ var sloc = require('gulp-sloc');
  * Package data
  */
 var pkg = require('./package.json');
+pkg.year = new Date().getFullYear();
 
 /**
  * Helpers
  */
 var banner = '// <%= pkg.name %> v<%= pkg.version %> - <%= pkg.description %>\n' +
-             '// Copyright (c) 2014 <%= pkg.author.name %> - <%= pkg.homepage %>\n' +
+             '// Copyright (c) <%= pkg.year %> <%= pkg.author.name %> - <%= pkg.homepage %>\n' +
              '// License: <%= pkg.licenses[0].type %> - <%= pkg.licenses[0].url %>\n';
 
 var beauty = {
@@ -97,6 +98,7 @@ gulp.task('_lib',function(){
             'showFiles':true,
             'gzip':true
         }))
+        .pipe(header(banner,{pkg:pkg}))
         .pipe(gulp.dest(paths.dist.prod));
 });
 

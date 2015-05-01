@@ -1,5 +1,5 @@
-// conditioner v1.0.1 - ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules
-// Copyright (c) 2014 Rik Schennink - http://conditionerjs.com
+// conditioner v1.1.0 - ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules
+// Copyright (c) 2015 Rik Schennink - http://conditionerjs.com
 // License: MIT - http://www.opensource.org/licenses/mit-license.php
 (function (win, undefined) {
 
@@ -2079,7 +2079,6 @@
             parse: function (context) {
 
                 // @ifdef DEV
-                // if no context supplied, throw error
                 if (!context) {
                     throw new Error('ModuleLoader.loadModules(context): "context" is a required parameter.');
                 }
@@ -2665,13 +2664,13 @@
             /***
              * Returns the first [NodeController](#nodecontroller) matching the given selector within the passed context
              *
-             * `getNode(element)` - Returns the NodeController bound to this element
-             * `getNode(selector)` - Returns the first NodeController found with given selector
-             * `getNode(selector,context)` - Returns the first NodeController found with selector within given context
+             * - `getNode(element)` return the NodeController bound to this element
+             * - `getNode(selector)` return the first NodeController found with given selector
+             * - `getNode(selector,context)` return the first NodeController found with selector within given context
              *
              * @method getNode
              * @memberof Conditioner
-             * @param {...*=} arguments
+             * @param {...*=} arguments - See description.
              * @returns {(NodeController|null)} node - First matched node or null.
              */
             getNode: function () {
@@ -2763,7 +2762,7 @@
              *
              * @method getModule
              * @memberof Conditioner
-             * @param {...*=} arguments
+             * @param {...*=} arguments - See description.
              * @returns {(ModuleController|null)} module - The found module.
              * @public
              */
@@ -2827,7 +2826,7 @@
              *
              * @method getModules
              * @memberof Conditioner
-             * @param {...*=} arguments
+             * @param {...*=} arguments - See description.
              * @returns {(Array|null)} modules - The found modules.
              * @public
              */
