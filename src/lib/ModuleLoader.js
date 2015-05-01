@@ -22,7 +22,6 @@ ModuleLoader.prototype = {
 	parse:function(context) {
 
 		// @ifdef DEV
-		// if no context supplied, throw error
 		if (!context) {
 			throw new Error('ModuleLoader.loadModules(context): "context" is a required parameter.');
 		}
