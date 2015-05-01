@@ -1,4 +1,4 @@
-var Condition = function(expression,callback) {
+var Condition = function Condition(expression,callback) {
 
 	// get expression
 	this._expression = expression;

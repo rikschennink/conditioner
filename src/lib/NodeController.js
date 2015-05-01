@@ -58,12 +58,10 @@ var NodeController = (function() {
 		 */
 		load:function(moduleControllers) {
 
-			// @ifdef DEV
-			// if no module controllers found
+			// if no module controllers found, fail silently
 			if (!moduleControllers || !moduleControllers.length) {
-				throw new Error('NodeController.load(): Expects an Array of module controllers as parameters.');
+				return;
 			}
-			// @endif
 
 			// turn into array
 			this._moduleControllers = moduleControllers;
@@ -161,10 +159,16 @@ var NodeController = (function() {
 		 * @public
 		 */
 		matchesSelector:function(selector,context) {
+
+			if (!selector && context) {
+				return contains(context,this._element);
+			}
+
 			if (context && !contains(context,this._element)) {
 				return false;
 			}
-			return matchesSelector(this._element,selector,context);
+
+			return matchesSelector(this._element,selector);
 		},
 
 		/***

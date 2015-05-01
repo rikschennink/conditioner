@@ -22,12 +22,13 @@ var sloc = require('gulp-sloc');
  * Package data
  */
 var pkg = require('./package.json');
+pkg.year = new Date().getFullYear();
 
 /**
  * Helpers
  */
 var banner = '// <%= pkg.name %> v<%= pkg.version %> - <%= pkg.description %>\n' +
-             '// Copyright (c) 2014 <%= pkg.author.name %> - <%= pkg.homepage %>\n' +
+             '// Copyright (c) <%= pkg.year %> <%= pkg.author.name %> - <%= pkg.homepage %>\n' +
              '// License: <%= pkg.licenses[0].type %> - <%= pkg.licenses[0].url %>\n';
 
 var beauty = {
@@ -114,14 +115,14 @@ gulp.task('_clean',function(){
 });
 
 gulp.task('_jscs', function() {
-	return gulp.src(paths.src + '**/*.js')
-		.pipe(jscs())
-		// add stub task to prevent jscs from crashing
-		// https://github.com/sindresorhus/gulp-jscs/issues/22
-		.pipe(sloc());
+    return gulp.src(paths.src + '**/*.js')
+        .pipe(jscs())
+        // add stub task to prevent jscs from crashing
+        // https://github.com/sindresorhus/gulp-jscs/issues/22
+        .pipe(sloc());
 });
 
-gulp.task('_hint',function(){
+gulp.task('_hint',['_jscs'],function(){
     return gulp.src(paths.dist.dev + '*.js')
         .pipe(jshint())
         .pipe(jshint.reporter(reporter));

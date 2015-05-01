@@ -9,7 +9,7 @@
  * @param {(Object|String)=} options - options for this ModuleController
  * @param {Object=} agent - module activation agent
  */
-var ModuleController = function(path,element,options,agent) {
+var ModuleController = function ModuleController(path,element,options,agent) {
 
 	// @ifdef DEV
 	// if no path supplied, throw error
@@ -59,6 +59,14 @@ ModuleController.prototype = {
 	 */
 	hasInitialized:function() {
 		return this._initialized;
+	},
+
+	/**
+	 * Returns the element this module is attached to
+	 * @returns {Element}
+	 */
+	getElement:function() {
+		return this._element;
 	},
 
 	/***
@@ -210,14 +218,14 @@ ModuleController.prototype = {
 		// test if object is string
 		if (typeof overrides === 'string') {
 
-			// test if overrides is json string (is first char a '{'
+			// test if overrides is JSON string (is first char a '{'
 			if (overrides.charCodeAt(0) == 123) {
 
 				// @ifdef DEV
 				try {
-				// @endif
+					// @endif
 					overrides = JSON.parse(overrides);
-				// @ifdef DEV
+					// @ifdef DEV
 				}
 				catch(e) {
 					throw new Error('ModuleController.load(): "options" is not a valid JSON string.');
@@ -226,7 +234,7 @@ ModuleController.prototype = {
 			}
 			else {
 
-				// no json object, must be options string
+				// no JSON object, must be options string
 				var i = 0;
 				var opts = overrides.split(', ');
 				var l = opts.length;
@@ -409,7 +417,7 @@ ModuleController.prototype = {
 		// @endif
 
 		// watch for events on target
-		// this way it is possible to listen to events on the controller which is always there
+		// this way it is possible to listen for events on the controller which will always be there
 		Observer.inform(this._module,this);
 
 		// publish load event

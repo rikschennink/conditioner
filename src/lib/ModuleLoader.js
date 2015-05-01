@@ -1,9 +1,11 @@
+var _jsonRegExp = new RegExp('^\\[\\s*{','gm');
+
 /**
  * @exports ModuleLoader
  * @class
  * @constructor
  */
-var ModuleLoader = function() {
+var ModuleLoader = function ModuleLoader() {
 
 	// array of all parsed nodes
 	this._nodes = [];
@@ -20,7 +22,6 @@ ModuleLoader.prototype = {
 	parse:function(context) {
 
 		// @ifdef DEV
-		// if no context supplied, throw error
 		if (!context) {
 			throw new Error('ModuleLoader.loadModules(context): "context" is a required parameter.');
 		}
@@ -132,6 +133,29 @@ ModuleLoader.prototype = {
 	},
 
 	/**
+	 * Returns the node matching the given element
+	 * @param {Element} element - element to match to
+	 * @param {Boolean} [singleResult] - Optional boolean to only ask one result
+	 * @returns {Array|Node|null}
+	 * @public
+	 */
+	getNodeByElement:function(element) {
+
+		var i = 0;
+		var l = this._nodes.length;
+		var node;
+
+		for (;i < l;i++) {
+			node = this._nodes[i];
+			if (node.getElement() === element) {
+				return node;
+			}
+		}
+
+		return null;
+	},
+
+	/**
 	 * Returns one or multiple nodes matching the selector
 	 * @param {String} [selector] - Optional selector to match the nodes to
 	 * @param {Document|Element} [context] - Context to search in
@@ -232,10 +256,13 @@ ModuleLoader.prototype = {
 			// setup vars
 			l = specs.length;
 
-			// test if second character is a '{' if so, json format
-			if (config.charCodeAt(1) == 123) {
+			// test if is json format
+			if (_jsonRegExp.test(config)) {
 				for (;i < l;i++) {
 					spec = specs[i];
+
+					if (!ModuleRegistry.isModuleEnabled(spec.path)) {continue;}
+
 					controllers[i] = this._getModuleController(
 						spec.path,
 						element,
@@ -246,9 +273,12 @@ ModuleLoader.prototype = {
 				return controllers;
 			}
 
-			// array format
+			// expect array format
 			for (;i < l;i++) {
 				spec = specs[i];
+
+				if (!ModuleRegistry.isModuleEnabled(typeof spec == 'string' ? spec : spec[0])) {continue;}
+
 				if (typeof spec == 'string') {
 					controllers[i] = this._getModuleController(spec,element);
 				}
@@ -256,8 +286,8 @@ ModuleLoader.prototype = {
 					controllers[i] = this._getModuleController(
 						spec[0],
 						element,
-							typeof spec[1] == 'string' ? spec[2] : spec[1],
-							typeof spec[1] == 'string' ? spec[1] : spec[2]
+						typeof spec[1] == 'string' ? spec[2] : spec[1],
+						typeof spec[1] == 'string' ? spec[1] : spec[2]
 					);
 				}
 			}
@@ -265,6 +295,10 @@ ModuleLoader.prototype = {
 
 		}
 
+		// no support, no module
+		if (!ModuleRegistry.isModuleEnabled(config)) {return null;}
+
+		// support, so let's get the module controller
 		return [this._getModuleController(
 			config,
 			element,

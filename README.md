@@ -50,6 +50,14 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 
 ## History
 
+### 1.1.0
+
+* The `supported` property has been added which is used to determine if a module can be loaded at all.
+* Improved `getModule` method API
+* Constructor now set when extending a module
+* Performance optimisations
+
+
 ### 1.0.1
 
 * Fixed [memory leaks](https://github.com/rikschennink/conditioner/issues/71)

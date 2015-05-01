@@ -1,5 +1,5 @@
-// conditioner v1.0.1 - ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules
-// Copyright (c) 2014 Rik Schennink - http://conditionerjs.com
+// conditioner v1.1.0 - ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules
+// Copyright (c) 2015 Rik Schennink - http://conditionerjs.com
 // License: MIT - http://www.opensource.org/licenses/mit-license.php
 (function (win, undefined) {
 
@@ -102,7 +102,7 @@
             }
 
         };
-        var Condition = function (expression, callback) {
+        var Condition = function Condition(expression, callback) {
 
             // get expression
             this._expression = expression;
@@ -129,7 +129,7 @@
             }
 
         };
-        var MonitorFactory = function () {
+        var MonitorFactory = function MonitorFactory() {
             this._uid = 1;
             this._db = [];
             this._expressions = [];
@@ -387,7 +387,7 @@
             }
 
         };
-        var TestWrapper = function (query, element, cb) {
+        var TestWrapper = function TestWrapper(query, element, cb) {
 
             var expression = ExpressionParser.parse(query);
             this._element = element;
@@ -507,7 +507,7 @@
          * @param {UnaryExpression|BinaryExpression|Test} expression
          * @param {Boolean} negate
          */
-        var UnaryExpression = function (expression, negate) {
+        var UnaryExpression = function UnaryExpression(expression, negate) {
 
             this._expression = expression;
             this._negate = typeof negate === 'undefined' ? false : negate;
@@ -547,7 +547,7 @@
          * @param {String} operator
          * @param {UnaryExpression} b
          */
-        var BinaryExpression = function (a, operator, b) {
+        var BinaryExpression = function BinaryExpression(a, operator, b) {
 
             this._a = a;
             this._operator = operator;
@@ -590,213 +590,260 @@
             }
 
         };
-        var ExpressionParser = {
+        var ExpressionParser = (function (UnaryExpression, BinaryExpression) {
 
-            /**
-             * Parses an expression in string format and returns the same expression formatted as an expression tree
-             * @memberof ExpressionFormatter
-             * @param {String} expression
-             * @returns {UnaryExpression|BinaryExpression}
-             * @public
-             */
-            parse: function (expression) {
+            return {
 
-                var i = 0;
-                var path = '';
-                var tree = [];
-                var value = '';
-                var negate = false;
-                var isValue = false;
-                var target = null;
-                var parent = null;
-                var parents = [];
-                var l = expression.length;
-                var lastIndex;
-                var index;
-                var operator;
-                var test;
-                var j;
-                var c;
-                var k;
-                var n;
-                var op;
-                var ol;
-                var tl;
+                // @ifdef DEV
+                /**
+                 * Quickly validates supplied expression for errors, is removed in prod version because of performance penalty
+                 * @param {String} expression
+                 * @returns {boolean}
+                 */
+                validate: function (expression) {
 
-                if (!target) {
-                    target = tree;
-                }
+                    // if not supplied
+                    if (!expression) {
+                        return false;
+                    }
 
-                // read explicit expressions
-                for (; i < l; i++) {
+                    // regex to match expressions with
+                    var subExpression = new RegExp('[a-z]+:{[^}]*}', 'g');
 
-                    c = expression.charCodeAt(i);
+                    // get sub expressions
+                    var subs = expression.match(subExpression);
 
-                    // check if an expression, test for '{'
-                    if (c === 123) {
+                    // if none found
+                    if (!subs || !subs.length) {
+                        return false;
+                    }
 
-                        // now reading the expression
-                        isValue = true;
+                    // remove subs and check if resulting string is valid
+                    var glue = expression.replace(subExpression, '');
+                    if (glue.length && glue.replace(/(not|or|and| |\)|\()/g, '').length) {
+                        return false;
+                    }
 
-                        // reset path var
-                        path = '';
+                    // get amount of curly braces
+                    var curlyCount = (expression.match(/[{}]/g) || []).length;
 
-                        // fetch path
-                        k = i - 2;
-                        while (k >= 0) {
-                            n = expression.charCodeAt(k);
+                    // if not matched (curly braces count should be double of semi colon count) something is wrong
+                    return subs.length * 2 === curlyCount;
+                },
+                // @endif
+                /**
+                 * Parses an expression in string format and returns the same expression formatted as an expression tree
+                 * @memberof ExpressionFormatter
+                 * @param {String} expression
+                 * @returns {UnaryExpression|BinaryExpression}
+                 * @public
+                 */
+                parse: function (expression) {
 
-                            // test for ' ' or '('
-                            if (n === 32 || n === 40) {
-                                break;
+                    var i = 0;
+                    var path = '';
+                    var tree = [];
+                    var value = '';
+                    var negate = false;
+                    var isValue = false;
+                    var target = null;
+                    var parent = null;
+                    var parents = [];
+                    var l = expression.length;
+                    var lastIndex;
+                    var index;
+                    var operator;
+                    var test;
+                    var j;
+                    var c;
+                    var k;
+                    var n;
+                    var op;
+                    var ol;
+                    var tl;
+
+                    if (!target) {
+                        target = tree;
+                    }
+
+                    // @ifdef DEV
+                    // if no invalid expression supplied, throw error
+                    // this test is not definite but should catch some common mistakes
+                    if (!expression || !this.validate(expression)) {
+                        throw new Error('Expressionparser.parse(expression): "expression" is invalid.');
+                    }
+                    // @endif
+                    // read explicit expressions
+                    for (; i < l; i++) {
+
+                        c = expression.charCodeAt(i);
+
+                        // check if an expression, test for '{'
+                        if (c === 123) {
+
+                            // now reading the expression
+                            isValue = true;
+
+                            // reset path var
+                            path = '';
+
+                            // fetch path
+                            k = i - 2;
+                            while (k >= 0) {
+                                n = expression.charCodeAt(k);
+
+                                // test for ' ' or '('
+                                if (n === 32 || n === 40) {
+                                    break;
+                                }
+                                path = expression.charAt(k) + path;
+                                k--;
                             }
-                            path = expression.charAt(k) + path;
-                            k--;
+
+                            // on to the next character
+                            continue;
+
                         }
 
-                        // on to the next character
-                        continue;
+                        // else if is '}'
+                        else if (c === 125) {
 
-                    }
+                            lastIndex = target.length - 1;
+                            index = lastIndex + 1;
 
-                    // else if is '}'
-                    else if (c === 125) {
+                            // negate if last index contains not operator
+                            negate = target[lastIndex] === 'not';
 
-                        lastIndex = target.length - 1;
-                        index = lastIndex + 1;
+                            // if negate overwrite not operator location in array
+                            index = negate ? lastIndex : lastIndex + 1;
 
-                        // negate if last index contains not operator
-                        negate = target[lastIndex] === 'not';
+                            // setup test
+                            test = new Test(path, value);
 
-                        // if negate overwrite not operator location in array
-                        index = negate ? lastIndex : lastIndex + 1;
+                            // add expression
+                            target[index] = new UnaryExpression(
+                            test, negate);
 
-                        // setup test
-                        test = new Test(path, value);
+                            // reset vars
+                            path = '';
+                            value = '';
 
-                        // add expression
-                        target[index] = new UnaryExpression(
-                        test, negate);
+                            negate = false;
 
-                        // reset vars
-                        path = '';
-                        value = '';
+                            // no longer a value
+                            isValue = false;
+                        }
 
-                        negate = false;
-
-                        // no longer a value
-                        isValue = false;
-                    }
-
-                    // if we are reading an expression add characters to expression
-                    if (isValue) {
-                        value += expression.charAt(i);
-                        continue;
-                    }
-
-                    // if not in expression
-                    // check if goes up a level, test for '('
-                    if (c === 40) {
-
-                        // create new empty array in target
-                        target.push([]);
-
-                        // remember current target (is parent)
-                        parents.push(target);
-
-                        // set new child slot as new target
-                        target = target[target.length - 1];
-
-                    }
-
-                    // find out if next set of characters is a logical operator. Testing for ' ' or '('
-                    if (c === 32 || i === 0 || c === 40) {
-
-                        operator = expression.substr(i, 5).match(/and |or |not /g);
-                        if (!operator) {
+                        // if we are reading an expression add characters to expression
+                        if (isValue) {
+                            value += expression.charAt(i);
                             continue;
                         }
 
-                        // get reference and calculate length
-                        op = operator[0];
-                        ol = op.length - 1;
+                        // if not in expression
+                        // check if goes up a level, test for '('
+                        if (c === 40) {
 
-                        // add operator
-                        target.push(op.substring(0, ol));
+                            // create new empty array in target
+                            target.push([]);
 
-                        // skip over operator
-                        i += ol;
-                    }
+                            // remember current target (is parent)
+                            parents.push(target);
 
-                    // expression or level finished, time to clean up. Testing for ')'
-                    if (c === 41 || i === l - 1) {
+                            // set new child slot as new target
+                            target = target[target.length - 1];
 
-                        do {
+                        }
 
-                            // get parent reference
-                            parent = parents.pop();
+                        // find out if next set of characters is a logical operator. Testing for ' ' or '('
+                        if (c === 32 || i === 0 || c === 40) {
 
-                            // if contains zero elements = ()
-                            if (target.length === 0) {
-
-                                // zero elements added revert to parent
-                                target = parent;
-
+                            operator = expression.substr(i, 5).match(/and |or |not /g);
+                            if (!operator) {
                                 continue;
                             }
 
-                            // if more elements start the grouping process
-                            j = 0;
-                            tl = target.length;
+                            // get reference and calculate length
+                            op = operator[0];
+                            ol = op.length - 1;
 
-                            for (; j < tl; j++) {
+                            // add operator
+                            target.push(op.substring(0, ol));
 
-                                if (typeof target[j] !== 'string') {
+                            // skip over operator
+                            i += ol;
+                        }
+
+                        // expression or level finished, time to clean up. Testing for ')'
+                        if (c === 41 || i === l - 1) {
+
+                            do {
+
+                                // get parent reference
+                                parent = parents.pop();
+
+                                // if contains zero elements = ()
+                                if (target.length === 0) {
+
+                                    // zero elements added revert to parent
+                                    target = parent;
+
                                     continue;
                                 }
 
-                                // handle not expressions first
-                                if (target[j] === 'not') {
-                                    target.splice(j, 2, new UnaryExpression(target[j + 1], true));
+                                // if more elements start the grouping process
+                                j = 0;
+                                tl = target.length;
 
-                                    // rewind
-                                    j = -1;
-                                    tl = target.length;
+                                for (; j < tl; j++) {
+
+                                    if (typeof target[j] !== 'string') {
+                                        continue;
+                                    }
+
+                                    // handle not expressions first
+                                    if (target[j] === 'not') {
+                                        target.splice(j, 2, new UnaryExpression(target[j + 1], true));
+
+                                        // rewind
+                                        j = -1;
+                                        tl = target.length;
+                                    }
+                                    // handle binary expression
+                                    else if (target[j + 1] !== 'not') {
+                                        target.splice(j - 1, 3, new BinaryExpression(target[j - 1], target[j], target[j + 1]));
+
+                                        // rewind
+                                        j = -1;
+                                        tl = target.length;
+                                    }
+
                                 }
-                                // handle binary expression
-                                else if (target[j + 1] !== 'not') {
-                                    target.splice(j - 1, 3, new BinaryExpression(target[j - 1], target[j], target[j + 1]));
 
-                                    // rewind
-                                    j = -1;
-                                    tl = target.length;
+                                // if contains only one element
+                                if (target.length === 1 && parent) {
+
+                                    // overwrite target index with target content
+                                    parent[parent.length - 1] = target[0];
+
+                                    // set target to parent array
+                                    target = parent;
+
                                 }
 
                             }
-
-                            // if contains only one element
-                            if (target.length === 1 && parent) {
-
-                                // overwrite target index with target content
-                                parent[parent.length - 1] = target[0];
-
-                                // set target to parent array
-                                target = parent;
-
-                            }
+                            while (i === l - 1 && parent);
 
                         }
-                        while (i === l - 1 && parent);
-
+                        // end of ')' character or last index
                     }
-                    // end of ')' character or last index
+
+                    return tree.length === 1 ? tree[0] : tree;
+
                 }
+            };
 
-                return tree.length === 1 ? tree[0] : tree;
-
-            }
-
-        };
+        }(UnaryExpression, BinaryExpression));
         /**
          * Static Module Agent, will always load the module
          * @type {Object}
@@ -826,7 +873,7 @@
             destroy: function () {}
 
         };
-        var ConditionModuleAgent = function (conditions, element) {
+        var ConditionModuleAgent = function ConditionModuleAgent(conditions, element) {
 
             // if no conditions, conditions will always be suitable
             if (typeof conditions !== 'string' || !conditions.length) {
@@ -893,18 +940,23 @@
 
             _options: {},
             _redirects: {},
+            _enabled: {},
 
             /**
              * Register a module
              * @param {String} path - path to module
              * @param {Object} options - configuration to setup for module
              * @param {String} alias - alias name for module
+             * @param {Boolean} enabled - true/false if the module is enabled, null if -don't care-
              * @static
              */
-            registerModule: function (path, options, alias) {
+            registerModule: function (path, options, alias, enabled) {
 
                 // remember options for absolute path
                 this._options[_options.loader.toUrl(path)] = options;
+
+                // remember if module is supported
+                this._enabled[path] = enabled;
 
                 // setup redirect from alias
                 if (alias) {
@@ -913,6 +965,15 @@
 
                 // pass configuration to loader
                 _options.loader.config(path, options);
+            },
+
+            /**
+             * Returns if the given module is enabled
+             * @param {String} path - path to module
+             * @static
+             */
+            isModuleEnabled: function (path) {
+                return this._enabled[path] !== false;
             },
 
             /**
@@ -954,7 +1015,7 @@
          * @param {(Object|String)=} options - options for this ModuleController
          * @param {Object=} agent - module activation agent
          */
-        var ModuleController = function (path, element, options, agent) {
+        var ModuleController = function ModuleController(path, element, options, agent) {
 
             // @ifdef DEV
             // if no path supplied, throw error
@@ -1003,6 +1064,14 @@
              */
             hasInitialized: function () {
                 return this._initialized;
+            },
+
+            /**
+             * Returns the element this module is attached to
+             * @returns {Element}
+             */
+            getElement: function () {
+                return this._element;
             },
 
             /***
@@ -1153,7 +1222,7 @@
                 // test if object is string
                 if (typeof overrides === 'string') {
 
-                    // test if overrides is json string (is first char a '{'
+                    // test if overrides is JSON string (is first char a '{'
                     if (overrides.charCodeAt(0) == 123) {
 
                         // @ifdef DEV
@@ -1169,7 +1238,7 @@
                     }
                     else {
 
-                        // no json object, must be options string
+                        // no JSON object, must be options string
                         var i = 0;
                         var opts = overrides.split(', ');
                         var l = opts.length;
@@ -1351,7 +1420,7 @@
                 }
                 // @endif
                 // watch for events on target
-                // this way it is possible to listen to events on the controller which is always there
+                // this way it is possible to listen for events on the controller which will always be there
                 Observer.inform(this._module, this);
 
                 // publish load event
@@ -1512,12 +1581,11 @@
                  */
                 load: function (moduleControllers) {
 
-                    // @ifdef DEV
-                    // if no module controllers found
+                    // if no module controllers found, fail silently
                     if (!moduleControllers || !moduleControllers.length) {
-                        throw new Error('NodeController.load(): Expects an Array of module controllers as parameters.');
+                        return;
                     }
-                    // @endif
+
                     // turn into array
                     this._moduleControllers = moduleControllers;
 
@@ -1614,10 +1682,16 @@
                  * @public
                  */
                 matchesSelector: function (selector, context) {
+
+                    if (!selector && context) {
+                        return contains(context, this._element);
+                    }
+
                     if (context && !contains(context, this._element)) {
                         return false;
                     }
-                    return matchesSelector(this._element, selector, context);
+
+                    return matchesSelector(this._element, selector);
                 },
 
                 /***
@@ -1805,7 +1879,7 @@
          * @param {Array} controllers
          * @constructor
          */
-        var SyncedControllerGroup = function (controllers) {
+        var SyncedControllerGroup = function SyncedControllerGroup(controllers) {
 
             // @ifdef DEV
             // if no node controllers passed, no go
@@ -1867,6 +1941,11 @@
                 for (; i < l; i++) {
                     controller = this._controllers[i];
 
+                    // is also called when an undefined controller was found
+                    if (!controller) {
+                        continue;
+                    }
+
                     // listen to load and unload events so we can pass them on if appropriate
                     Observer.unsubscribe(controller, 'load', this._controllerLoadedBind);
                     Observer.unsubscribe(controller, 'unload', this._controllerUnloadedBind);
@@ -1899,6 +1978,7 @@
                         return false;
                     }
                 }
+
                 return true;
             },
 
@@ -1975,12 +2055,14 @@
             }
 
         };
+        var _jsonRegExp = new RegExp('^\\[\\s*{', 'gm');
+
         /**
          * @exports ModuleLoader
          * @class
          * @constructor
          */
-        var ModuleLoader = function () {
+        var ModuleLoader = function ModuleLoader() {
 
             // array of all parsed nodes
             this._nodes = [];
@@ -1997,7 +2079,6 @@
             parse: function (context) {
 
                 // @ifdef DEV
-                // if no context supplied, throw error
                 if (!context) {
                     throw new Error('ModuleLoader.loadModules(context): "context" is a required parameter.');
                 }
@@ -2106,6 +2187,29 @@
             },
 
             /**
+             * Returns the node matching the given element
+             * @param {Element} element - element to match to
+             * @param {Boolean} [singleResult] - Optional boolean to only ask one result
+             * @returns {Array|Node|null}
+             * @public
+             */
+            getNodeByElement: function (element) {
+
+                var i = 0;
+                var l = this._nodes.length;
+                var node;
+
+                for (; i < l; i++) {
+                    node = this._nodes[i];
+                    if (node.getElement() === element) {
+                        return node;
+                    }
+                }
+
+                return null;
+            },
+
+            /**
              * Returns one or multiple nodes matching the selector
              * @param {String} [selector] - Optional selector to match the nodes to
              * @param {Document|Element} [context] - Context to search in
@@ -2208,19 +2312,29 @@
                     // setup vars
                     l = specs.length;
 
-                    // test if second character is a '{' if so, json format
-                    if (config.charCodeAt(1) == 123) {
+                    // test if is json format
+                    if (_jsonRegExp.test(config)) {
                         for (; i < l; i++) {
                             spec = specs[i];
+
+                            if (!ModuleRegistry.isModuleEnabled(spec.path)) {
+                                continue;
+                            }
+
                             controllers[i] = this._getModuleController(
                             spec.path, element, spec.options, spec.conditions);
                         }
                         return controllers;
                     }
 
-                    // array format
+                    // expect array format
                     for (; i < l; i++) {
                         spec = specs[i];
+
+                        if (!ModuleRegistry.isModuleEnabled(typeof spec == 'string' ? spec : spec[0])) {
+                            continue;
+                        }
+
                         if (typeof spec == 'string') {
                             controllers[i] = this._getModuleController(spec, element);
                         }
@@ -2233,6 +2347,12 @@
 
                 }
 
+                // no support, no module
+                if (!ModuleRegistry.isModuleEnabled(config)) {
+                    return null;
+                }
+
+                // support, so let's get the module controller
                 return [this._getModuleController(
                 config, element, element.getAttribute(_options.attr.options), element.getAttribute(_options.attr.conditions))];
             },
@@ -2391,6 +2511,7 @@
                 var path;
                 var mod;
                 var alias;
+                var enabled;
 
                 // update options
                 _options = mergeObjects(_options, options);
@@ -2424,8 +2545,11 @@
                     // get config
                     config = typeof mod === 'string' ? null : mod.options || {};
 
+                    // get result of requirements
+                    enabled = typeof mod === 'string' ? null : mod.enabled;
+
                     // register this module
-                    ModuleRegistry.registerModule(path, config, alias);
+                    ModuleRegistry.registerModule(path, config, alias, enabled);
 
                 }
 
@@ -2540,15 +2664,24 @@
             /***
              * Returns the first [NodeController](#nodecontroller) matching the given selector within the passed context
              *
+             * - `getNode(element)` return the NodeController bound to this element
+             * - `getNode(selector)` return the first NodeController found with given selector
+             * - `getNode(selector,context)` return the first NodeController found with selector within given context
+             *
              * @method getNode
              * @memberof Conditioner
-             * @param {String=} selector - Selector to match the nodes to.
-             * @param {Element=} context - Context to search in.
+             * @param {...*=} arguments - See description.
              * @returns {(NodeController|null)} node - First matched node or null.
              */
-            getNode: function (selector, context) {
+            getNode: function () {
 
-                return _moduleLoader.getNodes(selector, context, true);
+                // if first param is element return the node on that element only
+                if (typeof arguments[0] === 'object') {
+                    return _moduleLoader.getNodeByElement(arguments[0]);
+                }
+
+                // return nodes found with supplied parameters
+                return _moduleLoader.getNodes(arguments[0], arguments[1], true);
 
             },
 
@@ -2559,8 +2692,7 @@
              * @memberof Conditioner
              * @param {String=} selector - Selector to match the nodes to.
              * @param {Element=} context - Context to search in.
-             * @returns {Array} nodes -  Array containing matched nodes or empty .
-             Array
+             * @returns {Array} nodes -  Array containing matched nodes or empty Array.
              */
             getNodes: function (selector, context) {
 
@@ -2619,22 +2751,58 @@
             },
 
             /***
-             * Returns the first [ModuleController](#modulecontroller) matching the given selector within the supplied context.
+             * Returns the first [ModuleController](#modulecontroller) matching the supplied query.
+             *
+             * - `getModule(element)` get module on the given element
+             * - `getModule(element, path)` get module with path on the given element
+             * - `getModule(path)` get first module with given path
+             * - `getModule(path, filter)` get first module with path in document scope
+             * - `getModule(path, context)` get module with path, search within conetxt subtree
+             * - `getModule(path, filter, context)` get module with path, search within matched elements in context
              *
              * @method getModule
              * @memberof Conditioner
-             * @param {String=} path - Path to match the modules to.
-             * @param {String=} selector - Selector to match the nodes to.
-             * @param {Element=} context - Context to search in.
+             * @param {...*=} arguments - See description.
              * @returns {(ModuleController|null)} module - The found module.
              * @public
              */
-            getModule: function (path, selector, context) {
+            getModule: function () {
 
-                var i = 0;
-                var results = this.getNodes(selector, context);
-                var l = results.length;
+                var i;
+                var path;
+                var filter;
+                var context;
+                var results;
+                var l;
+                var node;
                 var module;
+
+                // if the first argument is an element we are testing this element only, not it's subtree
+                // the second argument could either be 'undefined' or a 'path'
+                if (typeof arguments[0] === 'object') {
+
+                    // find the element and get the correct module by path (if set)
+                    node = _moduleLoader.getNodeByElement(arguments[0]);
+
+                    // get module controller
+                    return node ? node.getModule(arguments[1]) : null;
+                }
+
+                // if first argument is not an element, it is expected to be a module path
+                path = arguments[0];
+
+                // argument two could be a context or a filter depending on type
+                if (typeof arguments[1] === 'string') {
+                    filter = arguments[1];
+                    context = arguments[2];
+                }
+                else {
+                    context = arguments[1];
+                }
+
+                i = 0;
+                results = _moduleLoader.getNodes(filter, context, false);
+                l = results.length;
 
                 for (; i < l; i++) {
                     module = results[i].getModule(path);
@@ -2644,27 +2812,63 @@
                 }
 
                 return null;
-
             },
 
             /***
              * Returns all [ModuleControllers](#modulecontroller) matching the given path within the supplied context.
              *
+             * - `getModules(element)` get modules on the given element
+             * - `getModules(element, path)` get modules with path on the given element
+             * - `getModules(path)` get modules with given path
+             * - `getModules(path, filter)` get modules with path in document scope
+             * - `getModules(path, context)` get modules with path, search within element subtree
+             * - `getModules(path, filter, context)` get modules with path, search within matched elements in context
+             *
              * @method getModules
              * @memberof Conditioner
-             * @param {String=} path - Path to match the modules to
-             * @param {String=} selector - Selector to match the nodes to
-             * @param {Element=} context - Context to search in
+             * @param {...*=} arguments - See description.
              * @returns {(Array|null)} modules - The found modules.
              * @public
              */
-            getModules: function (path, selector, context) {
+            getModules: function () {
 
-                var i = 0;
-                var results = this.getNodes(selector, context);
-                var l = results.length;
-                var filtered = [];
+                var i;
+                var path;
+                var filter;
+                var context;
+                var results;
+                var l;
+                var node;
                 var modules;
+                var filtered;
+
+                // if the first argument is an element we are testing this element only, not it's subtree
+                // the second argument could either be 'undefined' or a 'path'
+                if (typeof arguments[0] === 'object') {
+
+                    // find the element and get the correct module by path (if set)
+                    node = _moduleLoader.getNodeByElement(arguments[0]);
+
+                    // get module controllers
+                    return node.getModules(arguments[1]);
+                }
+
+                // if first argument is not an element, it is expected to be a module path
+                path = arguments[0];
+
+                // argument two could be a context or a filter depending on type
+                if (typeof arguments[1] === 'string') {
+                    filter = arguments[1];
+                    context = arguments[2];
+                }
+                else {
+                    context = arguments[1];
+                }
+
+                i = 0;
+                results = this.getNodes(filter, context);
+                l = results.length;
+                filtered = [];
 
                 for (; i < l; i++) {
                     modules = results[i].getModules(path);

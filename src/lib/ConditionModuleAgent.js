@@ -1,4 +1,4 @@
-var ConditionModuleAgent = function(conditions,element) {
+var ConditionModuleAgent = function ConditionModuleAgent(conditions,element) {
 
 	// if no conditions, conditions will always be suitable
 	if (typeof conditions !== 'string' || !conditions.length) {

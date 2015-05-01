@@ -31,6 +31,9 @@
 		// copy prototype to child
 		Child.prototype = Object.create(Child.__super.prototype);
 
+		// set constructor
+		Child.prototype.constructor = Child;
+
 		// return the Child Class
 		return Child;
 

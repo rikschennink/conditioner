@@ -153,6 +153,7 @@
 				var path;
 				var mod;
 				var alias;
+				var enabled;
 
 				// update options
 				_options = mergeObjects(_options,options);
@@ -182,8 +183,11 @@
 					// get config
 					config = typeof mod === 'string' ? null : mod.options || {};
 
+					// get result of requirements
+					enabled = typeof mod === 'string' ? null : mod.enabled;
+
 					// register this module
-					ModuleRegistry.registerModule(path,config,alias);
+					ModuleRegistry.registerModule(path,config,alias,enabled);
 
 				}
 
@@ -301,15 +305,24 @@
 			/***
 			 * Returns the first [NodeController](#nodecontroller) matching the given selector within the passed context
 			 *
+			 * - `getNode(element)` return the NodeController bound to this element
+			 * - `getNode(selector)` return the first NodeController found with given selector
+			 * - `getNode(selector,context)` return the first NodeController found with selector within given context
+			 *
 			 * @method getNode
 			 * @memberof Conditioner
-			 * @param {String=} selector - Selector to match the nodes to.
-			 * @param {Element=} context - Context to search in.
+			 * @param {...*=} arguments - See description.
 			 * @returns {(NodeController|null)} node - First matched node or null.
 			 */
-			getNode:function(selector,context) {
+			getNode:function() {
 
-				return _moduleLoader.getNodes(selector,context,true);
+				// if first param is element return the node on that element only
+				if (typeof arguments[0] === 'object') {
+					return _moduleLoader.getNodeByElement(arguments[0]);
+				}
+
+				// return nodes found with supplied parameters
+				return _moduleLoader.getNodes(arguments[0],arguments[1],true);
 
 			},
 
@@ -320,8 +333,7 @@
 			 * @memberof Conditioner
 			 * @param {String=} selector - Selector to match the nodes to.
 			 * @param {Element=} context - Context to search in.
-			 * @returns {Array} nodes -  Array containing matched nodes or empty .
-Array
+			 * @returns {Array} nodes -  Array containing matched nodes or empty Array.
 			 */
 			getNodes:function(selector,context) {
 
@@ -381,22 +393,58 @@ Array
 			},
 
 			/***
-			 * Returns the first [ModuleController](#modulecontroller) matching the given selector within the supplied context.
+			 * Returns the first [ModuleController](#modulecontroller) matching the supplied query.
+			 *
+			 * - `getModule(element)` get module on the given element
+			 * - `getModule(element, path)` get module with path on the given element
+			 * - `getModule(path)` get first module with given path
+			 * - `getModule(path, filter)` get first module with path in document scope
+			 * - `getModule(path, context)` get module with path, search within conetxt subtree
+			 * - `getModule(path, filter, context)` get module with path, search within matched elements in context
 			 *
 			 * @method getModule
 			 * @memberof Conditioner
-			 * @param {String=} path - Path to match the modules to.
-			 * @param {String=} selector - Selector to match the nodes to.
-			 * @param {Element=} context - Context to search in.
+			 * @param {...*=} arguments - See description.
 			 * @returns {(ModuleController|null)} module - The found module.
 			 * @public
 			 */
-			getModule:function(path,selector,context) {
+			getModule:function() {
 
-				var i = 0;
-				var results = this.getNodes(selector,context);
-				var l = results.length;
+				var i;
+				var path;
+				var filter;
+				var context;
+				var results;
+				var l;
+				var node;
 				var module;
+
+				// if the first argument is an element we are testing this element only, not it's subtree
+				// the second argument could either be 'undefined' or a 'path'
+				if (typeof arguments[0] === 'object') {
+
+					// find the element and get the correct module by path (if set)
+					node = _moduleLoader.getNodeByElement(arguments[0]);
+
+					// get module controller
+					return node ? node.getModule(arguments[1]) : null;
+				}
+
+				// if first argument is not an element, it is expected to be a module path
+				path = arguments[0];
+
+				// argument two could be a context or a filter depending on type
+				if (typeof arguments[1] === 'string') {
+					filter = arguments[1];
+					context = arguments[2];
+				}
+				else {
+					context = arguments[1];
+				}
+
+				i = 0;
+				results = _moduleLoader.getNodes(filter,context,false);
+				l = results.length;
 
 				for (;i < l;i++) {
 					module = results[i].getModule(path);
@@ -406,27 +454,63 @@ Array
 				}
 
 				return null;
-
 			},
 
 			/***
 			 * Returns all [ModuleControllers](#modulecontroller) matching the given path within the supplied context.
 			 *
+			 * - `getModules(element)` get modules on the given element
+			 * - `getModules(element, path)` get modules with path on the given element
+			 * - `getModules(path)` get modules with given path
+			 * - `getModules(path, filter)` get modules with path in document scope
+			 * - `getModules(path, context)` get modules with path, search within element subtree
+			 * - `getModules(path, filter, context)` get modules with path, search within matched elements in context
+			 *
 			 * @method getModules
 			 * @memberof Conditioner
-			 * @param {String=} path - Path to match the modules to
-			 * @param {String=} selector - Selector to match the nodes to
-			 * @param {Element=} context - Context to search in
+			 * @param {...*=} arguments - See description.
 			 * @returns {(Array|null)} modules - The found modules.
 			 * @public
 			 */
-			getModules:function(path,selector,context) {
+			getModules:function() {
 
-				var i = 0;
-				var results = this.getNodes(selector,context);
-				var l = results.length;
-				var filtered = [];
+				var i;
+				var path;
+				var filter;
+				var context;
+				var results;
+				var l;
+				var node;
 				var modules;
+				var filtered;
+
+				// if the first argument is an element we are testing this element only, not it's subtree
+				// the second argument could either be 'undefined' or a 'path'
+				if (typeof arguments[0] === 'object') {
+
+					// find the element and get the correct module by path (if set)
+					node = _moduleLoader.getNodeByElement(arguments[0]);
+
+					// get module controllers
+					return node.getModules(arguments[1]);
+				}
+
+				// if first argument is not an element, it is expected to be a module path
+				path = arguments[0];
+
+				// argument two could be a context or a filter depending on type
+				if (typeof arguments[1] === 'string') {
+					filter = arguments[1];
+					context = arguments[2];
+				}
+				else {
+					context = arguments[1];
+				}
+
+				i = 0;
+				results = this.getNodes(filter,context);
+				l = results.length;
+				filtered = [];
 
 				for (;i < l;i++) {
 					modules = results[i].getModules(path);
