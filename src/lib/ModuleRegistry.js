@@ -34,7 +34,7 @@ var ModuleRegistry = {
 	 * @param {String} path - path to module
 	 * @static
 	 */
-    isModuleEnabled:function(path) {
+	isModuleEnabled:function(path) {
 		return this._enabled[path] !== false;
 	},
 
