@@ -101,7 +101,7 @@ define(function(){
                     results[0]._moduleControllers[0]._unload();
 
                 });
-                
+
             });
 
         });

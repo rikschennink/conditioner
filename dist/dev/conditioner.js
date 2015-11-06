@@ -1839,20 +1839,19 @@
                  */
                 _onModuleUnload: function (moduleController) {
 
-                    var self = this;
-
                     // stop listening to unload
                     Observer.subscribe(moduleController, 'load', this._moduleLoadBind);
                     Observer.unsubscribe(moduleController, 'unload', this._moduleUnloadBind);
 
-                    // conceal events from module controller
-                    setTimeout(function () {
-                        Observer.conceal(moduleController, self);
-                    }, 0);
-
                     // update initialized attribute with now active module controllers list
                     this._updateAttribute(_options.attr.initialized, this.getActiveModules());
 
+                    // conceal events from module controller
+                    // behind timeout so the event is still published by the node controller, otherwise missed by syncgroup
+                    var self = this;
+                    setTimeout(function () {
+                        Observer.conceal(moduleController, self);
+                    }, 0);
                 },
 
                 /**
