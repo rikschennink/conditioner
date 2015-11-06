@@ -98,11 +98,10 @@ define(function(){
                     });
 
                     // publish fake unload event
-                    Observer.publish(results[0],'unload');
+                    results[0]._moduleControllers[0]._unload();
 
                 });
-
-
+                
             });
 
         });
