@@ -1,6 +1,6 @@
 {
   "name": "conditioner",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules",
   "homepage": "http://conditionerjs.com",
   "main": "index.js",

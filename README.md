@@ -50,9 +50,16 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 
 ## History
 
+### 1.2.0
+
+* Fixed [unload handler not called](https://github.com/rikschennink/conditioner/issues/91)
+* Renamed `.on` method to `addConditionMonitor` and `.is` method to `matchesCondition`
+* Added `.removeConditionMonitor`
+* Fixed problem where `.is`/`matchesCondition` method did not clean up Promise
+
 ### 1.1.0
 
-* The `supported` property has been added which is used to determine if a module can be loaded at all.
+* The `supported` property has been added which is used to determine if a module can be loaded at all
 * Improved `getModule` method API
 * Constructor now set when extending a module
 * Performance optimisations
