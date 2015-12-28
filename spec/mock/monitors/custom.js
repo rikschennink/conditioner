@@ -1,5 +1,4 @@
 /**
- * Tests if the window dimensions match certain expectations
  * @module monitors/custom
  */
 (function(undefined) {

@@ -2916,8 +2916,9 @@
                 // @endif
                 // run test and resolve with first received state
                 var p = new Promise();
-                WebContext.setTest(condition, element, function (valid) {
+                var uid = WebContext.setTest(condition, element, function (valid) {
                     p.resolve(valid);
+                    WebContext.clearTest(uid)
                 });
                 return p;
 
