@@ -34,11 +34,14 @@ conditioner.init();
 
 Some more demos can be found in the [examples](http://conditionerjs.com/examples/conditions/) section of the documentation.
 
-## Articles
+## Resources
 * [Frizz Free JavaScript With ConditionerJS](http://www.smashingmagazine.com/2014/04/03/frizz-free-javascript-with-conditionerjs/)
+* [Presenting ConditionerJS At JavaScript MVC #9](http://rikschennink.nl/thoughts/frizz-free-javascript-mvc-meetup-9/)
+* [Presenting ConditionerJS At Kabisa](http://rikschennink.nl/thoughts/frizz-free-javascript-fronteers-meetup/)
 
 ## Documentation
 You can find the API documentation and a selection of demos at [conditionerjs.com](http://conditionerjs.com)
+
 
 ## Requirements
 Conditioner expects an AMD loader to be available. It's been tested with [RequireJS](http://requirejs.org), [Almond](https://github.com/jrburke/almond) and [Curl](https://github.com/cujojs/curl). As long as your AMD loader follows the [AMD spec](https://github.com/amdjs/amdjs-api) it should be fine.
@@ -48,7 +51,8 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 * AMD Loader / CommonJS Preprocessor
 * Modern browser, IE8 is supported but requires a bit of shimming.
 
-## History
+
+## Version History
 
 ### 1.2.0
 
@@ -63,7 +67,6 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 * Improved `getModule` method API
 * Constructor now set when extending a module
 * Performance optimisations
-
 
 ### 1.0.1
 
@@ -87,7 +90,7 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 Read the [1.0.0 closed issue list](https://github.com/rikschennink/conditioner/issues?milestone=2&page=1&state=closed) for a complete overview.
 
 ## Feedback
-If you like what you're seeing, send me smiley faces on [Twitter](http://twitter.com/rikschennink) or sponsor through [Gittip](https://www.gittip.com/rikschennink/)!
+If you like what you're seeing, send me smiley faces on [Twitter](http://twitter.com/rikschennink)
 
 ## License
 [MIT](http://www.opensource.org/licenses/mit-license.php)
