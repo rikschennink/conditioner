@@ -182,7 +182,7 @@ define(function(){
                         'mock/modules/unsupported':{
 
                             // a feature test should result in this boolean
-                            'enabled':false //
+                            'enabled':false
 
                         }
                     }
@@ -191,7 +191,7 @@ define(function(){
 
                 // assert
                 expect(element.getAttribute('data-processed')).to.equal('true');
-                expect(element.getAttribute('data-initialized')).to.not.contain('mock/modules/unsupported');
+                expect(element.getAttribute('data-initialized')).to.not.be.defined;
 
             });
 

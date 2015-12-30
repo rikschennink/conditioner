@@ -23,6 +23,7 @@ var sloc = require('gulp-sloc');
  */
 var pkg = require('./package.json');
 pkg.year = new Date().getFullYear();
+pkg.name = 'conditioner.js';
 
 /**
  * Helpers

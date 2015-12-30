@@ -1,6 +1,6 @@
 {
-  "name": "conditioner.js",
-  "version": "1.2.1",
+  "name": "conditionerjs",
+  "version": "1.2.2",
   "description": "ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules",
   "homepage": "http://conditionerjs.com",
   "main": "./dist/min/conditioner.js",
@@ -37,6 +37,7 @@
   "readmeFilename": "README.md",
   "dependencies": {},
   "devDependencies": {
+    "chai": "^3.4.1",
     "gulp": "^3.9.0",
     "gulp-beautify": "^1.0.3",
     "gulp-concat": "^2.2.0",
@@ -60,6 +61,8 @@
     "karma-mocha-reporter": "^0.2.6",
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-requirejs": "^0.2.2",
+    "mocha": "^2.3.4",
+    "requirejs": "^2.1.22",
     "run-sequence": "^0.3.6"
   }
 }
