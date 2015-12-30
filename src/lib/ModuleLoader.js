@@ -1,4 +1,4 @@
-var _jsonRegExp = new RegExp('^\\[\\s*{','gm');
+var _jsonRegExp = new RegExp('^\\[\\s*{');
 
 /**
  * @exports ModuleLoader

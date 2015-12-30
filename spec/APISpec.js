@@ -616,24 +616,59 @@ define(function(){
 
         });
 
-        describe('is(conditions)',function(){
+        describe('addConditionMonitor(condition,element,callback)',function(){
+
+            beforeEach(function() {
+                var i=0;
+                var l=100;
+                for(;i<l;i++) {
+                    conditioner.removeConditionMonitor(i);
+                }
+            });
 
             it('will throw an error when no test passed',function(){
 
-                var testIt = function(){conditioner.is();};
+                var testIt = function(){conditioner.addConditionMonitor();};
+                expect(testIt).to.throw(Error);
+
+            });
+
+            it('will throw an error when no callback passed',function(){
+
+                var el = document.createElement('div');
+                var testIt = function(){conditioner.addConditionMonitor('single:{true}');};
+                expect(testIt).to.throw(Error);
+
+            });
+
+            it('will throw an error when element but no callback passed',function(){
+
+                var el = document.createElement('div');
+                var testIt = function(){conditioner.addConditionMonitor('single:{true}',el);};
+                expect(testIt).to.throw(Error);
+
+            });
+
+        });
+
+        describe('matchesCondition(conditions)',function(){
+
+            it('will throw an error when no test passed',function(){
+
+                var testIt = function(){conditioner.matchesCondition();};
                 expect(testIt).to.throw(Error);
 
             });
 
             it('will return a promise',function(){
 
-                expect(conditioner.is('single:{true}').then).to.be.defined;
+                expect(conditioner.matchesCondition('single:{true}').then).to.be.defined;
 
             });
 
             it('will call resolve method on test assertion success',function(done){
 
-                conditioner.is('single:{true}').then(
+                conditioner.matchesCondition('single:{true}').then(
                     function(state){
                         expect(state).to.be.ok;
                         done();
@@ -644,7 +679,7 @@ define(function(){
 
             it('will call reject method on test assertion failure',function(done){
 
-                conditioner.is('single:{false}').then(
+                conditioner.matchesCondition('single:{false}').then(
                     function(state){
                         expect(state).to.not.be.ok;
                         done();

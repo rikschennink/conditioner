@@ -613,14 +613,14 @@
 			 */
 			addConditionMonitor:function(condition,element,callback) {
 
+				// handle optional element parameter
+				callback = typeof element === 'function' ? element : callback;
+
 				// @ifdef DEV
-				if (!condition) {
+				if (!condition || !callback) {
 					throw new Error('Conditioner.addConditionMonitor(condition,[element],callback): "condition" and "callback" are required parameter.');
 				}
 				// @endif
-
-				// handle optional element parameter
-				callback = typeof element === 'function' ? element : callback;
 
 				// run test and execute callback on change
 				return WebContext.setTest(condition,element,function(valid) {

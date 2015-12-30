@@ -35,7 +35,7 @@
   "readmeFilename": "README.md",
   "dependencies": {},
   "devDependencies": {
-    "gulp": "^3.8.5",
+    "gulp": "^3.9.0",
     "gulp-beautify": "^1.0.3",
     "gulp-concat": "^2.2.0",
     "gulp-header": "^1.0.2",

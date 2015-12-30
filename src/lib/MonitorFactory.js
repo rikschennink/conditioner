@@ -233,6 +233,12 @@ MonitorFactory.prototype = {
 
 		// get monitor and remove watches contained in this test
 		var monitorId = test.getMonitor();
+
+		// test has no monitor assigned, stop here
+		if (monitorId === null) {
+			return;
+		}
+
 		var	monitor = this._db[monitorId];
 		var	monitorWatches = monitor.watches;
 		var	l = monitorWatches.length;
