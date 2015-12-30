@@ -3,12 +3,7 @@
   "version": "1.2.0",
   "description": "ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules",
   "homepage": "http://conditionerjs.com",
-  "main": "dist/min/conditioner.js",
-  "files":[
-    "dist/min/conditioner.js",
-    "dist/min/monitors",
-    "dist/min/utils"
-  ],
+  "main": "./dist/min/conditioner.js",
   "scripts": {
     "test": "gulp test"
   },

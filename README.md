@@ -13,12 +13,12 @@ Load a Google Map module only if the screen is wider than 40em and the HTML elem
    data-conditions="media:{(min-width:40em)} and element:{was visible}"> ... </a>
 ```
 
-More demos can be found in the [examples](http://conditionerjs.com/examples/conditions/) section of the documentation.
+When the module has loaded ConditionerJS will automatically unload it once the conditions are no longer valid (for instance when the user resizes the viewport). 
 
 
 ## Documentation
 
-You can find the API documentation and a selection of demos at [conditionerjs.com](http://conditionerjs.com)
+The documentation and a selection of demos can be found at [conditionerjs.com](http://conditionerjs.com)
 
 
 ## Installation
