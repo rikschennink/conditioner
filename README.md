@@ -26,9 +26,9 @@ You can find the API documentation and a selection of demos at [conditionerjs.co
 
 ### Package
 
-`npm install conditioner`
+`npm install conditioner.js`
 
-`bower install conditioner`
+`bower install conditioner.js`
 
 
 ### Manual

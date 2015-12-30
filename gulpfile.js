@@ -83,7 +83,7 @@ var copySupportFilesInFolder = function(folder) {
 gulp.task('_lib',function(){
     return gulp
         .src(files.lib)
-        .pipe(concat(pkg.name + '.js'))
+        .pipe(concat(pkg.name))
         .pipe(wrap({ src: paths.src + 'factory.js'}))
         .pipe(replace('// FACTORY ',''))
         .pipe(header(banner,{pkg:pkg}))
@@ -136,7 +136,7 @@ gulp.task('_hint',['_jscs'],function(){
  */
 gulp.task('build',function(cb){
 
-	// first runs clean than runs _lib _utils and _monitors in parallel
+	// first cleans old build, then runs _lib _utils and _monitors in parallel
 	return sequence('_clean',['_lib','_utils','_monitors'],'_hint','_sloc',cb);
 
 });
@@ -156,16 +156,7 @@ gulp.task('test',['build'],function(){
 
 gulp.task('dev',['test'],function() {
 
-    // watch but first test current
+    // watch but first test current build
     gulp.watch([paths.src + '**/*',paths.spec + '*.js'],['test']);
-
-});
-
-gulp.task('inject',function(){
-
-    // injects the dist files into the pages and bower folders
-    gulp.src(paths.dist.dev + '/**/*.*',{ base: paths.dist.dev })
-        .pipe(gulp.dest(paths.pages))
-        .pipe(gulp.dest(paths.bower));
 
 });

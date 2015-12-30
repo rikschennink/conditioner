@@ -1,9 +1,14 @@
 {
-  "name": "conditioner",
+  "name": "conditioner.js",
   "version": "1.2.0",
   "description": "ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules",
   "homepage": "http://conditionerjs.com",
-  "main": "index.js",
+  "main": "dist/min/conditioner.js",
+  "files":[
+    "dist/min/conditioner.js",
+    "dist/min/monitors",
+    "dist/min/utils"
+  ],
   "scripts": {
     "test": "gulp test"
   },
@@ -18,7 +23,9 @@
     "javascript",
     "media queries",
     "media query",
-    "amd",
+    "module",
+    "responsive",
+    "context",
     "conditions",
     "shampoo"
   ],
