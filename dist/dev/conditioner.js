@@ -1,5 +1,5 @@
 // conditioner.js v1.2.2 - ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules
-// Copyright (c) 2015 Rik Schennink - http://conditionerjs.com
+// Copyright (c) 2016 Rik Schennink - http://conditionerjs.com
 // License: MIT - http://www.opensource.org/licenses/mit-license.php
 (function (win, undefined) {
 
@@ -3032,4 +3032,4 @@
         // @endif
     }
 
-}(this));
+}(window));
