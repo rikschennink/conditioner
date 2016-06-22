@@ -47,4 +47,4 @@
 		define(function() {return exports;});
 	}
 
-}(this));
+}(window));

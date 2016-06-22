@@ -81,4 +81,4 @@
 		win.Promise = exports;
 	}
 
-}(this));
+}(window));

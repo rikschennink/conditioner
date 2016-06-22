@@ -1,1 +1,1 @@
-!function(e,n){"use strict";var t={trigger:{online:e,offline:e},test:{any:function(e){return e.expected}}};"undefined"!=typeof module&&module.exports?module.exports=t:"function"==typeof define&&define.amd&&define(function(){return t})}(this);
+!function(e,n){"use strict";var t={trigger:{online:e,offline:e},test:{any:function(e){return e.expected}}};"undefined"!=typeof module&&module.exports?module.exports=t:"function"==typeof define&&define.amd&&define(function(){return t})}(window);

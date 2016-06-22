@@ -71,4 +71,4 @@
         win.matchesSelector = exports;
     }
 
-}(this));
+}(window));

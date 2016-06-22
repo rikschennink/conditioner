@@ -48,4 +48,4 @@
 		win.contains = exports;
 	}
 
-}(this));
+}(window));
