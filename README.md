@@ -61,6 +61,10 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 
 ## Version History
 
+### 1.2.3
+
+* Replaced `this` with `window` to fix Browserify root problems
+
 ### 1.2.0
 
 * Fixed [unload handler not called](https://github.com/rikschennink/conditioner/issues/91)
