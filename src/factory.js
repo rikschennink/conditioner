@@ -682,4 +682,4 @@
 		// @endif
 	}
 
-}(this));
+}(window));

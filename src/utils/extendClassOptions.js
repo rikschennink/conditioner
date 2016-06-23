@@ -52,4 +52,4 @@
 		win.extendClassOptions = exports;
 	}
 
-}(this));
+}(window));
