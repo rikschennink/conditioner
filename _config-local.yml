@@ -1,4 +1,4 @@
-highlighter: 'pygments'
+highlighter: 'rouge'
 safe: true
 exclude: [node_modules]
 
