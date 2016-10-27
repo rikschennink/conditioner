@@ -1,6 +1,13 @@
 /**
  * Body + Header layouting
  */
+.highlight {
+	margin:0;
+	pre {
+		white-space: pre-wrap;
+	}
+}
+
 @media (min-width:38rem) {
 
 	body {
@@ -60,10 +67,6 @@
             }
         }
 
-    }
-
-    .highlight {
-        margin-right:-6rem;
     }
 
     .monitors {
