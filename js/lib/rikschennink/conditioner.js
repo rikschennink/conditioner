@@ -1,5 +1,5 @@
-// conditioner v1.1.0 - ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules
-// Copyright (c) 2014 Rik Schennink - http://conditionerjs.com
+// conditioner.js v1.2.3 - ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules
+// Copyright (c) 2016 Rik Schennink - http://conditionerjs.com
 // License: MIT - http://www.opensource.org/licenses/mit-license.php
 (function (win, undefined) {
 
@@ -365,6 +365,12 @@
 
                 // get monitor and remove watches contained in this test
                 var monitorId = test.getMonitor();
+
+                // test has no monitor assigned, stop here
+                if (monitorId === null) {
+                    return;
+                }
+
                 var monitor = this._db[monitorId];
                 var monitorWatches = monitor.watches;
                 var l = monitorWatches.length;
@@ -1843,12 +1849,15 @@
                     Observer.subscribe(moduleController, 'load', this._moduleLoadBind);
                     Observer.unsubscribe(moduleController, 'unload', this._moduleUnloadBind);
 
-                    // conceal events from module controller
-                    Observer.conceal(moduleController, this);
-
                     // update initialized attribute with now active module controllers list
                     this._updateAttribute(_options.attr.initialized, this.getActiveModules());
 
+                    // conceal events from module controller
+                    // behind timeout so the event is still published by the node controller, otherwise missed by syncgroup
+                    var self = this;
+                    setTimeout(function () {
+                        Observer.conceal(moduleController, self);
+                    }, 0);
                 },
 
                 /**
@@ -2055,7 +2064,7 @@
             }
 
         };
-        var _jsonRegExp = new RegExp('^\\[\\s*{', 'gm');
+        var _jsonRegExp = new RegExp('^\\[\\s*{');
 
         /**
          * @exports ModuleLoader
@@ -2881,14 +2890,32 @@
 
             },
 
+            // deprecated
+            is: function (condition, element) {
+
+                // @ifdef DEV
+                console.warn('Conditioner.is(condition,[element]): method "is" is deprecated, instead use "matchesCondition".');
+                // @endif
+                this.matchesCondition(condition, element);
+            },
+
+            // deprecated
+            on: function (condition, element, callback) {
+
+                // @ifdef DEV
+                console.warn('Conditioner.on(condition,[element],callback): method "on" is deprecated, instead use "addConditionMonitor".');
+                // @endif
+                return this.addConditionMonitor(condition, element, callback);
+            },
+
             /***
-             * Manually test an expression, only returns once via promise with a `true` or `false` state
+             * Test an expression, only returns once via promise with a `true` or `false` state.
              *
              * ```js
              * require(['conditioner'],function(conditioner){
              *
              *     // Test if supplied condition is valid
-             *     conditioner.is('window:{min-width:500}').then(function(state){
+             *     conditioner.matchesCondition('window:{min-width:500}').then(function(state){
              *
              *         // State equals true if window has a
              *         // minimum width of 500 pixels.
@@ -2898,36 +2925,37 @@
              * });
              * ```
              *
-             * @method is
+             * @method matchesCondition
              * @memberof Conditioner
              * @param {String} condition - Expression to test.
              * @param {Element=} element - Element to run the test on.
              * @returns {Promise}
              */
-            is: function (condition, element) {
+            matchesCondition: function (condition, element) {
 
                 // @ifdef DEV
                 if (!condition) {
-                    throw new Error('Conditioner.is(condition,[element]): "condition" is a required parameter.');
+                    throw new Error('Conditioner.matchesCondition(condition,[element]): "condition" is a required parameter.');
                 }
                 // @endif
                 // run test and resolve with first received state
                 var p = new Promise();
-                WebContext.setTest(condition, element, function (valid) {
+                var uid = WebContext.setTest(condition, element, function (valid) {
                     p.resolve(valid);
+                    WebContext.clearTest(uid);
                 });
                 return p;
 
             },
 
             /***
-             * Manually test an expression, bind a callback method to be executed once something changes.
+             * Monitor an expression, bind a callback method to be executed when something changes.
              *
              * ```js
              * require(['conditioner'],function(conditioner){
              *
              *     // Test if supplied condition is valid
-             *     conditioner.on('window:{min-width:500}',function(state){
+             *     conditioner.addConditionMonitor('window:{min-width:500}', function(state) {
              *
              *         // State equals true if window a
              *         // has minimum width of 500 pixels.
@@ -2940,27 +2968,48 @@
              * });
              * ```
              *
-             * @method on
+             * @method addConditionMonitor
              * @memberof Conditioner
              * @param {String} condition - Expression to test.
              * @param {(Element|Function)=} element - Optional element to run the test on.
              * @param {Function=} callback - Callback method.
+             * @returns {Number} - Unique condition monitor id
              */
-            on: function (condition, element, callback) {
+            addConditionMonitor: function (condition, element, callback) {
 
-                // @ifdef DEV
-                if (!condition) {
-                    throw new Error('Conditioner.on(condition,[element],callback): "condition" and "callback" are required parameter.');
-                }
-                // @endif
                 // handle optional element parameter
                 callback = typeof element === 'function' ? element : callback;
 
+                // @ifdef DEV
+                if (!condition || !callback) {
+                    throw new Error('Conditioner.addConditionMonitor(condition,[element],callback): "condition" and "callback" are required parameter.');
+                }
+                // @endif
                 // run test and execute callback on change
-                WebContext.setTest(condition, element, function (valid) {
+                return WebContext.setTest(condition, element, function (valid) {
                     callback(valid);
                 });
 
+            },
+
+            /***
+             * Stop monitoring an expression.
+             *
+             * ```js
+             * require(['conditioner'],function(conditioner){
+             *
+             *     // Remove condition monitor with supplied id
+             *     conditioner.removeConditionMonitor(id);
+             *
+             * });
+             * ```
+             *
+             * @method removeConditionMonitor
+             * @memberof Conditioner
+             * @param {Number} id - Condition monitor id to remove.
+             */
+            removeConditionMonitor: function (id) {
+                WebContext.clearTest(id);
             }
 
         };
@@ -2983,4 +3032,4 @@
         // @endif
     }
 
-}(this));
+}(window));
