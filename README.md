@@ -1,4 +1,4 @@
-# ConditionerJS [![Build Status](https://api.travis-ci.org/rikschennink/conditioner.svg?branch=master)](https://travis-ci.org/rikschennink/conditioner) [![Coverage Status](https://coveralls.io/repos/github/rikschennink/conditioner/badge.svg?branch=master)
+# ConditionerJS [![Build Status](https://api.travis-ci.org/rikschennink/conditioner.svg?branch=master)](https://travis-ci.org/rikschennink/conditioner) [![Coverage Status](https://coveralls.io/repos/github/rikschennink/conditioner/badge.svg?branch=master)](https://coveralls.io/github/rikschennink/conditioner)
 
 ConditionerJS is a JavaScript library for loading and unloading behavior based on the current user context.
 
