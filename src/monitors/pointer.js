@@ -61,7 +61,7 @@
 		trigger:function(bubble) {
 
 			// filter events
-			var filter = function filter(e) {
+			var filter = function(e) {
 
 				// handle pointer events
 				if (pointerEventSupport) {
