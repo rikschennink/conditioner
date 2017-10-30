@@ -40,8 +40,6 @@ npm i conditioner-core --save
 
 ## Setup
 
-When dynamic imports are supported Conditioner can be imported using the `import` statement.
-
 Using Conditioner in a module:
 
 ```js
@@ -50,6 +48,17 @@ import * as conditioner from 'conditioner-core';
 conditioner.hydrate( document.documentElement );
 ```
 
+Dynamically import Conditioner.
+
+```js
+(async () => {
+
+    const conditioner = await import('./node_modules/conditioner-core/dist/conditioner-core-es6.js');
+
+    conditioner.hydrate( document.documentElement );
+
+})();
+```
 
 ## Boilerplates
 
