@@ -42,9 +42,11 @@ Using a CDN:
 <script src="https://unpkg.com/conditioner-core"></script>
 ```
 
+
+
 ## Setup
 
-Using Conditioner in a module:
+Using Conditioner in an ES6 module:
 
 ```js
 import * as conditioner from 'conditioner-core';
@@ -53,10 +55,10 @@ import * as conditioner from 'conditioner-core';
 conditioner.hydrate( document.documentElement );
 ```
 
-Dynamically import Conditioner:
+Using Conditioner with dynamic imports:
 
 ```js
-import('./node_modules/conditioner-core/dist/conditioner-core-es6.js').then(conditioner => {
+import('conditioner-core-es6.js').then(conditioner => {
     
     // mount all modules on the page
     conditioner.hydrate( document.documentElement );
@@ -64,9 +66,30 @@ import('./node_modules/conditioner-core/dist/conditioner-core-es6.js').then(cond
 });
 ```
 
-## Boilerplates
+Using Conditioner in an AMD module:
 
-These boilerplates should help you on your way if you want to use Conditioner for your project.
+```js
+require(['conditioner'], function(conditioner) {
+
+    // mount all modules on the page
+    conditioner.hydrate( document.documentElement );
+
+});
+```
+
+Using Conditioner on the global scope:
+
+```html
+<script src="conditioner-core.js"></script>
+<script>
+    
+    // mount all modules on the page
+    conditioner.hydrate( document.documentElement );
+    
+</script>
+```
+
+A collection of boilerplates to get you started with various project setups:
 
 - [Dynamic Imports](https://github.com/rikschennink/conditioner-boilerplate-dynamic-imports)
 - [Webpack 2](https://github.com/rikschennink/conditioner-boilerplate-webpack)
@@ -92,16 +115,16 @@ Method                      | Description
 
 Bound modules are returned by the `hydrate` method. Each bound module object wraps a module. It exposes a set of properties, methods and callbacks to interact with the module and its element.
 
-Property / Method                             | Description
-----------------------------------------------|---------------
-`alias`                                       | Name found in `dataset.module`.
-`name`                                        | Module path after name has been passed through `moduleSetName`.
-`element`                                     | The element the module is bound to.
-`mount()`                                     | Method to manually mount the module.
-`unmount()`                                   | Method to manually unmount the module.
-`onmount(boundModule)`                        | Callback that runs when the module has been mounted. Scoped to element.
-`onmounterror(error, boundModule)`            | Callback that runs when an error occurs during the mount process. Scoped to element.
-`onunmount(boundModule)`                      | Callback that runs when the module has been unmounted. Scoped to element.
+Property / Method                              | Description
+-----------------------------------------------|---------------
+`alias`                                        | Name found in `dataset.module`.
+`name`                                         | Module path after name has been passed through `moduleSetName`.
+`element`                                      | The element the module is bound to.
+`mount()`                                      | Method to manually mount the module.
+`unmount()`                                    | Method to manually unmount the module.
+`onmount(boundModule)`                         | Callback that runs when the module has been mounted. Scoped to element.
+`onmounterror(error, boundModule)`             | Callback that runs when an error occurs during the mount process. Scoped to element.
+`onunmount(boundModule)`                       | Callback that runs when the module has been unmounted. Scoped to element.
 
 
 ### Plugins
@@ -149,11 +172,8 @@ conditioner.addPlugin({
     
     // we setup a monitor plugin
     monitor: {
-        // monitor plugins expect a name property
         name: 'visible',
-
-        // and a create method, which receives the required context for the module to load and the element the module is being mounted on
-        create:(context, element) => {
+        create:(context, element) => { 
 
             // setup our api
             const api = {
@@ -175,6 +195,19 @@ conditioner.addPlugin({
 
 });
 ```
+
+Now we can use our new `visible` monitor like this:
+
+```html
+<div data-module="/ui/SectionToggle.js" data-context="@visible true"></div>
+```
+
+We can combine it with the `media` monitor by adding an `and` statement.
+
+```html
+<div data-module="/ui/SectionToggle.js" data-context="@media (max-width:30em) and @visible true"></div>
+```
+
 
 
 
