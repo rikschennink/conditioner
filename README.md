@@ -36,6 +36,11 @@ Install with npm:
 npm i conditioner-core --save
 ```
 
+Using a CDN:
+
+```html
+<script src="https://unpkg.com/conditioner-core"></script>
+```
 
 ## Setup
 
