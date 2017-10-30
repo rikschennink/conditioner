@@ -34,31 +34,13 @@ Conditioner will unmount the SectionToggler when the context is no longer fittin
 Install from npm:
 
 ```bash
-npm install conditioner-core --save
+npm i conditioner-core --save
 ```
 
 
 ## Setup
 
 When dynamic imports are supported Conditioner can be imported using the `import` statement.
-
-
-Importing Conditioner in a page using the dynamic `import` statement:
-
-```js
-<script>
-(async () => {
-
-    // get conditioner module
-    const conditioner = await import('./conditioner-nano.js');
-
-    // parse the DOM
-    conditioner.hydrate( document.documentElement );
-
-})();
-</script>
-```
-
 
 Using Conditioner in a module:
 
@@ -69,6 +51,15 @@ conditioner.hydrate( document.documentElement );
 ```
 
 
+## Boilerplates
+
+These boilerplates should help you on your way if you want to use Conditioner for your project.
+
+- [Dynamic Imports](https://github.com/rikschennink/conditioner-boilerplate-dynamic-imports)
+- [Webpack 2](https://github.com/rikschennink/conditioner-boilerplate-webpack)
+- [RequireJS](https://github.com/rikschennink/conditioner-boilerplate-requirejs)
+- [Global](https://github.com/rikschennink/conditioner-boilerplate-global)
+
 
 ## API
 
@@ -77,6 +68,9 @@ Method                      | Description
 `hydrate(context)`          | Mount modules in a certain part of the DOM
 `addPlugin(plugin)`         | Add a plugin to Conditioner to extend its core functionality
 
+
+### Parsing the DOM for modules
+
 Mount all modules on the page.
 
 ```js
@@ -84,14 +78,79 @@ conditioner.hydrate( document.documentElement );
 ```
 
 
+### Adding custom functionality to Conditioner
 
-## Resources
+Conditioner can be extended with plugins.
 
-Version 1.x
+Adding a plugin can be done with the `addPlugin` method, the method expects a plugin definition object.
 
-* [Frizz Free JavaScript With ConditionerJS](http://www.smashingmagazine.com/2014/04/03/frizz-free-javascript-with-conditionerjs/)
-* [Presenting ConditionerJS At JavaScript MVC #9](http://rikschennink.nl/thoughts/frizz-free-javascript-mvc-meetup-9/)
-* [Presenting ConditionerJS At Kabisa](http://rikschennink.nl/thoughts/frizz-free-javascript-fronteers-meetup/)
+Plugins can be used to override internal methods or add custom monitors to Conditioner.
+
+The following hooks can be used to setup plugins:
+
+Hook                                           | Description
+-----------------------------------------------|---------------
+`moduleSelector(context)`                      | Selects all elements with modules within the given context and returns a `NodeList`.
+`moduleGetContext(element)`                    | Returns context requirements for the module. By default returns the `element.dataset.context` attribute.
+`moduleImport(name)`                           | Imports the module with the given name, should return a `Promise`.
+`moduleGetConstructor(module)`                 | Gets the constructor method from the module object, by default expects it to be defined on `module.default` or a default export.
+`moduleGetDestructor(moduleExports)`           | Gets the destructor method from the module constructor return value, by default expects a single function.
+`moduleSetConstructorArguments(name, element)` | Use to alter the arguments supplied to the module constructor, expects an `array` as return value.
+`moduleGetName(element)`                       | Called to get the name of the module, by default retrieves the `element.dataset.module` value.
+`moduleSetName(name)`                          | Called when the module name has been retrieved just before setting it.
+`moduleWillMount(boundModule)`                 | Called before the module is mounted.
+`moduleDidMount(boundModule)`                  | Called after the module is mounted.
+`moduleWillUnmount(boundModule)`               | Called before the module is unmounted.
+`moduleDidUnmount(boundModule)`                | Called after the module is unmounted.
+`moduleDidCatch(error, boundModule)`           | Called when module import throws an error.
+`monitor`                                      | A collection of registered monitors. See monitor setup instructions below.
+
+
+Let's setup a basic plugin. Instead of writing each module with extension we want to leave out the extension and add it automatically. We'll use the `moduleSetName` hook for this.
+
+```js
+conditioner.addPlugin({
+    moduleSetName: name => name + '.js'
+});
+```
+
+
+```js
+conditioner.addPlugin({
+    
+    // we setup a monitor plugin
+    monitor: {
+        // monitor plugins expect a name property
+        name: 'visible',
+
+        // and a create method, which receives the required context for the module to load and the element the module is being mounted on
+        create:(context, element) => {
+
+            // a monitor plugin should expose an api similar to matchMedia, it should return a
+            // - matches property
+            // - addListener method
+
+            // setup our api
+            const api = {
+                matches: false,
+                addListener (change) {
+                    
+                    new IntersectionObserver(entries => {
+                        api.matches = entries.pop().isIntersecting == (context === 'true');
+                        change(api.matches);
+                    }).observe(element);
+
+                }
+            };
+
+            // done!
+            return api;
+        }
+    }
+
+});
+```
+
 
 
 

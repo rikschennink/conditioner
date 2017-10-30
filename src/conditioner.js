@@ -55,6 +55,9 @@ const bindModule = element => {
                     // callback for this specific module
                     boundModule.onmounterror.apply(element, [error, boundModule]);
 
+                    // log silently to console
+                    console.warn(error);
+
                 })
                 .then( module => {
 
@@ -164,7 +167,7 @@ addPlugin({
     moduleGetContext: element => element.dataset.context,
 
     // load the referenced module, by default uses es6 dynamic module imports
-    // passing the variable as a string prevents a webpack dependancy warning
+    // passing the variable as a string prevents a dependency warning when used in webpack
     moduleImport: name => import(`${ name }`),
 
     // returns the module constructor, by default we assume the module default exports a function
