@@ -30,7 +30,7 @@ Conditioner will unmount the `SectionToggler` when the context is no longer fitt
 
 ## Installation
 
-NPM
+Install with npm:
 
 ```bash
 npm i conditioner-core --save
