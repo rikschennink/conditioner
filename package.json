@@ -1,11 +1,11 @@
 {
-  "name": "conditioner-js",
-  "version": "1.2.3",
-  "description": "ConditionerJS - Frizz Free, Environment-aware, JavaScript Modules",
-  "homepage": "http://conditionerjs.com",
-  "main": "./dist/min/conditioner.js",
+  "name": "conditioner-core",
+  "version": "2.0.0",
+  "description": "Conditioner - Frizz Free, Environment-aware, JavaScript Modules",
+  "homepage": "https://pqina.nl/conditioner",
+  "main": "dist/conditioner-core.js",
   "scripts": {
-    "test": "gulp test"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -19,50 +19,29 @@
     "media queries",
     "media query",
     "module",
+    "import",
+    "dynamic",
     "responsive",
+    "design",
     "context",
     "conditions",
     "shampoo"
   ],
-  "author": {
-    "name": "Rik Schennink",
-    "url": "http://rikschennink.nl"
-  },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://www.opensource.org/licenses/mit-license.php"
-    }
-  ],
-  "readmeFilename": "README.md",
+  "author": "Rik Schennink <hello@rikschennink.nl> (http://rikschennink.nl/)",
+  "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "chai": "^3.4.1",
-    "gulp": "^3.9.0",
-    "gulp-beautify": "^1.0.3",
-    "gulp-concat": "^2.2.0",
-    "gulp-header": "^1.0.2",
-    "gulp-jscs": "^1.3.1",
-    "gulp-jshint": "^1.6.4",
-    "gulp-karma": "0.0.4",
-    "gulp-preprocess": "^1.0.1",
-    "gulp-replace": "^0.2.0",
-    "gulp-rimraf": "^0.1.0",
-    "gulp-size": "^0.3.0",
-    "gulp-sloc": "^1.0.4",
-    "gulp-uglify": "^0.2.1",
-    "gulp-wrap": "^0.3.0",
-    "jshint-stylish": "^0.1.5",
-    "karma": "^0.12.16",
-    "karma-chai": "^0.1.0",
-    "karma-coverage": "^0.2.4",
-    "karma-coveralls": "^0.1.4",
-    "karma-mocha": "^0.1.4",
-    "karma-mocha-reporter": "^0.2.6",
-    "karma-phantomjs-launcher": "^0.1.4",
-    "karma-requirejs": "^0.2.2",
-    "mocha": "^2.3.4",
-    "requirejs": "^2.1.22",
-    "run-sequence": "^0.3.6"
+    "babel-cli": "^6.18.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-header": "^1.8.9",
+    "gulp-rename": "^1.2.2",
+    "gulp-size": "^2.1.0",
+    "gulp-uglify": "^3.0.0"
   }
 }

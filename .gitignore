@@ -1,13 +1,4 @@
 .DS_Store
-.cache
-.hg
-.svn
-.CVS
-.idea
-node_modules
+node_modules/
 Thumbs.db
-_SpecRunner.html
 npm-debug.log
-.sass-cache
-coverage
-_site

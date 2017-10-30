@@ -1,69 +1,111 @@
-# ConditionerJS [![Build Status](https://api.travis-ci.org/rikschennink/conditioner.svg?branch=master)](https://travis-ci.org/rikschennink/conditioner) [![Coverage Status](https://coveralls.io/repos/github/rikschennink/conditioner/badge.svg?branch=master)](https://coveralls.io/github/rikschennink/conditioner)
+# Conditioner
 
-ConditionerJS is a JavaScript library for loading and unloading behavior based on the current user context.
+Declaratively link JavaScript modules to your elements and mount them based on contextual parameters like viewport size and element visibilty.
+
+
+
+## Features
+
+- Progressive Enhancement!
+- Declarative way to bind logic to elements
+- Perfectly fits with Responsive Design
+- Dynamic import support
+- No dependencies
+- Small footprint
+- Easy to extend with plugins
+
 
 
 ## Example
 
-Load a Google Map module only if the screen is wider than 40em and the HTML element has been seen by the user.
+Mount a `SectionToggler` module, but only do it on narrow viewports.
 
 ```html
-<a href="http://maps.google.com/?ll=51.741,3.822"
-   data-module="ui/Map"
-   data-conditions="media:{(min-width:40em)} and element:{was visible}"> ... </a>
+<h2 data-module="/ui/SectionToggler.js"
+    data-context="@media (max-width:30em)"> ... </h2>
 ```
 
-When the module has loaded ConditionerJS will automatically unload it once the conditions are no longer valid (for instance when the user resizes the viewport). 
+Conditioner will unmount the SectionToggler when the context is no longer fitting. So when the user resizes or rotates the viewport and suddenly it's wider than `30em` the `SectionToggler` will be unmounted.
 
-
-## Documentation
-
-The documentation and a selection of demos can be found at [conditionerjs.com](http://conditionerjs.com)
 
 
 ## Installation
 
+Install from npm:
 
-### Package
-
-`npm install conditioner-js`
-
-`bower install conditioner-js`
-
-
-### Manual
-
-Add the `conditioner.js` file (found in the dist/dev folder) to your project. You'll also have to add the monitors and utilities folder. The dev version of the conditioner framework includes logging statements, the dist/min folder contains a minimized version without these statements to limit file size.
+```bash
+npm install conditioner-core --save
+```
 
 
+## Setup
 
-## Running tests
-
-Run `gulp test` to spin up the test suite. 
+When dynamic imports are supported Conditioner can be imported using the `import` statement.
 
 
-## Requirements
+Importing Conditioner in a page using the dynamic `import` statement:
 
-Conditioner expects an AMD loader to be available. It's been tested with [RequireJS](http://requirejs.org), [Almond](https://github.com/jrburke/almond) and [Curl](https://github.com/cujojs/curl). As long as your AMD loader follows the [AMD spec](https://github.com/amdjs/amdjs-api) it should be fine.
+```js
+<script>
+(async () => {
 
-If you're not into AMD and prefer [Browserify](http://browserify.org) that's fine too but keep in mind that your optimized file should contain all modules. If you want the best of both worlds you might be interested in [WebPack](http://webpack.github.io).
+    // get conditioner module
+    const conditioner = await import('./conditioner-nano.js');
 
-* AMD Loader / CommonJS Preprocessor
-* Modern browser, IE8 is supported but requires a bit of shimming.
+    // parse the DOM
+    conditioner.hydrate( document.documentElement );
+
+})();
+</script>
+```
+
+
+Using Conditioner in a module:
+
+```js
+import * as conditioner from 'conditioner-core';
+
+conditioner.hydrate( document.documentElement );
+```
+
+
+
+## API
+
+Method                      | Description
+----------------------------|---------------
+`hydrate(context)`          | Mount modules in a certain part of the DOM
+`addPlugin(plugin)`         | Add a plugin to Conditioner to extend its core functionality
+
+Mount all modules on the page.
+
+```js
+conditioner.hydrate( document.documentElement );
+```
+
 
 
 ## Resources
+
+Version 1.x
 
 * [Frizz Free JavaScript With ConditionerJS](http://www.smashingmagazine.com/2014/04/03/frizz-free-javascript-with-conditionerjs/)
 * [Presenting ConditionerJS At JavaScript MVC #9](http://rikschennink.nl/thoughts/frizz-free-javascript-mvc-meetup-9/)
 * [Presenting ConditionerJS At Kabisa](http://rikschennink.nl/thoughts/frizz-free-javascript-fronteers-meetup/)
 
 
+
 ## Version History
+
+### 2.0.0
+
+* Total rewrite of Conditioner, resulting in an ES6 codebase and a smaller and more plugin oriented API.
+
 
 ### 1.2.3
 
 * Replaced `this` with `window` to fix Browserify root problems
+
 
 ### 1.2.0
 
@@ -73,6 +115,7 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 * Fixed problem where `.is`/`matchesCondition` method did not clean up Promise
 * Removed global and multiline flags from quick regex test [issue 94](https://github.com/rikschennink/conditioner/issues/94)
 
+
 ### 1.1.0
 
 * The `supported` property has been added which is used to determine if a module can be loaded at all
@@ -80,9 +123,11 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 * Constructor now set when extending a module
 * Performance optimisations
 
+
 ### 1.0.1
 
 * Fixed [memory leaks](https://github.com/rikschennink/conditioner/issues/71)
+
 
 ### 1.0.0
 
@@ -100,11 +145,6 @@ If you're not into AMD and prefer [Browserify](http://browserify.org) that's fin
 * Fixes and small improvements.
 
 Read the [1.0.0 closed issue list](https://github.com/rikschennink/conditioner/issues?milestone=2&page=1&state=closed) for a complete overview.
-
-
-## Feedback
-
-Always interested in your opinion, please let me know on [Twitter](http://twitter.com/rikschennink) or contact met via [hello@rikschennink.nl](mailto:hello@rikschennink.nl)
 
 
 ## License
