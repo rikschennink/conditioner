@@ -211,7 +211,7 @@ conditioner.addPlugin({
 
 Next up is a plugin that adds a `visible` monitor using the `IntersectionObserver` API. Monitors can be used in a context query by prefixing the name with an `@`.
 
-Monitor plugins should mimic the [`MediaQueryList` API](https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList). Each monitor should expose a `matches` property and an `addListener` method.
+Monitor plugins should mimic the [`MediaQueryList`](https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList) API. Each monitor should expose a `matches` property and an `addListener` method.
 
 ```js
 conditioner.addPlugin({
@@ -254,11 +254,12 @@ Context queries can consist of multiple monitors joined with an `and` statement.
 ```
 
 
+
 ## Polyfilling
 
-To use Conditioner on older browsers you will probably have to polyfill the following APIs (click api's for compatibility tables).
+To use Conditioner on older browsers you will have to polyfill some APIs (click ASPI's for compatibility tables).
 
-Older versions of Edge
+Edge <= 14
 
 - [`Array.prototype.includes`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes#Browser_compatibility)
 
@@ -268,7 +269,11 @@ Internet Explorer 11
 - [`Array.prototype.from`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from#Browser_compatibility)
 - [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise#Browser_compatibility)
 
-Internet Explorer 10 does not support [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset#Browser_compatibility), you can either polyfill it or add the following plugin to override the `moduleGetName` and `moduleGetContext` hooks (which use `dataset`).
+Internet Explorer 10
+
+- [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset#Browser_compatibility)
+
+You can either polyfill `dataset` or add the following plugin to override the `moduleGetName` and `moduleGetContext` hooks (which use `dataset`).
 
 ```js
 conditioner.addPlugin({
@@ -276,6 +281,9 @@ conditioner.addPlugin({
     moduleGetContext: function(element) { return element.getAttribute('data-context'); }
 });
 ```
+
+The above plugin will also be required when you need to mount modules on SVG elements. Browser support for use of [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/SVGElement/dataset#Browser_compatibility) on SVG elements is a lot worse than HTML elements.
+
 
 
 ## Version History
