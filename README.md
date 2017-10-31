@@ -4,27 +4,27 @@ Declaratively link JavaScript modules to your elements and mount them based on c
 
 
 
+## Example
+
+Mount a component (like a Date Picker, Section Toggler or Carrousel), but only do it on wide viewports.
+
+```html
+<h2 data-module="/ui/component.js"
+    data-context="@media (min-width:30em)"> ... </h2>
+```
+
+If the viewport is resized or rotated and suddenly it's smaller than `30em` conditioner will automatically unmount the component.
+
+
+
 ## Features
 
 - Progressive Enhancement!
+- Responsive Design!
 - Declarative way to bind logic to elements, [why this is good](http://rikschennink.nl/thoughts/binding-behavior-you-are-doing-it-wrong/)
-- Perfectly fits with Responsive Design
-- Dynamic import support
 - No dependencies and small footprint (~1KB gzipped)
-- Extend with plugins
-
-
-
-## Example
-
-Mount a `SectionToggler` module, but only do it on narrow viewports.
-
-```html
-<h2 data-module="/ui/SectionToggler.js"
-    data-context="@media (max-width:30em)"> ... </h2>
-```
-
-Conditioner will unmount the `SectionToggler` when the context is no longer fitting. So when the user resizes or rotates the viewport and suddenly it's wider than `30em` the `SectionToggler` will be unmounted.
+- Supports ES6 `import()`
+- Easily extend with plugins
 
 
 
@@ -39,7 +39,7 @@ npm i conditioner-core --save
 Using a CDN:
 
 ```html
-<script src="https://unpkg.com/conditioner-core"></script>
+<script src="https://unpkg.com/conditioner-core/umd/conditioner-core.js"></script>
 ```
 
 
@@ -58,7 +58,7 @@ conditioner.hydrate( document.documentElement );
 Using Conditioner with dynamic imports:
 
 ```js
-import('conditioner-core-es6.js').then(conditioner => {
+import('conditioner-core/index.js').then(conditioner => {
     
     // mount all modules on the page
     conditioner.hydrate( document.documentElement );
@@ -69,7 +69,7 @@ import('conditioner-core-es6.js').then(conditioner => {
 Using Conditioner in an AMD module:
 
 ```js
-require(['conditioner'], function(conditioner) {
+require(['umd/conditioner-core'], function(conditioner) {
 
     // mount all modules on the page
     conditioner.hydrate( document.documentElement );
@@ -80,7 +80,7 @@ require(['conditioner'], function(conditioner) {
 Using Conditioner on the global scope:
 
 ```html
-<script src="conditioner-core.js"></script>
+<script src="umd/conditioner-core.js"></script>
 <script>
     
     // mount all modules on the page
@@ -199,13 +199,13 @@ conditioner.addPlugin({
 Now we can use our new `visible` monitor like this:
 
 ```html
-<div data-module="/ui/SectionToggle.js" data-context="@visible true"></div>
+<div data-module="/ui/component.js" data-context="@visible true"></div>
 ```
 
 We can combine it with the `media` monitor by adding an `and` statement.
 
 ```html
-<div data-module="/ui/SectionToggle.js" data-context="@media (max-width:30em) and @visible true"></div>
+<div data-module="/ui/component.js" data-context="@media (max-width:30em) and @visible true"></div>
 ```
 
 
