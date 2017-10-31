@@ -254,7 +254,28 @@ Context queries can consist of multiple monitors joined with an `and` statement.
 ```
 
 
+## Polyfilling
 
+To use Conditioner on older browsers you will probably have to polyfill the following APIs (click api's for compatibility tables).
+
+Older versions of Edge
+
+- [`Array.prototype.includes`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes#Browser_compatibility)
+
+Internet Explorer 11
+
+- [`Array.prototype.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find#Browser_compatibility)
+- [`Array.prototype.from`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from#Browser_compatibility)
+- [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise#Browser_compatibility)
+
+Internet Explorer 10 does not support [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset#Browser_compatibility), you can either polyfill it or add the following plugin to override the `moduleGetName` and `moduleGetContext` hooks (which use `dataset`).
+
+```js
+conditioner.addPlugin({
+    moduleGetName: function(element) { return element.getAttribute('data-module'); },
+    moduleGetContext: function(element) { return element.getAttribute('data-context'); }
+});
+```
 
 
 ## Version History
