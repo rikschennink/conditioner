@@ -4,12 +4,10 @@ import babel from 'gulp-babel';
 import rename from 'gulp-rename';
 import size from 'gulp-size';
 import uglify from 'gulp-uglify';
-import uglifyes from 'gulp-uglifyes';
+import pkg from './package.json';
 
-const pkg = require('./package.json');
-const banner = `/* ${ pkg.name } ${ pkg.version } */`;
-
-gulp.task('build-es5', () => gulp.src('./src/conditioner.js')
+gulp.task('umd', () => gulp.src('./index.js')
+.pipe( rename('conditioner.js') )
   .pipe(babel({
     plugins: [
       'syntax-dynamic-import',
@@ -20,22 +18,12 @@ gulp.task('build-es5', () => gulp.src('./src/conditioner.js')
     ]
   }))
   .pipe( uglify() )
-  .pipe( header(banner, { pkg }) )
+  .pipe( header(`/* ${ pkg.name } ${ pkg.version } */`) )
   .pipe( rename(`${ pkg.name }.js`) )
   .pipe( size({ gzip: true }) )
-  .pipe( gulp.dest('./dist') )
+  .pipe( gulp.dest('./umd') )
 );
 
-gulp.task('build-es6', () => gulp.src('./src/conditioner.js')
-  .pipe( uglifyes() )
-  .pipe( header(banner, { pkg }) )
-  .pipe( rename(`${ pkg.name }-es6.js`) )
-  .pipe( size({ gzip: true }) )
-  .pipe( gulp.dest('./dist') )
-);
-
-gulp.task('build', ['build-es5', 'build-es6']);
-
-gulp.task('default', ['build'], () => {
-	gulp.watch('./src/*', ['build']);
+gulp.task('dev', ['umd'], () => {
+	gulp.watch('./index.js', ['umd']);
 });

@@ -1,19 +1,11 @@
 {
   "name": "conditioner-core",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Conditioner - Frizz Free, Environment-aware, JavaScript Modules",
   "homepage": "https://pqina.nl/conditioner",
-  "main": "dist/conditioner-core.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "gulp build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rikschennink/conditioner.git"
-  },
-  "bugs": {
-    "url": "https://github.com/rikschennink/conditioner/issues"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "javascript",
@@ -28,6 +20,13 @@
     "conditions",
     "shampoo"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rikschennink/conditioner.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rikschennink/conditioner/issues"
+  },
   "author": "Rik Schennink <hello@rikschennink.nl> (http://rikschennink.nl/)",
   "license": "MIT",
   "dependencies": {},
@@ -43,7 +42,6 @@
     "gulp-header": "^1.8.9",
     "gulp-rename": "^1.2.2",
     "gulp-size": "^2.1.0",
-    "gulp-uglify": "^3.0.0",
-    "gulp-uglifyes": "^0.1.2"
+    "gulp-uglify": "^3.0.0"
   }
 }
