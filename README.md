@@ -7,12 +7,11 @@ Declaratively link JavaScript modules to your elements and mount them based on c
 ## Features
 
 - Progressive Enhancement!
-- Declarative way to bind logic to elements
+- Declarative way to bind logic to elements, [why this is good](http://rikschennink.nl/thoughts/binding-behavior-you-are-doing-it-wrong/)
 - Perfectly fits with Responsive Design
 - Dynamic import support
-- No dependencies
-- Small footprint
-- Easy to extend with plugins
+- No dependencies and small footprint (~1KB gzipped)
+- Extend with plugins
 
 
 
@@ -25,44 +24,72 @@ Mount a `SectionToggler` module, but only do it on narrow viewports.
     data-context="@media (max-width:30em)"> ... </h2>
 ```
 
-Conditioner will unmount the SectionToggler when the context is no longer fitting. So when the user resizes or rotates the viewport and suddenly it's wider than `30em` the `SectionToggler` will be unmounted.
+Conditioner will unmount the `SectionToggler` when the context is no longer fitting. So when the user resizes or rotates the viewport and suddenly it's wider than `30em` the `SectionToggler` will be unmounted.
 
 
 
 ## Installation
 
-Install from npm:
+Install with npm:
 
 ```bash
 npm i conditioner-core --save
 ```
 
+Using a CDN:
+
+```html
+<script src="https://unpkg.com/conditioner-core"></script>
+```
+
+
 
 ## Setup
 
-Using Conditioner in a module:
+Using Conditioner in an ES6 module:
 
 ```js
 import * as conditioner from 'conditioner-core';
 
+// mount all modules on the page
 conditioner.hydrate( document.documentElement );
 ```
 
-Dynamically import Conditioner.
+Using Conditioner with dynamic imports:
 
 ```js
-(async () => {
-
-    const conditioner = await import('./node_modules/conditioner-core/dist/conditioner-core-es6.js');
-
+import('conditioner-core-es6.js').then(conditioner => {
+    
+    // mount all modules on the page
     conditioner.hydrate( document.documentElement );
-
-})();
+    
+});
 ```
 
-## Boilerplates
+Using Conditioner in an AMD module:
 
-These boilerplates should help you on your way if you want to use Conditioner for your project.
+```js
+require(['conditioner'], function(conditioner) {
+
+    // mount all modules on the page
+    conditioner.hydrate( document.documentElement );
+
+});
+```
+
+Using Conditioner on the global scope:
+
+```html
+<script src="conditioner-core.js"></script>
+<script>
+    
+    // mount all modules on the page
+    conditioner.hydrate( document.documentElement );
+    
+</script>
+```
+
+A collection of boilerplates to get you started with various project setups:
 
 - [Dynamic Imports](https://github.com/rikschennink/conditioner-boilerplate-dynamic-imports)
 - [Webpack 2](https://github.com/rikschennink/conditioner-boilerplate-webpack)
@@ -70,32 +97,43 @@ These boilerplates should help you on your way if you want to use Conditioner fo
 - [Global](https://github.com/rikschennink/conditioner-boilerplate-global)
 
 
+
 ## API
+
+### Public Methods
+
+Inspired by React and Babel, Conditioner has a tiny but extensible API.
 
 Method                      | Description
 ----------------------------|---------------
-`hydrate(context)`          | Mount modules in a certain part of the DOM
-`addPlugin(plugin)`         | Add a plugin to Conditioner to extend its core functionality
+`hydrate(element)`          | Mount modules found in the subtree of the passed element, returns an array of bound module objects.
+`addPlugin(plugin)`         | Add a plugin to Conditioner to extend its core functionality.
 
 
-### Parsing the DOM for modules
 
-Mount all modules on the page.
+### Bound Module
 
-```js
-conditioner.hydrate( document.documentElement );
-```
+Bound modules are returned by the `hydrate` method. Each bound module object wraps a module. It exposes a set of properties, methods and callbacks to interact with the module and its element.
+
+Property / Method                              | Description
+-----------------------------------------------|---------------
+`alias`                                        | Name found in `dataset.module`.
+`name`                                         | Module path after name has been passed through `moduleSetName`.
+`element`                                      | The element the module is bound to.
+`mount()`                                      | Method to manually mount the module.
+`unmount()`                                    | Method to manually unmount the module.
+`onmount(boundModule)`                         | Callback that runs when the module has been mounted. Scoped to element.
+`onmounterror(error, boundModule)`             | Callback that runs when an error occurs during the mount process. Scoped to element.
+`onunmount(boundModule)`                       | Callback that runs when the module has been unmounted. Scoped to element.
 
 
-### Adding custom functionality to Conditioner
-
-Conditioner can be extended with plugins.
+### Plugins
 
 Adding a plugin can be done with the `addPlugin` method, the method expects a plugin definition object.
 
 Plugins can be used to override internal methods or add custom monitors to Conditioner.
 
-The following hooks can be used to setup plugins:
+You can link your plugin to the following hooks:
 
 Hook                                           | Description
 -----------------------------------------------|---------------
@@ -115,7 +153,11 @@ Hook                                           | Description
 `monitor`                                      | A collection of registered monitors. See monitor setup instructions below.
 
 
-Let's setup a basic plugin. Instead of writing each module with extension we want to leave out the extension and add it automatically. We'll use the `moduleSetName` hook for this.
+Let's setup a basic plugin. 
+
+Instead of writing each module with extension we want to leave out the extension and add it automatically. 
+
+We'll use the `moduleSetName` hook to achieve this:
 
 ```js
 conditioner.addPlugin({
@@ -123,21 +165,15 @@ conditioner.addPlugin({
 });
 ```
 
+Next up is a plugin that adds a `visible` monitor using the `IntersectionObserver` API. Each monitor can be used in a context query by prefixing the name with an `@`. Monitor plugins should mimic the [`MediaQueryList` API](https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList). For Conditioner this means that each monitor should expose a `matches` property and an `addListener` method.
 
 ```js
 conditioner.addPlugin({
     
     // we setup a monitor plugin
     monitor: {
-        // monitor plugins expect a name property
         name: 'visible',
-
-        // and a create method, which receives the required context for the module to load and the element the module is being mounted on
-        create:(context, element) => {
-
-            // a monitor plugin should expose an api similar to matchMedia, it should return a
-            // - matches property
-            // - addListener method
+        create:(context, element) => { 
 
             // setup our api
             const api = {
@@ -159,6 +195,19 @@ conditioner.addPlugin({
 
 });
 ```
+
+Now we can use our new `visible` monitor like this:
+
+```html
+<div data-module="/ui/SectionToggle.js" data-context="@visible true"></div>
+```
+
+We can combine it with the `media` monitor by adding an `and` statement.
+
+```html
+<div data-module="/ui/SectionToggle.js" data-context="@media (max-width:30em) and @visible true"></div>
+```
+
 
 
 
