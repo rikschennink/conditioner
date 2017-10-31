@@ -286,58 +286,6 @@ The above plugin will also be required when you need to mount modules on SVG ele
 
 
 
-## Version History
-
-### 2.0
-
-* Total rewrite of Conditioner, resulting in an ES6 codebase and a smaller and more plugin oriented API.
-
-
-### 1.2.3
-
-* Replaced `this` with `window` to fix Browserify root problems
-
-
-### 1.2.0
-
-* Fixed [unload handler not called](https://github.com/rikschennink/conditioner/issues/91)
-* Renamed `.on` method to `addConditionMonitor` and `.is` method to `matchesCondition`
-* Added `.removeConditionMonitor`
-* Fixed problem where `.is`/`matchesCondition` method did not clean up Promise
-* Removed global and multiline flags from quick regex test [issue 94](https://github.com/rikschennink/conditioner/issues/94)
-
-
-### 1.1.0
-
-* The `supported` property has been added which is used to determine if a module can be loaded at all
-* Improved `getModule` method API
-* Constructor now set when extending a module
-* Performance optimisations
-
-
-### 1.0.1
-
-* Fixed [memory leaks](https://github.com/rikschennink/conditioner/issues/71)
-
-
-### 1.0.0
-
-* Bind multiple modules to the same DOM node.
-* New `was` statement to make tests sticky `element:{was visible}`.
-* Alternative more human readable option format `data-options=“map.zoom:10, map.type:terrain”`.
-* Support for other AMD loaders, if you follow AMD specs you should be fine.
-* Browserify support, for conditional loading you'll still need an AMD loader though. 
-* Separate loading state attribute for binding CSS loading animations.
-* Configure the paths and attributes Conditioner uses.
-* `getModule` and `getModules` methods to access moduleControllers more directly.
-* New `is` and `on` methods for manually testing conditions once or continually.
-* `destroy` method to destroy previously initialised nodes.
-* Writing your own monitors is now a lot easier.
-* Fixes and small improvements.
-
-Read the [1.0.0 closed issue list](https://github.com/rikschennink/conditioner/issues?milestone=2&page=1&state=closed) for a complete overview.
-
-
 ## License
 
 [MIT](http://www.opensource.org/licenses/mit-license.php)
