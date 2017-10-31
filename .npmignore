@@ -1,4 +1,3 @@
-src/
 .gitattributes
 .babelrc
 gulpfile.babel.js

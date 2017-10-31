@@ -23,8 +23,8 @@ If the viewport is resized or rotated and suddenly it's smaller than `30em` cond
 - Responsive Design!
 - Declarative way to bind logic to elements, [why this is good](http://rikschennink.nl/thoughts/binding-behavior-you-are-doing-it-wrong/)
 - No dependencies and small footprint (~1KB gzipped)
-- Supports ES6 `import()`
-- Easily extend with plugins
+- Compatible with ES `import()`, AMD `require()` and webpack
+- Can be extend easily with plugins
 
 
 
@@ -46,54 +46,98 @@ Using a CDN:
 
 ## Setup
 
-Using Conditioner in an ES6 module:
+Using Conditioner on the global scope:
 
-```js
-import * as conditioner from 'conditioner-core';
+```html
+<script src="https://unpkg.com/conditioner-core/umd/conditioner-core.js"></script>
+<script>
 
-// mount all modules on the page
+// mount modules!
 conditioner.hydrate( document.documentElement );
+
+</script>
 ```
 
-Using Conditioner with dynamic imports:
+Using Conditioner with ES6 modules:
 
 ```js
 import('conditioner-core/index.js').then(conditioner => {
     
-    // mount all modules on the page
+    // use es6 imports
+    conditioner.addPlugin({
+
+        // converts module aliases to paths
+        moduleSetName: (name) => `/ui/${ name }.js`,
+
+        // get the module constructor
+        moduleGetConstructor: (module) => module.default,
+
+        // fetch module with dynamic import
+        moduleImport: (name) => import(name),
+
+    });
+
+    // mount modules!
     conditioner.hydrate( document.documentElement );
-    
 });
+```
+
+Using Conditioner with webpack:
+
+```js
+import * as conditioner from 'conditioner-core';
+
+conditioner.addPlugin({
+
+    // converts module aliases to paths
+    moduleSetName: (name) => `./ui/${ name }.js`,
+    
+    // get the module constructor
+    moduleGetConstructor: (module) => module.default,
+
+    // override the import
+    moduleImport: (name) => import(`${ name }`)
+
+});
+
+// lets go!
+conditioner.hydrate( document.documentElement );
 ```
 
 Using Conditioner in an AMD module:
 
 ```js
-require(['umd/conditioner-core'], function(conditioner) {
+require(['umd/conditioner-core.js'], function(conditioner) {
 
-    // mount all modules on the page
+    // setup AMD require
+    conditioner.addPlugin({
+
+        // converts module aliases to paths
+        moduleSetName: function(name) { return '/ui/' + name + '.js' },
+
+        // setup AMD require
+        moduleImport: function(name) {
+            return new Promise(function(resolve) {
+                require([name], function(module) {
+                    resolve(module);
+                });
+            });
+        }
+
+    });
+
+    // mount modules!
     conditioner.hydrate( document.documentElement );
-
 });
 ```
 
-Using Conditioner on the global scope:
 
-```html
-<script src="umd/conditioner-core.js"></script>
-<script>
-    
-    // mount all modules on the page
-    conditioner.hydrate( document.documentElement );
-    
-</script>
-```
 
 A collection of boilerplates to get you started with various project setups:
 
-- [Dynamic Imports](https://github.com/rikschennink/conditioner-boilerplate-dynamic-imports)
-- [Webpack 2](https://github.com/rikschennink/conditioner-boilerplate-webpack)
-- [RequireJS](https://github.com/rikschennink/conditioner-boilerplate-requirejs)
+- [ES6](https://github.com/rikschennink/conditioner-boilerplate-es6)
+- [Webpack](https://github.com/rikschennink/conditioner-boilerplate-webpack)
+- [AMD](https://github.com/rikschennink/conditioner-boilerplate-amd)
 - [Global](https://github.com/rikschennink/conditioner-boilerplate-global)
 
 
@@ -139,8 +183,8 @@ Hook                                           | Description
 -----------------------------------------------|---------------
 `moduleSelector(context)`                      | Selects all elements with modules within the given context and returns a `NodeList`.
 `moduleGetContext(element)`                    | Returns context requirements for the module. By default returns the `element.dataset.context` attribute.
-`moduleImport(name)`                           | Imports the module with the given name, should return a `Promise`.
-`moduleGetConstructor(module)`                 | Gets the constructor method from the module object, by default expects it to be defined on `module.default` or a default export.
+`moduleImport(name)`                           | Imports the module with the given name, should return a `Promise`. By default searches global scope for module name.
+`moduleGetConstructor(module)`                 | Gets the constructor method from the module object, by default expects module parameter itself to be a factory function.
 `moduleGetDestructor(moduleExports)`           | Gets the destructor method from the module constructor return value, by default expects a single function.
 `moduleSetConstructorArguments(name, element)` | Use to alter the arguments supplied to the module constructor, expects an `array` as return value.
 `moduleGetName(element)`                       | Called to get the name of the module, by default retrieves the `element.dataset.module` value.
@@ -161,16 +205,17 @@ We'll use the `moduleSetName` hook to achieve this:
 
 ```js
 conditioner.addPlugin({
-    moduleSetName: name => name + '.js'
+    moduleSetName: (name) => name + '.js'
 });
 ```
 
-Next up is a plugin that adds a `visible` monitor using the `IntersectionObserver` API. Each monitor can be used in a context query by prefixing the name with an `@`. Monitor plugins should mimic the [`MediaQueryList` API](https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList). For Conditioner this means that each monitor should expose a `matches` property and an `addListener` method.
+Next up is a plugin that adds a `visible` monitor using the `IntersectionObserver` API. Monitors can be used in a context query by prefixing the name with an `@`.
+
+Monitor plugins should mimic the [`MediaQueryList` API](https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList). Each monitor should expose a `matches` property and an `addListener` method.
 
 ```js
 conditioner.addPlugin({
     
-    // we setup a monitor plugin
     monitor: {
         name: 'visible',
         create:(context, element) => { 
@@ -196,16 +241,16 @@ conditioner.addPlugin({
 });
 ```
 
-Now we can use our new `visible` monitor like this:
+With our `visible` monitor added, we can use it in a context query:
 
 ```html
 <div data-module="/ui/component.js" data-context="@visible true"></div>
 ```
 
-We can combine it with the `media` monitor by adding an `and` statement.
+Context queries can consist of multiple monitors joined with an `and` statement.
 
 ```html
-<div data-module="/ui/component.js" data-context="@media (max-width:30em) and @visible true"></div>
+<div data-module="/ui/component.js" data-context="@media (min-width:30em) and @visible true"></div>
 ```
 
 
@@ -214,7 +259,7 @@ We can combine it with the `media` monitor by adding an `and` statement.
 
 ## Version History
 
-### 2.0.0
+### 2.0
 
 * Total rewrite of Conditioner, resulting in an ES6 codebase and a smaller and more plugin oriented API.
 

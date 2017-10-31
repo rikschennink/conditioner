@@ -6,7 +6,7 @@ import size from 'gulp-size';
 import uglify from 'gulp-uglify';
 import pkg from './package.json';
 
-gulp.task('umd', () => gulp.src('./index.js')
+gulp.task('build-umd', () => gulp.src('./index.js')
 .pipe( rename('conditioner.js') )
   .pipe(babel({
     plugins: [
@@ -14,7 +14,11 @@ gulp.task('umd', () => gulp.src('./index.js')
       'transform-es2015-modules-umd'
     ],
     presets: [
-      'es2015'
+      ['env', {
+        'targets': {
+          'browsers': ['last 2 versions']
+        }
+      }]
     ]
   }))
   .pipe( uglify() )
@@ -24,6 +28,6 @@ gulp.task('umd', () => gulp.src('./index.js')
   .pipe( gulp.dest('./umd') )
 );
 
-gulp.task('dev', ['umd'], () => {
-	gulp.watch('./index.js', ['umd']);
+gulp.task('dev', ['build-umd'], () => {
+	gulp.watch('./index.js', ['build-umd']);
 });

@@ -1,6 +1,6 @@
 {
   "name": "conditioner-core",
-  "version": "2.0.2",
+  "version": "2.0.6",
   "description": "Conditioner - Frizz Free, Environment-aware, JavaScript Modules",
   "homepage": "https://pqina.nl/conditioner",
   "main": "index.js",
@@ -32,11 +32,9 @@
   "dependencies": {},
   "devDependencies": {
     "babel-cli": "^6.18.0",
-    "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-header": "^1.8.9",

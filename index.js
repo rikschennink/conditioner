@@ -166,12 +166,11 @@ addPlugin({
     // returns the context query as defined on the element
     moduleGetContext: element => element.dataset.context,
 
-    // load the referenced module, by default uses es6 dynamic module imports
-    // passing the variable as a string prevents a dependency warning when used in webpack
-    moduleImport: name => import(`${ name }`),
+    // load the referenced module, by default searches global scope for module name
+    moduleImport: name => new Promise(resolve => resolve(self[name])),
 
-    // returns the module constructor, by default we assume the module default exports a function
-    moduleGetConstructor: module => module.default,
+    // returns the module constructor, by default we assume the module returned is a factory function
+    moduleGetConstructor: module => module,
 
     // returns the module destrutor, by default we assume the constructor exports a function
     moduleGetDestructor: moduleExports => moduleExports,
