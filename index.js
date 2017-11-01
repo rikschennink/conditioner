@@ -20,6 +20,9 @@ const bindModule = element => {
         // reference to the element
         element,
 
+        // is the module currently mounted?
+        mounted: false,
+
         // unload is empty function so we can blindly call it if initial context does not match
         unmount: () => {
 
@@ -31,6 +34,9 @@ const bindModule = element => {
             
             // clean up 
             state.destroy();
+
+            // no longer mounted
+            boundModule.mounted = false;
             
             // done unmounting the module
             eachPlugins('moduleDidUnmount', boundModule);
@@ -64,6 +70,9 @@ const bindModule = element => {
                     // initialise the module, module can return a destroy mehod ()
                     state.destroy = runPlugin('moduleGetDestructor', runPlugin('moduleGetConstructor', module)( ...runPlugin('moduleSetConstructorArguments', name, element, module) ) );
                     
+                    // module is now mounted
+                    boundModule.mounted = true;
+
                     // did mount the module
                     eachPlugins('moduleDidMount', boundModule);
                     
