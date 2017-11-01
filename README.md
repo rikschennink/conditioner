@@ -1,6 +1,8 @@
 # Conditioner
 
-Declaratively link JavaScript modules to your elements and mount them based on contextual parameters like viewport size and element visibilty.
+Conditioner provides a straight forward Progressive Enhancement based solution for linking JavaScript modules or functionality to DOM elements.
+
+Modules and functionality can be linked based on contextual parameters like viewport size and element visibilty making it your perfect Responsive Design companion.
 
 
 
@@ -13,7 +15,7 @@ Mount a component (like a Date Picker, Section Toggler or Carrousel), but only d
     data-context="@media (min-width:30em)"> ... </h2>
 ```
 
-If the viewport is resized or rotated and suddenly it's smaller than `30em` conditioner will automatically unmount the component.
+If the viewport is resized or rotated and suddenly it's smaller than `30em` Conditioner will automatically unmount the component.
 
 
 
