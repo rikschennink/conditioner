@@ -1,6 +1,8 @@
 # Conditioner
 
-Declaratively link JavaScript modules to your elements and mount them based on contextual parameters like viewport size and element visibilty.
+Conditioner provides a straight forward Progressive Enhancement based solution for linking JavaScript modules or functionality to DOM elements.
+
+Modules and functionality can be linked based on contextual parameters like viewport size and element visibilty making it your perfect Responsive Design companion.
 
 
 
@@ -13,14 +15,14 @@ Mount a component (like a Date Picker, Section Toggler or Carrousel), but only d
     data-context="@media (min-width:30em)"> ... </h2>
 ```
 
-If the viewport is resized or rotated and suddenly it's smaller than `30em` conditioner will automatically unmount the component.
+If the viewport is resized or rotated and suddenly it's smaller than `30em` Conditioner will automatically unmount the component.
 
 
 
 ## Features
 
-- Progressive Enhancement!
-- Responsive Design!
+- Progressive Enhancement as a starting point
+- Perfect for a Responsive Design strategy
 - Declarative way to bind logic to elements, [why this is good](http://rikschennink.nl/thoughts/binding-behavior-you-are-doing-it-wrong/)
 - No dependencies and small footprint (~1KB gzipped)
 - Compatible with ES `import()`, AMD `require()` and webpack
@@ -166,6 +168,7 @@ Property / Method                              | Description
 `element`                                      | The element the module is bound to.
 `mount()`                                      | Method to manually mount the module.
 `unmount()`                                    | Method to manually unmount the module.
+`mounted`                                      | Boolean indicating wether the module is currently mounted.
 `onmount(boundModule)`                         | Callback that runs when the module has been mounted. Scoped to element.
 `onmounterror(error, boundModule)`             | Callback that runs when an error occurs during the mount process. Scoped to element.
 `onunmount(boundModule)`                       | Callback that runs when the module has been unmounted. Scoped to element.
@@ -211,7 +214,7 @@ conditioner.addPlugin({
 
 Next up is a plugin that adds a `visible` monitor using the `IntersectionObserver` API. Monitors can be used in a context query by prefixing the name with an `@`.
 
-Monitor plugins should mimic the [`MediaQueryList` API](https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList). Each monitor should expose a `matches` property and an `addListener` method.
+Monitor plugins should mimic the [`MediaQueryList`](https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList) API. Each monitor should expose a `matches` property and an `addListener` method.
 
 ```js
 conditioner.addPlugin({
@@ -255,58 +258,35 @@ Context queries can consist of multiple monitors joined with an `and` statement.
 
 
 
+## Polyfilling
 
+To use Conditioner on older browsers you will have to polyfill some APIs (click ASPI's for compatibility tables).
 
-## Version History
+Edge <= 14
 
-### 2.0
+- [`Array.prototype.includes`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes#Browser_compatibility)
 
-* Total rewrite of Conditioner, resulting in an ES6 codebase and a smaller and more plugin oriented API.
+Internet Explorer 11
 
+- [`Array.prototype.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find#Browser_compatibility)
+- [`Array.prototype.from`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from#Browser_compatibility)
+- [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise#Browser_compatibility)
 
-### 1.2.3
+Internet Explorer 10
 
-* Replaced `this` with `window` to fix Browserify root problems
+- [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset#Browser_compatibility)
 
+You can either polyfill `dataset` or add the following plugin to override the `moduleGetName` and `moduleGetContext` hooks (which use `dataset`).
 
-### 1.2.0
+```js
+conditioner.addPlugin({
+    moduleGetName: function(element) { return element.getAttribute('data-module'); },
+    moduleGetContext: function(element) { return element.getAttribute('data-context'); }
+});
+```
 
-* Fixed [unload handler not called](https://github.com/rikschennink/conditioner/issues/91)
-* Renamed `.on` method to `addConditionMonitor` and `.is` method to `matchesCondition`
-* Added `.removeConditionMonitor`
-* Fixed problem where `.is`/`matchesCondition` method did not clean up Promise
-* Removed global and multiline flags from quick regex test [issue 94](https://github.com/rikschennink/conditioner/issues/94)
+The above plugin will also be required when you need to mount modules on SVG elements. Browser support for use of [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/SVGElement/dataset#Browser_compatibility) on SVG elements is a lot worse than HTML elements.
 
-
-### 1.1.0
-
-* The `supported` property has been added which is used to determine if a module can be loaded at all
-* Improved `getModule` method API
-* Constructor now set when extending a module
-* Performance optimisations
-
-
-### 1.0.1
-
-* Fixed [memory leaks](https://github.com/rikschennink/conditioner/issues/71)
-
-
-### 1.0.0
-
-* Bind multiple modules to the same DOM node.
-* New `was` statement to make tests sticky `element:{was visible}`.
-* Alternative more human readable option format `data-options=“map.zoom:10, map.type:terrain”`.
-* Support for other AMD loaders, if you follow AMD specs you should be fine.
-* Browserify support, for conditional loading you'll still need an AMD loader though. 
-* Separate loading state attribute for binding CSS loading animations.
-* Configure the paths and attributes Conditioner uses.
-* `getModule` and `getModules` methods to access moduleControllers more directly.
-* New `is` and `on` methods for manually testing conditions once or continually.
-* `destroy` method to destroy previously initialised nodes.
-* Writing your own monitors is now a lot easier.
-* Fixes and small improvements.
-
-Read the [1.0.0 closed issue list](https://github.com/rikschennink/conditioner/issues?milestone=2&page=1&state=closed) for a complete overview.
 
 
 ## License
