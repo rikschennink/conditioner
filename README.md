@@ -168,6 +168,7 @@ Property / Method                              | Description
 `element`                                      | The element the module is bound to.
 `mount()`                                      | Method to manually mount the module.
 `unmount()`                                    | Method to manually unmount the module.
+`mounted`                                      | Boolean indicating wether the module is currently mounted.
 `onmount(boundModule)`                         | Callback that runs when the module has been mounted. Scoped to element.
 `onmounterror(error, boundModule)`             | Callback that runs when an error occurs during the mount process. Scoped to element.
 `onunmount(boundModule)`                       | Callback that runs when the module has been unmounted. Scoped to element.
