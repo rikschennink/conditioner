@@ -208,7 +208,7 @@ We'll use the `moduleSetName` hook to achieve this:
 
 ```js
 conditioner.addPlugin({
-    moduleSetName: (name) => name + '.js'
+    moduleSetName: (name) => `${ name }.js`
 });
 ```
 
