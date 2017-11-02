@@ -263,7 +263,7 @@ Context queries can consist of multiple monitors joined with an `and` statement.
 
 ## Polyfilling
 
-To use Conditioner on older browsers you will have to polyfill some APIs (click ASPI's for compatibility tables).
+To use Conditioner on older browsers you will have to polyfill some APIs (click APIs for compatibility tables).
 
 Edge <= 14
 
