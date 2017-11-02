@@ -1,8 +1,8 @@
 # Conditioner
 
-Conditioner provides a straight forward Progressive Enhancement based solution for linking JavaScript modules or functionality to DOM elements.
+Conditioner provides a straight forward Progressive Enhancement based solution for linking JavaScript modules to DOM elements.
 
-Modules and functionality can be linked based on contextual parameters like viewport size and element visibilty making it your perfect Responsive Design companion.
+Modules can be linked based on contextual parameters like viewport size and element visibilty making Conditioner your perfect Responsive Design companion.
 
 
 
@@ -26,7 +26,7 @@ If the viewport is resized or rotated and suddenly it's smaller than `30em` Cond
 - Declarative way to bind logic to elements, [why this is good](http://rikschennink.nl/thoughts/binding-behavior-you-are-doing-it-wrong/)
 - No dependencies and small footprint (~1KB gzipped)
 - Compatible with ES `import()`, AMD `require()` and webpack
-- Can be extend easily with plugins
+- Can be extended easily with plugins
 
 
 
