@@ -156,11 +156,13 @@ const createModule = element => {
 // parse a certain section of the DOM and load bound modules
 const hydrate = context => [ ...runPlugin('moduleSelector', context) ].map( createModule );
 
+// array includes 'polyfill', one less polyfill for users on edge
+const includes = (arr, value) => arr.indexOf(value) > -1;
 
 // plugin api
 const plugins = [];
 const addPlugin = plugin => plugins.push(plugin);
-const getPlugins = type => plugins.filter( plugin => Object.keys(plugin).includes(type) ).map( plugin => plugin[type] )
+const getPlugins = type => plugins.filter( plugin => includes(Object.keys(plugin), type) ).map( plugin => plugin[type] )
 const eachPlugins = (type, ...args) => getPlugins(type).forEach(plugin => plugin(...args));
 const chainPlugins = (type, ...args) => getPlugins(type).reduce((args, plugin) => [plugin(...args)], args).shift();
 const runPlugin = (type, ...args) => getPlugins(type).pop()(...args);

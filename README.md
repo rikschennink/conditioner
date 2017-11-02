@@ -265,10 +265,6 @@ Context queries can consist of multiple monitors joined with an `and` statement.
 
 To use Conditioner on older browsers you will have to polyfill some APIs (click APIs for compatibility tables).
 
-Edge <= 14
-
-- [`Array.prototype.includes`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes#Browser_compatibility)
-
 Internet Explorer 11
 
 - [`Array.prototype.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find#Browser_compatibility)
