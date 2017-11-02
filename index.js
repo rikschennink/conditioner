@@ -119,13 +119,13 @@ const createContextualModule = (query, boundModule) => {
     // if all monitors return true for .matches getter, we mount the module
     const onchange = () => {
 
-    // will keep returning false if one of the monitors does not match, else checks matches property
-    const matches = monitors.reduce((matches, monitor) => {
-        return matches ? monitor.matches : false;
-    }, true);
+        // will keep returning false if one of the monitors does not match, else checks matches property
+        const matches = monitors.reduce((matches, monitor) => {
+            return matches ? monitor.matches : false;
+        }, true);
 
-    // if matches we mount the module, else we unmount
-    matches ? boundModule.mount() : boundModule.unmount();
+        // if matches we mount the module, else we unmount
+        matches ? boundModule.mount() : boundModule.unmount();
     }
     
     // listen for context changes
