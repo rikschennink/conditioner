@@ -1,8 +1,8 @@
 # Conditioner
 
-Conditioner provides a straight forward Progressive Enhancement based solution for linking JavaScript modules or functionality to DOM elements.
+Conditioner provides a straight forward Progressive Enhancement based solution for linking JavaScript modules to DOM elements.
 
-Modules and functionality can be linked based on contextual parameters like viewport size and element visibilty making it your perfect Responsive Design companion.
+Modules can be linked based on contextual parameters like viewport size and element visibilty making Conditioner your perfect Responsive Design companion.
 
 
 
