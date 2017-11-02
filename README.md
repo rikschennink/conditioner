@@ -221,24 +221,27 @@ conditioner.addPlugin({
     
     monitor: {
         name: 'visible',
-        create:(context, element) => { 
+        create: (context, element) => ({
 
-            // setup our api
-            const api = {
-                matches: false,
-                addListener (change) {
-                    
-                    new IntersectionObserver(entries => {
-                        api.matches = entries.pop().isIntersecting == (context === 'true');
-                        change(api.matches);
-                    }).observe(element);
+            // current match state
+            matches: false,
 
-                }
-            };
+            // called by conditioner to start listening for changes
+            addListener (change) {
 
-            // done!
-            return api;
-        }
+                new IntersectionObserver(entries => {
+
+                    // update the matches state
+                    this.matches = entries.pop().isIntersecting == (context === 'true');
+
+                    // inform conditioner of the new state
+                    change(this.matches);
+
+                }).observe(element);
+
+            }
+            
+        })
     }
 
 });
