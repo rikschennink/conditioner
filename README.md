@@ -60,12 +60,11 @@ conditioner.hydrate( document.documentElement );
 </script>
 ```
 
-Using Conditioner with ES6 modules:
+Using Conditioner async with ES6 modules:
 
 ```js
 import('conditioner-core/index.js').then(conditioner => {
     
-    // use es6 imports
     conditioner.addPlugin({
 
         // converts module aliases to paths
@@ -106,7 +105,7 @@ conditioner.addPlugin({
 conditioner.hydrate( document.documentElement );
 ```
 
-Using Conditioner in an AMD module:
+Using Conditioner in AMD modules:
 
 ```js
 require(['umd/conditioner-core.js'], function(conditioner) {
