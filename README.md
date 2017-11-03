@@ -5,6 +5,8 @@ Conditioner provides a straight forward Progressive Enhancement based solution f
 Modules can be linked based on contextual parameters like viewport size and element visibilty making Conditioner your perfect Responsive Design companion.
 
 
+![](https://raw.githubusercontent.com/rikschennink/conditioner/master/demo.gif)
+
 
 ## Example
 
