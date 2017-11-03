@@ -234,7 +234,7 @@ conditioner.addPlugin({
                     this.matches = entries.pop().isIntersecting == (context === 'true');
 
                     // inform conditioner of the new state
-                    change(this.matches);
+                    change();
 
                 }).observe(element);
 

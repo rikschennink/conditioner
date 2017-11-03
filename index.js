@@ -118,14 +118,19 @@ const bindModule = element => {
     return boundModule;
 };
 
-// @media (min-width:30em) and @visible true  ->  [ ['media', '(min-width:30em)'], ['visible', 'true'] ]
+
 // splits the context query on 'and @' (to prevent splits in context value)
-// then for each part of the query it extracts the name and value [name, value] (thats why the regex has two match groups)
-const parseQuery = query => query.substr(1).split(' and @').map(q => /^([a-z]+) (.+)/.exec(q).splice(1));
+// extracts the name and value [name, value] (thats why the regex has two match groups)
+const extractNameAndValue = query => /^([a-z]+) (.+)/.exec(query).splice(1)
+
+// @media (min-width:30em) and @visible true  ->  [ ['media', '(min-width:30em)'], ['visible', 'true'] ]
+const parseQuery = query => query
+    .substr(1) // remove first @
+    .split(' and @') // find the sub queries
+    .map(extractNameAndValue); // get the query name and value as an array
 
 // finds monitor plugins and calls the create method on the first found monitor
-const getContextMonitor = (name, context, element) => 
-    getPlugins('monitor')
+const getContextMonitor = (name, context, element) => getPlugins('monitor')
     .find(monitor => monitor.name === name)
     .create(context, element);
 
