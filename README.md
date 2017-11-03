@@ -5,9 +5,6 @@ Conditioner provides a straight forward Progressive Enhancement based solution f
 Modules can be linked based on contextual parameters like viewport size and element visibilty making Conditioner your perfect Responsive Design companion.
 
 
-![](https://raw.githubusercontent.com/rikschennink/conditioner/master/demo.gif)
-
-
 ## Example
 
 Mount a component (like a Date Picker, Section Toggler or Carrousel), but only do it on wide viewports.
@@ -19,6 +16,10 @@ Mount a component (like a Date Picker, Section Toggler or Carrousel), but only d
 
 If the viewport is resized or rotated and suddenly it's smaller than `30em` Conditioner will automatically unmount the component.
 
+
+## Demo
+
+[![](https://raw.githubusercontent.com/rikschennink/conditioner/master/demo.gif)](https://codepen.io/rikschennink/details/mqVzXb/)
 
 
 ## Features
