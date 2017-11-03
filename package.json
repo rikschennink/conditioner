@@ -1,7 +1,7 @@
 {
   "name": "conditioner-core",
-  "version": "2.0.8",
-  "description": "Conditioner - Frizz free, Context-aware, JavaScript modules",
+  "version": "2.0.9",
+  "description": "Conditioner - Frizz free, context-aware, JavaScript modules",
   "homepage": "https://pqina.nl/conditioner",
   "main": "index.js",
   "scripts": {
@@ -11,6 +11,9 @@
     "javascript",
     "media queries",
     "media query",
+    "es6",
+    "import",
+    "webpack",
     "module",
     "import",
     "dynamic",

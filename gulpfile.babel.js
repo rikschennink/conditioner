@@ -6,7 +6,7 @@ import size from 'gulp-size';
 import uglify from 'gulp-uglify';
 import pkg from './package.json';
 
-gulp.task('build-umd', () => gulp.src('./index.js')
+gulp.task('build', () => gulp.src('./index.js')
 .pipe( rename('conditioner.js') )
   .pipe(babel({
     plugins: [
@@ -28,6 +28,6 @@ gulp.task('build-umd', () => gulp.src('./index.js')
   .pipe( gulp.dest('./umd') )
 );
 
-gulp.task('dev', ['build-umd'], () => {
-	gulp.watch('./index.js', ['build-umd']);
+gulp.task('dev', ['build'], () => {
+	gulp.watch('./index.js', ['build']);
 });
