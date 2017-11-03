@@ -1,23 +1,28 @@
 // links the module to the element and exposes a callback api object
 const bindModule = element => {
 
+    // gets the name of the module from the element, we assume the name is an alias
     const alias = runPlugin('moduleGetName', element);
 
+    // sets the name of the plugin, this does nothing by default but allows devs to turn an alias into the actual module name
     const name = chainPlugins('moduleSetName', alias);
 
+    // internal state
     const state = {
-        destroy: null // holder for unload method
+        destroy: null, // holder for unload method,
+        mounting: false
     };
 
-    // module config
+    // api wrapped around module object
     const boundModule = {
 
+        // original name as found on the element
         alias,
 
-        // module name
+        // transformed name
         name,
 
-        // reference to the element
+        // reference to the element the module is bound to
         element,
 
         // is the module currently mounted?
@@ -26,13 +31,14 @@ const bindModule = element => {
         // unload is empty function so we can blindly call it if initial context does not match
         unmount: () => {
 
-            // can't be destroyed as no destroy method has been supplied
-            if (!state.destroy) { return; }
+            // can't be unmounted if no destroy method has been supplied
+            // can't be unmounted if not mounted
+            if (!state.destroy || !boundModule.mounted) { return; }
 
             // about to unmount the module
             eachPlugins('moduleWillUnmount', boundModule);
             
-            // clean up 
+            // clean up
             state.destroy();
 
             // no longer mounted
@@ -48,12 +54,21 @@ const bindModule = element => {
         // requests and loads the module
         mount: () => {
 
+            // can't mount an already mounted module
+            // can't mount a module that is currently mounting
+            if (boundModule.mounted || state.mounting) {
+                return;
+            }
+
             // about to mount the module
             eachPlugins('moduleWillMount', boundModule);
 
             // get the module
             runPlugin('moduleImport', name)
                 .catch( error => {
+
+                    // failed to mount so no longer mounting
+                    state.mounting = false;
 
                     // failed to mount the module
                     eachPlugins('moduleDidCatch', error, boundModule);
@@ -67,11 +82,14 @@ const bindModule = element => {
                 })
                 .then( module => {
 
-                    // initialise the module, module can return a destroy mehod ()
+                    // initialise the module, module can return a destroy mehod
                     state.destroy = runPlugin('moduleGetDestructor', runPlugin('moduleGetConstructor', module)( ...runPlugin('moduleSetConstructorArguments', name, element, module) ) );
                     
                     // module is now mounted
                     boundModule.mounted = true;
+
+                    // no longer mounting
+                    state.mounting = false;
 
                     // did mount the module
                     eachPlugins('moduleDidMount', boundModule);
@@ -100,15 +118,16 @@ const bindModule = element => {
     return boundModule;
 };
 
-// @media (min-width:30em) and @visible true  ->  ['media', '(min-width:30em)'], ['visible', 'true']
+// @media (min-width:30em) and @visible true  ->  [ ['media', '(min-width:30em)'], ['visible', 'true'] ]
+// splits the context query on 'and @' (to prevent splits in context value)
+// then for each part of the query it extracts the name and value [name, value] (thats why the regex has two match groups)
 const parseQuery = query => query.substr(1).split(' and @').map(q => /^([a-z]+) (.+)/.exec(q).splice(1));
 
-// returns a context monitor from the plugins array
-const getContextMonitor = (name, context, element) => {
-    const monitors = getPlugins('monitor');
-    const monitor = monitors.find(monitor => monitor.name === name);
-    return monitor.create(context, element);
-};
+// finds monitor plugins and calls the create method on the first found monitor
+const getContextMonitor = (name, context, element) => 
+    getPlugins('monitor')
+    .find(monitor => monitor.name === name)
+    .create(context, element);
 
 // handles contextual loading and unloading
 const createContextualModule = (query, boundModule) => {
@@ -120,13 +139,12 @@ const createContextualModule = (query, boundModule) => {
     const onchange = () => {
 
         // will keep returning false if one of the monitors does not match, else checks matches property
-        const matches = monitors.reduce((matches, monitor) => {
-            return matches ? monitor.matches : false;
-        }, true);
+        const matches = monitors.reduce((matches, monitor) => matches ? monitor.matches : false, true);
 
         // if matches we mount the module, else we unmount
         matches ? boundModule.mount() : boundModule.unmount();
-    }
+
+    };
     
     // listen for context changes
     monitors.forEach(monitor => monitor.addListener(onchange));
@@ -138,7 +156,7 @@ const createContextualModule = (query, boundModule) => {
 };
 
 
-// creates modules.. you don't say!?
+// pass in an element and outputs a bound module object, will wrap bound module in a contextual module if required
 const createModule = element => {
     
     // bind the module to the element and receive the module wrapper API
@@ -156,16 +174,29 @@ const createModule = element => {
 // parse a certain section of the DOM and load bound modules
 const hydrate = context => [ ...runPlugin('moduleSelector', context) ].map( createModule );
 
-// array includes 'polyfill', one less polyfill for users on edge
-const includes = (arr, value) => arr.indexOf(value) > -1;
+
 
 // plugin api
 const plugins = [];
+
+// array includes 'polyfill', Array.prototype.includes was the only feature not supported on Edge
+const includes = (arr, value) => arr.indexOf(value) > -1;
+
+// plugins are stored in an array as multiple plugins can subscribe to one hook
 const addPlugin = plugin => plugins.push(plugin);
+
+// returns the plugins that match the requested type, as plugins can subscribe to multiple hooks we need to loop over the plugin keys to see if it matches
 const getPlugins = type => plugins.filter( plugin => includes(Object.keys(plugin), type) ).map( plugin => plugin[type] )
+
+// run for each of the registered plugins
 const eachPlugins = (type, ...args) => getPlugins(type).forEach(plugin => plugin(...args));
+
+// run registered plugins but chain input -> output (sync)
 const chainPlugins = (type, ...args) => getPlugins(type).reduce((args, plugin) => [plugin(...args)], args).shift();
+
+// run on last registered plugin
 const runPlugin = (type, ...args) => getPlugins(type).pop()(...args);
+
 
 
 // default plugin
@@ -178,7 +209,7 @@ addPlugin({
     moduleGetContext: element => element.dataset.context,
 
     // load the referenced module, by default searches global scope for module name
-    moduleImport: name => new Promise(resolve => resolve(self[name])),
+    moduleImport: name => new Promise(resolve => self[name] ? resolve(self[name]) : reject(`Module ${name} not found.`)),
 
     // returns the module constructor, by default we assume the module returned is a factory function
     moduleGetConstructor: module => module,
