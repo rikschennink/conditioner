@@ -44,7 +44,7 @@ npm i conditioner-core --save
 Using a CDN:
 
 ```html
-<script src="https://unpkg.com/conditioner-core/umd/conditioner-core.js"></script>
+<script src="https://unpkg.com/conditioner-core/conditioner-core.js"></script>
 ```
 
 
@@ -54,7 +54,7 @@ Using a CDN:
 Using Conditioner on the global scope:
 
 ```html
-<script src="https://unpkg.com/conditioner-core/umd/conditioner-core.js"></script>
+<script src="https://unpkg.com/conditioner-core/conditioner-core.js"></script>
 <script>
 
 // mount modules!
@@ -111,7 +111,7 @@ conditioner.hydrate( document.documentElement );
 Using Conditioner in AMD modules:
 
 ```js
-require(['umd/conditioner-core.js'], function(conditioner) {
+require(['conditioner-core.js'], function(conditioner) {
 
     // setup AMD require
     conditioner.addPlugin({

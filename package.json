@@ -1,9 +1,11 @@
 {
   "name": "conditioner-core",
-  "version": "2.0.9",
+  "version": "2.1.0",
   "description": "Conditioner - Frizz free, context-aware, JavaScript modules",
   "homepage": "https://pqina.nl/conditioner",
-  "main": "index.js",
+  "main": "conditioner-core.js",
+  "browser": "conditioner-core.js",
+  "module": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
