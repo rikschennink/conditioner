@@ -1,4 +1,4 @@
-# Conditioner  <img src="./logo.svg" width="48" height="48"/>
+# Conditioner  <img src="./logo.svg" width="56"/>
 
 Conditioner provides a straight forward Progressive Enhancement based solution for linking JavaScript modules to DOM elements.
 
