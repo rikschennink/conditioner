@@ -141,6 +141,7 @@ A collection of boilerplates to get you started with various project setups:
 
 - [ES6](https://github.com/rikschennink/conditioner-boilerplate-es6)
 - [Webpack](https://github.com/rikschennink/conditioner-boilerplate-webpack)
+- [Browserify](https://github.com/rikschennink/conditioner-boilerplate-browserify)
 - [AMD](https://github.com/rikschennink/conditioner-boilerplate-amd)
 - [Global](https://github.com/rikschennink/conditioner-boilerplate-global)
 
