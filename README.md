@@ -266,9 +266,17 @@ Context queries can consist of multiple monitors joined with an `and` statement.
 
 ## Polyfilling
 
-To use Conditioner on older browsers you will have to polyfill some APIs (click APIs for compatibility tables).
+To use Conditioner on older browsers you'll have to polyfill some modern JavaScript features. You could also opt to use a [Mustard Cut](http://responsivenews.co.uk/post/18948466399/cutting-the-mustard) and prevent your JavaScript from running on older browsers by wrapping the `hydrate` method in a feature detection statement.
 
-Internet Explorer 11
+```js
+// this will only run on IE10 and up
+// https://caniuse.com/#feat=pagevisibility
+if ('visibilityState' in document) {
+    conditioner.hydrate();
+}
+```
+
+Polyfills required for Internet Explorer 11
 
 - [`Array.prototype.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find#Browser_compatibility)
 - [`Array.prototype.from`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from#Browser_compatibility)
