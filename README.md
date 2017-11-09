@@ -24,7 +24,7 @@ If the viewport is resized or rotated and suddenly it's smaller than `30em` Cond
 
 ## Features
 
-- Progressive Enhancement as a starting point
+- Progressive Enhancement as a starting point 💆🏻
 - Perfect for a Responsive Design strategy
 - Declarative way to bind logic to elements, [why this is good](http://rikschennink.nl/thoughts/binding-behavior-you-are-doing-it-wrong/)
 - No dependencies and small footprint (~1KB gzipped)
