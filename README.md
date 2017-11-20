@@ -234,7 +234,7 @@ conditioner.addPlugin({
                 new IntersectionObserver(entries => {
 
                     // update the matches state
-                    this.matches = entries.pop().isIntersecting == (context === 'true');
+                    this.matches = entries.pop().isIntersecting == context;
 
                     // inform conditioner of the new state
                     change();
@@ -249,16 +249,36 @@ conditioner.addPlugin({
 });
 ```
 
-With our `visible` monitor added, we can use it in a context query:
+With our `visible` monitor registered, we are ready to use it in a context query:
 
 ```html
 <div data-module="/ui/component.js" data-context="@visible true"></div>
 ```
 
-Context queries can consist of multiple monitors joined with an `and` statement.
+To make context queries easier to read Conditioner will automatically set the context value to `true` if its omitted. So the following context query is the same as `@visible true`.
 
 ```html
-<div data-module="/ui/component.js" data-context="@media (min-width:30em) and @visible true"></div>
+<div data-module="/ui/component.js" data-context="@visible"></div>
+```
+
+To invert the monitor state we can use the `not` operator instead of writing `@visible false`. It's simply more natural to read `not @visible` than `@visible false`.
+
+The `@visible` state context monitor will unload modules when they are no longer visible.
+
+This might be exactly what you want, it's however more likely you want the modules to stick around after they've been loaded for the first time.
+
+You can achieve this by adding the `was` statement.
+
+```html
+<div data-module="/ui/component.js" data-context="was @visible"></div>
+```
+
+Now the module will stay loaded once its required context has been matched for the first time.
+
+You can string multiple monitors together with an `and` statement allowing for very precise context queries.
+
+```html
+<div data-module="/ui/component.js" data-context="@media (min-width:30em) and was @visible"></div>
 ```
 
 

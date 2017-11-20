@@ -118,33 +118,75 @@ const bindModule = element => {
     return boundModule;
 };
 
+const queryParamsRegex = /(was)? ?(not)? ?@([a-z]+) ?(.*)?/;
+const queryRegex = /(?:was )?(?:not )?@[a-z]+ ?.*?(?:(?= and (?:was )?(?:not )?@[a-z])|$)/g;
 
-// splits the context query on 'and @' (to prevent splits in context value)
-// extracts the name and value [name, value] (thats why the regex has two match groups)
-const extractNameAndValue = query => /^([a-z]+) (.+)/.exec(query).splice(1)
+// convert context values to booleans if value is undefined or a boolean described as string
+const toContextValue = value => typeof value === 'undefined' || value === 'true' ? true : value === 'false' ? false : value;
 
-// @media (min-width:30em) and @visible true  ->  [ ['media', '(min-width:30em)'], ['visible', 'true'] ]
-const parseQuery = query => query
-    .substr(1) // remove first @
-    .split(' and @') // find the sub queries
-    .map(extractNameAndValue); // get the query name and value as an array
+const extractParams = query => {
+    const [ , retain, invert, name, value ] = query.match(queryParamsRegex); // extract groups, we ignore the first array index which is the entire matches string
+    return [
+        name, 
+        toContextValue(value), 
+        invert === 'not', retain === 'was'
+    ];
+}
+
+// @media (min-width:30em) and was @visible true  ->  [ ['media', '(min-width:30em)', false, false], ['visible', 'true', false, true] ]
+const parseQuery = query => query.match(queryRegex).map(extractParams)
+
+// add intert and retain properties to monitor
+const decorateMonitor = (monitor, invert, retain) => {
+    monitor.invert = invert;
+    monitor.retain = retain;
+    monitor.matched = false;
+    return monitor;
+};
 
 // finds monitor plugins and calls the create method on the first found monitor
-const getContextMonitor = (name, context, element) => getPlugins('monitor')
+const getContextMonitor = (element, name, context) => getPlugins('monitor')
     .find(monitor => monitor.name === name)
     .create(context, element);
 
 // handles contextual loading and unloading
 const createContextualModule = (query, boundModule) => {
-    
+
     // get monitors for supplied query
-    const monitors = parseQuery(query).map(params => getContextMonitor(...params, boundModule.element));
+    const monitors = parseQuery(query).map(params => decorateMonitor( getContextMonitor(boundModule.element, ...params), ...params.splice(2) ) );
 
     // if all monitors return true for .matches getter, we mount the module
     const onchange = () => {
 
         // will keep returning false if one of the monitors does not match, else checks matches property
-        const matches = monitors.reduce((matches, monitor) => matches ? monitor.matches : false, true);
+        const matches = monitors.reduce(
+            (matches, monitor) => {
+
+                // an earlier monitor returned false, so current context will no longer be suitable
+                if (!matches) {
+                    return false;
+                }
+
+                // get current match state, takes "not" into account
+                const matched = monitor.invert ? !monitor.matches : monitor.matches;
+
+                // mark monitor as has been matched in the past
+                if (matched) {
+                    monitor.matched = true;
+                }
+
+                // if retain is enabled with "was" and the monitor has been matched in the past, there's a match
+                if (monitor.retain && monitor.matched) {
+                    return true;
+                }
+
+                // return current match state
+                return matched;
+            }, 
+
+            // initial value is always match
+            true
+        );
 
         // if matches we mount the module, else we unmount
         matches ? boundModule.mount() : boundModule.unmount();
