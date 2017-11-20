@@ -256,17 +256,17 @@ With our `visible` monitor registered, we are ready to use it in a context query
 <div data-module="/ui/component.js" data-context="@visible true"></div>
 ```
 
-To make context queries easier to read Conditioner will automatically set the context value to `true` if its omitted. So the following context query is the same as `@visible true`.
+To make context queries easier to read Conditioner will automatically set the context value to `true` if its omitted. The following context query is the same as `@visible true`.
 
 ```html
 <div data-module="/ui/component.js" data-context="@visible"></div>
 ```
 
-To invert the monitor state we can use the `not` operator instead of writing `@visible false`. It's simply more natural to read `not @visible` than `@visible false`.
+Instead of writing `@visible false` we can use the `not` operator to invert the monitor state, this little bit of syntactic suger makes context queries easier to read.
 
-The `@visible` state context monitor will unload modules when they are no longer visible.
+The `@visible` context monitor will mount modules when they scroll into the users view and unmount modules when they are no longer visible to the user.
 
-This might be exactly what you want, it's however more likely you want the modules to stick around after they've been loaded for the first time.
+This might be exactly what you want (for instance if you're doing intro and outro animations). It's however more likely you want the modules to stick around after they've been loaded for the first time.
 
 You can achieve this by adding the `was` statement.
 
@@ -274,9 +274,9 @@ You can achieve this by adding the `was` statement.
 <div data-module="/ui/component.js" data-context="was @visible"></div>
 ```
 
-Now the module will stay loaded once its required context has been matched for the first time.
+Now the module will stay mounted after its context has been matched for the first time.
 
-You can string multiple monitors together with an `and` statement allowing for very precise context queries.
+Using the `and` statement you can string multiple monitors together allowing for very precise context queries.
 
 ```html
 <div data-module="/ui/component.js" data-context="@media (min-width:30em) and was @visible"></div>
