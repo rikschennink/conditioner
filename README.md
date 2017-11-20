@@ -24,7 +24,7 @@ If the viewport is resized or rotated and suddenly it's smaller than `30em` Cond
 
 ## Features
 
-- Progressive Enhancement as a starting point
+- Progressive Enhancement as a starting point 💆🏻
 - Perfect for a Responsive Design strategy
 - Declarative way to bind logic to elements, [why this is good](http://rikschennink.nl/thoughts/binding-behavior-you-are-doing-it-wrong/)
 - No dependencies and small footprint (~1KB gzipped)
@@ -141,6 +141,7 @@ A collection of boilerplates to get you started with various project setups:
 
 - [ES6](https://github.com/rikschennink/conditioner-boilerplate-es6)
 - [Webpack](https://github.com/rikschennink/conditioner-boilerplate-webpack)
+- [Browserify](https://github.com/rikschennink/conditioner-boilerplate-browserify)
 - [AMD](https://github.com/rikschennink/conditioner-boilerplate-amd)
 - [Global](https://github.com/rikschennink/conditioner-boilerplate-global)
 
@@ -285,9 +286,17 @@ You can string multiple monitors together with an `and` statement allowing for v
 
 ## Polyfilling
 
-To use Conditioner on older browsers you will have to polyfill some APIs (click APIs for compatibility tables).
+To use Conditioner on older browsers you'll have to polyfill some modern JavaScript features. You could also opt to use a [Mustard Cut](http://responsivenews.co.uk/post/18948466399/cutting-the-mustard) and prevent your JavaScript from running on older browsers by wrapping the `hydrate` method in a feature detection statement.
 
-Internet Explorer 11
+```js
+// this will only run on IE10 and up
+// https://caniuse.com/#feat=pagevisibility
+if ('visibilityState' in document) {
+    conditioner.hydrate();
+}
+```
+
+Polyfills required for Internet Explorer 11
 
 - [`Array.prototype.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find#Browser_compatibility)
 - [`Array.prototype.from`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from#Browser_compatibility)
