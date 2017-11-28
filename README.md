@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/conditioner-core.svg)](https://badge.fury.io/js/conditioner-core)
+
 # Conditioner  <img src="./logo.svg" width="56"/>
 
 Conditioner provides a straight forward Progressive Enhancement based solution for linking JavaScript modules to DOM elements.
