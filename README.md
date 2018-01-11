@@ -1,37 +1,32 @@
-# Conditioner  <img src="./logo.svg" width="56"/>
+# Conditioner <img src="./logo.svg" width="56"/>
 
 Conditioner provides a straight forward Progressive Enhancement based solution for linking JavaScript modules to DOM elements.
 
 Modules can be linked based on contextual parameters like viewport size and element visibilty making Conditioner your perfect Responsive Design companion.
 
-
 ## Example
 
-Mount a component (like a Date Picker, Section Toggler or Carrousel), but only do it on wide viewports.
+Mount a component (like a Date Picker, Section Toggler or Carrousel), but only do it on wide viewports and when the user has seen it.
 
 ```html
 <h2 data-module="/ui/component.js"
-    data-context="@media (min-width:30em)"> ... </h2>
+    data-context="@media (min-width:30em) and was @visible"> ... </h2>
 ```
 
 If the viewport is resized or rotated and suddenly it's smaller than `30em` Conditioner will automatically unmount the component.
-
 
 ## Demo
 
 [![](https://raw.githubusercontent.com/rikschennink/conditioner/master/demo.gif)](https://codepen.io/rikschennink/details/mqVzXb/)
 
-
 ## Features
 
-- Progressive Enhancement as a starting point 💆🏻
-- Perfect for a Responsive Design strategy
-- Declarative way to bind logic to elements, [why this is good](http://rikschennink.nl/thoughts/binding-behavior-you-are-doing-it-wrong/)
-- No dependencies and small footprint (~1KB gzipped)
-- Compatible with ES `import()`, AMD `require()` and webpack
-- Can be extended easily with plugins
-
-
+* Progressive Enhancement as a starting point 💆🏻
+* Perfect for a Responsive Design strategy
+* Declarative way to bind logic to elements, [why this is good](http://rikschennink.nl/thoughts/binding-behavior-you-are-doing-it-wrong/)
+* No dependencies and small footprint (~1KB gzipped)
+* Compatible with ES `import()`, AMD `require()` and webpack
+* Can easily be extended with plugins
 
 ## Installation
 
@@ -41,13 +36,13 @@ Install with npm:
 npm i conditioner-core --save
 ```
 
+The package includes both development and product versions. Use `conditioner-core.min.js` for production. The ES6 version of Conditioner (`conditioner-core.esm.js`) is not compressed.
+
 Using a CDN:
 
 ```html
 <script src="https://unpkg.com/conditioner-core/conditioner-core.js"></script>
 ```
-
-
 
 ## Setup
 
@@ -66,23 +61,20 @@ conditioner.hydrate( document.documentElement );
 Using Conditioner async with ES6 modules:
 
 ```js
-import('conditioner-core/index.js').then(conditioner => {
-    
-    conditioner.addPlugin({
+import('conditioner-core/conditioner-core.esm.js').then(conditioner => {
+	conditioner.addPlugin({
+		// converts module aliases to paths
+		moduleSetName: name => `/ui/${name}.js`,
 
-        // converts module aliases to paths
-        moduleSetName: (name) => `/ui/${ name }.js`,
+		// get the module constructor
+		moduleGetConstructor: module => module.default,
 
-        // get the module constructor
-        moduleGetConstructor: (module) => module.default,
+		// fetch module with dynamic import
+		moduleImport: name => import(name)
+	});
 
-        // fetch module with dynamic import
-        moduleImport: (name) => import(name),
-
-    });
-
-    // mount modules!
-    conditioner.hydrate( document.documentElement );
+	// mount modules!
+	conditioner.hydrate(document.documentElement);
 });
 ```
 
@@ -92,60 +84,53 @@ Using Conditioner with webpack:
 import * as conditioner from 'conditioner-core';
 
 conditioner.addPlugin({
+	// converts module aliases to paths
+	moduleSetName: name => `./ui/${name}.js`,
 
-    // converts module aliases to paths
-    moduleSetName: (name) => `./ui/${ name }.js`,
-    
-    // get the module constructor
-    moduleGetConstructor: (module) => module.default,
+	// get the module constructor
+	moduleGetConstructor: module => module.default,
 
-    // override the import
-    moduleImport: (name) => import(`${ name }`)
-
+	// override the import
+	moduleImport: name => import(`${name}`)
 });
 
 // lets go!
-conditioner.hydrate( document.documentElement );
+conditioner.hydrate(document.documentElement);
 ```
 
 Using Conditioner in AMD modules:
 
 ```js
 require(['conditioner-core.js'], function(conditioner) {
+	// setup AMD require
+	conditioner.addPlugin({
+		// converts module aliases to paths
+		moduleSetName: function(name) {
+			return '/ui/' + name + '.js';
+		},
 
-    // setup AMD require
-    conditioner.addPlugin({
+		// setup AMD require
+		moduleImport: function(name) {
+			return new Promise(function(resolve) {
+				require([name], function(module) {
+					resolve(module);
+				});
+			});
+		}
+	});
 
-        // converts module aliases to paths
-        moduleSetName: function(name) { return '/ui/' + name + '.js' },
-
-        // setup AMD require
-        moduleImport: function(name) {
-            return new Promise(function(resolve) {
-                require([name], function(module) {
-                    resolve(module);
-                });
-            });
-        }
-
-    });
-
-    // mount modules!
-    conditioner.hydrate( document.documentElement );
+	// mount modules!
+	conditioner.hydrate(document.documentElement);
 });
 ```
 
-
-
 A collection of boilerplates to get you started with various project setups:
 
-- [ES6](https://github.com/rikschennink/conditioner-boilerplate-es6)
-- [Webpack](https://github.com/rikschennink/conditioner-boilerplate-webpack)
-- [Browserify](https://github.com/rikschennink/conditioner-boilerplate-browserify)
-- [AMD](https://github.com/rikschennink/conditioner-boilerplate-amd)
-- [Global](https://github.com/rikschennink/conditioner-boilerplate-global)
-
-
+* [ES6](https://github.com/rikschennink/conditioner-boilerplate-es6)
+* [Webpack](https://github.com/rikschennink/conditioner-boilerplate-webpack)
+* [Browserify](https://github.com/rikschennink/conditioner-boilerplate-browserify)
+* [AMD](https://github.com/rikschennink/conditioner-boilerplate-amd)
+* [Global](https://github.com/rikschennink/conditioner-boilerplate-global)
 
 ## API
 
@@ -153,29 +138,53 @@ A collection of boilerplates to get you started with various project setups:
 
 Inspired by React and Babel, Conditioner has a tiny but extensible API.
 
-Method                      | Description
-----------------------------|---------------
-`hydrate(element)`          | Mount modules found in the subtree of the passed element, returns an array of bound module objects.
-`addPlugin(plugin)`         | Add a plugin to Conditioner to extend its core functionality.
-
-
+| Method                        | Description                                                                                                          |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `hydrate(element)`            | Mount modules found in the subtree of the passed element, returns an array of [bound module](#bound-module) objects. |
+| `monitor(context[, element])` | Manually monitor a context. Returns a [context monitor](#context-monitor) object.                                    |
+| `addPlugin(plugin)`           | Add a plugin to Conditioner to extend its core functionality.                                                        |
 
 ### Bound Module
 
 Bound modules are returned by the `hydrate` method. Each bound module object wraps a module. It exposes a set of properties, methods and callbacks to interact with the module and its element.
 
-Property / Method                              | Description
------------------------------------------------|---------------
-`alias`                                        | Name found in `dataset.module`.
-`name`                                         | Module path after name has been passed through `moduleSetName`.
-`element`                                      | The element the module is bound to.
-`mount()`                                      | Method to manually mount the module.
-`unmount()`                                    | Method to manually unmount the module.
-`mounted`                                      | Boolean indicating wether the module is currently mounted.
-`onmount(boundModule)`                         | Callback that runs when the module has been mounted. Scoped to element.
-`onmounterror(error, boundModule)`             | Callback that runs when an error occurs during the mount process. Scoped to element.
-`onunmount(boundModule)`                       | Callback that runs when the module has been unmounted. Scoped to element.
+| Property / Method                  | Description                                                                          |
+| ---------------------------------- | ------------------------------------------------------------------------------------ |
+| `alias`                            | Name found in `dataset.module`.                                                      |
+| `name`                             | Module path after name has been passed through `moduleSetName`.                      |
+| `element`                          | The element the module is bound to.                                                  |
+| `mounted`                          | Boolean indicating wether the module is currently mounted.                           |
+| `mount()`                          | Manually mount the module.                                                           |
+| `unmount()`                        | Manually unmount the module.                                                         |
+| `destroy()`                        | Unmounts the module and then removes any monitors.                                   |
+| `onmount(boundModule)`             | Callback that runs when the module has been mounted. Scoped to element.              |
+| `onmounterror(error, boundModule)` | Callback that runs when an error occurs during the mount process. Scoped to element. |
+| `onunmount(boundModule)`           | Callback that runs when the module has been unmounted. Scoped to element.            |
 
+### Context Monitor
+
+Context Monitors are returned by the `monitor` method.
+
+| Property / Method   | Description                                                                        |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| `matches`           | Boolean indicating wether the context is currently matches                         |
+| `active`            | Boolean indicating wether it's actively monitoring the context                     |
+| `start()`           | Start monitoring the context                                                       |
+| `stop()`            | Stop monitoring the context                                                        |
+| `destroy()`         | Stops monitoring the context and cleans up the monitor array                       |
+| `onchange(matches)` | Callback that runs when one of the monitors in the context query reported a change |
+
+An example setup is shown below.
+
+```js
+const viewportMonitor = conditioner.monitor('@media (min-width:30em) and was @visible');
+
+viewportMonitor.onchange = matches => {
+	console.log('context is matched', matches);
+};
+
+viewportMonitor.start();
+```
 
 ### Plugins
 
@@ -183,90 +192,85 @@ Adding a plugin can be done with the `addPlugin` method, the method expects a pl
 
 Plugins can be used to override internal methods or add custom monitors to Conditioner.
 
-You can link your plugin to the following hooks:
+We can link our plugins to the following hooks:
 
-Hook                                           | Description
------------------------------------------------|---------------
-`moduleSelector(context)`                      | Selects all elements with modules within the given context and returns a `NodeList`.
-`moduleGetContext(element)`                    | Returns context requirements for the module. By default returns the `element.dataset.context` attribute.
-`moduleImport(name)`                           | Imports the module with the given name, should return a `Promise`. By default searches global scope for module name.
-`moduleGetConstructor(module)`                 | Gets the constructor method from the module object, by default expects module parameter itself to be a factory function.
-`moduleGetDestructor(moduleExports)`           | Gets the destructor method from the module constructor return value, by default expects a single function.
-`moduleSetConstructorArguments(name, element)` | Use to alter the arguments supplied to the module constructor, expects an `array` as return value.
-`moduleGetName(element)`                       | Called to get the name of the module, by default retrieves the `element.dataset.module` value.
-`moduleSetName(name)`                          | Called when the module name has been retrieved just before setting it.
-`moduleWillMount(boundModule)`                 | Called before the module is mounted.
-`moduleDidMount(boundModule)`                  | Called after the module is mounted.
-`moduleWillUnmount(boundModule)`               | Called before the module is unmounted.
-`moduleDidUnmount(boundModule)`                | Called after the module is unmounted.
-`moduleDidCatch(error, boundModule)`           | Called when module import throws an error.
-`monitor`                                      | A collection of registered monitors. See monitor setup instructions below.
+| Hook                                           | Description                                                                                                              |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `moduleSelector(context)`                      | Selects all elements with modules within the given context and returns a `NodeList`.                                     |
+| `moduleGetContext(element)`                    | Returns context requirements for the module. By default returns the `element.dataset.context` attribute.                 |
+| `moduleImport(name)`                           | Imports the module with the given name, should return a `Promise`. By default searches global scope for module name.     |
+| `moduleGetConstructor(module)`                 | Gets the constructor method from the module object, by default expects module parameter itself to be a factory function. |
+| `moduleGetDestructor(moduleExports)`           | Gets the destructor method from the module constructor return value, by default expects a single function.               |
+| `moduleSetConstructorArguments(name, element)` | Use to alter the arguments supplied to the module constructor, expects an `array` as return value.                       |
+| `moduleGetName(element)`                       | Called to get the name of the module, by default retrieves the `element.dataset.module` value.                           |
+| `moduleSetName(name)`                          | Called when the module name has been retrieved just before setting it.                                                   |
+| `moduleWillMount(boundModule)`                 | Called before the module is mounted.                                                                                     |
+| `moduleDidMount(boundModule)`                  | Called after the module is mounted.                                                                                      |
+| `moduleWillUnmount(boundModule)`               | Called before the module is unmounted.                                                                                   |
+| `moduleDidUnmount(boundModule)`                | Called after the module is unmounted.                                                                                    |
+| `moduleDidCatch(error, boundModule)`           | Called when module import throws an error.                                                                               |
+| `monitor`                                      | A collection of registered monitors. See monitor setup instructions below.                                               |
 
+#### File Extension Plugin Example
 
-Let's setup a basic plugin. 
-
-Instead of writing each module with extension we want to leave out the extension and add it automatically. 
+Instead of referencing each module with file extension (`datepicker.js`) we want to leave out the extension and add it automatically.
 
 We'll use the `moduleSetName` hook to achieve this:
 
 ```js
 conditioner.addPlugin({
-    moduleSetName: (name) => `${ name }.js`
+	moduleSetName: name => `${name}.js`
 });
 ```
 
-Next up is a plugin that adds a `visible` monitor using the `IntersectionObserver` API. Monitors can be used in a context query by prefixing the name with an `@`.
+#### Element Visibility Monitor
 
-Monitor plugins should mimic the [`MediaQueryList`](https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList) API. Each monitor should expose a `matches` property and an `addListener` method.
+Let's add a `visible` monitor using the [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) API. All our custom monitors can be used in context queries by prefixing the name with an `@`.
+
+Monitor plugins should mimic the [`MediaQueryList`](https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList) API. Each monitor should at least expose a `matches` property and an `addListener` method. To allow for the monitor to be unloaded we should also add the `removeListener` method, but it's optional.
 
 ```js
 conditioner.addPlugin({
-    
-    monitor: {
-        name: 'visible',
-        create: (context, element) => ({
+	// the plugin "monitor" hook
+	monitor: {
+		// the name of our monitor, not prefixed with "@"
+		name: 'visible',
 
-            // current match state
-            matches: false,
+		// the monitor factory method, this will create our monitor
+		create: (context, element) => ({
+			// current match state
+			matches: false,
 
-            // called by conditioner to start listening for changes
-            addListener (change) {
+			// called by conditioner to start listening for changes
+			addListener(change) {
+				new IntersectionObserver(entries => {
+					// update the matches state
+					this.matches = entries.pop().isIntersecting == context;
 
-                new IntersectionObserver(entries => {
-
-                    // update the matches state
-                    this.matches = entries.pop().isIntersecting == context;
-
-                    // inform conditioner of the new state
-                    change();
-
-                }).observe(element);
-
-            }
-            
-        })
-    }
-
+					// inform conditioner of the new state
+					change();
+				}).observe(element);
+			}
+		})
+	}
 });
 ```
 
-With our `visible` monitor registered, we are ready to use it in a context query:
+With our `visible` monitor registered, we are ready to use it in a context query.
 
 ```html
 <div data-module="/ui/component.js" data-context="@visible true"></div>
 ```
 
-To make context queries easier to read Conditioner will automatically set the context value to `true` if its omitted. So the following context query is the same as `@visible true`.
+To make context queries easier to read Conditioner will automatically set the context value to `true` if it's omitted. So the following context query is exactle the same as `@visible true`.
 
 ```html
 <div data-module="/ui/component.js" data-context="@visible"></div>
 ```
 
-To invert the monitor state we can use the `not` operator instead of writing `@visible false`. It's simply more natural to read `not @visible` than `@visible false`.
+To invert the monitor state we can use the `not` operator. Instead of writing `@visible false` we can now write `not @visible`, which again makes queries easier to read.
 
-The `@visible` state context monitor will unload modules when they are no longer visible.
-
-This might be exactly what you want, it's however more likely you want the modules to stick around after they've been loaded for the first time.
+The `@visible` state context monitor will unload modules when they are no longer visible. This might be exactly what we want, for instance when animating element in and out of view. It's however more likely we want the modules to stick around after they've been loaded for the first time.
 
 You can achieve this by adding the `was` statement.
 
@@ -276,13 +280,17 @@ You can achieve this by adding the `was` statement.
 
 Now the module will stay loaded once its required context has been matched for the first time.
 
-You can string multiple monitors together with an `and` statement allowing for very precise context queries.
+Let's string multiple monitors together with the `and` operator so we can more precise context queries.
 
 ```html
 <div data-module="/ui/component.js" data-context="@media (min-width:30em) and was @visible"></div>
 ```
 
+Last but not least we can use the `or` to make exceptions. On small viewports we only mount the module when the element was visible, on big viewports we always mount the module.
 
+```html
+<div data-module="/ui/component.js" data-context="@media (max-width:30em) and was @visible or @media(min-width:30em)"></div>
+```
 
 ## Polyfilling
 
@@ -292,32 +300,34 @@ To use Conditioner on older browsers you'll have to polyfill some modern JavaScr
 // this will only run on IE10 and up
 // https://caniuse.com/#feat=pagevisibility
 if ('visibilityState' in document) {
-    conditioner.hydrate();
+	conditioner.hydrate();
 }
 ```
 
 Polyfills required for Internet Explorer 11
 
-- [`Array.prototype.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find#Browser_compatibility)
-- [`Array.prototype.from`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from#Browser_compatibility)
-- [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise#Browser_compatibility)
+* [`Array.prototype.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find#Browser_compatibility)
+* [`Array.prototype.from`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from#Browser_compatibility)
+* [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise#Browser_compatibility)
 
 Internet Explorer 10
 
-- [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset#Browser_compatibility)
+* [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset#Browser_compatibility)
 
 You can either polyfill `dataset` or add the following plugin to override the `moduleGetName` and `moduleGetContext` hooks (which use `dataset`).
 
 ```js
 conditioner.addPlugin({
-    moduleGetName: function(element) { return element.getAttribute('data-module'); },
-    moduleGetContext: function(element) { return element.getAttribute('data-context'); }
+	moduleGetName: function(element) {
+		return element.getAttribute('data-module');
+	},
+	moduleGetContext: function(element) {
+		return element.getAttribute('data-context');
+	}
 });
 ```
 
 The above plugin will also be required when you need to mount modules on SVG elements. Browser support for use of [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/SVGElement/dataset#Browser_compatibility) on SVG elements is a lot worse than HTML elements.
-
-
 
 ## License
 

@@ -1,3 +1,4 @@
+/* conditioner-core 2.3.0 */
 // links the module to the element and exposes a callback api object
 const bindModule = element => {
 	// gets the name of the module from the element, we assume the name is an alias
