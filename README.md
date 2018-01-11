@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/conditioner-core.svg)](https://badge.fury.io/js/conditioner-core)
+
 # Conditioner <img src="./logo.svg" width="56"/>
 
 Conditioner provides a straight forward Progressive Enhancement based solution for linking JavaScript modules to DOM elements.
@@ -278,9 +280,9 @@ You can achieve this by adding the `was` statement.
 <div data-module="/ui/component.js" data-context="was @visible"></div>
 ```
 
-Now the module will stay loaded once its required context has been matched for the first time.
+Now the module will stay mounted after its context has been matched for the first time.
 
-Let's string multiple monitors together with the `and` operator so we can more precise context queries.
+Let's string multiple monitors together with the `and` operator so we can do more precise context queries.
 
 ```html
 <div data-module="/ui/component.js" data-context="@media (min-width:30em) and was @visible"></div>
