@@ -1,6 +1,6 @@
 {
 	"name": "conditioner-core",
-	"version": "2.3.1",
+	"version": "2.3.0",
 	"description": "Conditioner - Frizz free, context-aware, JavaScript modules",
 	"homepage": "https://pqina.nl/conditioner",
 	"main": "conditioner-core.js",
