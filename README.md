@@ -38,7 +38,7 @@ Install with npm:
 npm i conditioner-core --save
 ```
 
-The package includes both development and product versions. Use `conditioner-core.min.js` for production. The ES6 version of Conditioner (`conditioner-core.esm.js`) is not compressed.
+The package includes both development and product versions. Use `conditioner-core.min.js` for production. The ES Module version of Conditioner (`conditioner-core.esm.js`) is not compressed.
 
 Using a CDN:
 
@@ -60,7 +60,7 @@ conditioner.hydrate( document.documentElement );
 </script>
 ```
 
-Using Conditioner async with ES6 modules:
+Using Conditioner async with ES modules:
 
 ```js
 import('conditioner-core/conditioner-core.esm.js').then(conditioner => {
@@ -83,7 +83,7 @@ import('conditioner-core/conditioner-core.esm.js').then(conditioner => {
 Using Conditioner with webpack:
 
 ```js
-import * as conditioner from 'conditioner-core';
+import * as conditioner from 'conditioner-core/conditioner-core.esm';
 
 conditioner.addPlugin({
 	// converts module aliases to paths
@@ -128,7 +128,7 @@ require(['conditioner-core.js'], function(conditioner) {
 
 A collection of boilerplates to get you started with various project setups:
 
-* [ES6](https://github.com/rikschennink/conditioner-boilerplate-es6)
+* [ES Modules](https://github.com/rikschennink/conditioner-boilerplate-esm)
 * [Webpack](https://github.com/rikschennink/conditioner-boilerplate-webpack)
 * [Browserify](https://github.com/rikschennink/conditioner-boilerplate-browserify)
 * [AMD](https://github.com/rikschennink/conditioner-boilerplate-amd)
