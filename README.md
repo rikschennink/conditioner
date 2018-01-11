@@ -64,19 +64,19 @@ Using Conditioner async with ES modules:
 
 ```js
 import('conditioner-core/conditioner-core.esm.js').then(conditioner => {
-	conditioner.addPlugin({
-		// converts module aliases to paths
-		moduleSetName: name => `/ui/${name}.js`,
+  conditioner.addPlugin({
+    // converts module aliases to paths
+    moduleSetName: name => `/ui/${name}.js`,
 
-		// get the module constructor
-		moduleGetConstructor: module => module.default,
+    // get the module constructor
+    moduleGetConstructor: module => module.default,
 
-		// fetch module with dynamic import
-		moduleImport: name => import(name)
-	});
+    // fetch module with dynamic import
+    moduleImport: name => import(name)
+  });
 
-	// mount modules!
-	conditioner.hydrate(document.documentElement);
+  // mount modules!
+  conditioner.hydrate(document.documentElement);
 });
 ```
 
@@ -86,14 +86,14 @@ Using Conditioner with webpack:
 import * as conditioner from 'conditioner-core/conditioner-core.esm';
 
 conditioner.addPlugin({
-	// converts module aliases to paths
-	moduleSetName: name => `./ui/${name}.js`,
+  // converts module aliases to paths
+  moduleSetName: name => `./ui/${name}.js`,
 
-	// get the module constructor
-	moduleGetConstructor: module => module.default,
+  // get the module constructor
+  moduleGetConstructor: module => module.default,
 
-	// override the import
-	moduleImport: name => import(`${name}`)
+  // override the import
+  moduleImport: name => import(`${name}`)
 });
 
 // lets go!
@@ -104,25 +104,25 @@ Using Conditioner in AMD modules:
 
 ```js
 require(['conditioner-core.js'], function(conditioner) {
-	// setup AMD require
-	conditioner.addPlugin({
-		// converts module aliases to paths
-		moduleSetName: function(name) {
-			return '/ui/' + name + '.js';
-		},
+  // setup AMD require
+  conditioner.addPlugin({
+    // converts module aliases to paths
+    moduleSetName: function(name) {
+      return '/ui/' + name + '.js';
+    },
 
-		// setup AMD require
-		moduleImport: function(name) {
-			return new Promise(function(resolve) {
-				require([name], function(module) {
-					resolve(module);
-				});
-			});
-		}
-	});
+    // setup AMD require
+    moduleImport: function(name) {
+      return new Promise(function(resolve) {
+        require([name], function(module) {
+          resolve(module);
+        });
+      });
+    }
+  });
 
-	// mount modules!
-	conditioner.hydrate(document.documentElement);
+  // mount modules!
+  conditioner.hydrate(document.documentElement);
 });
 ```
 
@@ -182,7 +182,7 @@ An example setup is shown below.
 const viewportMonitor = conditioner.monitor('@media (min-width:30em) and was @visible');
 
 viewportMonitor.onchange = matches => {
-	console.log('context is matched', matches);
+  console.log('context is matched', matches);
 };
 
 viewportMonitor.start();
@@ -221,7 +221,7 @@ We'll use the `moduleSetName` hook to achieve this:
 
 ```js
 conditioner.addPlugin({
-	moduleSetName: name => `${name}.js`
+  moduleSetName: name => `${name}.js`
 });
 ```
 
@@ -233,28 +233,28 @@ Monitor plugins should mimic the [`MediaQueryList`](https://developer.mozilla.or
 
 ```js
 conditioner.addPlugin({
-	// the plugin "monitor" hook
-	monitor: {
-		// the name of our monitor, not prefixed with "@"
-		name: 'visible',
+  // the plugin "monitor" hook
+  monitor: {
+    // the name of our monitor, not prefixed with "@"
+    name: 'visible',
 
-		// the monitor factory method, this will create our monitor
-		create: (context, element) => ({
-			// current match state
-			matches: false,
+    // the monitor factory method, this will create our monitor
+    create: (context, element) => ({
+      // current match state
+      matches: false,
 
-			// called by conditioner to start listening for changes
-			addListener(change) {
-				new IntersectionObserver(entries => {
-					// update the matches state
-					this.matches = entries.pop().isIntersecting == context;
+      // called by conditioner to start listening for changes
+      addListener(change) {
+        new IntersectionObserver(entries => {
+          // update the matches state
+          this.matches = entries.pop().isIntersecting == context;
 
-					// inform conditioner of the new state
-					change();
-				}).observe(element);
-			}
-		})
-	}
+          // inform conditioner of the new state
+          change();
+        }).observe(element);
+      }
+    })
+  }
 });
 ```
 
@@ -302,7 +302,7 @@ To use Conditioner on older browsers you'll have to polyfill some modern JavaScr
 // this will only run on IE10 and up
 // https://caniuse.com/#feat=pagevisibility
 if ('visibilityState' in document) {
-	conditioner.hydrate();
+  conditioner.hydrate();
 }
 ```
 
@@ -320,12 +320,12 @@ You can either polyfill `dataset` or add the following plugin to override the `m
 
 ```js
 conditioner.addPlugin({
-	moduleGetName: function(element) {
-		return element.getAttribute('data-module');
-	},
-	moduleGetContext: function(element) {
-		return element.getAttribute('data-context');
-	}
+  moduleGetName: function(element) {
+    return element.getAttribute('data-module');
+  },
+  moduleGetContext: function(element) {
+    return element.getAttribute('data-context');
+  }
 });
 ```
 
