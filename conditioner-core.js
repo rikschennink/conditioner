@@ -1,4 +1,4 @@
-/* conditioner-core 2.3.0 */
+/* conditioner-core 2.3.1 */
 (function (global, factory) {
 	if (typeof define === "function" && define.amd) {
 		define(['exports'], factory);
@@ -146,7 +146,7 @@
 					throw new Error('Conditioner: ' + error);
 				}).then(function (module) {
 					// initialise the module, module can return a destroy mehod
-					state.destruct = runPlugin('moduleGetDestructor', runPlugin('moduleGetConstructor', module).apply(undefined, _toConsumableArray(runPlugin('moduleSetConstructorArguments', name, element, module))));
+					state.destruct = runPlugin('moduleGetDestructor', runPlugin('moduleGetConstructor', module).apply(undefined, _toConsumableArray(runPlugin('moduleSetConstructorArguments', name, element))));
 
 					// module is now mounted
 					boundModule.mounted = true;

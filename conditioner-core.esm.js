@@ -1,4 +1,4 @@
-/* conditioner-core 2.3.0 */
+/* conditioner-core 2.3.1 */
 // links the module to the element and exposes a callback api object
 const bindModule = element => {
 	// gets the name of the module from the element, we assume the name is an alias
@@ -82,7 +82,7 @@ const bindModule = element => {
 					state.destruct = runPlugin(
 						'moduleGetDestructor',
 						runPlugin('moduleGetConstructor', module)(
-							...runPlugin('moduleSetConstructorArguments', name, element, module)
+							...runPlugin('moduleSetConstructorArguments', name, element)
 						)
 					);
 

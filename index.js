@@ -81,7 +81,7 @@ const bindModule = element => {
 					state.destruct = runPlugin(
 						'moduleGetDestructor',
 						runPlugin('moduleGetConstructor', module)(
-							...runPlugin('moduleSetConstructorArguments', name, element, module)
+							...runPlugin('moduleSetConstructorArguments', name, element)
 						)
 					);
 
