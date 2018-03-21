@@ -30,6 +30,10 @@ If the viewport is resized or rotated and suddenly it's smaller than `30em` Cond
 * Compatible with ES `import()`, AMD `require()` and webpack
 * Can easily be extended with plugins
 
+## Resources
+
+* [Lazy Loading JavaScript with Conditioner on Smashing Magazine](https://www.smashingmagazine.com/2018/03/lazy-loading-with-conditioner-js/)
+
 ## Installation
 
 Install with npm:
