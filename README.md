@@ -39,7 +39,7 @@ If the viewport is resized or rotated and suddenly it's smaller than `30em` Cond
 Install with npm:
 
 ```bash
-npm i conditioner-core --save
+npm install conditioner-core --save
 ```
 
 The package includes both development and product versions. Use `conditioner-core.min.js` for production. The ES Module version of Conditioner (`conditioner-core.esm.js`) is not compressed.
