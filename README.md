@@ -3,7 +3,7 @@
 
 Conditioner provides a straight forward Progressive Enhancement based solution for linking JavaScript modules to DOM elements. Modules can be linked based on contextual parameters like viewport size and element visibilty making Conditioner your perfect Responsive Design companion.
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/rikschennink/conditioner/blob/master/LICENSE)
 [![npm version](https://badge.fury.io/js/conditioner-core.svg)](https://badge.fury.io/js/conditioner-core)
 [![Donate with PayPal](https://img.shields.io/badge/donate-PayPal.me-pink.svg)](https://www.paypal.me/rikschennink/5)
 
