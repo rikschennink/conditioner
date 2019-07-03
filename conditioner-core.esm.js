@@ -56,14 +56,14 @@ const bindModule = element => {
 			// can't mount an already mounted module
 			// can't mount a module that is currently mounting
 			if (boundModule.mounted || state.mounting) {
-				return;
+				return Promise.resolve();
 			}
 
 			// about to mount the module
 			eachPlugins('moduleWillMount', boundModule);
 
 			// get the module
-			runPlugin('moduleImport', name)
+			return runPlugin('moduleImport', name)
 				.catch(error => {
 					// failed to mount so no longer mounting
 					state.mounting = false;
@@ -97,10 +97,10 @@ const bindModule = element => {
 
 					// module has now loaded lets fire the onload event so everyone knows about it
 					boundModule.onmount.apply(element, [boundModule]);
-				});
 
-			// return state object
-			return boundModule;
+					// return state object
+					return boundModule;
+				});
 		},
 
 		// called when fails to bind the module
@@ -278,11 +278,11 @@ const createModule = element => {
 	const query = runPlugin('moduleGetContext', element);
 
 	// wait for the right context or load the module immidiately if no context supplied
-	return query ? createContextualModule(query, boundModule) : boundModule.mount();
+	return query ? Promise.resolve(createContextualModule(query, boundModule)) : boundModule.mount();
 };
 
 // parse a certain section of the DOM and load bound modules
-export const hydrate = context => [...runPlugin('moduleSelector', context)].map(createModule);
+export const hydrate = context => Promise.all([...runPlugin('moduleSelector', context)].map(createModule));
 
 // all registered plugins
 const plugins = [];

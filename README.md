@@ -161,7 +161,7 @@ Bound modules are returned by the `hydrate` method. Each bound module object wra
 | `name`                             | Module path after name has been passed through `moduleSetName`.                      |
 | `element`                          | The element the module is bound to.                                                  |
 | `mounted`                          | Boolean indicating wether the module is currently mounted.                           |
-| `mount()`                          | Manually mount the module.                                                           |
+| `mount()`                          | Manually mount the module. Returns a `Promise`.                                      |
 | `unmount()`                        | Manually unmount the module.                                                         |
 | `destroy()`                        | Unmounts the module and then removes any monitors.                                   |
 | `onmount(boundModule)`             | Callback that runs when the module has been mounted. Scoped to element.              |
