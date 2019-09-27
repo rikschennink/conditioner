@@ -167,6 +167,8 @@ Bound modules are returned by the `hydrate` method. Each bound module object wra
 | `onmount(boundModule)`             | Callback that runs when the module has been mounted. Scoped to element.              |
 | `onmounterror(error, boundModule)` | Callback that runs when an error occurs during the mount process. Scoped to element. |
 | `onunmount(boundModule)`           | Callback that runs when the module has been unmounted. Scoped to element.            |
+| `ondestroy(boundModule)`           | Callback that runs when the module has been destroyed. Scoped to element.            |
+
 
 ### Context Monitor
 
@@ -215,6 +217,8 @@ We can link our plugins to the following hooks:
 | `moduleDidMount(boundModule)`                  | Called after the module is mounted.                                                                                      |
 | `moduleWillUnmount(boundModule)`               | Called before the module is unmounted.                                                                                   |
 | `moduleDidUnmount(boundModule)`                | Called after the module is unmounted.                                                                                    |
+| `moduleWillDestroy(boundModule)`               | Called before the module is destroyed.                                                                                   |
+| `moduleDidDestroy(boundModule)`                | Called after the module is destroyed.                                                                                    |
 | `moduleDidCatch(error, boundModule)`           | Called when module import throws an error.                                                                               |
 | `monitor`                                      | A collection of registered monitors. See monitor setup instructions below.                                               |
 

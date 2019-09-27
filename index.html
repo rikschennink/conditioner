@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conditioner Demo</title>
+    <style>
+    html {
+        line-height:1.5;
+    }
+
+    body {
+        padding:2em;
+    }
+
+    h2 {
+        margin-top:0;
+        font-size:1.125em;
+    }
+
+    button {
+    all:inherit;
+        position: relative;
+        width: 100%;
+        box-sizing: border-box;
+        padding-right: 2em;
+        cursor: pointer;
+    }
+
+    svg {
+        position: absolute;
+        right: 0;
+        top: .5em;
+        width: 1.25em;
+    }
+
+    button:focus svg {
+        outline: 2px solid;
+    }
+
+    [aria-expanded='true'] svg {
+        transform: scaleY(-1);
+    }
+    </style>
+</head>
+<body>
+
+    <!--
+    Resize the window, when it's wider than 40em Conditioner will unmount the SectionToggler
+    -->
+
+    <h2 data-module="sectionToggler" data-context="@media (max-width:40em)">Frizz free, context-aware, JavaScript modules</h2>
+    <div>
+        
+        <p>Building a content based website?</p>
+    
+        <p>Progressively enhancing it with a bit of interactivity?</p>
+    
+        <p>Want to offer different interactivity based on user context?</p>
+    
+        <p>Preferably do it without losing your mind?</p>
+
+        <p>👉 <a href="https://pqina.nl/conditioner/">pqina.nl/conditioner/</a></p>
+    
+    </div>
+
+    <script src="conditioner-core.min.js"></script>
+    <script>
+    // Our Accessible Section toggler module
+    var sectionToggler = (element) => {
+
+        // get section to toggle so we can hide it
+        const target = element.nextElementSibling;
+
+        // setup toggle button
+        const btn = document.createElement('button');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.innerHTML = element.textContent + '<svg aria-hidden="true" focusable="false" viewBox="0 0 16 10"><polyline stroke="#000" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" points="2 2 8 8 14 2"></polyline></svg>';
+        btn.onclick = function() {
+            const expanded = btn.getAttribute('aria-expanded') === 'true' || false;
+            btn.setAttribute('aria-expanded', !expanded);
+            target.hidden = expanded;
+        };
+        element.textContent = '';
+        element.appendChild(btn);
+
+        // hide the section
+        target.hidden = true;
+        
+        // clean up method
+        return () => {
+            element.nextElementSibling.hidden = false;
+            element.textContent = element.firstChild.textContent;
+        };
+    };
+
+    // Hydrate the DOM with Conditioner
+    conditioner.hydrate(document.documentElement);
+    </script>
+    
+</body>
+</html>

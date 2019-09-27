@@ -1,5 +1,5 @@
 // links the module to the element and exposes a callback api object
-const bindModule = element => {
+const bindModule = (element, unbind) => {
 	// gets the name of the module from the element, we assume the name is an alias
 	const alias = runPlugin('moduleGetName', element);
 
@@ -26,13 +26,11 @@ const bindModule = element => {
 		// is the module currently mounted?
 		mounted: false,
 
-		// unload is empty function so we can blindly call it if initial context does not match
+		// unmounts the module
 		unmount: () => {
 			// can't be unmounted if no destroy method has been supplied
 			// can't be unmounted if not mounted
-			if (!state.destruct || !boundModule.mounted) {
-				return;
-			}
+			if (!state.destruct || !boundModule.mounted) return;
 
 			// about to unmount the module
 			eachPlugins('moduleWillUnmount', boundModule);
@@ -46,7 +44,7 @@ const bindModule = element => {
 			// done unmounting the module
 			eachPlugins('moduleDidUnmount', boundModule);
 
-			// done destroying
+			// done unmounting
 			boundModule.onunmount.apply(element);
 		},
 
@@ -54,15 +52,37 @@ const bindModule = element => {
 		mount: () => {
 			// can't mount an already mounted module
 			// can't mount a module that is currently mounting
-			if (boundModule.mounted || state.mounting) {
-				return;
-			}
+			if (boundModule.mounted || state.mounting) return;
 
+            // now mounting module
+			state.mounting = true;
+			
 			// about to mount the module
 			eachPlugins('moduleWillMount', boundModule);
 
 			// get the module
 			runPlugin('moduleImport', name)
+				.then(module => {
+					// initialise the module, module can return a destroy mehod
+					state.destruct = runPlugin(
+						'moduleGetDestructor',
+						runPlugin('moduleGetConstructor', module)(
+							...runPlugin('moduleSetConstructorArguments', name, element)
+						)
+					);
+
+					// no longer mounting
+					state.mounting = false;
+
+					// module is now mounted
+					boundModule.mounted = true;
+
+					// did mount the module
+					eachPlugins('moduleDidMount', boundModule);
+
+					// module has now loaded lets fire the onload event so everyone knows about it
+					boundModule.onmount.apply(element, [boundModule]);
+				})
 				.catch(error => {
 					// failed to mount so no longer mounting
 					state.mounting = false;
@@ -75,31 +95,29 @@ const bindModule = element => {
 
 					// let dev know
 					throw new Error(`Conditioner: ${error}`);
-				})
-				.then(module => {
-					// initialise the module, module can return a destroy mehod
-					state.destruct = runPlugin(
-						'moduleGetDestructor',
-						runPlugin('moduleGetConstructor', module)(
-							...runPlugin('moduleSetConstructorArguments', name, element)
-						)
-					);
-
-					// module is now mounted
-					boundModule.mounted = true;
-
-					// no longer mounting
-					state.mounting = false;
-
-					// did mount the module
-					eachPlugins('moduleDidMount', boundModule);
-
-					// module has now loaded lets fire the onload event so everyone knows about it
-					boundModule.onmount.apply(element, [boundModule]);
 				});
 
 			// return state object
 			return boundModule;
+		},
+
+		// unmounts the module and destroys the attached monitors
+		destroy: function() {
+
+			// about to destroy the module
+			eachPlugins('moduleWillDestroy', boundModule);
+
+			// not implemented yet
+			boundModule.unmount();
+			
+			// did destroy the module
+			eachPlugins('moduleDidDestroy', boundModule);
+
+			// call public ondestroy so dev can handle it as well
+			boundModule.ondestroy.apply(element);
+
+			// call the destroy callback so monitor can be removed as well
+			unbind();
 		},
 
 		// called when fails to bind the module
@@ -111,8 +129,8 @@ const bindModule = element => {
 		// called when the module is unloaded, scope is set to element
 		onunmount: function() {},
 
-		// unmounts the module and destroys the attached monitors
-		destroy: function() {}
+		// called when the module is destroyed
+		ondestroy: function() {}
 	};
 
 	// done!
@@ -147,9 +165,7 @@ const getContextMonitor = (element, name, context) => {
 	const monitor = getPlugins('monitor').find(monitor => monitor.name === name);
 	// @exclude
 	if (!monitor) {
-		throw new Error(
-			`Conditioner: Cannot find monitor with name "@${name}". Only the "@media" monitor is always available. Custom monitors can be added with the \`addPlugin\` method using the \`monitors\` key. The name of the custom monitor should not include the "@" symbol.`
-		);
+		throw new Error(`Conditioner: Cannot find monitor with name "@${name}". Only the "@media" monitor is always available. Custom monitors can be added with the \`addPlugin\` method using the \`monitors\` key. The name of the custom monitor should not include the "@" symbol.`);
 	}
 	// @endexclude
 	return monitor.create(context, element);
@@ -160,22 +176,16 @@ const matchMonitors = monitors =>
 	monitors.reduce(
 		(matches, monitor) => {
 			// an earlier monitor returned false, so current context will no longer be suitable
-			if (!matches) {
-				return false;
-			}
+			if (!matches)  return false;
 
 			// get current match state, takes "not" into account
 			const matched = monitor.invert ? !monitor.matches : monitor.matches;
 
 			// mark monitor as has been matched in the past
-			if (matched) {
-				monitor.matched = true;
-			}
+			if (matched) monitor.matched = true;
 
 			// if retain is enabled with "was" and the monitor has been matched in the past, there's a match
-			if (monitor.retain && monitor.matched) {
-				return true;
-			}
+			if (monitor.retain && monitor.matched) return true;
 
 			// return current match state
 			return matched;
@@ -193,9 +203,7 @@ export const monitor = (query, element) => {
 		onchange: function() {},
 		start: () => {
 			// cannot be activated when already active
-			if (contextMonitor.active) {
-				return;
-			}
+			if (contextMonitor.active) return;
 
 			// now activating
 			contextMonitor.active = true;
@@ -216,9 +224,7 @@ export const monitor = (query, element) => {
 			monitorSets.forEach(monitorSet =>
 				monitorSet.forEach(monitor => {
 					// stop listening (if possible)
-					if (!monitor.removeListener) {
-						return;
-					}
+					if (!monitor.removeListener) return;
 					monitor.removeListener(onMonitorEvent);
 				})
 			);
@@ -241,10 +247,10 @@ export const monitor = (query, element) => {
 	// if all monitors return true for .matches getter, we mount the module
 	const onMonitorEvent = () => {
 		// will keep returning false if one of the monitors does not match, else checks matches property
-		const matches = monitorSets.reduce((matches, monitorSet) => {
+		const matches = monitorSets.reduce((matches, monitorSet) => 
 			// if one of the sets is true, it's all fine, no need to match the other sets
-			return matches ? true : matchMonitors(monitorSet);
-		}, false);
+			matches ? true : matchMonitors(monitorSet)
+		, false);
 
 		// store new state
 		contextMonitor.matches = matches;
@@ -260,24 +266,32 @@ export const monitor = (query, element) => {
 const createContextualModule = (query, boundModule) => {
 	// setup query monitor
 	const moduleMonitor = monitor(query, boundModule.element);
-	moduleMonitor.onchange = matches => (matches ? boundModule.mount() : boundModule.unmount());
+	moduleMonitor.onchange = matches => matches ? boundModule.mount() : boundModule.unmount();
 
 	// start monitoring
 	moduleMonitor.start();
 
-	return boundModule;
+	// export monitor
+	return moduleMonitor;
 };
 
 // pass in an element and outputs a bound module object, will wrap bound module in a contextual module if required
 const createModule = element => {
+
+	// called when the module is destroyed
+	const unbindModule = () => monitor && monitor.destroy();
+
 	// bind the module to the element and receive the module wrapper API
-	const boundModule = bindModule(element);
+	const boundModule = bindModule(element, unbindModule);
 
 	// get context requirements for this module (if any have been defined)
 	const query = runPlugin('moduleGetContext', element);
 
 	// wait for the right context or load the module immidiately if no context supplied
-	return query ? createContextualModule(query, boundModule) : boundModule.mount();
+	const monitor = createContextualModule(query, boundModule);
+
+	// return module
+	return query ? boundModule : boundModule.mount();
 };
 
 // parse a certain section of the DOM and load bound modules
@@ -319,9 +333,7 @@ addPlugin({
 	// load the referenced module, by default searches global scope for module name
 	moduleImport: name =>
 		new Promise((resolve, reject) => {
-			if (self[name]) {
-				return resolve(self[name]);
-			}
+			if (self[name]) return resolve(self[name]);
 			// @exclude
 			reject(
 				`Cannot find module with name "${name}". By default Conditioner will import modules from the global scope, make sure a function named "${name}" is defined on the window object. The scope of a function defined with \`let\` or \`const\` is limited to the <script> block in which it is defined.`

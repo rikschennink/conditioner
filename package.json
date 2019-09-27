@@ -1,12 +1,14 @@
 {
 	"name": "conditioner-core",
-	"version": "2.3.1",
+	"version": "2.3.2",
 	"description": "Conditioner - Frizz free, context-aware, JavaScript modules",
 	"homepage": "https://pqina.nl/conditioner",
 	"main": "conditioner-core.js",
 	"browser": "conditioner-core.js",
 	"module": "conditioner-core.esm.js",
 	"scripts": {
+		"start": "gulp",
+		"build": "gulp build",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [
