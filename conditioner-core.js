@@ -1,4 +1,4 @@
-/* conditioner-core 2.3.2 */
+/* conditioner-core 2.3.3 */
 (function (global, factory) {
 	if (typeof define === "function" && define.amd) {
 		define(['exports'], factory);
@@ -368,7 +368,7 @@
 		var query = runPlugin('moduleGetContext', element);
 
 		// wait for the right context or load the module immidiately if no context supplied
-		var monitor = createContextualModule(query, boundModule);
+		var monitor = query && createContextualModule(query, boundModule);
 
 		// return module
 		return query ? boundModule : boundModule.mount();

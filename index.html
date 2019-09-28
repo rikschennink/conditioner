@@ -49,7 +49,7 @@
     Resize the window, when it's wider than 40em Conditioner will unmount the SectionToggler
     -->
 
-    <h2 data-module="sectionToggler" data-context="@media (max-width:40em)">Frizz free, context-aware, JavaScript modules</h2>
+    <h2 data-module="SectionToggler" data-context="@media (max-width:40em)">Frizz free, context-aware, JavaScript modules</h2>
     <div>
         
         <p>Building a content based website?</p>
@@ -64,10 +64,18 @@
     
     </div>
 
+    <h2>Let's print "Hello World"</h2>
+    <p data-module="HelloWorld"></p>
+
     <script src="conditioner-core.min.js"></script>
     <script>
-    // Our Accessible Section toggler module
-    var sectionToggler = (element) => {
+    // Our Hello World module
+    function HelloWorld(element) {
+        element.textContent = 'Hello World';
+    };
+
+    // Our Section Toggler module
+    function SectionToggler(element) {
 
         // get section to toggle so we can hide it
         const target = element.nextElementSibling;
@@ -88,7 +96,7 @@
         target.hidden = true;
         
         // clean up method
-        return () => {
+        return function() {
             element.nextElementSibling.hidden = false;
             element.textContent = element.firstChild.textContent;
         };

@@ -1,4 +1,4 @@
-/* conditioner-core 2.3.2 */
+/* conditioner-core 2.3.3 */
 // links the module to the element and exposes a callback api object
 const bindModule = (element, unbind) => {
 	// gets the name of the module from the element, we assume the name is an alias
@@ -289,7 +289,7 @@ const createModule = element => {
 	const query = runPlugin('moduleGetContext', element);
 
 	// wait for the right context or load the module immidiately if no context supplied
-	const monitor = createContextualModule(query, boundModule);
+	const monitor = query && createContextualModule(query, boundModule);
 
 	// return module
 	return query ? boundModule : boundModule.mount();
