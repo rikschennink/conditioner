@@ -5,7 +5,6 @@ Conditioner provides a straight forward Progressive Enhancement based solution f
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/rikschennink/conditioner/blob/master/LICENSE)
 [![npm version](https://badge.fury.io/js/conditioner-core.svg)](https://badge.fury.io/js/conditioner-core)
-[![Support on Patreon](https://img.shields.io/badge/support-patreon-salmon.svg)](https://www.patreon.com/rikschennink)
 
 ## Example
 
